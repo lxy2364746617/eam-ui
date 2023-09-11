@@ -1,0 +1,48 @@
+<template>
+    <el-form ref="form" :model="form" :rules="rules" label-width="100px" :disabled="disabled">
+        <el-row :gutter="10">
+            <el-col :span="col.span||12" v-for="col in columns" :key="col.prop" v-if="col.formVisible!=false">
+                <el-form-item :label="col.label" :prop="col.prop">
+                <editor v-if="col.formType=='textarea'" v-model="form.noticeContent" :min-height="192"/>
+                <el-input v-else v-model="form[col.prop]" placeholder="请输入" />
+                </el-form-item>
+            </el-col>
+        </el-row>
+    </el-form>
+</template>
+<script>
+export default {
+    props: {
+        columns: {
+            default: ()=>[],
+            type: Array,
+        },
+        formData: {
+            default: ()=>{},
+            type: Object,
+        },
+        disabled:{
+          default: false,
+          type: Boolean
+        },
+    },
+    watch:{
+        formData(){
+            this.form = this.formData
+        }
+    },
+    data() {
+        return {
+            form: {},
+            rules: {},
+
+        }
+    },
+    created() {
+        console.log(this.formData,333);
+    },
+    methods: {
+
+    }
+}
+</script>

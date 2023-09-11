@@ -1,0 +1,10 @@
+<meta charset="utf-8">
+<title>xcrud demo</title>
+<script src="./xcrud.umd.js"></script>
+
+<link rel="stylesheet" href="./xcrud.css">
+
+
+<script>
+console.log(xcrud)
+</script>

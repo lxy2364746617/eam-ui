@@ -1,0 +1,96 @@
+{
+  "_from": "xcrud@^0.4.19",
+  "_id": "xcrud@0.4.19",
+  "_inBundle": false,
+  "_integrity": "sha512-ztlSYchkEExal0s4xoFb/92+zoTDULNmupTcM8nLkMs+SyxKreOGoW/l6BH9DK6qRc0jI3uNaKx271kHE7m2OA==",
+  "_location": "/xcrud",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "xcrud@^0.4.19",
+    "name": "xcrud",
+    "escapedName": "xcrud",
+    "rawSpec": "^0.4.19",
+    "saveSpec": null,
+    "fetchSpec": "^0.4.19"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/xcrud/-/xcrud-0.4.19.tgz",
+  "_shasum": "834d914407c369f39ada8e600851025254f41fb6",
+  "_spec": "xcrud@^0.4.19",
+  "_where": "E:\\visual_code_work_space\\ruoyi-ui",
+  "author": {
+    "name": "charles",
+    "email": "997462392@qq.com"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "bugs": {
+    "url": "https://github.com/GoldSubmarine/xcrud/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "element-ui": "^2.13.2",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.merge": "^4.6.2",
+    "vue": "^2.6.11"
+  },
+  "deprecated": false,
+  "description": "A simplified crud component based on element-ui & Vue",
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.5.0",
+    "@vue/cli-plugin-eslint": "^4.5.0",
+    "@vue/cli-service": "^4.5.0",
+    "async-validator": "1.11.5",
+    "babel-eslint": "^10.1.0",
+    "core-js": "^3.6.5",
+    "cross-env": "^7.0.2",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "highlight.js": "^9.12.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^10.0.2",
+    "vue-highlight.js": "^2.2.0",
+    "vue-template-compiler": "^2.6.11",
+    "vuepress": "^1.5.4"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "package",
+    "README.md",
+    "LICENSE"
+  ],
+  "homepage": "https://github.com/GoldSubmarine/xcrud#readme",
+  "keywords": [
+    "crud",
+    "vue",
+    "element-ui"
+  ],
+  "license": "MIT",
+  "main": "dist/xcrud.umd.min.js",
+  "name": "xcrud",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoldSubmarine/xcrud.git"
+  },
+  "scripts": {
+    "build": "vue-cli-service build --target lib --inline-vue --entry package/index.js",
+    "bump-version": "cd ./docs && node -e 'require(\"./.vuepress/lib/versioning.js\").generate()'",
+    "dev": "cross-env NODE_ENV=dev vuepress dev docs",
+    "docs:build": "cross-env NODE_ENV=production vuepress build docs&&echo 1 > ./docs/.vuepress/dist/.nojekyll",
+    "lint": "vue-cli-service lint",
+    "prepublish": "yarn build",
+    "serve": "vue-cli-service serve"
+  },
+  "version": "0.4.19"
+}
