@@ -2,11 +2,12 @@
   <div class="app-container">
     <el-row :gutter="20">
       <!--部门数据-->
-      <el-col :span="5" :xs="24">
-        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick"></jm-user-tree>
+      <el-col :span="6" :xs="24">
+        <p style="color: transparent;">1</p>
+        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" style="position: fixed;top: 121px;height: calc(100vh - 141px);"></jm-user-tree>
       </el-col>
       <!--用户数据-->
-      <el-col :span="19" :xs="24">
+      <el-col :span="18" :xs="24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
           <el-form-item label="用户名称" prop="userName">
             <el-input

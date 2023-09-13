@@ -21,48 +21,11 @@
           <jm-form 
             :columns="columns" 
             :formData="formData" 
+            :labelWidth="'150px'"
             @submitForm="submitForm" 
             @close="close" 
             :disabled="disabled">
           </jm-form>
-        </el-card>
-        <el-card shadow="never" v-show="disabled">
-          <div slot="header">
-            <span>下级信息</span>
-          </div>
-          <jm-table
-            :tableData="deptList"
-            @getList="getList"
-            @handleSelectionChange="handleSelectionChange"
-            :total="total"
-            :columns="columns">
-            <template slot="headerLeft">
-              <el-col :span="1.5">
-                <el-button
-                  v-if="deptList.length>0"
-                  type="warning"
-                  plain
-                  icon="el-icon-download"
-                  size="mini"
-                  @click="handleExport"
-                >导出</el-button>
-              </el-col>
-            </template>
-            <template #end_handle="scope">
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-edit"
-                @click="editTreeItem2(scope.row)"
-              >修改</el-button>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-delete"
-                @click="handleDelete(scope.row)"
-              >删除</el-button>
-            </template>
-          </jm-table>
         </el-card>
       </el-col>
     </el-row>
@@ -72,19 +35,30 @@
 </template>
 
 <script>
-import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild, getDeptChild } from "@/api/system/dept";
+import { equipmentTree, listCategory, getCategory, delCategory, addCategory, updateCategory } from "@/api/equipment/category";
+import { listTemplate } from "@/api/equipment/template";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import JmUserTree from "@/components/JmUserTree";
 import JmForm from "@/components/JmForm";
-import JmTable from "@/components/JmTable";
 
 export default {
   name: "Dept",
-  dicts: ['sys_prt_org','sys_second_unit','sys_lease'],
-  components: { Treeselect, JmUserTree, JmForm, JmTable },
+  dicts: ['em_is_special','em_is_sm'],
+  components: { Treeselect, JmUserTree, JmForm, },
   computed: {
-     
+    columns(){
+      return [ 
+        { label: '类别名称', prop: 'categoryName',width: 100, required: true, tableVisible: true, span:24, },
+        { label: '类别编码', prop: 'categoryCode', formDisabled: true,width: 100, tableVisible: true, span:24,  },
+        { label: '上级编码', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: this.deptOptions, width: 200, tableVisible: true, span:24, },
+        { label: '是否是特种设备', prop: 'isSpecial',formType: 'radio', options: this.dict.type.em_is_special ,width: 100, required: true, tableVisible: true, span:24, },
+        { label: '特种设备模板', prop: 'special',formDisabled: this.formData.isSpecial=="N",formType: 'select', options: this.special ,width: 100, tableVisible: true, span:24, },
+        { label: '是否是六大设备类型', prop: 'isSm',formType: 'radio', options: this.dict.type.em_is_sm ,width: 100, required: true, tableVisible: true, span:24, },
+        { label: '六大设备类型模板', prop: 'sm',formDisabled: this.formData.isSm=="N",formType: 'select', options: this.sm ,width: 100, tableVisible: true, span:24, },
+        { label: '备注', prop: 'remark',width: 100, tableVisible: true, span:24, },
+      ]
+    }
   },
   data() {
     return {
@@ -94,22 +68,22 @@ export default {
       showSearch: true,
       // 部门树选项
       deptOptions: [],
+      special: [],
+      sm: [],
       // 弹出层标题
       title: "",
       // 部门名称
       deptName: undefined,
-      columns: [ 
-        { label: '部门编码', prop: 'deptCode', formDisabled: true,width: 120, tableVisible: true,  },
-        { label: '是否产权组织', prop: 'prtOrg', formType: 'select', options: [] ,width: 100, required: true, tableVisible: true, },
-        { label: '部门名称', prop: 'deptName',width: 100, required: true, tableVisible: true, },
-        { label: '是否二级单位', prop: 'secondUnit',formType: 'select', options: [] ,width: 100, required: true, tableVisible: true,  },
-        { label: '父级组织', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: [], width: 200, tableVisible: true, },
-        { label: '是否租赁公司', prop: 'lease',formType: 'select', options: [] , width: 200, required: true, tableVisible: true,},
-        { label: '电话', prop: 'phone', width: 200, tableVisible: true, },
-        { label: '邮箱', prop: 'email',width: 200, tableVisible: true, },
-        { label: '地址', prop: 'address', width: 200, tableVisible: true,},
-        { label: '传真', prop: 'fax',width: 200, tableVisible: true, },
-      ],
+      // columns: [ 
+      //   { label: '类别名称', prop: 'categoryName',width: 100, required: true, tableVisible: true, span:24, },
+      //   { label: '类别编码', prop: 'categoryCode', formDisabled: true,width: 100, tableVisible: true, span:24,  },
+      //   { label: '上级编码', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: [], width: 200, tableVisible: true, span:24, },
+      //   { label: '是否是特种设备', prop: 'isSpecial',formType: 'radio', options: [] ,width: 100, required: true, tableVisible: true, span:24, },
+      //   { label: '特种设备模板', prop: 'isSpecial2',formType: 'select', options: [] ,width: 100, tableVisible: true, span:24, },
+      //   { label: '是否是六大设备类型', prop: 'isSm',formType: 'radio', options: [] ,width: 100, required: true, tableVisible: true, span:24, },
+      //   { label: '六大设备类型模板', prop: 'isSm2',formType: 'select', options: [] ,width: 100, tableVisible: true, span:24, },
+      //   { label: '备注', prop: 'remark',width: 100, tableVisible: true, span:24, },
+      // ],
       disabled: true,
       // 是否显示弹出层
       open: false,
@@ -118,14 +92,10 @@ export default {
       // 重新渲染表格状态
       refreshTable: true,
       // 点击树的基本详情
+      formDataInit: {},
       formData: {},
-      formDataInit: '',
       nowClickTreeItem: "",
       rightTitle: '基本信息',
-      // 点击树的表格详情
-      deptList: [],
-      // 点击树的表格详情
-      total: 0,
       // 表单参数
       form: {},
       // 表单校验
@@ -157,35 +127,74 @@ export default {
     };
   },
   async created() {
+    this.getSelect();
     await this.getDeptTree();
     // data赋值
-    this.columns.forEach(b => {
-      if(b.prop=='prtOrg') this.$set(b,'options',this.dict.type.sys_prt_org)
-      if(b.prop=='secondUnit') this.$set(b,'options',this.dict.type.sys_second_unit) 
-      if(b.prop=='lease') this.$set(b,'options',this.dict.type.sys_lease)
-      if(b.prop=='parentId') this.$set(b,'options',this.deptOptions)
-    });
+    // this.columns.forEach(b => {
+    //   if(b.prop=='isSpecial') this.$set(b,'options',this.dict.type.em_is_special)
+    //   if(b.prop=='isSm') this.$set(b,'options',this.dict.type.em_is_sm)
+    //   if(b.prop=='parentId') this.$set(b,'options',this.deptOptions)
+    //   if(b.prop=='isSpecial2') this.$set(b,'formDisabled',this.formData.isSpecial)
+    // });
   },
   mounted(){
     
   },
   methods: {
+    getSelect(){
+      var obj = {
+        pageNum: 1,
+        pageSize: 10000,
+      }
+      var obj2 = {
+        ...obj,
+        templateType: 'T'
+      }
+      var obj3 = {
+        ...obj,
+        templateType: 'Z'
+      }
+      listTemplate(obj2).then(response => {
+        this.special = response.rows;
+        this.special.forEach(b => {
+          b.label = b.templateName
+          b.value = b.templateId
+        });
+      });
+      listTemplate(obj3).then(response => {
+        this.sm = response.rows;
+        this.sm.forEach(b => {
+          b.label = b.templateName
+          b.value = b.templateId
+        });
+      });
+    },
+    
+    setColumns(prop,val){
+      this.columns.forEach(b => {
+        if(b.prop==prop) Object.assign(b,val)
+      });
+    },
     /** 查询部门下拉树结构 */
     async getDeptTree() {
-      await listDept().then(response => {
+      // await listCategory().then(response => {
+      //   this.forfn(response.rows)
+      //   this.deptOptions = response.rows;
+      // });
+      await equipmentTree().then(response => {
+        // this.forfn(response.rows)
         this.deptOptions = response.data;
       });
     },
-    /** 查询部门列表 */
-    getList(queryParams) {
-      var obj = {
-        parentId: this.nowClickTreeItem.id,
-        ...queryParams
-      }
-      getDeptChild(obj).then(response => {
-        this.deptList = response.data
-      });
-    },
+    // forfn(options){
+    //   for (let i = 0; i < options.length; i++) {
+    //     options[i].label = options[i].categoryName
+    //     options[i].id = options[i].categoryId
+    //     if(options[i].children){
+    //       this.forfn(options[i].children)
+    //     }
+    //   }
+    // },
     /** 转换部门数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
@@ -207,17 +216,11 @@ export default {
       this.rightTitle = '新增下级组织'
       console.log(this.nowClickTreeItem,555)
       this.formData = {
-        parentId:this.nowClickTreeItem.id
+        parentId:this.nowClickTreeItem.id || 0
       }
       this.disabled = false;
     },
     
-    editTreeItem2(row){
-      this.formData = JSON.parse(JSON.stringify(row))
-      this.rightTitle = '编辑'
-      this.disabled=false
-
-    },
     editTreeItem(){
       this.rightTitle = '编辑'
       this.disabled=false
@@ -249,7 +252,7 @@ export default {
       }
       this.open = true;
       this.title = "添加部门";
-      listDept().then(response => {
+      listCategory().then(response => {
         this.deptOptions = this.handleTree(response.data, "deptId");
       });
     },
@@ -267,45 +270,23 @@ export default {
         this.$message('请退出当前编辑')
       }else{
         this.nowClickTreeItem = row
-        getDept(row.id).then(response => {
+        getCategory(row.id).then(response => {
           this.formDataInit = JSON.stringify(response.data)
           this.formData = response.data
         });
-        var obj = {
-          parentId: row.id
-        }
-        getDeptChild(obj).then(response => {
-          this.deptList = response.data
-        });
       }
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      getDept(row.deptId).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改部门";
-        listDeptExcludeChild(row.deptId).then(response => {
-          this.deptOptions = this.handleTree(response.data, "deptId");
-          if (this.deptOptions.length == 0) {
-            const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] };
-            this.deptOptions.push(noResultsOptions);
-          }
-        });
-      });
     },
     /** 提交按钮 */
     submitForm: function(formdata) {
-      if (formdata.deptId != undefined) {
-        updateDept(formdata).then(response => {
+      if (formdata.categoryId != undefined) {
+        updateCategory(formdata).then(response => {
           this.rightTitle = '基本信息'
           this.$modal.msgSuccess("修改成功");
           this.disabled = true;
           this.getDeptTree();
         });
       } else {
-        addDept(formdata).then(response => {
+        addCategory(formdata).then(response => {
           this.rightTitle = '基本信息'
           this.$modal.msgSuccess("新增成功");
           this.disabled = true;
@@ -322,21 +303,11 @@ export default {
       var name = row.label?row.label:row.deptName;
       var id = row.id?row.id:row.deptId;
       this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function() {
-        return delDept(id);
+        return delCategory(id);
       }).then(() => {
         this.getDeptTree();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
-    },
-    /** 导出按钮操作 */
-    handleExport(queryParams) {
-      var obj = {
-        ...queryParams,
-        parentId: this.nowClickTreeItem.id
-      }
-      this.download('system/dept/export', 
-        obj,
-       `config_${new Date().getTime()}.xlsx`)
     },
   }
 };

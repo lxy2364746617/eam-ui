@@ -43,7 +43,7 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="10">
-        <el-card class="update-log">
+        <!-- <el-card class="update-log">
           <div slot="header" class="clearfix">
             <span>捐赠支持</span>
           </div>
@@ -57,7 +57,7 @@
             >可以请作者喝杯咖啡以示鼓励！</span
             >
           </div>
-        </el-card>
+        </el-card> -->
       </el-col>
     </el-row>
     <el-divider />
@@ -79,7 +79,7 @@
           <div slot="header" class="clearfix">
             <span>流程演示</span>
           </div>
-          <img style="width: 850px" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f248dea817f74341b70f4087f425975b~tplv-k3u1fbpfcp-watermark.image?"/>
+          <!-- <img style="width: 850px" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f248dea817f74341b70f4087f425975b~tplv-k3u1fbpfcp-watermark.image?"/> -->
         </el-card>
       </el-col>
     </el-row>

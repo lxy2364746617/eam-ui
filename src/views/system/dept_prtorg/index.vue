@@ -5,11 +5,11 @@
       <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
         <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" style="position: fixed;top: 121px;height: calc(100vh - 141px);">
-          <template slot="middle-pos">
+          <!-- <template slot="middle-pos">
             <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"></el-button>
             <el-button type="text" icon="el-icon-edit-outline" @click="editTreeItem"></el-button>
             <el-button type="text" icon="el-icon-delete" @click="handleDelete(nowClickTreeItem)"></el-button>
-          </template>
+          </template> -->
         </jm-user-tree>
       </el-col>
       <!--用户数据-->
@@ -34,9 +34,10 @@
             :tableData="deptList"
             @getList="getList"
             @handleSelectionChange="handleSelectionChange"
+            @handleExport="handleExport"
             :total="total"
             :columns="columns">
-            <template slot="headerLeft">
+            <template slot="headerLeft" slot-scope="scope">
               <el-col :span="1.5">
                 <el-button
                   v-if="deptList.length>0"
@@ -48,7 +49,7 @@
                 >导出</el-button>
               </el-col>
             </template>
-            <template #end_handle="scope">
+            <!-- <template #end_handle="scope">
               <el-button
                 size="mini"
                 type="text"
@@ -61,7 +62,7 @@
                 icon="el-icon-delete"
                 @click="handleDelete(scope.row)"
               >删除</el-button>
-            </template>
+            </template> -->
           </jm-table>
         </el-card>
       </el-col>
@@ -80,14 +81,18 @@ import JmForm from "@/components/JmForm";
 import JmTable from "@/components/JmTable";
 
 export default {
-  name: "Dept",
+  name: "Dept_Prtorg",
   dicts: ['sys_prt_org','sys_second_unit','sys_lease'],
   components: { Treeselect, JmUserTree, JmForm, JmTable },
   computed: {
+    
      
   },
   data() {
     return {
+      formParams:{
+        'prtOrg':"Y"
+      },
       // 遮罩层
       loading: true,
       // 显示搜索条件
@@ -98,17 +103,18 @@ export default {
       title: "",
       // 部门名称
       deptName: undefined,
-      columns: [ 
+      // 表格列
+      columns: [
         { label: '部门编码', prop: 'deptCode', formDisabled: true,width: 120, tableVisible: true,  },
-        { label: '是否产权组织', prop: 'prtOrg', formType: 'select', options: [] ,width: 100, required: true, tableVisible: true, },
+        { label: '是否产权组织', prop: 'prtOrg', formType: 'select', options:[] ,width: 100, required: true, tableVisible: true, },
         { label: '部门名称', prop: 'deptName',width: 100, required: true, tableVisible: true, },
-        { label: '是否二级单位', prop: 'secondUnit',formType: 'select', options: [] ,width: 100, required: true, tableVisible: true,  },
+        { label: '是否二级单位', prop: 'secondUnit',formType: 'select', options:[] ,width: 100, required: true, tableVisible: true,  },
         { label: '父级组织', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: [], width: 200, tableVisible: true, },
-        { label: '是否租赁公司', prop: 'lease',formType: 'select', options: [] , width: 200, required: true, tableVisible: true,},
-        { label: '电话', prop: 'phone', width: 200, tableVisible: true, },
-        { label: '邮箱', prop: 'email',width: 200, tableVisible: true, },
-        { label: '地址', prop: 'address', width: 200, tableVisible: true,},
-        { label: '传真', prop: 'fax',width: 200, tableVisible: true, },
+        { label: '是否租赁公司', prop: 'lease',formType: 'select', options:[] , width: 200, required: true, tableVisible: true,},
+        { label: '电话', prop: 'phone', width: 200, required: true, tableVisible: true, },
+        { label: '邮箱', prop: 'email',width: 200, required: true, tableVisible: true, },
+        { label: '地址', prop: 'address', width: 200, required: true, tableVisible: true,},
+        { label: '传真', prop: 'fax',width: 200, required: true, tableVisible: true, },
       ],
       disabled: true,
       // 是否显示弹出层
@@ -166,13 +172,10 @@ export default {
       if(b.prop=='parentId') this.$set(b,'options',this.deptOptions)
     });
   },
-  mounted(){
-    
-  },
   methods: {
     /** 查询部门下拉树结构 */
     async getDeptTree() {
-      await listDept().then(response => {
+      await listDept(this.formParams).then(response => {
         this.deptOptions = response.data;
       });
     },
@@ -180,7 +183,8 @@ export default {
     getList(queryParams) {
       var obj = {
         parentId: this.nowClickTreeItem.id,
-        ...queryParams
+        queryParams,
+        ...this.formParams,
       }
       getDeptChild(obj).then(response => {
         this.deptList = response.data
@@ -267,12 +271,14 @@ export default {
         this.$message('请退出当前编辑')
       }else{
         this.nowClickTreeItem = row
-        getDept(row.id).then(response => {
+
+        getDept(row.id,this.formParams).then(response => {
           this.formDataInit = JSON.stringify(response.data)
           this.formData = response.data
         });
         var obj = {
-          parentId: row.id
+          parentId: row.id,
+          ...this.formParams,
         }
         getDeptChild(obj).then(response => {
           this.deptList = response.data
@@ -286,7 +292,7 @@ export default {
         this.form = response.data;
         this.open = true;
         this.title = "修改部门";
-        listDeptExcludeChild(row.deptId).then(response => {
+        listDeptExcludeChild(row.deptId,this.formParams).then(response => {
           this.deptOptions = this.handleTree(response.data, "deptId");
           if (this.deptOptions.length == 0) {
             const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] };
@@ -297,15 +303,19 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function(formdata) {
+      var obj = {
+          ...formdata,
+          ...this.formParams
+        }
       if (formdata.deptId != undefined) {
-        updateDept(formdata).then(response => {
+        updateDept(obj).then(response => {
           this.rightTitle = '基本信息'
           this.$modal.msgSuccess("修改成功");
           this.disabled = true;
           this.getDeptTree();
         });
       } else {
-        addDept(formdata).then(response => {
+        addDept(obj).then(response => {
           this.rightTitle = '基本信息'
           this.$modal.msgSuccess("新增成功");
           this.disabled = true;
@@ -322,7 +332,7 @@ export default {
       var name = row.label?row.label:row.deptName;
       var id = row.id?row.id:row.deptId;
       this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function() {
-        return delDept(id);
+        return delDept(id, this.formParams);
       }).then(() => {
         this.getDeptTree();
         this.$modal.msgSuccess("删除成功");

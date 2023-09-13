@@ -31,6 +31,8 @@ module.exports = {
   devServer: {
     host: '0.0.0.0',
     port: port,
+    // inline: false,    //代码保存自动刷新页面
+    // hot: false,    //用于设置代码保存时是否进行热更新（局部刷新，不刷新整个页面）
     open: true,
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy

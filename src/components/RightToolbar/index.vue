@@ -8,17 +8,28 @@
         <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="columns">
-        <el-button size="mini" circle icon="el-icon-menu" @click="showColumn()" />
+        <el-popover
+          placement="bottom"
+          title=""
+          width="200"
+          trigger="click">
+          <el-checkbox-group v-model="value" @change="showColumn">
+            <div v-for="item in columns" :key="item.prop">
+              <el-checkbox :label="item.prop">{{ item.label }}</el-checkbox>
+            </div>
+          </el-checkbox-group>
+          <el-button slot="reference" size="mini" circle icon="el-icon-menu"/>
+        </el-popover>
       </el-tooltip>
     </el-row>
-    <el-dialog :title="title" :visible.sync="open" append-to-body>
+    <!-- <el-dialog :title="title" :visible.sync="open" append-to-body>
       <el-transfer
         :titles="['显示', '隐藏']"
         v-model="value"
         :data="columns"
         @change="dataChange"
       ></el-transfer>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 <script>
@@ -63,9 +74,9 @@ export default {
   created() {
     // 显隐列初始默认隐藏列
     for (let item in this.columns) {
-      this.columns[item].key = item; //设置key 0，1，2，3，4
-      if (this.columns[item].tableVisible === false) {
-        this.value.push(parseInt(item));
+      // this.columns[item].key = item; //设置key 0，1，2，3，4
+      if (this.columns[item].tableVisible) {
+        this.value.push(this.columns[item].prop);
       }
     }
   },
@@ -85,9 +96,12 @@ export default {
         this.columns[item].tableVisible = !data.includes(key);
       }
     },
-    // 打开显隐列dialog
-    showColumn() {
-      this.open = true;
+    // 处理显隐列
+    showColumn(val) {
+      // this.open = true;
+      this.columns.forEach((b,i) => {
+        this.$set(b,'tableVisible',val.includes(b.prop))
+      });
     },
   },
 };

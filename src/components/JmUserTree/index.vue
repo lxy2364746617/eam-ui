@@ -55,8 +55,10 @@
       },
       treeData(){
         this.$nextTick(() => {
-          const firstNode = document.querySelector('.el-tree-node')
-          firstNode.click();
+          const firstNode = document.querySelector('.el-tree-node');
+          if(firstNode){
+            firstNode.click();
+          }
         })
       }
     },

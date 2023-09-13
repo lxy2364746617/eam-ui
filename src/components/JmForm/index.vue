@@ -5,35 +5,41 @@
             <el-button size="mini" @click="submitForm" type="primary">保存</el-button>
         </div>
         <el-form 
-            ref="form" 
+            ref="formform" 
             size="small" 
-            :model="form" 
+            :model="formData" 
             :rules="rules" 
-            label-width="120px" >
+            :label-width="labelWidth||'120px'" >
             <el-row :gutter="10">
                 <el-col :span="col.span||12" v-for="col in columns" :key="col.prop" v-if="col.formVisible!=false">
                     <el-form-item 
                         :label="col.label" 
                         :prop="col.prop" 
                         :required="col.required">
-                        <editor v-if="col.formType=='textarea'" v-model="form[col.prop]" :min-height="192"/>
-                        <el-select v-else-if="col.formType=='select'" v-model="form[col.prop]" placeholder="请选择" :disabled="col.disabled || disabled">
+                        <editor v-if="col.formType=='textarea'" v-model="formData[col.prop]" :min-height="192"/>
+                        <el-select v-else-if="col.formType=='select'" v-model="formData[col.prop]" placeholder="请选择" filterable :disabled="col.formDisabled || disabled">
                             <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value"></el-option>
                         </el-select>
+                        <el-radio-group v-else-if="col.formType=='radio'" v-model="formData[col.prop]" :disabled="col.formDisabled || disabled" @input="col.changeFn">
+                            <el-radio :label="item.value" v-for="item in col.options" :key="item.value">{{item.label}}</el-radio>
+                        </el-radio-group>
                         <treeselect 
                             size="small" 
                             v-else-if="col.formType=='selectTree'" 
-                            v-model="form[col.prop]" 
+                            v-model="formData[col.prop]" 
                             :options="col.options" 
+                            clear-value-text="清除"
+                            no-options-text="暂无数据"
                             placeholder="请选择" 
                             :normalizer="normalizer" 
-                            :disabled="col.disabled || disabled" 
+                            :disabled="col.formDisabled || disabled" 
                             style="height: 32px;line-height: 32px;"/>
-                        <el-input v-else v-model="form[col.prop]" placeholder="请输入" :disabled="col.disabled || disabled"/>
+                        <el-input v-else v-model="formData[col.prop]" placeholder="请输入" :disabled="col.formDisabled || disabled"/>
                     </el-form-item>
                 </el-col>
             </el-row>
         </el-form>
+        <slot name="footer"></slot>
     </div>
 </template>
 <script>
@@ -59,22 +65,38 @@ export default {
           default: false,
           type: Boolean
         },
-    },
-    watch:{
-        formData() {
-            this.form = this.formData
-            this.clearValidate()
-            console.log(this.form,444);
+        labelWidth: {
+            default: '',
+            type: String,
         },
     },
+    // watch:{
+    //     formData: {
+    //         handler(newVal) {
+    //             this.form = newVal
+    //             this.clearValidate()
+    //         },
+    //         immediate: true,
+    //         deep: true,
+    //     },
+    //     // 'form.parentId'(newval,oldval) {
+    //     //     if(newval==0){
+    //     //         this.form.parentId = 100
+    //     //     }
+    //     // }
+    // },
     data() {
         return {
-            form: {},
+            // form: {},
             rules: {},
         }
     },
     created() {
         
+    },
+    mounted(){
+        this.clearValidate()
+
     },
     methods: {
         /** 转换部门数据结构 */
@@ -90,13 +112,13 @@ export default {
         },
         clearValidate(){
             this.$nextTick(()=>{
-                this.$refs["form"].clearValidate()
+                this.$refs["formform"].clearValidate()
             })
         },
         submitForm() {
-            this.$refs["form"].validate(valid => {
+            this.$refs["formform"].validate(valid => {
                 if (valid) {
-                    this.$emit( 'submitForm' , this.form)
+                    this.$emit('submitForm', this.formData)
                 }
             });
         },
@@ -114,7 +136,27 @@ export default {
     color: #000;
     cursor: not-allowed;
 }
+::v-deep .el-radio__input.is-disabled .el-radio__inner{
+    background-color: #f9f9f9;
+    border-color: #dddddd;
+    color: #000;
+    cursor: not-allowed;
+}
+::v-deep .el-radio__input.is-disabled.is-checked {
+    .el-radio__inner{
+        &::after{
+            background-color: #000;
+        }
+    }
+    &+.el-radio__label{
+        color: #000;
+    }
+
+}
 ::v-deep .vue-treeselect--disabled .vue-treeselect__control{
     cursor: not-allowed;
+}
+.el-select.el-select--small{
+    width: 100%;
 }
 </style>

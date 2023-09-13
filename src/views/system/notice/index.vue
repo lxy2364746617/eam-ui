@@ -3,7 +3,7 @@
     <jm-table
       :tableData="noticeList"
       @getList="getList"
-      @handleExport="handleExport"
+      @handleSelectionChange="handleSelectionChange"
       :total="total"
       :columns="columns">
       <template slot="headerLeft">
@@ -40,7 +40,7 @@
         </el-col>
         
       </template>
-      <template slot="end_handle">
+      <template #end_handle="scope">
         <el-button
           size="mini"
           type="text"
