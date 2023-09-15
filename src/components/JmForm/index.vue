@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="!disabled" style="float: right;margin-top: -65px;">
+        <div v-if="!disabled && showButton" style="float: right;margin-top: -65px;">
             <el-button size="mini" @click="close">取消</el-button>
             <el-button size="mini" @click="submitForm" type="primary">保存</el-button>
         </div>
@@ -16,13 +16,23 @@
                         :label="col.label" 
                         :prop="col.prop" 
                         :required="col.required">
-                        <editor v-if="col.formType=='textarea'" v-model="formData[col.prop]" :min-height="192"/>
+                        <editor v-if="col.formType=='editor'" v-model="formData[col.prop]" :min-height="192"/>
                         <el-select v-else-if="col.formType=='select'" v-model="formData[col.prop]" placeholder="请选择" filterable :disabled="col.formDisabled || disabled">
                             <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value"></el-option>
                         </el-select>
                         <el-radio-group v-else-if="col.formType=='radio'" v-model="formData[col.prop]" :disabled="col.formDisabled || disabled" @input="col.changeFn">
                             <el-radio :label="item.value" v-for="item in col.options" :key="item.value">{{item.label}}</el-radio>
                         </el-radio-group>
+                        <el-date-picker
+                            v-else-if="col.formType=='date'"
+                            v-model="formData[col.prop]"
+                            value-format="yyyy-MM-dd"
+                            size="small"
+                            type="date"
+                            clearable
+                            style="width: auto;"
+                            placeholder="选择日期">
+                        </el-date-picker>
                         <treeselect 
                             size="small" 
                             v-else-if="col.formType=='selectTree'" 
@@ -34,7 +44,8 @@
                             :normalizer="normalizer" 
                             :disabled="col.formDisabled || disabled" 
                             style="height: 32px;line-height: 32px;"/>
-                        <el-input v-else v-model="formData[col.prop]" placeholder="请输入" :disabled="col.formDisabled || disabled"/>
+                        <el-input v-else-if="col.formType=='textarea'" type="textarea" v-model="formData[col.prop]" placeholder="请输入" :disabled="col.formDisabled || disabled"/>
+                        <el-input v-else v-model="formData[col.prop]" placeholder="请输入" :readonly="col.readonly" :disabled="col.formDisabled || disabled" @click.native="col.clickFn?col.clickFn():(()=>{})()" />
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -61,7 +72,11 @@ export default {
             default: ()=>{},
             type: Object,
         },
-        disabled:{
+        showButton: {
+          default: true,
+          type: Boolean
+        },
+        disabled: {
           default: false,
           type: Boolean
         },
@@ -115,12 +130,16 @@ export default {
                 this.$refs["formform"].clearValidate()
             })
         },
-        submitForm() {
-            this.$refs["formform"].validate(valid => {
-                if (valid) {
-                    this.$emit('submitForm', this.formData)
-                }
-            });
+        async submitForm() {
+            try {
+                //调用表单的validate方法，执行表单校验
+                await this.$refs['formform'].validate()
+            }catch(e) {
+                //如果表单有报错，则进入catch，此时直接return不执行表单提交
+                return false
+            }
+            this.$emit('submitForm', this.formData)
+            return true
         },
         close(){
             this.clearValidate()

@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询设备平台_设备档案_基础信息列表
 export function listBASE(query) {
   return request({
-    url: '/equipment/BASE/list',
+    url: '/equipment/base/list',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listBASE(query) {
 // 查询设备平台_设备档案_基础信息详细
 export function getBASE(deviceId) {
   return request({
-    url: '/equipment/BASE/' + deviceId,
+    url: '/equipment/base/' + deviceId,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getBASE(deviceId) {
 // 新增设备平台_设备档案_基础信息
 export function addBASE(data) {
   return request({
-    url: '/equipment/BASE',
+    url: '/equipment/base',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addBASE(data) {
 // 修改设备平台_设备档案_基础信息
 export function updateBASE(data) {
   return request({
-    url: '/equipment/BASE',
+    url: '/equipment/base',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updateBASE(data) {
 // 删除设备平台_设备档案_基础信息
 export function delBASE(deviceId) {
   return request({
-    url: '/equipment/BASE/' + deviceId,
+    url: '/equipment/base/' + deviceId,
     method: 'delete'
   })
 }

@@ -5,12 +5,22 @@
         <right-toolbar :search="search" @queryTable="getList" :columns="columns"></right-toolbar>
       </el-row>
       <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-        <el-table v-loading="loading" :data="tableData2" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" :selectable="(row,index)=>index!=0"/>
+        <el-table 
+          v-loading="loading" 
+          highlight-current-row 
+          @current-change="handleCurrentChange"
+          :data="tableData2" 
+          @selection-change="handleSelectionChange">
+          <el-table-column v-if="!isRadio" type="selection" width="55" align="center" :selectable="(row,index)=>index!=0"/>
+          <el-table-column v-if="isRadio" width="50">
+            <template scope="scope">
+                <el-radio v-model="radio" :label="scope.$index" v-if="scope.$index!=0">&nbsp;</el-radio>
+            </template>
+          </el-table-column>
           <el-table-column label="序号" align="center" prop="noticeId" width="50">
-            <template slot-scope="scope">
-                <div v-if="scope.$index != 0" v-html="scope.$index"></div>
-              </template>
+            <template scope="scope">
+              <div v-if="scope.$index != 0" v-html="scope.$index"></div>
+            </template>
           </el-table-column>
           <template v-for='(col) in columns'>
             <el-table-column 
@@ -123,6 +133,10 @@ export default {
           default: ()=>[],
           type: Array
         },
+        isRadio: {
+          default: false,
+          type: Boolean
+        },
         // 显示搜索条件
         showSearch:{
           default: true,
@@ -160,18 +174,26 @@ export default {
     },
     data() {
         return {
-            // 遮罩层
-            loading: true,
-            // 表格数据
-            tableData2: [],
-            // 查询参数
-            queryParams: {
-                pageNum: 1,
-                pageSize: 10,
-            },
+          radio: '',
+          // 遮罩层
+          loading: true,
+          // 表格数据
+          tableData2: [],
+          // 查询参数
+          queryParams: {
+              pageNum: 1,
+              pageSize: 10,
+          },
         }
     },
     methods: {
+      handleCurrentChange(currentRow, oldCurrentRow) {
+        if(currentRow){
+          this.currentRow = currentRow;
+          this.radio = this.tableData2.indexOf(currentRow);
+          this.$emit('handleSelectionChange',[currentRow])
+        }
+      },
       /** 转换部门数据结构 */
       normalizer(node) {
             if (JSON.stringify(node.children)=='[]') {

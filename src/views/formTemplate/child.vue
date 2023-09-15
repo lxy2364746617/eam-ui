@@ -2,7 +2,8 @@
   <div>
     <div class="mb20" style="background-color: #fff;">
       <i class="el-icon-back" @click="backparent" style="color: #007bfe;cursor: pointer;"></i>
-      字段配置</div>
+      字段配置
+    </div>
     <jm-table
       :tableData="templateList"
       @getList="getList"
