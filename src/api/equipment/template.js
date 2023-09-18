@@ -42,3 +42,12 @@ export function delTemplate(templateId) {
     method: 'delete'
   })
 }
+
+// 根据维度查找表单
+export function findByTemplateType(data) {
+  return request({
+    url: '/equipment/template/templateType',
+    method: 'post',
+    data: data
+  })
+}

@@ -34,6 +34,7 @@
                 plain
                 icon="el-icon-plus"
                 size="mini"
+                :loading="btnLoading"
                 @click="handleAdd"
                 v-hasPermi="['equipment:book:add']"
               >新增</el-button>
@@ -85,6 +86,7 @@
               size="mini"
               type="text"
               icon="el-icon-view"
+              :loading="btnLoading"
               @click="handleUpdate(scope.row,'view')"
               v-hasPermi="['equipment:book:edit']"
             >详情</el-button>
@@ -123,6 +125,7 @@
 </template>
 
 <script>
+import { findByTemplateType } from "@/api/equipment/template";
 import { listBASE, getBASE, delBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
@@ -163,7 +166,13 @@ export default {
   data() {
     return {
       btnLoading: false,
-      formData: {},
+      formData: {
+        archivesOther: {}, // 步骤2
+        emArchivesExtendAtt: [], // 步骤2-扩展数据
+        archivesIndexList: [], // 步骤3
+        archivesPartsList: [], // 步骤4
+        fileResourceList: [],  // 步骤5
+      },
       // 遮罩层
       loading: true,
       // 选中数组
@@ -319,11 +328,126 @@ export default {
           break;
       }
     },
+    setFormLabel(arr){
+      arr.forEach(b => {
+        b.label=b.fieldName;
+        b.prop=b.fieldCode;
+        b.required = b.required=='0'?true:false;
+
+      });
+    },
     /** 新增按钮操作 */
     handleAdd() {
-      this.addEdit = true;
-      this.title = "新增设备";
-      this.formData = {}
+      this.btnLoading = true
+      findByTemplateType({templateType: 'K'}).then(response => {
+        this.formData = this.$options.data().formData;
+        this.formData.emArchivesExtendAtt = response.data;
+        this.formData.archivesIndexList = response.data;
+        var aa = [
+          {
+              "createBy": "buyunxuyong",
+              "createTime": "2023-09-13 11:38:53",
+              "updateBy": null,
+              "updateTime": null,
+              "remark": "12",
+              "fieldId": 13,
+              "templateId": 2,
+              "fieldCode": "aqsq",
+              "fieldName": "12",
+              
+              "valuePath": "12",
+              "required": null,
+              "isModify": "0",
+              "componentType": "input",
+              "componentContent": "12",
+              "disabled": null
+          },
+          {
+              "createBy": "buyunxuyong",
+              "createTime": "2023-09-13 16:06:10",
+              "updateBy": null,
+              "updateTime": null,
+              "remark": "1111",
+              "fieldId": 21,
+              "templateId": 2,
+              "fieldCode": "dewde",
+              "fieldName": "1111",
+              
+              "valuePath": "1111",
+              "required": "0",
+              "isModify": "0",
+              "componentType": "input",
+              "componentContent": "1111",
+              "disabled": null
+          },
+          {
+              "createBy": "buyunxuyong",
+              "createTime": "2023-09-13 16:08:02",
+              "updateBy": null,
+              "updateTime": null,
+              "remark": "11",
+              "fieldId": 23,
+              "templateId": 2,
+              "fieldCode": "vfvf",
+              "fieldName": "11",
+              
+              "valuePath": "11",
+              "required": "0",
+              "isModify": "0",
+              "componentType": "input",
+              "componentContent": "11",
+              "disabled": null
+          },
+          {
+              "createBy": "buyunxuyong",
+              "createTime": "2023-09-13 16:08:57",
+              "updateBy": null,
+              "updateTime": null,
+              "remark": "11",
+              "fieldId": 24,
+              "templateId": 2,
+              "fieldCode": "cdacad",
+              "fieldName": "11",
+              
+              "valuePath": "11",
+              "required": "0",
+              "isModify": "0",
+              "componentType": "input",
+              "componentContent": "11",
+              "disabled": null
+          },
+          {
+              "createBy": "buyunxuyong",
+              "createTime": "2023-09-13 16:41:16",
+              "updateBy": null,
+              "updateTime": null,
+              "remark": "1221",
+              "fieldId": 28,
+              "templateId": 2,
+              "fieldCode": "vfewvf",
+              "fieldName": "12",
+              
+              "valuePath": "12",
+              "required": "0",
+              "isModify": "0",
+              "componentType": "input",
+              "componentContent": "122",
+              "disabled": null
+          }
+        ]
+        this.setFormLabel(aa)
+        this.formData.emArchivesExtendAtt = {
+          componentContent: aa,
+          fieldValue: {},
+        }
+        this.formData.archivesIndexList = {
+          componentContent: aa,
+          fieldValue: {},
+        }
+        this.addEdit = true;
+        this.title = "新增设备";
+        this.btnLoading = false
+      });
 
       // this.reset();
       // getBASE().then(response => {
@@ -341,6 +465,14 @@ export default {
       getBASE(deviceId).then(response => {
         this.title = "编辑设备";
         this.formData = response.data;
+        if(this.formData.emArchivesExtendAtt){
+          this.formData.emArchivesExtendAtt.componentContent = JSON.parse(this.formData.emArchivesExtendAtt.componentContent)
+          this.formData.emArchivesExtendAtt.fieldValue = JSON.parse(this.formData.emArchivesExtendAtt.fieldValue)
+          this.setFormLabel(this.formData.emArchivesExtendAtt.componentContent)
+        }
+        if(this.formData.archivesOther==null){
+          this.formData.archivesOther = {}
+        }
         this.addEdit = true;
         this.btnLoading = false
       });

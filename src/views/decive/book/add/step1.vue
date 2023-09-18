@@ -82,13 +82,13 @@ export default {
         { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, tableVisible: true, span: 8, },
         { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, tableVisible: true, span: 8, required: true, },
         { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, required: true, }, //(Y 是、N 否)
-        { label:"功能位置", prop:"LOCATION", tableVisible: true, span: 8, required: true, },
+        { label:"功能位置", prop:"location", tableVisible: true, span: 8, required: true, },
         { label:"规格型号", prop:"sModel", tableVisible: true, span: 8, },
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, tableVisible: true, span: 8, required: true, },  //(1 设备、2 部件)
         { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: true, span: 8, required: true, },
         { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: true, span: 8, required: true, },
         { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, tableVisible: true, readonly: true, span: 8, }, //(0 父级)
-        { label:"重要等级", prop:"LEVEL", formType: 'select', options: this.dict.type.em_device_level, tableVisible: true, span: 8, }, //(A、B、C)
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, tableVisible: true, span: 8, }, //(A、B、C)
         { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, required: true, },
       ]
     },
@@ -96,17 +96,17 @@ export default {
       return [
         { label:"批次编号", prop:"batchNo", tableVisible: false, span: 8, },
         { label:"煤安标志证号", prop:"logoNo", tableVisible: false, span: 8, },
-        { label:"存放位置", prop:"POSITION", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, },
-        { label:"防爆合格证", prop:"CERTIFICATE", tableVisible: false, span: 8, },
-        { label:"计量单位", prop:"UNIT", formType: 'select', options: this.dict.type.em_unit, tableVisible: false, span: 8, }, //(台、个、座、件)
-        { label:"重量(千克)", prop:"WEIGHT", tableVisible: false, span: 8, },
-        { label:"大小/尺寸mm", prop:"SIZE", tableVisible: false, span: 8, },
+        { label:"存放位置", prop:"position", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, },
+        { label:"防爆合格证", prop:"certificate", tableVisible: false, span: 8, },
+        { label:"计量单位", prop:"unit", formType: 'select', options: this.dict.type.em_unit, tableVisible: false, span: 8, }, //(台、个、座、件)
+        { label:"重量(千克)", prop:"weight", tableVisible: false, span: 8, },
+        { label:"大小/尺寸mm", prop:"size", tableVisible: false, span: 8, },
         { label:"是否融资设备", prop:"isFinan", formType: 'select', options: this.dict.type.em_device_financing, tableVisible: false, span: 8, },//(Y 是、N 否)
         { label:"融资设备到期日", prop:"finanTime", formType: 'date', tableVisible: false, span: 8, },
         { label:"折旧年限", prop:"depLife", tableVisible: false, span: 8, },
         { label:"是否租赁设备", prop:"isLease", formType: 'select', options: this.dict.type.em_is_lease, tableVisible: false, span: 8, },//(Y 是、N 否)
         { label:"租赁设备到期日", prop:"leaseTime", formType: 'date', tableVisible: false, span: 8, },
-        { label:"备注", prop:"REMARK", formType: 'textarea', tableVisible: false, span: 24, },
+        { label:"备注", prop:"remark", formType: 'textarea', tableVisible: false, span: 24, },
       ]
     },
   },
@@ -130,8 +130,8 @@ export default {
       // 弹出层标题
       title: "",
       // 部门树选项
-      categoryOptions: undefined,
-      deptOptions: undefined,
+      categoryOptions: [],
+      deptOptions: [],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -220,19 +220,27 @@ export default {
         this.submitForm(fn)
       }
     },
+    getFormDataParams(){
+      var formData = JSON.parse(JSON.stringify(this.formData))
+      var aa = formData.emArchivesExtendAtt
+      aa['fieldValue'] = JSON.stringify(aa['fieldValue'])
+      aa['componentContent'] = JSON.stringify(aa['componentContent'])
+      return formData
+    },
     /** 提交按钮 */
-    submitForm: function(fn) {
-      console.log(this.formData,333);
-      if (this.formData.deviceId != undefined) {
-        updateBASE(this.formData).then(response => {
+    submitForm(fn) {
+      var formData = this.getFormDataParams()
+      if (formData.deviceId != undefined) {
+        updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
-          if(fn) fn()
+          console.log(typeof fn);
+          if(typeof fn == 'function') fn()
         });
       } else {
-        addBASE(this.formData).then(response => {
+        addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
           this.formData.deviceId = response.msg
-          if(fn) fn()
+          if(typeof fn == 'function') fn()
         });
       }
     },

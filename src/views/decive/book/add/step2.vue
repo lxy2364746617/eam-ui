@@ -5,7 +5,7 @@
       <jm-form 
         class="mr20"
         :columns="columns" 
-        :formData="formData" 
+        :formData="formData.archivesOther" 
         :showButton="false"
         ref="jmform1">
       </jm-form>
@@ -14,17 +14,19 @@
         class="mr20"
         :columns="columns2" 
         :showButton="false"
-        :formData="formData" 
+        :formData="formData.archivesOther" 
         ref="jmform2">
       </jm-form>
-      <p><i class="el-icon-magic-stick"></i> 扩展数据</p>
-      <jm-form 
-        class="mr20"
-        :columns="columns3" 
-        :showButton="false"
-        :formData="formData" 
-        ref="jmform2">
-      </jm-form>
+      <div v-if="formData.emArchivesExtendAtt!=null">
+        <p><i class="el-icon-magic-stick"></i> 扩展数据</p>
+        <jm-form 
+          class="mr20"
+          :columns="formData.emArchivesExtendAtt.componentContent" 
+          :showButton="false"
+          :formData="formData.emArchivesExtendAtt.fieldValue"
+          ref="jmform3">
+        </jm-form>
+      </div>
       <!-- 添加或修改设备平台_表单模板对话框 -->
       <el-drawer
         title="选择上级设备"
@@ -58,8 +60,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "bookadd",
   dicts: [
-    'em_device_state',  'device_run_state', 'em_is_special',  'em_device_att', 
-    'em_unit',  'em_device_level',  'em_device_financing',  'em_is_lease', 
+    'em_property_type', 
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, 
@@ -78,7 +79,6 @@ export default {
       default: {},
       type: Object,
     },
-
   },
   computed:{
     // 列信息
@@ -86,30 +86,22 @@ export default {
       return [
         { label:"财务资产编码", prop:"propertyCode", tableVisible: true, span: 8, },
         { label:"资产原值(元)", prop:"propertyOv", tableVisible: true, span: 8, },
-        { label:"资产权属占比", prop:"propertyOs", formType: 'select', options: this.dict.type.em_device_state, tableVisible: true, span: 8, },
+        { label:"资产权属占比", prop:"propertyOs", tableVisible: true, span: 8, },
         { label:"资产净值(元)", prop:"propertyNv", tableVisible: true, span: 8, },
-        { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.device_run_state, tableVisible: true, span: 8, },
+        { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.em_property_type, tableVisible: true, span: 8, },
       ]
     },
     columns2(){
       return [
-        { label:"关联购置单号", prop:"makerNo", tableVisible: false, span: 8, },
-        { label:"行号", prop:"makerLn", tableVisible: false, span: 8, },
-        { label:"启用日期", prop:"makerEnTime", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, },
+        { label:"关联购置单号", prop:"makerNo", tableVisible: false, formDisabled: true, span: 8, },
+        { label:"行号", prop:"makerLn", tableVisible: false, formDisabled: true, span: 8, },
+        { label:"启用日期", prop:"makerEnTime", formType: 'date', tableVisible: false, span: 8, },
         { label:"制造商", prop:"maker", tableVisible: false, span: 8, },
-        { label:"入账日期", prop:"makerAoTime", formType: 'select', options: this.dict.type.em_unit, tableVisible: false, span: 8, }, 
-        { label:"到货日期", prop:"makerMoaTime", tableVisible: false, span: 8, },
+        { label:"入账日期", prop:"makerAoTime", formType: 'date', tableVisible: false, span: 8, }, 
+        { label:"到货日期", prop:"makerMoaTime", formType: 'date', tableVisible: false, span: 8, },
         { label:"出厂编号", prop:"makerPdNo", tableVisible: false, span: 8, },
-        { label:"出厂日期", prop:"makerPdTime", formType: 'select', options: this.dict.type.em_device_financing, tableVisible: false, span: 8, },
-        { label:"使用年限", prop:"makerExp", formType: 'date', tableVisible: false, span: 8, },
-      ]
-    },
-    columns3(){
-      return [
-        { label:"能否跨子公司调剂", prop:"batchNo", tableVisible: false, span: 8, },
-        { label:"出租意向", prop:"logoNo", tableVisible: false, span: 8, },
-        { label:"自定义属性1", prop:"POSITION", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, },
-        { label:"自定义属性2", prop:"CERTIFICATE", tableVisible: false, span: 8, },
+        { label:"出厂日期", prop:"makerPdTime", formType: 'date', tableVisible: false, span: 8, },
+        { label:"使用年限", prop:"makerExp", tableVisible: false, span: 8, },
       ]
     },
   },
@@ -219,22 +211,32 @@ export default {
     async save(fn){
       var jmform1 = await this.$refs.jmform1.submitForm()
       var jmform2 = await this.$refs.jmform2.submitForm()
-      if(jmform1  && jmform2){
+      var jmform3 = true
+      if(this.$refs.jmform3){
+        jmform3 = await this.$refs.jmform3.submitForm()
+      }
+      if(jmform1  && jmform2 && jmform3){
         this.submitForm(fn)
       }
     },
+    getFormDataParams(){
+      var formData = JSON.parse(JSON.stringify(this.formData))
+      var aa = formData.emArchivesExtendAtt
+      aa['fieldValue'] = JSON.stringify(aa['fieldValue'])
+      aa['componentContent'] = JSON.stringify(aa['componentContent'])
+      return formData
+    },
     /** 提交按钮 */
     submitForm: function(fn) {
-      console.log(this.formData,333);
-      if (this.formData.deviceId != undefined) {
-        updateBASE(this.formData).then(response => {
+      var formData = this.getFormDataParams()
+      if (formData.deviceId != undefined) {
+        updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
           if(fn) fn()
         });
       } else {
-        addBASE(this.formData).then(response => {
+        addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
-          this.formData.deviceId = response.msg
           if(fn) fn()
         });
       }

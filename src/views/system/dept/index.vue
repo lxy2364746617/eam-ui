@@ -267,17 +267,20 @@ export default {
         this.$message('请退出当前编辑')
       }else{
         this.nowClickTreeItem = row
-        getDept(row.id).then(response => {
-          this.formDataInit = JSON.stringify(response.data)
-          this.formData = response.data
-        });
-        var obj = {
-          parentId: row.id
-        }
-        getDeptChild(obj).then(response => {
-          this.deptList = response.data
-        });
+        this.getDeptFn()
       }
+    },
+    getDeptFn(){
+      getDept(this.nowClickTreeItem.id).then(response => {
+        this.formDataInit = JSON.stringify(response.data)
+        this.formData = response.data
+      });
+      var obj = {
+        parentId: this.nowClickTreeItem.id
+      }
+      getDeptChild(obj).then(response => {
+        this.deptList = response.data
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -302,7 +305,7 @@ export default {
           this.rightTitle = '基本信息'
           this.$modal.msgSuccess("修改成功");
           this.disabled = true;
-          this.getDeptTree();
+          this.getDeptFn()
         });
       } else {
         addDept(formdata).then(response => {

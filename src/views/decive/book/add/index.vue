@@ -93,6 +93,13 @@ export default {
     backparent(){
       this.$emit('back')
     },
+    getFormDataParams(){
+      var formData = JSON.parse(JSON.stringify(this.formData))
+      var aa = formData.emArchivesExtendAtt
+      aa['fieldValue'] = JSON.stringify(aa['fieldValue'])
+      aa['componentContent'] = JSON.stringify(aa['componentContent'])
+      return formData
+    },
   }
 };
 </script>

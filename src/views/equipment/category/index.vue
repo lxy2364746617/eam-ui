@@ -270,11 +270,14 @@ export default {
         this.$message('请退出当前编辑')
       }else{
         this.nowClickTreeItem = row
-        getCategory(row.id).then(response => {
-          this.formDataInit = JSON.stringify(response.data)
-          this.formData = response.data
-        });
+        this.getCategoryFn()
       }
+    },
+    getCategoryFn(){
+      getCategory(this.nowClickTreeItem.id).then(response => {
+        this.formDataInit = JSON.stringify(response.data)
+        this.formData = response.data
+      });
     },
     /** 提交按钮 */
     submitForm: function(formdata) {
@@ -283,7 +286,7 @@ export default {
           this.rightTitle = '基本信息'
           this.$modal.msgSuccess("修改成功");
           this.disabled = true;
-          this.getDeptTree();
+          this.getCategoryFn()
         });
       } else {
         addCategory(formdata).then(response => {
