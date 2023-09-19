@@ -90,12 +90,12 @@ export default {
       this.$emit("queryTable");
     },
     // 右侧列表元素变化
-    dataChange(data) {
-      for (let item in this.columns) {
-        const key = this.columns[item].key;
-        this.columns[item].tableVisible = !data.includes(key);
-      }
-    },
+    // dataChange(data) {
+    //   for (let item in this.columns) {
+    //     const key = this.columns[item].key;
+    //     this.columns[item].tableVisible = !data.includes(key);
+    //   }
+    // },
     // 处理显隐列
     showColumn(val) {
       // this.open = true;

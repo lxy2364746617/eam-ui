@@ -9,15 +9,17 @@
             size="small" 
             :model="formData" 
             :rules="rules" 
+            :label-position="labelPosition"
             :label-width="labelWidth||'120px'" >
             <el-row :gutter="10">
                 <el-col :span="col.span||12" v-for="col in columns" :key="col.prop" v-if="col.formVisible!=false">
                     <el-form-item 
                         :label="col.label" 
                         :prop="col.prop" 
+                        :class="{'hideBorder':hideBorder}"
                         :required="col.required">
                         <editor v-if="col.formType=='editor'" v-model="formData[col.prop]" :min-height="192"/>
-                        <el-select v-else-if="col.formType=='select'" v-model="formData[col.prop]" placeholder="请选择" filterable :disabled="col.formDisabled || disabled">
+                        <el-select v-else-if="col.formType=='select'" v-model="formData[col.prop]" placeholder="请选择" filterable clearable :disabled="col.formDisabled || disabled">
                             <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value"></el-option>
                         </el-select>
                         <el-radio-group v-else-if="col.formType=='radio'" v-model="formData[col.prop]" :disabled="col.formDisabled || disabled" @input="col.changeFn">
@@ -30,6 +32,7 @@
                             size="small"
                             type="date"
                             clearable
+                            :disabled="col.formDisabled || disabled" 
                             style="width: auto;"
                             placeholder="选择日期">
                         </el-date-picker>
@@ -41,6 +44,8 @@
                             clear-value-text="清除"
                             no-options-text="暂无数据"
                             placeholder="请选择" 
+                            :default-expand-level="4"
+                            :appendToBody="true"
                             :normalizer="normalizer" 
                             :disabled="col.formDisabled || disabled" 
                             style="height: 32px;line-height: 32px;"/>
@@ -72,6 +77,10 @@ export default {
             default: ()=>{},
             type: Object,
         },
+        hideBorder: {
+          default: false,
+          type: Boolean
+        },
         showButton: {
           default: true,
           type: Boolean
@@ -82,6 +91,10 @@ export default {
         },
         labelWidth: {
             default: '',
+            type: String,
+        },
+        labelPosition: {
+            default: 'right',
             type: String,
         },
     },
@@ -149,18 +162,15 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-::v-deep .el-input.is-disabled .el-input__inner {
+::v-deep .el-input.is-disabled .el-input__inner,
+::v-deep .el-textarea.is-disabled .el-textarea__inner,
+::v-deep .el-radio__input.is-disabled .el-radio__inner {
     background-color: #f9f9f9;
     border-color: #dddddd;
     color: #000;
     cursor: not-allowed;
 }
-::v-deep .el-radio__input.is-disabled .el-radio__inner{
-    background-color: #f9f9f9;
-    border-color: #dddddd;
-    color: #000;
-    cursor: not-allowed;
-}
+
 ::v-deep .el-radio__input.is-disabled.is-checked {
     .el-radio__inner{
         &::after{
@@ -177,5 +187,21 @@ export default {
 }
 .el-select.el-select--small{
     width: 100%;
+}
+::v-deep .hideBorder{
+    .vue-treeselect__control,
+    .el-input__inner,
+    .el-textarea__inner{
+        border: none !important;
+        background-color: #fff !important;
+        cursor: default !important;
+    }
+    .el-input__suffix,
+    .el-input__prefix{
+        display: none !important;
+    }
+    .el-input--prefix .el-input__inner {
+        padding-left: 15px !important;
+    }
 }
 </style>

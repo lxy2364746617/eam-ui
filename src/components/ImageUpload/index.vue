@@ -14,6 +14,7 @@
       :show-file-list="true"
       :headers="headers"
       :file-list="fileList"
+      :disabled="disabled"
       :on-preview="handlePictureCardPreview"
       :class="{hide: this.fileList.length >= this.limit}"
     >
@@ -67,6 +68,14 @@ export default {
     isShowTip: {
       type: Boolean,
       default: true
+    },
+    extraData: {
+      type: Object,
+      default: {}
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -99,6 +108,8 @@ export default {
                   item = { name: item, url: item };
               }
             }
+            item.name = item.originalFileName
+            item.url = this.baseUrl + item.fileName
             return item;
           });
         } else {
@@ -113,7 +124,7 @@ export default {
   computed: {
     // 是否显示提示
     showTip() {
-      return this.isShowTip && (this.fileType || this.fileSize);
+      return this.isShowTip && (this.fileType || this.fileSize) && !this.disabled;
     },
   },
   methods: {
@@ -155,7 +166,11 @@ export default {
     // 上传成功回调
     handleUploadSuccess(res, file) {
       if (res.code === 200) {
-        this.uploadList.push({ name: res.fileName, url: res.fileName });
+        res.name = res.fileName
+        res.url = this.baseUrl + res.fileName
+        res.fileType = res.fileName.match(/\.([^\.]+)$/)[1]
+        Object.assign(res,this.extraData)
+        this.uploadList.push(res);
         this.uploadedSuccessfully();
       } else {
         this.number--;
@@ -170,6 +185,7 @@ export default {
       const findex = this.fileList.map(f => f.name).indexOf(file.name);
       if(findex > -1) {
         this.fileList.splice(findex, 1);
+        this.$emit("uploadChange", this.fileList);
         this.$emit("input", this.listToString(this.fileList));
       }
     },
@@ -184,6 +200,7 @@ export default {
         this.fileList = this.fileList.concat(this.uploadList);
         this.uploadList = [];
         this.number = 0;
+        this.$emit("uploadChange", this.fileList);
         this.$emit("input", this.listToString(this.fileList));
         this.$modal.closeLoading();
       }

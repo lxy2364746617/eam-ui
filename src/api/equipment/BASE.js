@@ -35,6 +35,15 @@ export function updateBASE(data) {
   })
 }
 
+// 编辑-设备平台_设备档案_基础信息
+export function modifyBASE(data) {
+  return request({
+    url: '/equipment/base/modify',
+    method: 'put',
+    data: data
+  })
+}
+
 // 删除设备平台_设备档案_基础信息
 export function delBASE(deviceId) {
   return request({

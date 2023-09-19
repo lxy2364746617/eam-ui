@@ -72,6 +72,17 @@ export default {
     },
 
   },
+  watch:{
+    'formData.categoryId':function(val){
+      this.getTreeItem(val,this.categoryOptions)
+      console.log(this.treeItem,222);
+      if(this.treeItem.isSm == 'Y' && this.treeItem.smAttributes){
+        this.$parent.elstep[2].visible = true
+      }else{
+        this.$parent.elstep[2].visible = false
+      }
+    }
+  },
   computed:{
     // 列信息
     columns(){
@@ -112,6 +123,7 @@ export default {
   },
   data() {
     return {
+      treeItem: {},
       // 遮罩层
       loading: true,
       // 选中数组
@@ -202,6 +214,17 @@ export default {
     this.getTreeSelect()
   },
   methods: {
+    getTreeItem(id,arr){
+      for (let i = 0; i < arr.length; i++) {
+        const b = arr[i];
+        if(b.id == id){
+          this.treeItem = b
+        }
+        if(b.children){
+          this.getTreeItem(id,b.children)
+        }
+      }
+    },
     closeform(){
       this.$emit('closeform')
     },
@@ -220,20 +243,12 @@ export default {
         this.submitForm(fn)
       }
     },
-    getFormDataParams(){
-      var formData = JSON.parse(JSON.stringify(this.formData))
-      var aa = formData.emArchivesExtendAtt
-      aa['fieldValue'] = JSON.stringify(aa['fieldValue'])
-      aa['componentContent'] = JSON.stringify(aa['componentContent'])
-      return formData
-    },
     /** 提交按钮 */
     submitForm(fn) {
-      var formData = this.getFormDataParams()
+      var formData = this.$parent.getFormDataParams();
       if (formData.deviceId != undefined) {
         updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
-          console.log(typeof fn);
           if(typeof fn == 'function') fn()
         });
       } else {

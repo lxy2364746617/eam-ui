@@ -1,41 +1,56 @@
 <template>
   <div class="upload-file">
-    <el-upload
-      multiple
-      :action="uploadFileUrl"
-      :before-upload="handleBeforeUpload"
-      :file-list="fileList"
-      :limit="limit"
-      :on-error="handleUploadError"
-      :on-exceed="handleExceed"
-      :on-success="handleUploadSuccess"
-      :show-file-list="false"
-      :headers="headers"
-      class="upload-file-uploader"
-      ref="fileUpload"
-    >
-      <!-- 上传按钮 -->
-      <el-button size="mini" type="primary">选取文件</el-button>
-      <!-- 上传提示 -->
-      <div class="el-upload__tip" slot="tip" v-if="showTip">
-        请上传
-        <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b> </template>
-        <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>
-        的文件
-      </div>
-    </el-upload>
-
-    <!-- 文件列表 -->
-    <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
-      <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
-        <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
-          <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
-        </el-link>
-        <div class="ele-upload-list__item-content-action">
-          <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
-        </div>
-      </li>
-    </transition-group>
+    <el-row :gutter="20">
+      <el-col :span="9" :xs="24" :sm="24">
+        <el-upload
+          multiple
+          :action="uploadFileUrl"
+          :before-upload="handleBeforeUpload"
+          :file-list="fileList"
+          :limit="limit"
+          :list-type="listType"
+          :drag="drag"
+          :on-error="handleUploadError"
+          :on-exceed="handleExceed"
+          :on-success="handleUploadSuccess"
+          :show-file-list="false"
+          :headers="headers"
+          class="upload-file-uploader"
+          ref="fileUpload"
+        >
+          <!-- 上传按钮 -->
+          <span v-if="drag" style="line-height: 20px;">
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <div class="el-upload__tip" slot="tip">只能上传{{ fileType.join("/") }}文件，且不超过{{ fileSize }}MB</div>
+          </span>
+          <span v-else>
+            <!-- 上传提示 -->
+            <el-button size="mini" type="primary">选取文件</el-button>
+            <div class="el-upload__tip" slot="tip" v-if="showTip">
+              请上传
+              <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b> </template>
+              <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>
+              的文件
+            </div>
+          </span>
+        </el-upload>
+      </el-col>
+      <el-col :span="12" :xs="24" :sm="24">
+        <!-- 文件列表 -->
+        <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
+          <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
+            <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
+              <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
+            </el-link>
+            <div class="ele-upload-list__item-content-action">
+              <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
+            </div>
+          </li>
+        </transition-group>
+      </el-col>
+    </el-row>
+    
   </div>
 </template>
 
@@ -60,12 +75,24 @@ export default {
     // 文件类型, 例如['png', 'jpg', 'jpeg']
     fileType: {
       type: Array,
-      default: () => ["doc", "xls", "ppt", "txt", "pdf"],
+      default: () => ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "pdf",'jpg','png','bmp','gif'],
     },
     // 是否显示提示
     isShowTip: {
       type: Boolean,
       default: true
+    },
+    listType: {
+      type: String,
+      default: 'text'
+    },
+    drag: {
+      type: Boolean,
+      default: false
+    },
+    extraData: {
+      type: Object,
+      default: {}
     }
   },
   data() {
@@ -92,6 +119,8 @@ export default {
             if (typeof item === "string") {
               item = { name: item, url: item };
             }
+            item.name = item.originalFileName
+            item.url = this.baseUrl + item.fileName
             item.uid = item.uid || new Date().getTime() + temp++;
             return item;
           });
@@ -147,7 +176,11 @@ export default {
     // 上传成功回调
     handleUploadSuccess(res, file) {
       if (res.code === 200) {
-        this.uploadList.push({ name: res.fileName, url: res.fileName });
+        res.name = res.fileName
+        res.url = this.baseUrl + res.fileName
+        res.fileType = res.fileName.match(/\.([^\.]+)$/)[1]
+        Object.assign(res,this.extraData)
+        this.uploadList.push(res);
         this.uploadedSuccessfully();
       } else {
         this.number--;
@@ -160,6 +193,7 @@ export default {
     // 删除文件
     handleDelete(index) {
       this.fileList.splice(index, 1);
+      this.$emit("uploadChange", this.fileList);
       this.$emit("input", this.listToString(this.fileList));
     },
     // 上传结束处理
@@ -168,6 +202,7 @@ export default {
         this.fileList = this.fileList.concat(this.uploadList);
         this.uploadList = [];
         this.number = 0;
+        this.$emit("uploadChange", this.fileList);
         this.$emit("input", this.listToString(this.fileList));
         this.$modal.closeLoading();
       }
@@ -177,7 +212,7 @@ export default {
       if (name.lastIndexOf("/") > -1) {
         return name.slice(name.lastIndexOf("/") + 1);
       } else {
-        return "";
+        return name;
       }
     },
     // 对象转成指定字符串分隔
@@ -211,5 +246,8 @@ export default {
 }
 .ele-upload-list__item-content-action .el-link {
   margin-right: 10px;
+}
+::v-deep .el-upload--picture-card{
+  line-height: 46px;
 }
 </style>

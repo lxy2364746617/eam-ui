@@ -219,25 +219,18 @@ export default {
         this.submitForm(fn)
       }
     },
-    getFormDataParams(){
-      var formData = JSON.parse(JSON.stringify(this.formData))
-      var aa = formData.emArchivesExtendAtt
-      aa['fieldValue'] = JSON.stringify(aa['fieldValue'])
-      aa['componentContent'] = JSON.stringify(aa['componentContent'])
-      return formData
-    },
     /** 提交按钮 */
     submitForm: function(fn) {
-      var formData = this.getFormDataParams()
+      var formData = this.$parent.getFormDataParams();
       if (formData.deviceId != undefined) {
         updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
-          if(fn) fn()
+          if(typeof fn == 'function') fn()
         });
       } else {
         addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
-          if(fn) fn()
+          if(typeof fn == 'function') fn()
         });
       }
     },

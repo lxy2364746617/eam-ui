@@ -11,7 +11,7 @@
         </jm-user-tree>
       </el-col>
       <!--用户数据-->
-      <el-col :span="18" :xs="24">
+      <el-col :span="18" :xs="24" v-show="!addDetails">
         <el-row v-if="!isChoose" :gutter="20" style="border-bottom: 5px solid #efefef;margin-bottom: 20px;">
           <el-col :span="6" :xs="24" v-for="item in 4" :key="item">
             <div style="display: inline-block;vertical-align: middle;font-size: 40px;margin-left: 20px;color: #007bfe;"><i class="el-icon-share"></i></div>
@@ -115,6 +115,10 @@
           </template>
         </jm-table>
       </el-col>
+      <el-col :span="18" :xs="24" v-if="addDetails">
+        <add-details :formData="formData" @back="back()"></add-details>
+      </el-col>
+
     </el-row>
     <div v-if="isChoose" style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
       <el-button size="mini" @click="close">取消</el-button>
@@ -125,12 +129,13 @@
 </template>
 
 <script>
-import { findByTemplateType } from "@/api/equipment/template";
+import { findByTemplateType } from "@/api/equipment/attribute";
 import { listBASE, getBASE, delBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
-import addEdit from "@/views/decive/book/add/index";
+import addEdit from "@/views/decive/book/add";
+import addDetails from "@/views/decive/book/details";
 import JmTable from "@/components/JmTable";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -138,7 +143,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "devicebook",
   dicts: ['sys_normal_disable', 'sys_user_sex'],
-  components: { Treeselect, JmUserTree, JmTable, addEdit },
+  components: { Treeselect, JmUserTree, JmTable, addEdit, addDetails },
   props:{
     isChoose:{
       default:false,
@@ -168,10 +173,11 @@ export default {
       btnLoading: false,
       formData: {
         archivesOther: {}, // 步骤2
-        emArchivesExtendAtt: [], // 步骤2-扩展数据
-        archivesIndexList: [], // 步骤3
+        emArchivesExtendAtt: {}, // 步骤2-扩展数据
+        emArchivesIndex: {}, // 步骤3
         archivesPartsList: [], // 步骤4
-        fileResourceList: [],  // 步骤5
+        genFileResourceList: [],  // 步骤5
+        imgFileResourceList: [],  // 步骤5
       },
       // 遮罩层
       loading: true,
@@ -200,6 +206,7 @@ export default {
       // 岗位选项
       postOptions: [],
       addEdit: false,
+      addDetails: false,
       // 角色选项
       roleOptions: [],
       // 表单参数
@@ -267,6 +274,7 @@ export default {
     },
     back(){
       this.addEdit=false
+      this.addDetails=false
       this.getList(this.queryParams)
     },
     /** 查询用户列表 */
@@ -287,6 +295,7 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data) {
+      this.addDetails = false
       this.queryParams.categoryId = data.id;
       this.handleQuery();
     },
@@ -342,7 +351,7 @@ export default {
       findByTemplateType({templateType: 'K'}).then(response => {
         this.formData = this.$options.data().formData;
         this.formData.emArchivesExtendAtt = response.data;
-        this.formData.archivesIndexList = response.data;
+        this.formData.emArchivesIndex = response.data;
         var aa = [
           {
               "createBy": "buyunxuyong",
@@ -440,12 +449,15 @@ export default {
           componentContent: aa,
           fieldValue: {},
         }
-        this.formData.archivesIndexList = {
+        this.formData.emArchivesIndex = {
           componentContent: aa,
           fieldValue: {},
         }
         this.addEdit = true;
         this.title = "新增设备";
+        this.btnLoading = false
+      })
+      .catch(err => {
         this.btnLoading = false
       });
 
@@ -459,21 +471,35 @@ export default {
       // });
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    handleUpdate(row,f) {
       this.btnLoading = true
       const deviceId = row.deviceId
       getBASE(deviceId).then(response => {
         this.title = "编辑设备";
         this.formData = response.data;
+        // 第二步
+        if(this.formData.archivesOther==null){
+          this.formData.archivesOther = {}
+        }
         if(this.formData.emArchivesExtendAtt){
           this.formData.emArchivesExtendAtt.componentContent = JSON.parse(this.formData.emArchivesExtendAtt.componentContent)
           this.formData.emArchivesExtendAtt.fieldValue = JSON.parse(this.formData.emArchivesExtendAtt.fieldValue)
           this.setFormLabel(this.formData.emArchivesExtendAtt.componentContent)
         }
-        if(this.formData.archivesOther==null){
-          this.formData.archivesOther = {}
+        // 第三步
+        if(this.formData.emArchivesIndex){
+          this.formData.emArchivesIndex.componentContent = JSON.parse(this.formData.emArchivesIndex.componentContent)
+          this.formData.emArchivesIndex.fieldValue = JSON.parse(this.formData.emArchivesIndex.fieldValue)
+          this.setFormLabel(this.formData.emArchivesIndex.componentContent)
         }
-        this.addEdit = true;
+        this.btnLoading = false
+        if(f=='edit'){
+          this.addEdit = true;
+        }else if(f=='view'){
+          this.addDetails = true;
+        }
+      })
+      .catch(err => {
         this.btnLoading = false
       });
     },

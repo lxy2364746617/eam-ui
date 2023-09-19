@@ -1,23 +1,37 @@
 <template>
   <div>
-    <el-card shadow="never" style="margin-top: 10px;">
-      <div v-if="formData.emArchivesIndex!=null">
-        <p><i class="el-icon-magic-stick"></i> 主要指标</p>
-        <jm-form 
-          class="mr20"
-          :columns="formData.emArchivesIndex.componentContent" 
-          :showButton="false"
-          :formData="formData.emArchivesIndex.fieldValue"
-          ref="jmform1">
-        </jm-form>
-      </div>
-    </el-card>
-    <el-card shadow="never" style="margin-top: 10px;text-align: right;">
-      <el-button size="mini" @click="closeform">取消</el-button>
-      <el-button size="mini" @click="prvstep" type="primary" v-if="stepActive>=1">上一步</el-button>
-      <el-button size="mini" @click="nextstep" type="primary" v-if="stepActive<=elstep.length-2">下一步</el-button>
-      <el-button size="mini" @click="save" type="primary">保存</el-button>
-    </el-card>
+    <el-row :gutter="12">
+      <el-col :span="16">
+        <p class="subtitle"><i class="el-icon-magic-stick"></i> 设备位置：
+          <span> 111 </span>
+        </p>
+        <div>
+          地图
+        </div> 
+      </el-col>
+      <el-col :span="8">
+        <p class="subtitle"><i class="el-icon-magic-stick"></i> 设备图片
+          <span v-if="disabled1" class="rightbutton">
+            <el-button type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
+          </span>
+          <span v-else class="rightbutton">
+            <el-button type="text" @click="save('1')">确认</el-button>
+            <el-button type="text" @click="closeEdit('1')">取消</el-button>
+          </span>
+        </p>
+        <div>
+          <image-upload 
+            :fileType="['jpg','png']"
+            @uploadChange="uploadChange1"
+            :disabled="disabled1"
+            :value="formData.imgFileResourceList"
+            :extraData="{'category':1}"
+            :listType="'picture-card'">
+
+          </image-upload>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -35,33 +49,31 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "bookadd",
   dicts: [
-    'em_property_type', 
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, 
   },
   props:{
-    stepActive:{
-      default:0,
-      type: Number,
-    },
-    elstep:{
-      default:[],
-      type: Array,
-    },
     formData: {
-      default: {},
+      default: ()=>{},
       type: Object,
     },
   },
-  computed:{
-    
+  watch: {
+    formData: {
+      handler(val) {
+      },
+      immediate: true,
+      deep: true,
+    },
   },
-  mounted(){
-    console.log(this.formData,33333);
+  computed:{
+
   },
   data() {
     return {
+      disabled1: true,
+      disabled2: true,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -80,8 +92,8 @@ export default {
       // 弹出层标题
       title: "",
       // 部门树选项
-      categoryOptions: undefined,
-      deptOptions: undefined,
+      categoryOptions: [],
+      deptOptions: [],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -152,37 +164,23 @@ export default {
     this.getTreeSelect()
   },
   methods: {
-    closeform(){
-      this.$emit('closeform')
+    uploadChange1(val){
+      this.formData.imgFileResourceList = val
     },
-    prvstep(){
-      this.$emit('prvstep')
+    async save(formref){
+      var flag = await this.$refs['jmform'+formref].submitForm()
+      if(flag){
+        this.$emit('submitForm',(val)=>{
+          if(val){
+            this['disabled'+formref] = true;
+          }
+        })
+      }
     },
-    nextstep(){
-      this.save(()=>{
-        this.$emit('nextstep')
+    closeEdit(formref){
+      this.$emit('close',(val)=>{
+        this['disabled'+formref] = true;
       })
-    },
-    async save(fn){
-      var jmform1 = await this.$refs.jmform1.submitForm()
-      if(jmform1){
-        this.submitForm(fn)
-      }
-    },
-    /** 提交按钮 */
-    submitForm: function(fn) {
-      var formData = this.$parent.getFormDataParams();
-      if (formData.deviceId != undefined) {
-        updateBASE(formData).then(response => {
-          this.$modal.msgSuccess("修改成功");
-          if(typeof fn == 'function') fn()
-        });
-      } else {
-        addBASE(formData).then(response => {
-          this.$modal.msgSuccess("保存成功");
-          if(typeof fn == 'function') fn()
-        });
-      }
     },
     close(){
       this.drawer = false
@@ -213,3 +211,13 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+  .subtitle{
+    background: #ebf4fc;
+    line-height: 40px;
+    & > .rightbutton{
+      margin-right: 20px;
+      float: right;
+    }
+  }
+</style>
