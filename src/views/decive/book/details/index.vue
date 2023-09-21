@@ -3,8 +3,8 @@
     <el-card shadow="never">
       <el-row :gutter="12">
         <el-col :span="19">
-          <i class="el-icon-back" @click="backparent" style="color: #007bfe;cursor: pointer;"></i>
-           {{ formTitle }}
+          <i class="el-icon-back" @click="backparent" style="color: #007bfe;cursor: pointer;"></i> 
+          <span style="font-size: 14px;"> {{ formTitle }}</span> 
         </el-col>
         <el-col :span="5" v-if="disabled1" style="font-size: 12px;color: #888;">
           <el-button type="text" icon="el-icon-s-help">快速工单</el-button>
@@ -13,8 +13,8 @@
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px;">
         <el-col :span="6">
-          <img src="" alt="" srcset="">
-          <img src="" alt="" srcset="">
+          <img :src="mainImage" alt="" srcset="" style="width: 50%;vertical-align: top;height: 100px;">
+          <img :src="qrCode" alt="" srcset="" style="width: 50%;vertical-align: top;">
         </el-col>
         <el-col :span="15" style="font-size: 12px;color: #888;padding-top: 4px;">
           <jm-form 
@@ -39,20 +39,9 @@
         </el-col>
       </el-row>
       <el-tabs v-model="activeName" @tab-click="tabsHandleClick">
-        <el-tab-pane label="基本信息" name="1">
-          <step1 :formData="formData1" @submitForm="submitForm" @close="close"></step1>
+        <el-tab-pane :label="item.label" :name="item.name" v-for="item in tabs" :key="item.label" v-if="item.visible">
+          <component :is="item.name" :formData="formData1" @submitForm="submitForm" @close="close"></component>
         </el-tab-pane>
-        <el-tab-pane label="主要指标" name="2">
-          <step2 :formData="formData1" @submitForm="submitForm" @close="close"></step2>
-        </el-tab-pane>
-        <el-tab-pane label="设备图片及位置" name="3">
-          <step3 :formData="formData1" @submitForm="submitForm" @close="close"></step3>
-        </el-tab-pane>
-        <el-tab-pane label="技术资料" name="4">
-          <step4 :formData="formData1" @submitForm="submitForm" @close="close"></step4>
-        </el-tab-pane>
-        <el-tab-pane label="关联设备" name="5">定时任务补偿</el-tab-pane>
-        <el-tab-pane label="关联部件" name="6">定时任务补偿</el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -70,6 +59,7 @@ import step2 from "@/views/decive/book/details/step2";
 import step3 from "@/views/decive/book/details/step3";
 import step4 from "@/views/decive/book/details/step4";
 import step5 from "@/views/decive/book/details/step5";
+import step6 from "@/views/decive/book/details/step6";
 
 export default {
   name: "bookadddetails",
@@ -78,17 +68,37 @@ export default {
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, 
-    step1, step2, step3, step4, step5,
+    step1, step2, step3, step4, step5, step6,
     devicebook: ()=> import("@/views/decive/book/index"),
   },
   computed:{
+    mainImage(){
+      return process.env.VUE_APP_BASE_API + this.formData.mainImage
+    }, 
+    qrCode(){
+      return process.env.VUE_APP_BASE_API + this.formData.qrCode
+    }, 
     // 列信息
     columns(){
       return [
-        { label:"设备名称", prop:"deviceName", tableVisible: true, span: 12, required: true, },
-        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, tableVisible: true, span: 12, required: true, },
-        { label:"设备编码", prop:"deviceCode", tableVisible: true, span: 12, required: true, },
-        { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, tableVisible: true, span: 12, },
+        { label:"设备名称", prop:"deviceName", span: 12, required: true, },
+        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, span: 12, required: true, },
+        { label:"设备编码", prop:"deviceCode", span: 12, required: true, },
+        { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, span: 12, },
+      ]
+    },
+    tabs(){
+      return [
+        { label:'基本信息', name:'step1', visible: true, },
+        { label:
+          (this.formData.emArchivesIndex?'主要指标':'')+
+          (this.formData.emArchivesIndex && this.formData.emArchivesSpecial?'/':'')+
+          (this.formData.emArchivesSpecial?'特种设备信息':''), 
+          name:'step2', visible: this.formData.emArchivesIndex || this.formData.emArchivesSpecial, },
+        { label:'设备图片及位置', name:'step3', visible: true, },
+        { label:'技术资料', name:'step4', visible: true, },
+        { label:'备件备品', name:'step6', visible: true, },
+        { label:'关联设备', name:'step5', visible: true, },
       ]
     },
   },
@@ -117,7 +127,7 @@ export default {
   },
   data() {
     return {
-      activeName: '1',
+      activeName: 'step1',
       disabled1: true,
       formData1: {},
     };
@@ -163,6 +173,12 @@ export default {
       var bb = formData1.emArchivesIndex
       bb['fieldValue'] = JSON.stringify(bb['fieldValue'])
       bb['componentContent'] = JSON.stringify(bb['componentContent'])
+
+      var cc = formData1.emArchivesSpecial
+      if(cc){
+        cc['fieldValue'] = JSON.stringify(cc['fieldValue'])
+        cc['componentContent'] = JSON.stringify(cc['componentContent'])
+      }
 
       return formData1
     },

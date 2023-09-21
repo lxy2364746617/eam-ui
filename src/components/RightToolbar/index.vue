@@ -13,6 +13,7 @@
           title=""
           width="200"
           trigger="click">
+          <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
           <el-checkbox-group v-model="value" @change="showColumn">
             <div v-for="item in columns" :key="item.prop">
               <el-checkbox :label="item.prop">{{ item.label }}</el-checkbox>
@@ -21,6 +22,7 @@
           <el-button slot="reference" size="mini" circle icon="el-icon-menu"/>
         </el-popover>
       </el-tooltip>
+      <slot name="right_end"></slot>
     </el-row>
     <!-- <el-dialog :title="title" :visible.sync="open" append-to-body>
       <el-transfer
@@ -43,6 +45,8 @@ export default {
       title: "显示/隐藏",
       // 是否显示弹出层
       open: false,
+      isIndeterminate: true,
+      checkAll: false,
     };
   },
   props: {
@@ -61,6 +65,9 @@ export default {
       type: Number,
       default: 10,
     },
+    tableVisible: {
+      type: Object,
+    }
   },
   computed: {
     style() {
@@ -73,14 +80,26 @@ export default {
   },
   created() {
     // 显隐列初始默认隐藏列
-    for (let item in this.columns) {
-      // this.columns[item].key = item; //设置key 0，1，2，3，4
-      if (this.columns[item].tableVisible) {
-        this.value.push(this.columns[item].prop);
-      }
-    }
+    this.setVisible()
   },
   methods: {
+    setVisible(){
+      for (let item in this.tableVisible) {
+        if (this.tableVisible[item]) {
+          this.value.push(item);
+        }
+      }
+      let checkedCount = this.value.length;
+      this.checkAll = checkedCount === this.columns.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.columns.length;
+    },
+    handleCheckAllChange(val) {
+      this.value = val ? Object.keys(this.tableVisible) : [];
+      this.isIndeterminate = false;
+      for (let key in this.tableVisible) {
+        this.$set(this.tableVisible,key,this.value.includes(key))
+      }
+    },
     // 搜索
     toggleSearch() {
       this.$emit("update:showSearch", !this.showSearch);
@@ -98,10 +117,13 @@ export default {
     // },
     // 处理显隐列
     showColumn(val) {
-      // this.open = true;
-      this.columns.forEach((b,i) => {
-        this.$set(b,'tableVisible',val.includes(b.prop))
-      });
+      let checkedCount = val.length;
+      this.checkAll = checkedCount === this.columns.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.columns.length;
+
+      for (let key in this.tableVisible) {
+        this.$set(this.tableVisible,key,val.includes(key))
+      }
     },
   },
 };

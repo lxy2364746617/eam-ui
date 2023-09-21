@@ -13,9 +13,12 @@
       <!--用户数据-->
       <el-col :span="18" :xs="24" v-show="!addDetails">
         <el-row v-if="!isChoose" :gutter="20" style="border-bottom: 5px solid #efefef;margin-bottom: 20px;">
-          <el-col :span="6" :xs="24" v-for="item in 4" :key="item">
-            <div style="display: inline-block;vertical-align: middle;font-size: 40px;margin-left: 20px;color: #007bfe;"><i class="el-icon-share"></i></div>
-            <div style="display: inline-block;vertical-align: middle;margin-left: 20px;"><p>数量</p><p>2222</p></div>
+          <el-col :span="6" :xs="24" v-for="item in countColumn" :key="item.prop">
+            <div style="display: inline-block;vertical-align: middle;font-size: 40px;margin-left: 20px;color: #007bfe;"><i :class="item.icon"></i></div>
+            <div v-if="item.label" style="line-height: 12px;font-size: 14px;display: inline-block;vertical-align: middle;margin-left: 20px;"><p>{{ item.label }}</p><p style="font-size: 20px;font-weight: bold;">{{countData[item.prop]}}</p></div>
+            <div v-if="item.children" style="font-size: 14px;display: inline-block;vertical-align: middle;margin-left: 20px;">
+              <p style="line-height: 10px;" v-for="item2 in item.children">{{ item2.label }}:<span style="font-weight: bold;">{{countData[item2.prop]}}</span></p>
+            </div>
           </el-col>
         </el-row>
         <jm-table
@@ -116,7 +119,7 @@
         </jm-table>
       </el-col>
       <el-col :span="18" :xs="24" v-if="addDetails">
-        <add-details :formData="formData" @back="back()"></add-details>
+        <add-details :formData="formData" :formTitle="title" @back="back()"></add-details>
       </el-col>
 
     </el-row>
@@ -130,7 +133,7 @@
 
 <script>
 import { findByTemplateType } from "@/api/equipment/attribute";
-import { listBASE, getBASE, delBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
+import { listBASE, getBASE, delBASE, addBASE, updateBASE, countBASE } from "@/api/equipment/BASE";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
@@ -154,17 +157,17 @@ export default {
     // 列信息
     columns(){
       return [
-        { label:"设备编码", prop:"deviceCode", tableVisible: true, },
-        { label:"设备名称", prop:"deviceName", tableVisible: true, },
-        { label:"规格型号", prop:"sModel", tableVisible: true, },
-        { label:"设备类别", prop:"categoryId", tableVisible: true, },
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options:[], tableVisible: true, },  //(1 设备、2 部件)
-        { label:"财务资产编码", prop:"propertyCode", tableVisible: true, },
-        { label:"功能位置", prop:"LOCATION", tableVisible: true, },
-        { label:"重要等级", prop:"LEVEL", formType: 'select', options:[], tableVisible: true, }, //(A、B、C)
-        { label:"上级设备", prop:"parentId", formType: 'select', options:[], tableVisible: true, }, //(0 父级)
-        { label:"所属组织", prop:"affDeptId", tableVisible: true, },
-        { label:"当前使用组织", prop:"currDeptId", tableVisible: true, },
+        { label:"设备编码", prop:"deviceCode",  },
+        { label:"设备名称", prop:"deviceName",  },
+        { label:"规格型号", prop:"sModel",  },
+        { label:"设备类别", prop:"categoryId",  },
+        { label:"设备属性", prop:"deviceAtt", formType: 'select', options:[],  },  //(1 设备、2 部件)
+        { label:"财务资产编码", prop:"propertyCode",  },
+        { label:"功能位置", prop:"LOCATION",  },
+        { label:"重要等级", prop:"LEVEL", formType: 'select', options:[],  }, //(A、B、C)
+        { label:"上级设备", prop:"parentId", formType: 'select', options:[],  }, //(0 父级)
+        { label:"所属组织", prop:"affDeptId",  },
+        { label:"当前使用组织", prop:"currDeptId",  },
       ]
     },
   },
@@ -172,12 +175,13 @@ export default {
     return {
       btnLoading: false,
       formData: {
-        archivesOther: {}, // 步骤2
-        emArchivesExtendAtt: {}, // 步骤2-扩展数据
-        emArchivesIndex: {}, // 步骤3
-        archivesPartsList: [], // 步骤4
-        genFileResourceList: [],  // 步骤5
-        imgFileResourceList: [],  // 步骤5
+        archivesOther: {}, // 步骤2 值
+        emArchivesExtendAtt: {}, // 步骤2-扩展数据  模板 值
+        emArchivesIndex: {}, // 步骤3 主要指标  模板 值
+        emArchivesSpecial: {}, // 步骤3 特种设备  模板 值
+        archivesPartsList: [], // 步骤4  表格
+        genFileResourceList: [],  // 步骤5  上传图片
+        imgFileResourceList: [],  // 步骤5  上传文件
       },
       // 遮罩层
       loading: true,
@@ -193,6 +197,17 @@ export default {
       total: 0,
       // 表格数据
       equipmentList: null,
+      countData:{},
+      countColumn:[
+        {label:'设备数量',prop:'sumCount',icon:'el-icon-share',},
+        {label:'在用数量',prop:'zyCount',icon:'el-icon-tickets',},
+        {label:'未审批数量',prop:'checkCount',icon:'el-icon-reading',},
+        {children:[
+          {label:'A级',prop:'a'},
+          {label:'B级',prop:'b'},
+          {label:'C级',prop:'c'},
+        ],icon:'el-icon-pie-chart',},
+      ],
       // 弹出层标题
       title: "",
       // 部门树选项
@@ -207,6 +222,7 @@ export default {
       postOptions: [],
       addEdit: false,
       addDetails: false,
+      valueMap: {},
       // 角色选项
       roleOptions: [],
       // 表单参数
@@ -280,23 +296,37 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;
-      listBASE(queryParams).then(response => {
+      var data = {
+        categoryId:this.queryParams.categoryId,
+        ...queryParams
+      }
+      this.getCount(data)
+      listBASE(data).then(response => {
           this.equipmentList = response.rows;
           this.total = response.total;
           this.loading = false;
         }
       );
     },
+    /** 查询统计 */
+    getCount(queryParams) {
+      countBASE(queryParams).then(response => {
+          this.countData = response.data;
+        });
+    },
     /** 查询部门下拉树结构 */
     getTree() {
       equipmentTree().then(response => {
         this.deptOptions = response.data;
+        // 方便获取父级tree
+        this.loops(this.deptOptions)
       });
     },
     // 节点单击事件
     handleNodeClick(data) {
       this.addDetails = false
       this.queryParams.categoryId = data.id;
+      this.getCount({categoryId:this.queryParams.categoryId})
       this.handleQuery();
     },
     // 取消按钮
@@ -348,109 +378,107 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.btnLoading = true
+      // 获取扩展数据
       findByTemplateType({templateType: 'K'}).then(response => {
         this.formData = this.$options.data().formData;
-        this.formData.emArchivesExtendAtt = response.data;
-        this.formData.emArchivesIndex = response.data;
-        var aa = [
-          {
-              "createBy": "buyunxuyong",
-              "createTime": "2023-09-13 11:38:53",
-              "updateBy": null,
-              "updateTime": null,
-              "remark": "12",
-              "fieldId": 13,
-              "templateId": 2,
-              "fieldCode": "aqsq",
-              "fieldName": "12",
+        // this.formData.emArchivesExtendAtt = response.data;
+        // this.formData.emArchivesIndex = response.data;
+        // var aa = [
+        //   {
+        //       "createBy": "buyunxuyong",
+        //       "createTime": "2023-09-13 11:38:53",
+        //       "updateBy": null,
+        //       "updateTime": null,
+        //       "remark": "12",
+        //       "fieldId": 13,
+        //       "templateId": 2,
+        //       "fieldCode": "aqsq",
+        //       "fieldName": "12",
               
-              "valuePath": "12",
-              "required": null,
-              "isModify": "0",
-              "componentType": "input",
-              "componentContent": "12",
-              "disabled": null
-          },
-          {
-              "createBy": "buyunxuyong",
-              "createTime": "2023-09-13 16:06:10",
-              "updateBy": null,
-              "updateTime": null,
-              "remark": "1111",
-              "fieldId": 21,
-              "templateId": 2,
-              "fieldCode": "dewde",
-              "fieldName": "1111",
+        //       "valuePath": "12",
+        //       "required": null,
+        //       "isModify": "0",
+        //       "componentType": "input",
+        //       "componentContent": "12",
+        //       "disabled": null
+        //   },
+        //   {
+        //       "createBy": "buyunxuyong",
+        //       "createTime": "2023-09-13 16:06:10",
+        //       "updateBy": null,
+        //       "updateTime": null,
+        //       "remark": "1111",
+        //       "fieldId": 21,
+        //       "templateId": 2,
+        //       "fieldCode": "dewde",
+        //       "fieldName": "1111",
               
-              "valuePath": "1111",
-              "required": "0",
-              "isModify": "0",
-              "componentType": "input",
-              "componentContent": "1111",
-              "disabled": null
-          },
-          {
-              "createBy": "buyunxuyong",
-              "createTime": "2023-09-13 16:08:02",
-              "updateBy": null,
-              "updateTime": null,
-              "remark": "11",
-              "fieldId": 23,
-              "templateId": 2,
-              "fieldCode": "vfvf",
-              "fieldName": "11",
+        //       "valuePath": "1111",
+        //       "required": "0",
+        //       "isModify": "0",
+        //       "componentType": "input",
+        //       "componentContent": "1111",
+        //       "disabled": null
+        //   },
+        //   {
+        //       "createBy": "buyunxuyong",
+        //       "createTime": "2023-09-13 16:08:02",
+        //       "updateBy": null,
+        //       "updateTime": null,
+        //       "remark": "11",
+        //       "fieldId": 23,
+        //       "templateId": 2,
+        //       "fieldCode": "vfvf",
+        //       "fieldName": "11",
               
-              "valuePath": "11",
-              "required": "0",
-              "isModify": "0",
-              "componentType": "input",
-              "componentContent": "11",
-              "disabled": null
-          },
-          {
-              "createBy": "buyunxuyong",
-              "createTime": "2023-09-13 16:08:57",
-              "updateBy": null,
-              "updateTime": null,
-              "remark": "11",
-              "fieldId": 24,
-              "templateId": 2,
-              "fieldCode": "cdacad",
-              "fieldName": "11",
+        //       "valuePath": "11",
+        //       "required": "0",
+        //       "isModify": "0",
+        //       "componentType": "input",
+        //       "componentContent": "11",
+        //       "disabled": null
+        //   },
+        //   {
+        //       "createBy": "buyunxuyong",
+        //       "createTime": "2023-09-13 16:08:57",
+        //       "updateBy": null,
+        //       "updateTime": null,
+        //       "remark": "11",
+        //       "fieldId": 24,
+        //       "templateId": 2,
+        //       "fieldCode": "cdacad",
+        //       "fieldName": "11",
               
-              "valuePath": "11",
-              "required": "0",
-              "isModify": "0",
-              "componentType": "input",
-              "componentContent": "11",
-              "disabled": null
-          },
-          {
-              "createBy": "buyunxuyong",
-              "createTime": "2023-09-13 16:41:16",
-              "updateBy": null,
-              "updateTime": null,
-              "remark": "1221",
-              "fieldId": 28,
-              "templateId": 2,
-              "fieldCode": "vfewvf",
-              "fieldName": "12",
+        //       "valuePath": "11",
+        //       "required": "0",
+        //       "isModify": "0",
+        //       "componentType": "input",
+        //       "componentContent": "11",
+        //       "disabled": null
+        //   },
+        //   {
+        //       "createBy": "buyunxuyong",
+        //       "createTime": "2023-09-13 16:41:16",
+        //       "updateBy": null,
+        //       "updateTime": null,
+        //       "remark": "1221",
+        //       "fieldId": 28,
+        //       "templateId": 2,
+        //       "fieldCode": "vfewvf",
+        //       "fieldName": "12",
               
-              "valuePath": "12",
-              "required": "0",
-              "isModify": "0",
-              "componentType": "input",
-              "componentContent": "122",
-              "disabled": null
-          }
-        ]
-        this.setFormLabel(aa)
+        //       "valuePath": "12",
+        //       "required": "0",
+        //       "isModify": "0",
+        //       "componentType": "input",
+        //       "componentContent": "122",
+        //       "disabled": null
+        //   }
+        // ]
+        this.setFormLabel(response.data)
+        // 扩展数据
         this.formData.emArchivesExtendAtt = {
-          componentContent: aa,
-          fieldValue: {},
-        }
-        this.formData.emArchivesIndex = {
-          componentContent: aa,
+          componentContent: response.data,
           fieldValue: {},
         }
         this.addEdit = true;
@@ -477,16 +505,23 @@ export default {
       getBASE(deviceId).then(response => {
         this.title = "编辑设备";
         this.formData = response.data;
+        // 第一步  特种设备
+        if(this.formData.emArchivesSpecial){
+          this.formData.emArchivesSpecial.componentContent = JSON.parse(this.formData.emArchivesSpecial.componentContent)
+          this.formData.emArchivesSpecial.fieldValue = JSON.parse(this.formData.emArchivesSpecial.fieldValue)
+          this.setFormLabel(this.formData.emArchivesSpecial.componentContent)
+        }
         // 第二步
         if(this.formData.archivesOther==null){
           this.formData.archivesOther = {}
         }
+        // 第二步  扩展数据
         if(this.formData.emArchivesExtendAtt){
           this.formData.emArchivesExtendAtt.componentContent = JSON.parse(this.formData.emArchivesExtendAtt.componentContent)
           this.formData.emArchivesExtendAtt.fieldValue = JSON.parse(this.formData.emArchivesExtendAtt.fieldValue)
           this.setFormLabel(this.formData.emArchivesExtendAtt.componentContent)
         }
-        // 第三步
+        // 第三步 主要指标
         if(this.formData.emArchivesIndex){
           this.formData.emArchivesIndex.componentContent = JSON.parse(this.formData.emArchivesIndex.componentContent)
           this.formData.emArchivesIndex.fieldValue = JSON.parse(this.formData.emArchivesIndex.fieldValue)
@@ -496,11 +531,34 @@ export default {
         if(f=='edit'){
           this.addEdit = true;
         }else if(f=='view'){
+          this.title = this.getTreeParent(row.categoryId).join(' > ') + ' > ' + row.deviceName;
           this.addDetails = true;
         }
       })
       .catch(err => {
+        console.log(err,333);
         this.btnLoading = false
+      });
+    },
+    getTreeParent(id){
+      const path = [];
+      let current = this.valueMap[id];
+      while (current) {
+        path.unshift(current.label);
+        current = current.parent;
+      }
+      return path
+    },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id
+        });
+        node.children = this.loops(children, node);
+        return node;
       });
     },
     /** 删除按钮操作 */

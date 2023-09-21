@@ -22,6 +22,7 @@
         title="选择上级设备"
         :visible.sync="drawer"
         direction="rtl"
+        :destroy-on-close="true"
         size="80%"
         :wrapperClosable="false">
         <devicebook isChoose @submitRadio="submitRadio" @close="close"></devicebook>
@@ -73,33 +74,60 @@ export default {
 
   },
   watch:{
-    'formData.categoryId':function(val){
-      this.getTreeItem(val,this.categoryOptions)
-      console.log(this.treeItem,222);
-      if(this.treeItem.isSm == 'Y' && this.treeItem.smAttributes){
-        this.$parent.elstep[2].visible = true
-      }else{
-        this.$parent.elstep[2].visible = false
-      }
+    'formData.categoryId':{
+      handler(val) {
+        this.getTreeItem(val,this.categoryOptions)
+        var b = this.treeItem
+        if(b.isSm == 'Y' && b.smAttributes){
+          // this.$parent.elstep[2].visible = true
+          if(this.formData.emArchivesIndex==null){
+            this.formData.emArchivesIndex = {}
+          }
+          this.setFormLabel(b.smAttributes)
+          this.$set(this.formData.emArchivesIndex, 'componentContent', b.smAttributes)
+          this.$set(this.formData.emArchivesIndex, 'fieldValue', {})
+        }else{
+          // this.$parent.elstep[2].visible = false
+          this.$set(this.formData,'emArchivesIndex',null)
+        }
+        if(b.isSpecial == 'Y'){
+          this.$set(this.formData, 'isSpecial', 'Y')
+          
+          if(this.formData.emArchivesSpecial==null){
+            this.formData.emArchivesSpecial = {}
+          }
+          if(b.specialAttributes!=null){
+            this.$set(this.formData.emArchivesSpecial, 'componentContent', b.specialAttributes)
+            this.$set(this.formData.emArchivesSpecial, 'fieldValue', {})
+          }else{
+            this.$set(this.formData,'emArchivesSpecial',null)
+          }
+        }else{
+          this.$set(this.formData, 'isSpecial', 'N')
+          
+          this.$set(this.formData,'emArchivesSpecial',null)
+        }
+      },
+      // immediate: true,
     }
   },
   computed:{
     // 列信息
     columns(){
       return [
-        { label:"设备名称", prop:"deviceName", tableVisible: true, span: 8, required: true, },
-        { label:"设备编码", prop:"deviceCode", tableVisible: true, span: 8, required: true, },
-        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, tableVisible: true, span: 8, required: true, },
-        { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, tableVisible: true, span: 8, },
-        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, tableVisible: true, span: 8, required: true, },
-        { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, required: true, }, //(Y 是、N 否)
-        { label:"功能位置", prop:"location", tableVisible: true, span: 8, required: true, },
-        { label:"规格型号", prop:"sModel", tableVisible: true, span: 8, },
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, tableVisible: true, span: 8, required: true, },  //(1 设备、2 部件)
-        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: true, span: 8, required: true, },
-        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: true, span: 8, required: true, },
-        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, tableVisible: true, readonly: true, span: 8, }, //(0 父级)
-        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, tableVisible: true, span: 8, }, //(A、B、C)
+        { label:"设备名称", prop:"deviceName", span: 8, required: true, },
+        { label:"设备编码", prop:"deviceCode", span: 8, required: true, },
+        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, span: 8, required: true, },
+        { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, span: 8, },
+        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 8, required: true, },
+        { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, formDisabled:true, required: true, }, //(Y 是、N 否)
+        { label:"功能位置", prop:"location", span: 8, required: true, },
+        { label:"规格型号", prop:"sModel", span: 8, },
+        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 8, required: true, },  //(1 设备、2 部件)
+        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
+        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
+        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 8, }, //(0 父级)
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 8, }, //(A、B、C)
         { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, required: true, },
       ]
     },
@@ -224,6 +252,14 @@ export default {
           this.getTreeItem(id,b.children)
         }
       }
+    },
+    setFormLabel(arr){
+      arr.forEach(b => {
+        b.label=b.fieldName;
+        b.prop=b.fieldCode;
+        b.required = b.required=='0'?true:false;
+
+      });
     },
     closeform(){
       this.$emit('closeform')

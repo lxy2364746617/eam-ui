@@ -49,14 +49,14 @@ export default {
   computed: {
     columns(){
       return [ 
-        { label: '类别名称', prop: 'categoryName',width: 100, required: true, tableVisible: true, span:24, },
-        { label: '类别编码', prop: 'categoryCode', formDisabled: true,width: 100, tableVisible: true, span:24,  },
-        { label: '上级编码', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: this.deptOptions, width: 200, tableVisible: true, span:24, },
-        { label: '是否是特种设备', prop: 'isSpecial',formType: 'radio', options: this.dict.type.em_is_special ,width: 100, required: true, tableVisible: true, span:24, },
-        { label: '特种设备模板', prop: 'special',formDisabled: this.formData.isSpecial=="N",formType: 'select', options: this.special ,width: 100, tableVisible: true, span:24, },
-        { label: '是否是六大设备类型', prop: 'isSm',formType: 'radio', options: this.dict.type.em_is_sm ,width: 100, required: true, tableVisible: true, span:24, },
-        { label: '六大设备类型模板', prop: 'sm',formDisabled: this.formData.isSm=="N",formType: 'select', options: this.sm ,width: 100, tableVisible: true, span:24, },
-        { label: '备注', prop: 'remark',width: 100, tableVisible: true, span:24, },
+        { label: '类别名称', prop: 'categoryName',width: 100, required: true, span:24, },
+        { label: '类别编码', prop: 'categoryCode', formDisabled: true,width: 100, span:24,  },
+        { label: '上级编码', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: this.deptOptions, width: 200, span:24, },
+        { label: '是否是特种设备', prop: 'isSpecial',formType: 'radio', options: this.dict.type.em_is_special ,width: 100, required: true, span:24, },
+        { label: '特种设备模板', prop: 'special',formDisabled: this.formData.isSpecial=="N",formType: 'select', options: this.special ,width: 100, span:24, },
+        { label: '是否是六大设备类型', prop: 'isSm',formType: 'radio', options: this.dict.type.em_is_sm ,width: 100, required: true, span:24, },
+        { label: '六大设备类型模板', prop: 'sm',formDisabled: this.formData.isSm=="N",formType: 'select', options: this.sm ,width: 100, span:24, },
+        { label: '备注', prop: 'remark',width: 100, span:24, },
       ]
     }
   },
@@ -75,14 +75,14 @@ export default {
       // 部门名称
       deptName: undefined,
       // columns: [ 
-      //   { label: '类别名称', prop: 'categoryName',width: 100, required: true, tableVisible: true, span:24, },
-      //   { label: '类别编码', prop: 'categoryCode', formDisabled: true,width: 100, tableVisible: true, span:24,  },
-      //   { label: '上级编码', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: [], width: 200, tableVisible: true, span:24, },
-      //   { label: '是否是特种设备', prop: 'isSpecial',formType: 'radio', options: [] ,width: 100, required: true, tableVisible: true, span:24, },
-      //   { label: '特种设备模板', prop: 'isSpecial2',formType: 'select', options: [] ,width: 100, tableVisible: true, span:24, },
-      //   { label: '是否是六大设备类型', prop: 'isSm',formType: 'radio', options: [] ,width: 100, required: true, tableVisible: true, span:24, },
-      //   { label: '六大设备类型模板', prop: 'isSm2',formType: 'select', options: [] ,width: 100, tableVisible: true, span:24, },
-      //   { label: '备注', prop: 'remark',width: 100, tableVisible: true, span:24, },
+      //   { label: '类别名称', prop: 'categoryName',width: 100, required: true, span:24, },
+      //   { label: '类别编码', prop: 'categoryCode', formDisabled: true,width: 100, span:24,  },
+      //   { label: '上级编码', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: [], width: 200, span:24, },
+      //   { label: '是否是特种设备', prop: 'isSpecial',formType: 'radio', options: [] ,width: 100, required: true, span:24, },
+      //   { label: '特种设备模板', prop: 'isSpecial2',formType: 'select', options: [] ,width: 100, span:24, },
+      //   { label: '是否是六大设备类型', prop: 'isSm',formType: 'radio', options: [] ,width: 100, required: true, span:24, },
+      //   { label: '六大设备类型模板', prop: 'isSm2',formType: 'select', options: [] ,width: 100, span:24, },
+      //   { label: '备注', prop: 'remark',width: 100, span:24, },
       // ],
       disabled: true,
       // 是否显示弹出层

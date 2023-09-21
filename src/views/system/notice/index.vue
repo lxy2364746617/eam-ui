@@ -107,14 +107,14 @@ export default {
       open: false,
       // 表格列
       columns: [
-        { label: '创建时间', prop: 'createTime', width: '120', tableVisible: true, formType: 'date', formVisible: false },
-        { label: '发布人', prop: 'issUser', width: '100', tableVisible: true },
-        { label: '标题', prop: 'noticeTitle', width: '100', tableVisible: true },
-        { label: '简介', prop: 'noticeIntro', width: '100', tableVisible: true },
-        { label: '内容', prop: 'noticeContent', width: '200', tableVisible: true, formType: 'editor', span: 24 },
-        // { label: '公告类型', prop: 'noticeType', width: '200', tableVisible: true,  },
-        // { label: '状态', prop: 'status', width: '200', tableVisible: true,  },
-        // { label: '创建者', prop: 'createBy', width: '200', tableVisible: true,  },
+        { label: '创建时间', prop: 'createTime', width: '120', formType: 'date', formVisible: false },
+        { label: '发布人', prop: 'issUser', width: '100',  },
+        { label: '标题', prop: 'noticeTitle', width: '100',  },
+        { label: '简介', prop: 'noticeIntro', width: '100',  },
+        { label: '内容', prop: 'noticeContent', width: '200', formType: 'editor', span: 24 },
+        // { label: '公告类型', prop: 'noticeType', width: '200',  },
+        // { label: '状态', prop: 'status', width: '200',  },
+        // { label: '创建者', prop: 'createBy', width: '200',  },
       ],
       // 查询参数
       queryParams: {

@@ -168,14 +168,14 @@ export default {
       this.formData.imgFileResourceList = val
     },
     async save(formref){
-      var flag = await this.$refs['jmform'+formref].submitForm()
-      if(flag){
+      // var flag = await this.$refs['jmform'+formref].submitForm()
+      // if(flag){
         this.$emit('submitForm',(val)=>{
           if(val){
             this['disabled'+formref] = true;
           }
         })
-      }
+      // }
     },
     closeEdit(formref){
       this.$emit('close',(val)=>{

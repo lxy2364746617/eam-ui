@@ -1,23 +1,45 @@
 <template>
   <div>
-    <p class="subtitle"><i class="el-icon-magic-stick"></i> 主要指标
-      <span v-if="disabled5" class="rightbutton">
-        <el-button type="text" icon="el-icon-edit" @click="disabled5=false">编辑</el-button>
-      </span><span v-else class="rightbutton">
-        <el-button type="text" @click="save('5')">确认</el-button>
-        <el-button type="text" @click="closeEdit('5')">取消</el-button>
-      </span>
-    </p>
-    <jm-form 
-      class="mr20"
-      :columns="formData.emArchivesIndex.componentContent" 
-      :hideBorder="disabled5"
-      :labelPosition="'left'"
-      :disabled="disabled5"
-      :showButton="false"
-      :formData="formData.emArchivesIndex.fieldValue"
-      ref="jmform5">
-    </jm-form>
+    <div v-if="formData.emArchivesIndex">
+      <p class="subtitle"><i class="el-icon-magic-stick"></i> 主要指标
+        <span v-if="disabled5" class="rightbutton">
+          <el-button type="text" icon="el-icon-edit" @click="disabled5=false">编辑</el-button>
+        </span><span v-else class="rightbutton">
+          <el-button type="text" @click="save('5')">确认</el-button>
+          <el-button type="text" @click="closeEdit('5')">取消</el-button>
+        </span>
+      </p>
+      <jm-form 
+        class="mr20"
+        :columns="formData.emArchivesIndex.componentContent" 
+        :hideBorder="disabled5"
+        :labelPosition="'left'"
+        :disabled="disabled5"
+        :showButton="false"
+        :formData="formData.emArchivesIndex.fieldValue"
+        ref="jmform5">
+      </jm-form>
+    </div>
+    <div v-if="formData.emArchivesSpecial">
+      <p class="subtitle"><i class="el-icon-magic-stick"></i> 特种设备详情信息
+        <span v-if="disabled4" class="rightbutton">
+          <el-button type="text" icon="el-icon-edit" @click="disabled4=false">编辑</el-button>
+        </span><span v-else class="rightbutton">
+          <el-button type="text" @click="save('4')">确认</el-button>
+          <el-button type="text" @click="closeEdit('4')">取消</el-button>
+        </span>
+      </p>
+      <jm-form 
+        class="mr20"
+        :columns="formData.emArchivesSpecial.componentContent" 
+        :hideBorder="disabled4"
+        :labelPosition="'left'"
+        :disabled="disabled4"
+        :showButton="false"
+        :formData="formData.emArchivesSpecial.fieldValue"
+        ref="jmform4">
+      </jm-form>
+    </div>
     <!-- 添加或修改设备平台_表单模板对话框 -->
     <el-drawer
       title="选择上级设备"
@@ -67,64 +89,10 @@ export default {
     },
   },
   computed:{
-
-    // 列信息
-    columns(){
-      return [
-        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, tableVisible: true, span: 12, required: true, },
-        { label:"规格型号", prop:"sModel", tableVisible: true, span: 12, },
-        { label:"功能位置", prop:"location", tableVisible: true, span: 12, required: true, },
-        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: true, span: 12, required: true, },
-        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: true, span: 12, required: true, },
-        { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 12, required: true, },
-        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, tableVisible: true, span: 12, }, //(A、B、C)
-        { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 12, required: true, }, //(Y 是、N 否)
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, tableVisible: true, span: 12, required: true, },  //(1 设备、2 部件)
-        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, tableVisible: true, readonly: true, span: 12, }, //(0 父级)
-      ]
-    },
-    columns2(){
-      return [
-        { label:"批次编号", prop:"batchNo", tableVisible: false, span: 12, },
-        { label:"煤安标志证号", prop:"logoNo", tableVisible: false, span: 12, },
-        { label:"防爆合格证", prop:"certificate", tableVisible: false, span: 12, },
-        { label:"计量单位", prop:"unit", formType: 'select', options: this.dict.type.em_unit, tableVisible: false, span: 12, }, //(台、个、座、件)
-        { label:"大小/尺寸mm", prop:"size", tableVisible: false, span: 12, },
-        { label:"折旧年限", prop:"depLife", tableVisible: false, span: 12, },
-        { label:"存放位置", prop:"position", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 12, },
-        { label:"重量(千克)", prop:"weight", tableVisible: false, span: 12, },
-        { label:"是否融资设备", prop:"isFinan", formType: 'select', options: this.dict.type.em_device_financing, tableVisible: false, span: 12, },//(Y 是、N 否)
-        { label:"融资设备到期日", prop:"finanTime", formType: 'date', tableVisible: false, span: 12, },
-        { label:"是否租赁设备", prop:"isLease", formType: 'select', options: this.dict.type.em_is_lease, tableVisible: false, span: 12, },//(Y 是、N 否)
-        { label:"租赁设备到期日", prop:"leaseTime", formType: 'date', tableVisible: false, span: 12, },
-        { label:"备注", prop:"remark", formType: 'textarea', tableVisible: false, span: 24, },
-      ]
-    },
-    columns3(){
-      return [
-        { label:"财务资产编码", prop:"propertyCode", tableVisible: true, span: 12, },
-        { label:"资产原值(元)", prop:"propertyOv", tableVisible: true, span: 12, },
-        { label:"资产权属占比", prop:"propertyOs", tableVisible: true, span: 12, },
-        { label:"资产净值(元)", prop:"propertyNv", tableVisible: true, span: 12, },
-        { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.em_property_type, tableVisible: true, span: 12, },
-      ]
-    },
-    columns4(){
-      return [
-        { label:"关联购置单号", prop:"makerNo", tableVisible: false, formDisabled: true, span: 12, },
-        // { label:"行号", prop:"makerLn", tableVisible: false, formDisabled: true, span: 12, },
-        { label:"入账日期", prop:"makerAoTime", formType: 'date', tableVisible: false, span: 12, }, 
-        { label:"启用日期", prop:"makerEnTime", formType: 'date', tableVisible: false, span: 12, },
-        { label:"制造商", prop:"maker", tableVisible: false, span: 12, },
-        { label:"出厂日期", prop:"makerPdTime", formType: 'date', tableVisible: false, span: 12, },
-        { label:"到货日期", prop:"makerMoaTime", formType: 'date', tableVisible: false, span: 12, },
-        { label:"出厂编号", prop:"makerPdNo", tableVisible: false, span: 12, },
-        { label:"使用年限", prop:"makerExp", tableVisible: false, span: 12, },
-      ]
-    },
   },
   data() {
     return {
+      disabled4: true,
       disabled5: true,
       // 遮罩层
       loading: true,

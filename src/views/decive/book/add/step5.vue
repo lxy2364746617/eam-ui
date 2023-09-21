@@ -23,7 +23,7 @@
     <el-card shadow="never" style="margin-top: 10px;text-align: right;">
       <el-button size="mini" @click="closeform">取消</el-button>
       <el-button size="mini" @click="prvstep" type="primary" v-if="stepActive>=1">上一步</el-button>
-      <el-button size="mini" @click="nextstep" type="primary" v-if="stepActive<=elstep.length-2">下一步</el-button>
+      <el-button size="mini" @click="nextstep" type="primary" v-if="stepActive<=(elstep[2].visible?elstep.length-2:elstep.length-3)">下一步</el-button>
       <el-button size="mini" @click="save" type="primary">保存</el-button>
     </el-card>
   </div>

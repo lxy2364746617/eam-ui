@@ -51,3 +51,12 @@ export function delBASE(deviceId) {
     method: 'delete'
   })
 }
+
+// 查询设备平台_设备档案_统计
+export function countBASE(query) {
+  return request({
+    url: '/equipment/base/count',
+    method: 'get',
+    params: query
+  })
+}

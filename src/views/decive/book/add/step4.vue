@@ -118,15 +118,15 @@ export default {
     // 列信息
     columns(){
       return [
-        { label:"备件名称", prop:"partsName", tableVisible: true, span: 24, },
-        { label:"备件编码", prop:"partsCode", tableVisible: true, span: 24, },
-        { label:"规格型号", prop:"partsModel", tableVisible: true, span: 24, },
-        { label:"备件类别", prop:"partsType", tableVisible: true, span: 24, },
-        { label:"单位", prop:"unit", tableVisible: true, span: 24, },
-        { label:"当前库存", prop:"stock", tableVisible: true, span: 24, },
-        { label:"供应商名称", prop:"supName", tableVisible: true, span: 24, },
-        { label:"存储位置", prop:"location", tableVisible: true, span: 24, },
-        { label:"所属组织", prop:"orgId", tableVisible: true, span: 24, },
+        { label:"备件名称", prop:"partsName", span: 24, },
+        { label:"备件编码", prop:"partsCode", span: 24, },
+        { label:"规格型号", prop:"partsModel", span: 24, },
+        { label:"备件类别", prop:"partsType", span: 24, },
+        { label:"单位", prop:"unit", span: 24, },
+        { label:"当前库存", prop:"stock", span: 24, },
+        { label:"供应商名称", prop:"supName", span: 24, },
+        { label:"存储位置", prop:"location", span: 24, },
+        { label:"所属组织", prop:"orgId", span: 24, },
       ]
     },
   },

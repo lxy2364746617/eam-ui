@@ -97,11 +97,11 @@
     <!-- 添加或修改设备平台_表单模板对话框 -->
     <el-drawer
       title="选择上级设备"
-      :visible.sync="drawer"
+      :visible="drawer"
       direction="rtl"
       size="80%"
       :wrapperClosable="false">
-      <devicebook isChoose @submitRadio="submitRadio" @close="close"></devicebook>
+      <parentDevice></parentDevice>
     </el-drawer>
   </div>
 </template>
@@ -115,6 +115,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
+import parentDevice from "@/views/decive/book/parentDevice";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
@@ -125,8 +126,7 @@ export default {
     'em_property_type', 
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, 
-    devicebook: ()=> import("@/views/decive/book/index"),
+    Treeselect, JmUserTree, JmTable, JmForm, parentDevice,
   },
   props:{
     formData: {
@@ -147,16 +147,16 @@ export default {
     // 列信息
     columns(){
       return [
-        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, tableVisible: true, span: 12, required: true, },
-        { label:"规格型号", prop:"sModel", tableVisible: true, span: 12, },
-        { label:"功能位置", prop:"location", tableVisible: true, span: 12, required: true, },
-        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: true, span: 12, required: true, },
-        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: true, span: 12, required: true, },
+        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 12, required: true, },
+        { label:"规格型号", prop:"sModel", span: 12, },
+        { label:"功能位置", prop:"location", span: 12, required: true, },
+        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },
+        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },
         { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 12, required: true, },
-        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, tableVisible: true, span: 12, }, //(A、B、C)
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 12, }, //(A、B、C)
         { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 12, required: true, }, //(Y 是、N 否)
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, tableVisible: true, span: 12, required: true, },  //(1 设备、2 部件)
-        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, tableVisible: true, readonly: true, span: 12, }, //(0 父级)
+        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 12, required: true, },  //(1 设备、2 部件)
+        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 12, }, //(0 父级)
       ]
     },
     columns2(){
@@ -178,11 +178,11 @@ export default {
     },
     columns3(){
       return [
-        { label:"财务资产编码", prop:"propertyCode", tableVisible: true, span: 12, },
-        { label:"资产原值(元)", prop:"propertyOv", tableVisible: true, span: 12, },
-        { label:"资产权属占比", prop:"propertyOs", tableVisible: true, span: 12, },
-        { label:"资产净值(元)", prop:"propertyNv", tableVisible: true, span: 12, },
-        { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.em_property_type, tableVisible: true, span: 12, },
+        { label:"财务资产编码", prop:"propertyCode", span: 12, },
+        { label:"资产原值(元)", prop:"propertyOv", span: 12, },
+        { label:"资产权属占比", prop:"propertyOs", span: 12, },
+        { label:"资产净值(元)", prop:"propertyNv", span: 12, },
+        { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.em_property_type, span: 12, },
       ]
     },
     columns4(){

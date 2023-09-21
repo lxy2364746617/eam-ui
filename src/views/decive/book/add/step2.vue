@@ -84,11 +84,11 @@ export default {
     // 列信息
     columns(){
       return [
-        { label:"财务资产编码", prop:"propertyCode", tableVisible: true, span: 8, },
-        { label:"资产原值(元)", prop:"propertyOv", tableVisible: true, span: 8, },
-        { label:"资产权属占比", prop:"propertyOs", tableVisible: true, span: 8, },
-        { label:"资产净值(元)", prop:"propertyNv", tableVisible: true, span: 8, },
-        { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.em_property_type, tableVisible: true, span: 8, },
+        { label:"财务资产编码", prop:"propertyCode", span: 8, },
+        { label:"资产原值(元)", prop:"propertyOv", span: 8, },
+        { label:"资产权属占比", prop:"propertyOs", span: 8, },
+        { label:"资产净值(元)", prop:"propertyNv", span: 8, },
+        { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.em_property_type, span: 8, },
       ]
     },
     columns2(){

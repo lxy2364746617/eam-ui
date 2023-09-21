@@ -2,7 +2,11 @@
     <div>
       <el-row :gutter="10" class="mb8">
         <slot name="headerLeft"></slot>
-        <right-toolbar :search="search" @queryTable="getList" :columns="columns"></right-toolbar>
+        <right-toolbar :search="search" @queryTable="getList" :columns="columns" :tableVisible="tableVisible">
+          <template #right_end>
+            <slot name="right_end"></slot>
+          </template>
+        </right-toolbar>
       </el-row>
       <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" label-width="68px">
         <el-table 
@@ -13,12 +17,12 @@
           @selection-change="handleSelectionChange">
           <el-table-column v-if="!isRadio" type="selection" width="55" align="center" :selectable="(row,index)=>index!=0 || !showSearch"/>
           <el-table-column v-if="isRadio" width="50">
-            <template scope="scope">
+            <template slot-scope="scope">
                 <el-radio v-model="radio" :label="scope.$index" v-if="scope.$index!=0 && showSearch">&nbsp;</el-radio>
             </template>
           </el-table-column>
           <el-table-column label="序号" align="center" prop="noticeId" width="50">
-            <template scope="scope">
+            <template slot-scope="scope">
               <div v-if="scope.$index != 0" v-html="scope.$index"></div>
             </template>
           </el-table-column>
@@ -30,7 +34,7 @@
               :prop="col.prop" 
               :min-width="col.width||100" 
               :show-overflow-tooltip="col.showOverflowTooltip" 
-              v-if="col.tableVisible">
+              v-if="tableVisible[col.prop]">
               <template slot-scope="scope">
                 <div v-if="scope.$index == 0 && showSearch">
                   <el-form-item label="" :prop="col.prop" style="margin-bottom: 0;">
@@ -182,6 +186,9 @@ export default {
       },
     },
     created(){
+      this.columns.forEach(b => {
+        this.$set(this.tableVisible,b.prop,b.tableVisible?b.tableVisible:true)
+      });
     },
     data() {
         return {
@@ -195,6 +202,7 @@ export default {
               pageNum: 1,
               pageSize: 10,
           },
+          tableVisible: {},
         }
     },
     methods: {

@@ -127,12 +127,12 @@ export default {
       // 弹出层标题
       title: "新增表单",
       columns: [ 
-        { label: '表单名称', prop: 'templateName',width: 100, required: true, tableVisible: true, span:24, },
-        { label: '表单属性', prop: 'formAttribute',formType: 'select', required: true,options: [], width: 100, tableVisible: true, span:24,  },
-        { label: '所属模块', prop: 'module',formType: 'select',required: true, options: [], width: 200, tableVisible: true, span:24, },
-        { label: '所属维度', prop: 'templateType',formType: 'select', options: [] ,width: 100, required: true, tableVisible: true, span:24, },
-        { label: '备注', prop: 'remark', width: 100, tableVisible: true, span:24, },
-        { label: '更新时间', prop: 'updateTime',width: 100, tableVisible: true, span:24,formVisible:false },
+        { label: '表单名称', prop: 'templateName',width: 100, required: true, span:24, },
+        { label: '表单属性', prop: 'formAttribute',formType: 'select', required: true,options: [], width: 100, span:24,  },
+        { label: '所属模块', prop: 'module',formType: 'select',required: true, options: [], width: 200, span:24, },
+        { label: '所属维度', prop: 'templateType',formType: 'select', options: [] ,width: 100, required: true, span:24, },
+        { label: '备注', prop: 'remark', width: 100, span:24, },
+        { label: '更新时间', prop: 'updateTime',width: 100, span:24,formVisible:false },
       ],
       // 是否显示弹出层
       open: false,

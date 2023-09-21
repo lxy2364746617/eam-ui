@@ -1,88 +1,74 @@
 <template>
   <div>
-    <el-card shadow="never" style="margin-top: 10px;">
-      <p><i class="el-icon-magic-stick"></i> 设备图片</p>
-      <image-upload 
-        :fileType="['jpg','png']"
-        @uploadChange="uploadChange1"
-        :value="formData.imgFileResourceList"
-        :extraData="{'category':1}"
-        :listType="'picture-card'">
-
-      </image-upload>
-      <p><i class="el-icon-magic-stick"></i> 技术资料</p>
-      <file-upload 
-        :drag="true"
-        :extraData="{'category':2}"
-        @uploadChange="uploadChange2"
-        :value="formData.genFileResourceList"
-        :listType="'picture-card'">
-
-      </file-upload>
-    </el-card>
-    <el-card shadow="never" style="margin-top: 10px;text-align: right;">
-      <el-button size="mini" @click="closeform">取消</el-button>
-      <el-button size="mini" @click="prvstep" type="primary" v-if="stepActive>=1">上一步</el-button>
-      <el-button size="mini" @click="nextstep" type="primary" v-if="stepActive<=elstep.length-2">下一步</el-button>
-      <el-button size="mini" @click="save" type="primary">保存</el-button>
-    </el-card>
+    
   </div>
 </template>
 
 <script>
-import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
+import { listResource, addResource, delResource } from "@/api/system/resource";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
+import Treeselect from "@riophae/vue-treeselect";
+import JmTable from "@/components/JmTable";
+import JmForm from "@/components/JmForm";
+import JmUserTree from "@/components/JmUserTree";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+
 export default {
   name: "bookadd",
   dicts: [
-    
   ],
   components: { 
+    Treeselect, JmUserTree, JmTable, JmForm, 
   },
   props:{
-    stepActive:{
-      default:0,
-      type: Number,
-    },
-    elstep:{
-      default:[],
-      type: Array,
-    },
     formData: {
-      default: {},
+      default: ()=>{},
       type: Object,
     },
-
+  },
+  watch: {
+    formData: {
+      handler(val) {
+      },
+      immediate: true,
+      deep: true,
+    },
   },
   computed:{
-  },
-  mounted(){
+
   },
   data() {
     return {
+      fileList: [],
+      fileType: ['png','jpg','bmp','jpeg','pdf','gif'],
+      columns: [
+        { label:"文件名称", prop:"originalFileName", span: 12, required: true, },
+        { label:"上传时间", prop:"createTime", formType: 'date', span: 12, required: true, },
+        { label:"上传人员", prop:"createBy", span: 12, required: true, },
+        { label:"文件大小", prop:"fileSize", span: 12, required: true, },
+      ],
+      disabled1: true,
+      disabled2: true,
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
       // 非单个禁用
       single: true,
-      // 非多个禁用
-      multiple: true,
       // 显示搜索条件
       showSearch: true,
-      // 表格数据
-      equipmentList: null,
       // 总条数
       total: 0,
-      formDataNow: {},
+      // 表格数据
+      equipmentList: null,
       drawer: false,
       // 弹出层标题
       title: "",
       // 部门树选项
-      categoryOptions: undefined,
-      deptOptions: undefined,
+      categoryOptions: [],
+      deptOptions: [],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -114,10 +100,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userName: undefined,
-        phonenumber: undefined,
-        status: undefined,
-        deptId: undefined
+        busId: this.formData.deviceId,
+        category: 2,
       },
       // 表单校验
       rules: {
@@ -150,96 +134,84 @@ export default {
     };
   },
   created() {
-    this.getTreeSelect()
+    this.getList(this.queryParams)
   },
   methods: {
-    uploadChange1(val){
-      this.formData.imgFileResourceList = val
+    handlePreview(row){
+      window.open(process.env.VUE_APP_BASE_API+row.fileName)
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      var name = row.originalFileName;
+      var id = row.id;
+      this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function() {
+        return delResource(id);
+      }).then(() => {
+        this.$modal.msgSuccess("删除成功");
+        this.$refs.jmtable.getList()
+      }).catch(() => {});
+    },
+    downloadFile(row){
+      this.download('common/download', {
+        fileName: row.fileName
+      }, row.originalFileName)
+    },
+    handleAdd(){
+      this.fileList = []
+      this.drawer = true;
     },
     uploadChange2(val){
-      this.formData.genFileResourceList = val
+      this.fileList = val
+      this.fileList.forEach(b => {
+        b.busId = this.formData.deviceId
+      });
     },
-    closeform(){
-      this.$emit('closeform')
+    async save(formref){
+      var flag = await this.$refs['jmform'+formref].submitForm()
+      if(flag){
+        this.$emit('submitForm',(val)=>{
+          if(val){
+            this['disabled'+formref] = true;
+          }
+        })
+      }
     },
-    prvstep(){
-      this.save(()=>{
-        this.$emit('prvstep')
+    closeEdit(formref){
+      this.$emit('close',(val)=>{
+        this['disabled'+formref] = true;
       })
-    },
-    nextstep(){
-      this.save(()=>{
-        this.$emit('nextstep')
-      })
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.partsCode);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
     },
     close(){
       this.drawer = false
     },
-    // form保存
-    saveToTable(){
-      if(this.title == "新增设备"){
-        this.formData.archivesPartsList.push(JSON.parse(JSON.stringify(this.formDataNow)))
-        this.total = this.formData.archivesPartsList.length
-      }
+    submitFiles(row){
+      // 发送 this.fileList
+      addResource(this.fileList).then(response => {
+        this.$modal.msgSuccess("上传成功");
+        this.$refs.jmtable.getList()
+      });
       this.close()
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.drawer = true;
-      this.title = "新增设备";
-      this.formDataNow = {}
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.drawer = true;
-      this.title = "编辑设备";
-      this.formDataNow = row
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const partsCodes = row.partsCode || this.ids;
-      this.$modal.confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？')
-      .then(() =>{
-        console.log(this.formData.archivesPartsList,444);
-        this.formData.archivesPartsList = this.formData.archivesPartsList.filter((b)=>{
-          return partsCodes.indexOf(b.partsCode)<0
-        })
-        this.total = this.formData.archivesPartsList.length
-      })
-      .catch(() => {});
-    },
-    save(fn){
-      this.submitForm(fn)
-    },
-    /** 提交按钮 */
-    submitForm: function(fn) {
-      var formData = this.$parent.getFormDataParams();
-      if (formData.deviceId != undefined) {
-        updateBASE(formData).then(response => {
-          this.$modal.msgSuccess("修改成功");
-          if(typeof fn == 'function') fn()
-        });
-      } else {
-        addBASE(formData).then(response => {
-          this.$modal.msgSuccess("保存成功");
-          if(typeof fn == 'function') fn()
-        });
-      }
-    },
-    getTreeSelect(){
-      equipmentTree().then(response => {
-        this.categoryOptions = response.data;
-      });
-      listDept().then(response => {
-        this.deptOptions = response.data;
-      });
+    /** 查询用户列表 */
+    getList(queryParams) {
+      this.loading = true;
+      listResource(queryParams).then(response => {
+          this.equipmentList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        }
+      );
     },
   }
 };
 </script>
+<style scoped lang="scss">
+  .subtitle{
+    background: #ebf4fc;
+    line-height: 40px;
+    & > .rightbutton{
+      margin-right: 20px;
+      float: right;
+    }
+  }
+</style>
