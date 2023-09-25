@@ -328,14 +328,7 @@ export default {
     this.getTreeSelect();
   },
   methods: {
-    handleExport(){
-      var obj = {
-        categoryId: this.queryParams.categoryId
-      }
-      exportBASE(obj).then(response => {
-        
-      });
-    },
+    
     /** 查询设备档案下拉树结构 */
     getTree() {
       equipmentTree().then(response => {
@@ -651,10 +644,18 @@ export default {
       }).catch(() => {});
     },
     /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/user/export', {
-        ...this.queryParams
-      }, `user_${new Date().getTime()}.xlsx`)
+    // handleExport() {
+    //   this.download('system/user/export', {
+    //     ...this.queryParams
+    //   }, `user_${new Date().getTime()}.xlsx`)
+    // },
+    handleExport(){
+      var obj = {
+        categoryId: this.queryParams.categoryId
+      }
+      this.download('equipment/base/export', {
+        ...obj
+      }, `device_${new Date().getTime()}.xlsx`)
     },
     /** 导入按钮操作 */
     handleImport() {
