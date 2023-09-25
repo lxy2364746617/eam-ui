@@ -101,7 +101,7 @@
       direction="rtl"
       size="80%"
       :wrapperClosable="false">
-      <parentDevice></parentDevice>
+      <parentdevice @submitRadio="submitRadio" @close="close"></parentdevice>
     </el-drawer>
   </div>
 </template>
@@ -115,7 +115,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
-import parentDevice from "@/views/decive/book/parentDevice";
+import parentdevice from "@/views/decive/book/device";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
@@ -126,7 +126,7 @@ export default {
     'em_property_type', 
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, parentDevice,
+    Treeselect, JmUserTree, JmTable, JmForm, parentdevice,
   },
   props:{
     formData: {
@@ -141,6 +141,42 @@ export default {
       immediate: true,
       deep: true,
     },
+    'formData.categoryId':{
+      handler(val) {
+        this.getTreeItem(val,this.categoryOptions)
+        var b = this.treeItem
+        if(b.isSm == 'Y' && b.smAttributes){
+          // this.$parent.elstep[2].visible = true
+          if(this.formData.emArchivesIndex==null){
+            this.formData.emArchivesIndex = {}
+          }
+          this.setFormLabel(b.smAttributes)
+          this.$set(this.formData.emArchivesIndex, 'componentContent', b.smAttributes)
+          this.$set(this.formData.emArchivesIndex, 'fieldValue', {})
+        }else{
+          // this.$parent.elstep[2].visible = false
+          this.$set(this.formData,'emArchivesIndex',null)
+        }
+        if(b.isSpecial == 'Y'){
+          this.$set(this.formData, 'isSpecial', 'Y')
+          
+          if(this.formData.emArchivesSpecial==null){
+            this.formData.emArchivesSpecial = {}
+          }
+          if(b.specialAttributes!=null){
+            this.$set(this.formData.emArchivesSpecial, 'componentContent', b.specialAttributes)
+            this.$set(this.formData.emArchivesSpecial, 'fieldValue', {})
+          }else{
+            this.$set(this.formData,'emArchivesSpecial',null)
+          }
+        }else{
+          this.$set(this.formData, 'isSpecial', 'N')
+          
+          this.$set(this.formData,'emArchivesSpecial',null)
+        }
+      },
+      // immediate: true,
+    }
   },
   computed:{
 
@@ -154,9 +190,9 @@ export default {
         { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },
         { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 12, required: true, },
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 12, }, //(A、B、C)
-        { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 12, required: true, }, //(Y 是、N 否)
+        { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 12, required: true, formDisabled:true, }, //(Y 是、N 否)
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 12, required: true, },  //(1 设备、2 部件)
-        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 12, }, //(0 父级)
+        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 12, formVisible: this.formData.deviceAtt==1 }, //(0 父级)
       ]
     },
     columns2(){
@@ -226,6 +262,7 @@ export default {
       // 部门树选项
       categoryOptions: [],
       deptOptions: [],
+      treeItem: {},
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -296,6 +333,24 @@ export default {
     this.getTreeSelect()
   },
   methods: {
+    setFormLabel(arr){
+      arr.forEach(b => {
+        b.label=b.fieldName;
+        b.prop=b.fieldCode;
+        b.required = b.required=='0'?true:false;
+      });
+    },
+    getTreeItem(id,arr){
+      for (let i = 0; i < arr.length; i++) {
+        const b = arr[i];
+        if(b.id == id){
+          this.treeItem = b
+        }
+        if(b.children){
+          this.getTreeItem(id,b.children)
+        }
+      }
+    },
     async save(formref){
       var flag = await this.$refs['jmform'+formref].submitForm()
       if(flag){

@@ -43,13 +43,17 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "devicebook1",
-  dicts: [],
+  dicts: ['em_device_att'],
   components: { Treeselect, JmUserTree, JmTable },
   props:{
     isChoose:{
       default:true,
       type: Boolean,
-    }
+    },
+    formData: {
+      default: ()=>{},
+      type: Object,
+    },
   },
   computed:{
     // 列信息
@@ -59,10 +63,10 @@ export default {
         { label:"设备名称", prop:"deviceName",  },
         { label:"规格型号", prop:"sModel",  },
         { label:"设备类别", prop:"categoryId",  },
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options:[],  },  //(1 设备、2 部件)
+        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
         { label:"财务资产编码", prop:"propertyCode",  },
-        { label:"功能位置", prop:"LOCATION",  },
-        { label:"重要等级", prop:"LEVEL", formType: 'select', options:[],  }, //(A、B、C)
+        { label:"功能位置", prop:"location",  },
+        { label:"重要等级", prop:"level", formType: 'select', options:[],  }, //(A、B、C)
         { label:"上级设备", prop:"parentId", formType: 'select', options:[],  }, //(0 父级)
         { label:"所属组织", prop:"affDeptId",  },
         { label:"当前使用组织", prop:"currDeptId",  },
@@ -75,6 +79,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      checkBoxRows: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -105,7 +110,13 @@ export default {
       this.$emit('close')
     },
     submitRadio(){
-      this.$emit('submitRadio',this.radioRow)
+      if(this.isChoose){
+        // 单选
+        this.$emit('submitRadio',this.radioRow)
+      }else{
+        // 多选
+        this.$emit('submitRadio',this.checkBoxRows)
+      }
     },
     /** 查询用户列表 */
     getList(queryParams) {
@@ -115,6 +126,12 @@ export default {
         ...queryParams
       }
       listBASE(data).then(response => {
+          // 不展示自身
+          response.rows.forEach((b,i) => {
+            if(b.deviceId == this.formData.deviceId){
+              response.rows.splice(i,1)
+            }
+          });
           this.equipmentList = response.rows;
           this.total = response.total;
           this.loading = false;
@@ -130,7 +147,6 @@ export default {
     // 节点单击事件
     handleNodeClick(data) {
       this.queryParams.categoryId = data.id;
-      this.getCount({categoryId:this.queryParams.categoryId})
       this.handleQuery();
     },
     /** 搜索按钮操作 */
@@ -144,6 +160,7 @@ export default {
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.radioRow = selection[0]
+      this.checkBoxRows = selection;
     },
     setFormLabel(arr){
       arr.forEach(b => {

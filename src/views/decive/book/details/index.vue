@@ -7,7 +7,7 @@
           <span style="font-size: 14px;"> {{ formTitle }}</span> 
         </el-col>
         <el-col :span="5" v-if="disabled1" style="font-size: 12px;color: #888;">
-          <el-button type="text" icon="el-icon-s-help">快速工单</el-button>
+          <!-- <el-button type="text" icon="el-icon-s-help">快速工单</el-button> -->
           <el-button type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
         </el-col>
       </el-row>
@@ -60,6 +60,7 @@ import step3 from "@/views/decive/book/details/step3";
 import step4 from "@/views/decive/book/details/step4";
 import step5 from "@/views/decive/book/details/step5";
 import step6 from "@/views/decive/book/details/step6";
+import step7 from "@/views/decive/book/details/step7";
 
 export default {
   name: "bookadddetails",
@@ -68,7 +69,7 @@ export default {
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, 
-    step1, step2, step3, step4, step5, step6,
+    step1, step2, step3, step4, step5, step6, step7,
     devicebook: ()=> import("@/views/decive/book/index"),
   },
   computed:{
@@ -97,8 +98,9 @@ export default {
           name:'step2', visible: this.formData.emArchivesIndex || this.formData.emArchivesSpecial, },
         { label:'设备图片及位置', name:'step3', visible: true, },
         { label:'技术资料', name:'step4', visible: true, },
-        { label:'备件备品', name:'step6', visible: true, },
-        { label:'关联设备', name:'step5', visible: true, },
+        { label:'备件备品', name:'step5', visible: true, },
+        { label:'关联设备', name:'step6', visible: this.formData.deviceAtt==1, },
+        { label:'关联部件', name:'step7', visible: this.formData.deviceAtt==0, },
       ]
     },
   },

@@ -9,6 +9,24 @@ export function listBASE(query) {
   })
 }
 
+// 查询设备平台_设备档案_设备指标列表
+export function listIndexBASE(query) {
+  return request({
+    url: '/equipment/base/listIndex',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询设备平台_设备档案_设备指标列表
+export function specialListBASE(query) {
+  return request({
+    url: '/equipment/base/specialList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询设备平台_设备档案_基础信息详细
 export function getBASE(deviceId) {
   return request({
@@ -58,5 +76,31 @@ export function countBASE(query) {
     url: '/equipment/base/count',
     method: 'get',
     params: query
+  })
+}
+
+// 导出设备平台_设备档案_基础信息
+export function exportBASE(data) {
+  return request({
+    url: '/equipment/base/export',
+    method: 'post',
+    data: data
+  })
+}
+
+// 设备平台_设备档案_解除父级设备
+export function removeParentEmBASE(deviceId) {
+  return request({
+    url: '/equipment/base/removeParentEm?deviceId='+deviceId,
+    method: 'get',
+  })
+}
+
+// 设备平台_设备档案_添加父级设备
+export function addParentEmBASE(data) {
+  return request({
+    url: '/equipment/base/addParentEm',
+    method: 'post',
+    data: data
   })
 }

@@ -15,7 +15,6 @@
         <el-col :span="1.5">
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
@@ -24,8 +23,7 @@
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="danger"
-            plain
+            type="primary"
             icon="el-icon-delete"
             size="mini"
             :disabled="multiple"
@@ -89,6 +87,7 @@
 import { listTemplate, getTemplate, delTemplate, addTemplate, updateTemplate } from "@/api/equipment/attribute";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
+import { optionselect as getDictOptionselect } from "@/api/system/dict/type";
 
 export default {
   name: "Template_child",
@@ -106,9 +105,10 @@ export default {
         { label: '字段编码', prop: 'fieldCode',width: 100, required: true, span:24, },
         { label: '字段名称', prop: 'fieldName', required: true, width: 100, span:24,  },
         { label: '字段值类型', prop: 'fieldType',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_filed, width: 200, span:24, },
-        { label: '取值路径', prop: 'valuePath',width: 100,  span:24, },
+        { label: '字典属性', prop: 'dictionaryType', formType:'select', options: this.dictOptions,required: true, optionShowValue: true, formVisible: this.formData.fieldType=='dictionary', width: 100,  span:24, },
+        // { label: '取值路径', prop: 'valuePath',width: 100,  span:24, },
         { label: '组件类型', prop: 'componentType',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_assembly, width: 100, span:24, },
-        { label: '组件内容', prop: 'componentContent',width: 100, span:24, },
+        { label: '组件提示语', prop: 'componentContent',width: 100, span:24, },
         { label: '是否必填', prop: 'required',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_must,  width: 100, span:24, },
         { label: '是否可修改', prop: 'isModify',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_int, width: 100, span:24, },
         { label: '备注', prop: 'remark',width: 100, span:24, },
@@ -154,10 +154,13 @@ export default {
       // ],
       // 是否显示弹出层
       open: false,
+      // 字典信息
+      dictOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        templateId: null,
         templateName: null,
         templateCode: null,
         templateType: null,
@@ -178,7 +181,16 @@ export default {
     //   if(b.prop=='isModify') this.$set(b,'options',this.dict.type.equipment_attribute_int)
     //   if(b.prop=='DISABLED') this.$set(b,'options',this.dict.type.equipment_attribute_use  )
     // });
-    this.getList();
+    /** 查询字典下拉列表 */
+    getDictOptionselect().then(response => {
+      response.data.forEach(b => {
+        b.label = b.dictName;
+        b.value = b.dictType;
+      });
+      this.dictOptions = response.data;
+    });
+    this.queryParams.templateId = this.nowclickitem.templateId
+    this.getList(this.queryParams);
   },
   methods: {
     backparent(){
@@ -264,7 +276,7 @@ export default {
         updateTemplate(formdata).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.drawer = false;
-          this.getList();
+          this.getList(this.queryParams);
         });
       } else {
         // var obj = {
@@ -274,7 +286,7 @@ export default {
         addTemplate(formdata).then(response => {
           this.$modal.msgSuccess("新增成功");
           this.drawer = false;
-          this.getList();
+          this.getList(this.queryParams);
         });
       }
     },

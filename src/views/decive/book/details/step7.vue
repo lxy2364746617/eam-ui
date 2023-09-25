@@ -25,7 +25,7 @@
             size="mini"
             @click="handleAdd"
             v-hasPermi="['equipment:book:add']"
-          >添加</el-button>
+          >添加子级设备</el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
@@ -36,46 +36,26 @@
             :disabled="multiple"
             @click="handleDelete"
             v-hasPermi="['equipment:book:remove']"
-          >解除</el-button>
+          >解除子级设备</el-button>
         </el-col>
       </template>
       <template #end_handle="scope">
-        <el-button
+        <!-- <el-button
           size="mini"
           type="text"
           icon="el-icon-edit"
           @click="handleUpdate(scope.row,'edit')"
           v-hasPermi="['equipment:book:edit']"
-        >修改</el-button>
-        <el-button
+        >修改</el-button> -->
+        <!-- <el-button
           size="mini"
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['equipment:book:remove']"
-        >删除</el-button>
+        >删除</el-button> -->
       </template>
     </jm-table>
-    <!-- 添加或修改设备平台_表单模板对话框 -->
-    <el-drawer
-      :title="title"
-      :visible.sync="drawer"
-      direction="rtl"
-      :wrapperClosable="false">
-      <jm-form 
-        class="mr20"
-        :columns="columns" 
-        :showButton="false"
-        :formData="formDataNow"
-        ref="jmform1">
-        <template slot="footer">
-          <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
-            <el-button size="mini" @click="close">取消</el-button>
-            <el-button size="mini" @click="save" type="primary">确定</el-button>
-          </div>
-        </template>
-      </jm-form>
-    </el-drawer>
     <div v-show="radio3=='图示'">
       <div style="text-align: right;">
         <el-radio-group v-model="radio3" size="mini" style="margin-left: 10px;">
@@ -84,10 +64,10 @@
         </el-radio-group>
       </div>
       <el-row :gutter="2">
-        <el-col :span="8" v-for="item in equipmentList" :key="item.partsCode">
+        <el-col :span="8" v-for="item in equipmentList" :key="item.deviceCode">
           <el-card style="margin-bottom: 2px;font-size: 14px;">
             <p>
-              {{ item.partsName }}[{{ item.partsCode }}]
+              {{ item.deviceName }}[{{ item.deviceCode }}]
               <span style="float: right;">
                 <el-tag size="mini" type="success">在用</el-tag>
               </span>
@@ -97,38 +77,51 @@
                 图片
               </el-col>
               <el-col :span="14">
-                <p>规格型号:</p>
-                <p>设备类型:{{ item.partsType }}</p>
+                <p>规格型号:{{ item.sModel }}</p>
+                <p>设备类型:{{ item.categoryId }}</p>
                 <p>功能位置:{{ item.location }}</p>
-                <p>所属子公司:{{ item.orgId }}</p>
-                <p>所属组织:</p>
-                <p>重要等级:{{ item.unit }}</p>
+                <p>所属子公司:{{ item.aaaa }}</p>
+                <p>所属组织:{{ item.affDeptId }}</p>
+                <p>重要等级:{{ item.level }}</p>
               </el-col>
             </el-row>
           </el-card>
         </el-col>
       </el-row>
     </div>
-    
+    <!-- 添加或修改设备平台_表单模板对话框 -->
+    <el-drawer
+      title="选择上级设备"
+      :visible="drawer"
+      direction="rtl"
+      size="80%"
+      destroy-on-close
+      :wrapperClosable="false">
+      <childdevice :isChoose="false" @submitRadio="submitRadio" @close="close" :formData="formData"></childdevice>
+    </el-drawer>
   </div>
 </template>
 
 <script>
-import { listParts, addParts, updateParts, delParts } from "@/api/equipment/parts";
+import { listAssembly, addAssembly, updateParts, delAssembly } from "@/api/equipment/assembly";
+import { listDept } from "@/api/system/dept";
+import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import childdevice from "@/views/decive/book/device";
 
 export default {
   name: "bookadd",
   dicts: [
-    'em_property_type', 
+    'em_device_state', 
+    'em_device_level',
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, 
+    Treeselect, JmUserTree, JmTable, JmForm, childdevice
   },
   props:{
     formData: {
@@ -138,6 +131,20 @@ export default {
 
   },
   computed:{
+      // 列信息
+    columns(){
+      return [
+        { label:"设备编码", prop:"deviceCode", },
+        { label:"设备名称", prop:"deviceName", },
+        { label:"规格型号", prop:"sModel", },
+        { label:"设备类型", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions,   },
+        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
+        { label:"功能位置", prop:"location",  },
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
+        // { label:"所属子公司", prop:"",  },
+        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions,  },
+      ]
+    }
   },
   mounted(){
     
@@ -145,18 +152,6 @@ export default {
   data() {
     return {
       radio3:'列表',
-      // 列信息
-      columns: [
-        { label:"备件名称", prop:"partsName", span: 24, },
-        { label:"备件编码", prop:"partsCode", span: 24, },
-        { label:"规格型号", prop:"partsModel", span: 24, },
-        { label:"备件类别", prop:"partsType", span: 24, },
-        { label:"单位", prop:"unit", span: 24, },
-        { label:"当前库存", prop:"stock", span: 24, },
-        { label:"供应商名称", prop:"supName", span: 24, },
-        { label:"存储位置", prop:"location", span: 24, },
-        { label:"所属组织", prop:"orgId", span: 24, },
-      ],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -177,8 +172,8 @@ export default {
       // 弹出层标题
       title: "",
       // 部门树选项
-      categoryOptions: undefined,
-      deptOptions: undefined,
+      categoryOptions: [],
+      deptOptions: [],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -243,14 +238,39 @@ export default {
     };
   },
   created() {
+    this.getTree();
+    this.getTreeSelect();
     this.getList(this.queryParams)
   },
   methods: {
+    submitRadio(rows){
+      const deviceId = this.formData.deviceId;
+      var arr = rows.map((b)=> {
+        return {'deviceId': deviceId,'childDeviceId': b.deviceId}
+      })
+      addAssembly(arr).then(response => {
+        this.$modal.msgSuccess("保存成功");
+        this.getList(this.queryParams)
+        this.close()
+      });
+    },
+    /** 查询设备档案下拉树结构 */
+    getTree() {
+      equipmentTree().then(response => {
+        this.categoryOptions = response.data;
+      });
+    },
+    /** 查询部门下拉树结构 */
+    getTreeSelect(){
+      listDept().then(response => {
+        this.deptOptions = response.data;
+      });
+    },
     /** 查询用户列表 */
     getList(queryParams) {
       queryParams.deviceId = this.queryParams.deviceId
       this.loading = true;
-      listParts(queryParams).then(response => {
+      listAssembly(queryParams).then(response => {
           this.equipmentList = response.rows;
           this.total = response.total;
           this.loading = false;
@@ -286,7 +306,7 @@ export default {
       const ids = row.id || this.ids;
       const partsCodes = row.partsCode || this.partsCodes;
       this.$modal.confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？').then(() =>{
-        return delParts(ids);
+        return delAssembly(ids);
       }).then(() => {
         this.getList(this.queryParams);
         this.$modal.msgSuccess("删除成功");
@@ -304,7 +324,7 @@ export default {
           this.close()
         });
       } else {
-        addParts(this.formDataNow).then(response => {
+        addAssembly(this.formDataNow).then(response => {
           this.$modal.msgSuccess("保存成功");
           this.getList(this.queryParams)
           this.close()

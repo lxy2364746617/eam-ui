@@ -1,23 +1,61 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20" v-show="!addEdit">
+    <el-row :gutter="20" v-show="!addEdit && !deviceIndexVisible">
       <!--部门数据-->
-      <el-col :span="6" :xs="24">
+      <!-- <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
         <jm-user-tree 
-          :treeData="deptOptions" 
+          :treeData="categoryOptions" 
           @handleNodeClick="handleNodeClick" 
           style="position: fixed;top: 121px;height: calc(100vh - 141px);">
         </jm-user-tree>
-      </el-col>
+      </el-col> -->
+      <div>
+        <el-popover
+          placement="bottom"
+          title=""
+          style="position: fixed;z-index: 1009;top: 55px;right: 10px;"
+          width="200"
+          trigger="hover"
+          content="">
+          <el-button 
+            type="primary" 
+            size="small" 
+            icon="el-icon-c-scale-to-original" 
+            slot="reference"></el-button>
+          <jm-user-tree 
+            :treeData="categoryOptions" 
+            @handleNodeClick="handleNodeClick" 
+            style="position: fixed;top: 121px;height: calc(100vh - 141px);">
+          </jm-user-tree>
+        </el-popover>
+      </div>
       <!--用户数据-->
-      <el-col :span="18" :xs="24" v-show="!addDetails">
-        <el-row v-if="!isChoose" :gutter="20" style="border-bottom: 5px solid #efefef;margin-bottom: 20px;">
+      <el-col :span="24" :xs="24" v-show="!addDetails">
+        <el-row v-if="!isChoose" :gutter="10" style="margin-bottom: 20px;text-align: center;">
           <el-col :span="6" :xs="24" v-for="item in countColumn" :key="item.prop">
-            <div style="display: inline-block;vertical-align: middle;font-size: 40px;margin-left: 20px;color: #007bfe;"><i :class="item.icon"></i></div>
-            <div v-if="item.label" style="line-height: 12px;font-size: 14px;display: inline-block;vertical-align: middle;margin-left: 20px;"><p>{{ item.label }}</p><p style="font-size: 20px;font-weight: bold;">{{countData[item.prop]}}</p></div>
-            <div v-if="item.children" style="font-size: 14px;display: inline-block;vertical-align: middle;margin-left: 20px;">
-              <p style="line-height: 10px;" v-for="item2 in item.children">{{ item2.label }}:<span style="font-weight: bold;">{{countData[item2.prop]}}</span></p>
+            <div style="background-color: #f7fbff;padding-top:15px;">
+              <div style="font-size: 30px;">
+                <p style="width: 50px;height: 50px;margin: 0 auto;display: inline-block;color: #fff;background-color: #007bfe;border-radius: 50%;">
+                  <i :class="item.icon" style="margin-top: 9px;"></i>
+                </p>
+              </div>
+              <div v-if="item.label">
+                <el-row>
+                  <el-col :span="24">
+                    <p style="color: #666;font-size: 12px;margin: 5px auto;">{{ item.label }}</p>
+                    <p style="font-size: 20px;font-weight: bold;margin: 7px auto;padding-bottom: 10px;">{{countData[item.prop]}}</p>
+                  </el-col>
+                </el-row>
+              </div>
+              <div v-if="item.children">
+                <el-row>
+                  <el-col :span="8" v-for="item2 in item.children" :key="item.idd">
+                    <p :style="{'color': item2.color}" style="font-size: 12px;margin: 5px auto;">{{ item2.label }}</p>
+                    <p style="font-size: 20px;font-weight: bold;margin: 7px auto;padding-bottom: 10px;">{{countData[item2.prop]}}</p>
+                  </el-col>
+                </el-row>
+              </div>
             </div>
           </el-col>
         </el-row>
@@ -34,7 +72,6 @@
             <el-col :span="1.5">
               <el-button
                 type="primary"
-                plain
                 icon="el-icon-plus"
                 size="mini"
                 :loading="btnLoading"
@@ -44,8 +81,7 @@
             </el-col>
             <el-col :span="1.5">
               <el-button
-                type="danger"
-                plain
+                type="primary"
                 icon="el-icon-upload2"
                 size="mini"
                 @click="handleAdd"
@@ -54,21 +90,19 @@
             </el-col>
             <el-col :span="1.5">
               <el-button
-                type="success"
-                plain
+                type="primary"
                 icon="el-icon-document"
                 size="mini"
-                @click="handleAdd"
+                @click="handleDevice"
                 v-hasPermi="['equipment:book:add']"
               >设备指标</el-button>
             </el-col>
             <el-col :span="1.5">
               <el-button
-                type="warning"
-                plain
+                type="primary"
                 icon="el-icon-download"
                 size="mini"
-                @click="handleAdd"
+                @click="handleExport"
                 v-hasPermi="['equipment:book:add']"
               >下载</el-button>
             </el-col>
@@ -128,25 +162,28 @@
       <el-button size="mini" @click="submitRadio" type="primary" :disabled="multiple">确定</el-button>
     </div>
     <add-edit v-if="addEdit" :formTitle="title" :formData="formData" @back="back()"></add-edit>
+    <device-index v-if="deviceIndexVisible" @back="deviceIndexVisible=false"></device-index>
   </div>
 </template>
 
 <script>
 import { findByTemplateType } from "@/api/equipment/attribute";
-import { listBASE, getBASE, delBASE, addBASE, updateBASE, countBASE } from "@/api/equipment/BASE";
+import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
+import { listBASE, getBASE, delBASE, addBASE, updateBASE, countBASE, exportBASE } from "@/api/equipment/BASE";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import addEdit from "@/views/decive/book/add";
 import addDetails from "@/views/decive/book/details";
+import deviceIndex from "@/views/decive/book/deviceIndex";
 import JmTable from "@/components/JmTable";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "devicebook",
-  dicts: ['sys_normal_disable', 'sys_user_sex'],
-  components: { Treeselect, JmUserTree, JmTable, addEdit, addDetails },
+  dicts: [ 'em_device_state','em_device_att', 'apv_status','em_device_level'],
+  components: { Treeselect, JmUserTree, JmTable, addEdit, addDetails, deviceIndex },
   props:{
     isChoose:{
       default:false,
@@ -160,14 +197,19 @@ export default {
         { label:"设备编码", prop:"deviceCode",  },
         { label:"设备名称", prop:"deviceName",  },
         { label:"规格型号", prop:"sModel",  },
-        { label:"设备类别", prop:"categoryId",  },
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options:[],  },  //(1 设备、2 部件)
+        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions,   },
+        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
         { label:"财务资产编码", prop:"propertyCode",  },
-        { label:"功能位置", prop:"LOCATION",  },
-        { label:"重要等级", prop:"LEVEL", formType: 'select', options:[],  }, //(A、B、C)
-        { label:"上级设备", prop:"parentId", formType: 'select', options:[],  }, //(0 父级)
-        { label:"所属组织", prop:"affDeptId",  },
-        { label:"当前使用组织", prop:"currDeptId",  },
+        { label:"功能位置", prop:"location",  },
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
+        // { label:"所属子公司", prop:"",  },
+        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions,  },
+        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, },
+        { label:"入账日期", prop:"makerAoTime", formType: 'date', }, 
+        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
+        { label:"上级设备", prop:"parentDeviceName",  }, //(0 父级)
+        { label:"审批状态", prop:"apvStatus", formType: 'select', options: this.dict.type.apv_status, }, //apv_status
+        
       ]
     },
   },
@@ -199,19 +241,20 @@ export default {
       equipmentList: null,
       countData:{},
       countColumn:[
-        {label:'设备数量',prop:'sumCount',icon:'el-icon-share',},
-        {label:'在用数量',prop:'zyCount',icon:'el-icon-tickets',},
-        {label:'未审批数量',prop:'checkCount',icon:'el-icon-reading',},
+        {label:'设备数量',prop:'sumCount',icon:'el-icon-share',idd:'1',},
+        {label:'在用数量',prop:'zyCount',icon:'el-icon-tickets',idd:'2',},
+        {label:'未审批数量',prop:'checkCount',icon:'el-icon-reading',idd:'3',},
         {children:[
-          {label:'A级',prop:'a'},
-          {label:'B级',prop:'b'},
-          {label:'C级',prop:'c'},
-        ],icon:'el-icon-pie-chart',},
+          {label:'A级',prop:'a', color: '#24a71e'},
+          {label:'B级',prop:'b', color: '#ffb64f'},
+          {label:'C级',prop:'c', color: '#fc297d'},
+        ], icon:'el-icon-pie-chart',idd:'4',},
       ],
       // 弹出层标题
       title: "",
       // 部门树选项
       deptOptions: undefined,
+      categoryOptions: undefined,
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -247,7 +290,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        categoryId: undefined,
       },
+      deviceIndexVisible: false,
       // 表单校验
       rules: {
         userName: [
@@ -280,8 +325,41 @@ export default {
   },
   created() {
     this.getTree();
+    this.getTreeSelect();
   },
   methods: {
+    handleExport(){
+      var obj = {
+        categoryId: this.queryParams.categoryId
+      }
+      exportBASE(obj).then(response => {
+        
+      });
+    },
+    /** 查询设备档案下拉树结构 */
+    getTree() {
+      equipmentTree().then(response => {
+        this.categoryOptions = response.data;
+        // 方便获取父级tree
+        this.loops(this.categoryOptions)
+      });
+    },
+    /** 查询部门下拉树结构 */
+    getTreeSelect(){
+      listDept().then(response => {
+        this.deptOptions = response.data;
+      });
+    },
+    // 设备指标
+    handleDevice(){
+      this.deviceIndexVisible = true
+      // var obj = {
+      //   categoryId: this.queryParams.categoryId
+      // }
+      // listIndexBASE(obj).then(response => {
+        
+      // });
+    },
     close(){
       this.$emit('close')
     },
@@ -302,6 +380,15 @@ export default {
       }
       this.getCount(data)
       listBASE(data).then(response => {
+          response.rows.forEach(b => {
+            Object.assign(
+              b,
+              b.archivesOther?b.archivesOther:{},
+              b.emArchivesExtendAtt?JSON.parse(b.emArchivesExtendAtt.fieldValue):{},
+              b.emArchivesIndex?JSON.parse(b.emArchivesIndex.fieldValue):{},
+              b.emArchivesSpecial?JSON.parse(b.emArchivesSpecial.fieldValue):{},
+            )
+          });
           this.equipmentList = response.rows;
           this.total = response.total;
           this.loading = false;
@@ -313,14 +400,6 @@ export default {
       countBASE(queryParams).then(response => {
           this.countData = response.data;
         });
-    },
-    /** 查询部门下拉树结构 */
-    getTree() {
-      equipmentTree().then(response => {
-        this.deptOptions = response.data;
-        // 方便获取父级tree
-        this.loops(this.deptOptions)
-      });
     },
     // 节点单击事件
     handleNodeClick(data) {

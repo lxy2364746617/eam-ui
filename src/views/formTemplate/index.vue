@@ -7,13 +7,12 @@
         @getList="getList"
         @handleSelectionChange="handleSelectionChange"
         :total="total"
-        :handleWidth="300"
+        :handleWidth="280"
         :columns="columns">
         <template slot="headerLeft">
           <el-col :span="1.5">
             <el-button
               type="primary"
-              plain
               icon="el-icon-plus"
               size="mini"
               @click="handleAdd"
@@ -22,8 +21,7 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-              type="danger"
-              plain
+              type="primary"
               icon="el-icon-delete"
               size="mini"
               :disabled="multiple"

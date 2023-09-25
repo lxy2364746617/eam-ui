@@ -25,7 +25,7 @@
         :destroy-on-close="true"
         size="80%"
         :wrapperClosable="false">
-        <devicebook isChoose @submitRadio="submitRadio" @close="close"></devicebook>
+        <parentdevice @submitRadio="submitRadio" @close="close"></parentdevice>
       </el-drawer>
     </el-card>
     <el-card shadow="never" style="margin-top: 10px;text-align: right;">
@@ -47,6 +47,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import parentdevice from "@/views/decive/book/device";
 
 export default {
   name: "bookadd",
@@ -55,8 +56,7 @@ export default {
     'em_unit',  'em_device_level',  'em_device_financing',  'em_is_lease', 
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, 
-    devicebook: ()=> import("@/views/decive/book/index"),
+    Treeselect, JmUserTree, JmTable, JmForm, parentdevice,
   },
   props:{
     stepActive:{
@@ -126,7 +126,7 @@ export default {
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 8, required: true, },  //(1 设备、2 部件)
         { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
         { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
-        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 8, }, //(0 父级)
+        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 8, formVisible: this.formData.deviceAtt==1  }, //(0 父级)
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 8, }, //(A、B、C)
         { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, required: true, },
       ]

@@ -16,7 +16,7 @@
     </el-card>
     <step1 v-if="stepActive==0" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step1>
     <step2 v-if="stepActive==1" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step2>
-    <step3 v-if="elstep[2].visible?stepActive==2:''" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step3>
+    <step3 v-if="elstep[2].visible?stepActive==2:false" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step3>
     <step4 v-if="elstep[2].visible?stepActive==3:stepActive==2" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step4>
     <step5 v-if="elstep[2].visible?stepActive==4:stepActive==3" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step5>
   </div>

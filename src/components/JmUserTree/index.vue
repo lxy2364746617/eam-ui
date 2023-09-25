@@ -53,12 +53,14 @@
       deptName(val) {
         this.$refs.tree.filter(val);
       },
-      treeData(){
+      treeData(val){
         this.$nextTick(() => {
-          const firstNode = document.querySelector('.el-tree-node');
-          if(firstNode){
-            firstNode.click();
-          }
+          this.$refs.tree.setCurrentKey(val[0].id);
+          this.$emit('handleNodeClick',val[0]);
+          // const firstNode = document.querySelector('.el-tree-node');
+          // if(firstNode){
+          //   firstNode.click();
+          // }
         })
       }
     },

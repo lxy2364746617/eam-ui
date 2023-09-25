@@ -1,6 +1,6 @@
 <template>
     <div>
-      <el-row :gutter="10" class="mb8">
+      <el-row :gutter="10" class="mb8" style="margin-bottom: 20px;">
         <slot name="headerLeft"></slot>
         <right-toolbar :search="search" @queryTable="getList" :columns="columns" :tableVisible="tableVisible">
           <template #right_end>
@@ -31,6 +31,7 @@
               :label="col.label" 
               :align="col.align||'center'" 
               :key="col.prop" 
+              :sortable="false"
               :prop="col.prop" 
               :min-width="col.width||100" 
               :show-overflow-tooltip="col.showOverflowTooltip" 
@@ -55,7 +56,10 @@
                       v-model="queryParams[col.prop]" 
                       @keyup.enter.native="handleQuery"
                       placeholder="请选择">
-                        <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value"></el-option>
+                        <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value">
+                          <span v-if="col.optionShowValue" style="float: left">{{ item.label }}</span>
+                          <span v-if="col.optionShowValue" style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+                        </el-option>
                     </el-select>
                     <treeselect 
                       size="small" 
@@ -69,7 +73,8 @@
                       @keyup.enter.native="handleQuery"
                       placeholder="请选择" 
                       :normalizer="normalizer" 
-                      append-to-body
+                      :appendToBody="true"
+                      zIndex="9999"
                       style="height: 32px;line-height: 32px;"/>
                     <el-input
                       v-else
@@ -187,7 +192,7 @@ export default {
     },
     created(){
       this.columns.forEach(b => {
-        this.$set(this.tableVisible,b.prop,b.tableVisible?b.tableVisible:true)
+        this.$set(this.tableVisible,b.prop,b.tableVisible==false?false:true)
       });
     },
     data() {
@@ -284,4 +289,21 @@ export default {
 
 </script>
 <style scoped lang="scss">
+  ::v-deep .el-form-item__content,
+  ::v-deep .el-form-item__content .el-input--small,
+  ::v-deep .el-form-item__content .el-input--small .el-input__inner,
+  ::v-deep .el-form-item__content .el-select--small,
+  ::v-deep .el-form-item__content .el-select--small .el-input--small,
+  ::v-deep .el-form-item__content .el-select--small .el-input--small .el-input__inner {
+    height: auto;
+    border-radius: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+  ::v-deep .el-table th.el-table__cell{
+    background-color: #e7f3ff;
+  }
 </style>

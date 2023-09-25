@@ -1,184 +1,139 @@
 <template>
   <div>
-    <jm-table
-      v-show="radio3=='列表'"
-      :tableData="equipmentList"
-      @handleSelectionChange="handleSelectionChange"
-      @getList="getList"
-      :total="total"
-      ref="jmtable"
-      :initLoading="false"
-      :handleWidth="130"
-      :columns="columns">
-      <template slot="right_end">
-        <el-radio-group v-model="radio3" size="mini" style="margin-left: 10px;">
-          <el-radio-button label="图示"></el-radio-button>
-          <el-radio-button label="列表"></el-radio-button>
-        </el-radio-group>
-      </template>
-      <template slot="headerLeft">
-        <el-col :span="1.5">
-          <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
-          >添加</el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['equipment:book:remove']"
-          >解除</el-button>
-        </el-col>
-      </template>
-      <template #end_handle="scope">
+    <div class="title" style="margin-top: 20px;">
+      <span style="font-size: 14px;font-weight: bold;">父级设备信息</span>
+      <span style="float: right;">
         <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
           size="mini"
-          type="text"
-          icon="el-icon-edit"
-          @click="handleUpdate(scope.row,'edit')"
-          v-hasPermi="['equipment:book:edit']"
-        >修改</el-button>
+          @click="handleAdd"
+          v-hasPermi="['equipment:book:add']"
+        >选择父级设备</el-button>
         <el-button
+          type="danger"
+          plain
+          icon="el-icon-upload2"
           size="mini"
-          type="text"
-          icon="el-icon-delete"
-          @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
-        >删除</el-button>
-      </template>
-    </jm-table>
+          @click="handleRemove"
+          v-hasPermi="['equipment:book:add']"
+        >解除父级设备</el-button>
+      </span>
+    </div>
+    <el-row :gutter="20" style="margin-top: 30px;" v-if="parentData">
+      <!--图-->
+      <el-col :span="10" :xs="24">
+        <img :src="mainImage" alt="" srcset="" style="width: 100%;">
+      </el-col>
+      <!-- 文 -->
+      <el-col :span="14" :xs="24">
+        <jm-form 
+          class="mr20"
+          :columns="columns" 
+          :formData="parentData" 
+          :hideBorder="disabled1"
+          :disabled="disabled1"
+          :labelPosition="'left'"
+          :showButton="false"
+          ref="jmform1">
+        </jm-form>
+      </el-col>
+    </el-row>
+    <div style="text-align: center;font-size: 14px;color: #aaa;margin-top: 50px;" v-if="!parentData">无父级设备</div>
     <!-- 添加或修改设备平台_表单模板对话框 -->
     <el-drawer
-      :title="title"
-      :visible.sync="drawer"
+      title="选择上级设备"
+      :visible="drawer"
       direction="rtl"
+      size="80%"
       :wrapperClosable="false">
-      <jm-form 
-        class="mr20"
-        :columns="columns" 
-        :showButton="false"
-        :formData="formDataNow"
-        ref="jmform1">
-        <template slot="footer">
-          <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
-            <el-button size="mini" @click="close">取消</el-button>
-            <el-button size="mini" @click="save" type="primary">确定</el-button>
-          </div>
-        </template>
-      </jm-form>
+      <parentdevice @submitRadio="submitRadio" @close="close" :formData="formData"></parentdevice>
     </el-drawer>
-    <div v-show="radio3=='图示'">
-      <div style="text-align: right;">
-        <el-radio-group v-model="radio3" size="mini" style="margin-left: 10px;">
-          <el-radio-button label="图示"></el-radio-button>
-          <el-radio-button label="列表"></el-radio-button>
-        </el-radio-group>
-      </div>
-      <el-row :gutter="2">
-        <el-col :span="8" v-for="item in equipmentList" :key="item.partsCode">
-          <el-card style="margin-bottom: 2px;font-size: 14px;">
-            <p>
-              {{ item.partsName }}[{{ item.partsCode }}]
-              <span style="float: right;">
-                <el-tag size="mini" type="success">在用</el-tag>
-              </span>
-            </p>
-            <el-row :gutter="2">
-              <el-col :span="10">
-                图片
-              </el-col>
-              <el-col :span="14">
-                <p>规格型号:</p>
-                <p>设备类型:{{ item.partsType }}</p>
-                <p>功能位置:{{ item.location }}</p>
-                <p>所属子公司:{{ item.orgId }}</p>
-                <p>所属组织:</p>
-                <p>重要等级:{{ item.unit }}</p>
-              </el-col>
-            </el-row>
-          </el-card>
-        </el-col>
-      </el-row>
-    </div>
-    
   </div>
 </template>
 
 <script>
-import { listParts, addParts, updateParts, delParts } from "@/api/equipment/parts";
+import { listResource, addResource, delResource } from "@/api/system/resource";
+import { getBASE, removeParentEmBASE, addParentEmBASE } from "@/api/equipment/BASE";
+import { listDept } from "@/api/system/dept";
+import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import parentdevice from "@/views/decive/book/device";
 
 export default {
   name: "bookadd",
   dicts: [
-    'em_property_type', 
+    'em_device_state',
+    'em_device_level',
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, 
+    Treeselect, JmUserTree, JmTable, JmForm, parentdevice, 
   },
   props:{
     formData: {
-      default: {},
+      default: ()=>{},
       type: Object,
     },
-
+  },
+  watch: {
+    formData: {
+      handler(val) {
+      },
+      immediate: true,
+      deep: true,
+    },
   },
   computed:{
-  },
-  mounted(){
-    
+    mainImage(){
+      return process.env.VUE_APP_BASE_API + this.parentData.mainImage
+    }, 
+    // 列信息
+    columns(){
+      return [
+        { label:"设备编码", prop:"deviceCode", span: 24,  },
+        { label:"设备名称", prop:"deviceName", span: 24,  },
+        { label:"规格型号", prop:"sModel", span: 24, },
+        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 24,  },
+        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, span: 24,  },
+        { label:"功能位置", prop:"location", span: 24,  },
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 24, }, //(A、B、C)
+        // { label:"所属子公司", prop:"", span: 24, },
+        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 24,  },
+        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 24,  },
+      ]
+    },
   },
   data() {
     return {
-      radio3:'列表',
-      // 列信息
-      columns: [
-        { label:"备件名称", prop:"partsName", span: 24, },
-        { label:"备件编码", prop:"partsCode", span: 24, },
-        { label:"规格型号", prop:"partsModel", span: 24, },
-        { label:"备件类别", prop:"partsType", span: 24, },
-        { label:"单位", prop:"unit", span: 24, },
-        { label:"当前库存", prop:"stock", span: 24, },
-        { label:"供应商名称", prop:"supName", span: 24, },
-        { label:"存储位置", prop:"location", span: 24, },
-        { label:"所属组织", prop:"orgId", span: 24, },
-      ],
+      parentData: {},
+      fileList: [],
+      fileType: ['png','jpg','bmp','jpeg','pdf','gif'],
+      disabled1: true,
+      disabled2: true,
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
-      partsCodes: [],
       // 非单个禁用
       single: true,
-      // 非多个禁用
-      multiple: true,
       // 显示搜索条件
       showSearch: true,
-      // 表格数据
-      equipmentList: null,
       // 总条数
       total: 0,
-      formDataNow: {},
+      // 表格数据
+      equipmentList: null,
       drawer: false,
       // 弹出层标题
       title: "",
       // 部门树选项
-      categoryOptions: undefined,
-      deptOptions: undefined,
+      categoryOptions: [],
+      deptOptions: [],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -210,19 +165,20 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        deviceId: this.formData.deviceId,
+        busId: this.formData.deviceId,
+        category: 2,
       },
       // 表单校验
       rules: {
         userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
+          {  message: "用户名称不能为空", trigger: "blur" },
           { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
+          {  message: "用户昵称不能为空", trigger: "blur" }
         ],
         password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
+          {  message: "用户密码不能为空", trigger: "blur" },
           { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
         ],
         email: [
@@ -243,74 +199,149 @@ export default {
     };
   },
   created() {
-    this.getList(this.queryParams)
+    // this.getList(this.queryParams)
+    this.getDeviceParent()
+    this.getTreeSelect()
   },
   methods: {
+    handleRemove(){
+      const deviceId = this.formData.deviceId
+      this.$modal.confirm('是否确认解除父级设备？').then(function() {
+        return removeParentEmBASE(deviceId)
+      }).then(() => {
+        this.$set(this.formData,'parentId','')
+        this.$set(this.formData,'parentDeviceName','')
+        this.parentData = {}
+        this.$modal.msgSuccess("解除成功");
+      }).catch(() => {});
+    },
+    submitRadio(row){
+      var obj = {
+        deviceId: this.formData.deviceId,
+        parentId: row.deviceId,
+        parentDeviceName: row.deviceName,
+      }
+      addParentEmBASE(obj).then(response => {
+        this.$set(this.formData,'parentId',row.deviceId)
+        this.$set(this.formData,'parentDeviceName',row.deviceName)
+        this.$modal.msgSuccess("修改成功");
+        this.getDeviceParent()
+      });
+      this.close()
+    },
+    handleAdd(){
+      this.drawer = true;
+    },
+    getTreeSelect(){
+      equipmentTree().then(response => {
+        this.categoryOptions = response.data;
+      });
+      listDept().then(response => {
+        this.deptOptions = response.data;
+      });
+    },
+    getDeviceParent(){
+      const deviceId = this.formData.parentId
+      getBASE(deviceId).then(response => {
+        this.parentData = response.data||null;
+        // // 第一步  特种设备
+        // if(this.parentData.emArchivesSpecial){
+        //   this.parentData.emArchivesSpecial.componentContent = JSON.parse(this.parentData.emArchivesSpecial.componentContent)
+        //   this.parentData.emArchivesSpecial.fieldValue = JSON.parse(this.parentData.emArchivesSpecial.fieldValue)
+        //   this.setFormLabel(this.parentData.emArchivesSpecial.componentContent)
+        // }
+        // // 第二步
+        // if(this.parentData.archivesOther==null){
+        //   this.parentData.archivesOther = {}
+        // }
+        // // 第二步  扩展数据
+        // if(this.parentData.emArchivesExtendAtt){
+        //   this.parentData.emArchivesExtendAtt.componentContent = JSON.parse(this.parentData.emArchivesExtendAtt.componentContent)
+        //   this.parentData.emArchivesExtendAtt.fieldValue = JSON.parse(this.parentData.emArchivesExtendAtt.fieldValue)
+        //   this.setFormLabel(this.parentData.emArchivesExtendAtt.componentContent)
+        // }
+        // // 第三步 主要指标
+        // if(this.parentData.emArchivesIndex){
+        //   this.parentData.emArchivesIndex.componentContent = JSON.parse(this.parentData.emArchivesIndex.componentContent)
+        //   this.parentData.emArchivesIndex.fieldValue = JSON.parse(this.parentData.emArchivesIndex.fieldValue)
+        //   this.setFormLabel(this.parentData.emArchivesIndex.componentContent)
+        // }
+      })
+      .catch(err => {
+        console.log(err,333);
+      });
+    },
+    handlePreview(row){
+      window.open(process.env.VUE_APP_BASE_API+row.fileName)
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      var name = row.originalFileName;
+      var id = row.id;
+      this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function() {
+        return delResource(id);
+      }).then(() => {
+        this.$modal.msgSuccess("删除成功");
+        this.$refs.jmtable.getList()
+      }).catch(() => {});
+    },
+    downloadFile(row){
+      this.download('common/download', {
+        fileName: row.fileName
+      }, row.originalFileName)
+    },
+    uploadChange2(val){
+      this.fileList = val
+      this.fileList.forEach(b => {
+        b.busId = this.formData.deviceId
+      });
+    },
+    async save(formref){
+      var flag = await this.$refs['jmform'+formref].submitForm()
+      if(flag){
+        this.$emit('submitForm',(val)=>{
+          if(val){
+            this['disabled'+formref] = true;
+          }
+        })
+      }
+    },
+    closeEdit(formref){
+      this.$emit('close',(val)=>{
+        this['disabled'+formref] = true;
+      })
+    },
+    close(){
+      this.drawer = false
+    },
+    submitFiles(row){
+      // 发送 this.fileList
+      addResource(this.fileList).then(response => {
+        this.$modal.msgSuccess("上传成功");
+        this.$refs.jmtable.getList()
+      });
+      this.close()
+    },
     /** 查询用户列表 */
     getList(queryParams) {
-      queryParams.deviceId = this.queryParams.deviceId
       this.loading = true;
-      listParts(queryParams).then(response => {
+      listResource(queryParams).then(response => {
           this.equipmentList = response.rows;
           this.total = response.total;
           this.loading = false;
         }
       );
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id);
-      this.partsCodes = selection.map(item => item.partsCode);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
-    },
-    close(){
-      this.drawer = false
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.drawer = true;
-      this.title = "新增设备";
-      this.formDataNow = {
-        deviceId: this.queryParams.deviceId
-      }
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.drawer = true;
-      this.title = "编辑设备";
-      this.formDataNow = row
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      const partsCodes = row.partsCode || this.partsCodes;
-      this.$modal.confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？').then(() =>{
-        return delParts(ids);
-      }).then(() => {
-        this.getList(this.queryParams);
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
-    },
-    save(){
-      this.submitForm()
-    },
-    /** 提交按钮 */
-    submitForm: function() {
-      if (this.formDataNow.id != undefined) {
-        updateParts(this.formDataNow).then(response => {
-          this.$modal.msgSuccess("修改成功");
-          this.getList(this.queryParams)
-          this.close()
-        });
-      } else {
-        addParts(this.formDataNow).then(response => {
-          this.$modal.msgSuccess("保存成功");
-          this.getList(this.queryParams)
-          this.close()
-        });
-      }
-    },
   }
 };
 </script>
+<style scoped lang="scss">
+  .subtitle{
+    background: #ebf4fc;
+    line-height: 40px;
+    & > .rightbutton{
+      margin-right: 20px;
+      float: right;
+    }
+  }
+</style>

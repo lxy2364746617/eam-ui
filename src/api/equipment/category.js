@@ -51,3 +51,19 @@ export function delCategory(categoryId) {
     method: 'delete'
   })
 }
+
+// 查询设备平台_设备类别-获取六大类设备
+export function isSmEmCategoryCategory() {
+  return request({
+    url: '/equipment/category/isSmEmCategory',
+    method: 'get'
+  })
+}
+
+// 查询设备平台_设备类别-获取特种设备
+export function isSpecialEmCategoryCategory() {
+  return request({
+    url: '/equipment/category/isSpecialEmCategory',
+    method: 'get'
+  })
+}
