@@ -109,14 +109,17 @@ export default {
           });
       },
       /** 导出按钮操作 */
-      handleExport(queryParams) {
+      handleExport(queryParams) { 
           // var obj = {
           //     ...queryParams,
           //     parentId: this.nowClickTreeItem.id
           // }
-          // this.download('system/dept/export',
-          //     obj,
-          //     `config_${new Date().getTime()}.xlsx`)
+          var obj = {
+                categoryId: this.queryParams.categoryId,
+            }
+            this.download('equipment/special/export',
+                obj,
+                `特种设备_${new Date().getTime()}.xlsx`)
       },
   }
 };

@@ -77,14 +77,14 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
-        :importUrl="'/equipment/lbase/importData'">
+        :importUrl="'/equipment/Compressor/importData'">
       </file-import>
     </div>
   </div>
 </template>
         
 <script>
-import { listlbase, getlbase, dellbase, addlbase, updatelbase, importlbase } from "@/api/equipment/big/lbase";
+import { listCompressor, getCompressor, delCompressor, addCompressor, updateCompressor, importCompressor } from "@/api/equipment/big/compressor";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
@@ -99,19 +99,18 @@ export default {
     // 列信息
     tablecolumns() {
       return [
-        { label: "矿井名称", prop: "mineName" },
-        { label: "变电所名称", prop: "ssName" },
-        { label: "主变压器型号", prop: "motXh", },
-        { label: "主变压器运行方式", prop: "motYxfs", },
-        { label: "发电厂名称", prop: "powerName", },
-        { label: "主变压器容量", prop: "hostCapacity", },
-        { label: "高压开关电压(KV)", prop: "psV", },
-        { label: "高压开关设备型号", prop: "psXh", },
-        { label: "高压开关台数", prop: "psTs", },
-        { label: "低压开关电压 (KV)", prop: "lvsV", },
-        { label: "低压开关设备型号", prop: "lvsXh", },
-        { label: "低压开关台数", prop: "lvsTs", },
-        { label: "五防形式", prop: "wfXs", },
+        { label: "矿井名称",prop: "mineName" },
+        { label: "设备型号",prop: "deviceModel" },
+        { label: "压缩机形式",prop: "compressModel" },
+        { label: "功率",prop: "power" },
+        { label: "台数",prop: "sum" },
+        { label: "设备厂家",prop: "equipmentManufacturer" },
+        { label: "投运时间",prop: "putTime" },
+        { label: "电压等级",prop: "vcc" },
+        { label: "公称容积流量",prop: "common" },
+        { label: "排气压力",prop: "pressure" },
+        { label: "风包有无",prop: "wind" },
+        { label: "风包容积",prop: "windBag" },
       ]
     },
   },
@@ -180,7 +179,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      importlbase(this.importData).then(response => {
+      importCompressor(this.importData).then(response => {
         loading.close();
         this.$modal.msgSuccess("上传成功");
         this.getList(this.queryParams)
@@ -192,8 +191,8 @@ export default {
     /** 查询设备平台_表单模板列表 */
     getList(queryParams) {
       this.loading = true;
-      listlbase(queryParams).then(response => {
-        this.templateList = response.rows;
+      listCompressor(queryParams).then(response => {
+        this.templateList = response.data;
         this.total = response.total;
         this.loading = false;
       });
@@ -236,7 +235,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/lbase/add', })
+      this.$router.push({ path: '/decive/big/compressor/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -248,20 +247,20 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/lbase/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/decive/big/compressor/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },
     /** 提交按钮 */
     submitForm: function (formdata) {
       if (formdata.id != undefined) {
-        updatelbase(formdata).then(response => {
+        updateCompressor(formdata).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.drawer = false;
           this.getList();
         });
       } else {
-        addlbase(formdata).then(response => {
+        addCompressor(formdata).then(response => {
           this.$modal.msgSuccess("新增成功");
           this.drawer = false;
           this.getList();
@@ -272,7 +271,7 @@ export default {
     handleDelete(row) {
       const ids = row.largeId || this.ids;
       this.$modal.confirm('是否确认删除？').then(function () {
-        return dellbase(ids);
+        return delCompressor(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -284,7 +283,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('equipment/lbase/export', {
+      this.download('equipment/compressor/export', {
         ...this.queryParams
       }, `供电设备_${new Date().getTime()}.xlsx`)
     }

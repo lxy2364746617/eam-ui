@@ -1,20 +1,15 @@
 <template>
     <div class="app-container">
         <div>
-            <div class="mb20" style="background-color: #fff;">0000000</div>
-            <jm-form class="mr20" :showButton="false" :columns="columns" :formData="formData" @submitForm="submitForm" ref="jmform"
-                :disabled="disabled">
-                <template #footer>
-                    <div style="text-align: center;">
-                        <el-button size="mini" @click="drawer = false">取消</el-button>
-                        <el-button size="mini" @click="saveHandle" type="primary" v-if="!disabled">保存</el-button>
-                    </div>
-                </template>
+            <div class="mb20" style="background-color: #fff;">基本信息</div>
+            <jm-form class="mr20" :showButton="false" :columns="columns" :formData="formData" @submitForm="submitForm"
+                ref="jmform" :disabled="disabled">
             </jm-form>
-            <div class="mb20" style="background-color: #fff;">11111111</div>
-            <jm-table :tableData="formData.emArchivesParts" @getList="getList" @handleSelectionChange="handleSelectionChange"
-                @switchchange="switchchange" :total="total" :handleWidth="120" :columns="tablecolumns" ref="jmTable">
-                <template slot="headerLeft">
+            <div class="mb20" style="background-color: #fff;">详细设备信息</div>
+            <jm-table :tableData="formData.emArchivesParts" @getList="getList"
+                @handleSelectionChange="handleSelectionChange" @switchchange="switchchange" :total="total"
+                :handleWidth="120" :columns="tablecolumns" ref="jmTable">
+                <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
                             v-hasPermi="['equipment:template:add']">关联设备</el-button>
@@ -28,17 +23,11 @@
                             v-hasPermi="['equipment:book:add']">下载</el-button>
                     </el-col> -->
                     <el-col :span="1.5">
-                      <el-button
-                        type="primary"
-                        icon="el-icon-delete"
-                        size="mini"
-                        :disabled="multiple"
-                        @click="handleDelete"
-                        v-hasPermi="['equipment:template:remove']"
-                      >解除关联</el-button>
+                        <el-button type="primary" icon="el-icon-delete" size="mini" :disabled="multiple"
+                            @click="handleDelete" v-hasPermi="['equipment:template:remove']">解除关联</el-button>
                     </el-col>
                 </template>
-                <template #end_handle="scope">
+                <template #end_handle="scope" v-if="!disabled">
                     <!-- <el-button
                       size="mini"
                       type="text"
@@ -65,18 +54,15 @@
                 </template>
             </jm-table>
 
+            <div style="text-align: center;margin-top: 20px;" v-if="!disabled">
+                <el-button size="mini" @click="goback">取消</el-button>
+                <el-button size="mini" @click="saveHandle" type="primary">保存</el-button>
+            </div>
+
             <!-- 添加或修改设备平台_表单模板对话框 -->
-            <el-drawer :title="title" :visible.sync="drawer" :direction="direction" size="40%" :wrapperClosable="false"
-                :before-close="handleClose">
-                <jm-form class="mr20" :columns="columns" :formData="formData" @submitForm="submitForm" ref="jmform"
-                    :disabled="disabled">
-                    <template #footer>
-                        <div style="text-align: center;">
-                            <el-button size="mini" @click="drawer = false">取消</el-button>
-                            <el-button size="mini" @click="saveHandle" type="primary" v-if="!disabled">保存</el-button>
-                        </div>
-                    </template>
-                </jm-form>
+            <el-drawer title="选择上级设备" :visible.sync="drawer" direction="rtl" :destroy-on-close="true" size="80%"
+                :wrapperClosable="false">
+                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false"></parentdevice>
             </el-drawer>
 
             <!-- 导入 -->
@@ -88,80 +74,54 @@
 </template>
           
 <script>
-import { listlbase, getlbase, dellbase, addlbase, updatelbase, importlbase } from "@/api/equipment/big/lbase";
+import { listCompressor, getCompressor, delCompressor, addCompressor, updateCompressor, importCompressor } from "@/api/equipment/big/compressor";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
 import parentdevice from "@/views/decive/book/device";
+import { equipmentTree } from "@/api/equipment/category";
+import { listDept } from "@/api/system/dept";
 
 export default {
     name: "Template",
-    dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue'],
+    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
         columns() {
             return [
-                { label: "矿井名称", prop: "mineName", required: true, span: 8, },
-                { label: "变电所名称", prop: "ssName", required: true, span: 8, },
-                { label: "上级变电站", prop: "parentSsName", span: 8, },
-                { label: "供电电压等级", prop: "vcc", span: 8, },
-                { label: "供电距离(m)", prop: "vcm", span: 8, },
-                { label: "本回电源共几基塔杆", prop: "tb", span: 8, },
-                { label: "是否过采区塌陷区", prop: "isTx", span: 8, },//(Y 是、N 否)
-                { label: "采空、塌陷区塔杆共几层", prop: "cTb", span: 8, },
-                { label: "有无地面备用发电机", prop: "isBg", span: 8, },//(0 有、1 无)
-                { label: "发电机数量", prop: "cenNo", span: 8, },
-                { label: "发电机功率", prop: "cenPower", span: 8, },
-                { label: "站内母线形式", prop: "mxXs", span: 8, },
-                { label: "主变压器型号", prop: "motXh", span: 8, },
-                { label: "主变压客量(kvVA)", prop: "motKl", span: 8, },
-                { label: "主变压器运行方式", prop: "motYxfs", span: 8, },
-                { label: "主变有调压", prop: "motTy", span: 8, },//(有/无)
-                { label: "主变设备厂家", prop: "motCj", span: 8, },
-                { label: "主变投运日期", prop: "motTyTime", span: 8, },
-                { label: "高压开关电压(KV)", prop: "psV", span: 8, },
-                { label: "高压开关设备型号", prop: "psXh", span: 8, },
-                { label: "高压开关台数", prop: "psTs", span: 8, },
-                { label: "高压开关断路器", prop: "psDlq", span: 8, },
-                { label: "高压开关手车电动", prop: "psScdd", span: 8, },
-                { label: "高压开关设备厂家", prop: "psCj", span: 8, },
-                { label: "高压开关投运时间", prop: "psTyTime", span: 8, },
-                { label: "低压开关电压 (KV)", prop: "lvsV", span: 8, },
-                { label: "低压开关设备型号", prop: "lvsXh", span: 8, },
-                { label: "低压开关台数", prop: "lvsTs", span: 8, },
-                { label: "低压开关断路器", prop: "lvsDlq", span: 8, },
-                { label: "低压开关手车电动", prop: "lvsScdd", span: 8, },//(是/否)
-                { label: "低压开关设备厂家", prop: "lvsCj", span: 8, },
-                { label: "低压开关投运时间", prop: "lvsTyTime", span: 8, },
-                { label: "无功补偿形式", prop: "sVc", span: 8, },
-                { label: "无功补偿厂家", prop: "svCj", span: 8, },
-                { label: "直流电源形式", prop: "dcXs", span: 8, },
-                { label: "直流电源型号", prop: "dcXh", span: 8, },
-                { label: "直流电源厂家", prop: "dcCj", span: 8, },
-                { label: "综自保护型号", prop: "zzXh", span: 8, },
-                { label: "综自保护规约", prop: "zzGy", span: 8, },
-                { label: "综自保护厂家", prop: "zzCj", span: 8, },
-                { label: "五防形式", prop: "wfXs", span: 8, },
-                { label: "具备无人信守条件", prop: "wrTj", span: 8, },
+                { label: "矿井名称",prop: "mineName", required: true, span: 8, },
+                { label: "设备型号",prop: "deviceModel", span: 8,  },
+                { label: "压缩机形式",prop: "compressModel", span: 8,  },
+                { label: "功率",prop: "power", span: 8,  },
+                { label: "台数",prop: "sum", span: 8,  },
+                { label: "设备厂家",prop: "equipmentManufacturer", span: 8,  },
+                { label: "投运时间",prop: "putTime", span: 8,  },
+                { label: "电压等级",prop: "vcc", span: 8,  },
+                { label: "公称容积流量",prop: "common", span: 8,  },
+                { label: "排气压力",prop: "pressure", span: 8,  },
+                { label: "风包有无",prop: "wind", span: 8,  },
+                { label: "风包容积",prop: "windBag", span: 8,  },
+                { label: "机房名称",prop: "machineName", span: 8,  },
+                { label: "无人值守",prop: "unmanned", span: 8,  },//(是/否)
             ]
         },
         // 列信息
         tablecolumns() {
             return [
-                { label:"设备编码", prop:"deviceCode",  },
-                { label:"设备名称", prop:"deviceName",  },
-                { label:"规格型号", prop:"sModel",  },
-                { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions,   },
-                { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
-                { label:"功能位置", prop:"location",  },
-                { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-                { label:"所属子公司", prop:"111",  },
-                { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions,  },
-                { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, },
-                { label:"购置日期", prop:"makerAoTime", formType: 'date', }, 
-                
+                { label: "设备编码", prop: "deviceCode", },
+                { label: "设备名称", prop: "deviceName", },
+                { label: "规格型号", prop: "sModel", },
+                { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, },
+                { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
+                { label: "功能位置", prop: "location", },
+                { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
+                { label: "所属子公司", prop: "111", },
+                { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
+                { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, },
+                { label: "购置日期", prop: "makerAoTime", formType: 'date', },
+
             ]
         },
     },
@@ -175,11 +135,14 @@ export default {
             single: true,
             // 非多个禁用
             multiple: true,
-            formData: {},
+            formData: {
+                emArchivesParts:[]
+            },
             nowclickitem: '',
             // 部门树选项
-            deptOptions: undefined,
-            categoryOptions: undefined,
+            deptOptions: [],
+            categoryOptions: [],
+            valueMap: {},
             disabled: false,
             // 显示搜索条件
             showSearch: true,
@@ -209,10 +172,56 @@ export default {
         };
     },
     created() {
-        this.queryParams.largeId = this.$route.query.largeId;
-        this.getDetails(this.$route.query.largeId);
+        this.queryParams.largeId = this.$route.query.l;
+        this.disabled = this.$route.query.d == 'true';
+        if(this.$route.query.l){
+            this.getDetails(this.$route.query.l);
+        }
+        this.getTree();
+        this.getTreeSelect();
     },
     methods: {
+        close() {
+            this.drawer = false
+        },
+        submitRadio(row) {
+            row.forEach(b => {
+                var flag = this.formData.emArchivesParts.some((bb)=>bb.deviceId==b.deviceId)
+                if(!flag){
+                    this.formData.emArchivesParts.push(b)
+                }
+            });
+            this.formData.partIds = this.formData.emArchivesParts.map((b)=>b.deviceId)
+            // this.$set(this.formData, 'parentId', row.deviceId)
+            // this.$set(this.formData, 'parentDeviceName', row.deviceName)
+            this.close()
+        },
+        /** 查询设备档案下拉树结构 */
+        getTree() {
+            equipmentTree().then(response => {
+                this.categoryOptions = response.data;
+                // 方便获取父级tree
+                this.loops(this.categoryOptions)
+            });
+        },
+        /** 查询部门下拉树结构 */
+        getTreeSelect() {
+            listDept().then(response => {
+                this.deptOptions = response.data;
+            });
+        },
+        // 递归获取treeselect父节点
+        loops(list, parent) {
+            return (list || []).map(({ children, id, label }) => {
+                const node = (this.valueMap[id] = {
+                    parent,
+                    label,
+                    id
+                });
+                node.children = this.loops(children, node);
+                return node;
+            });
+        },
         handleImport() {
             this.$refs.fileImport.upload.open = true
         },
@@ -235,7 +244,7 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            importlbase(this.importData).then(response => {
+            importCompressor(this.importData).then(response => {
                 loading.close();
                 this.$modal.msgSuccess("上传成功");
                 this.getList(this.queryParams)
@@ -244,12 +253,15 @@ export default {
         handleClose(done) {
             done()
         },
+        getList(queryParams) {
+
+        },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
-            getlbase(queryParams).then(response => {
+            getCompressor(queryParams).then(response => {
                 this.formData = response.data;
-                if(this.formData.emArchivesParts==null){
+                if (this.formData.emArchivesParts == null) {
                     this.formData.emArchivesParts = []
                 }
                 this.loading = false;
@@ -287,7 +299,7 @@ export default {
         },
         // 多选框选中数据
         handleSelectionChange(selection) {
-            this.ids = selection.map(item => item.id)
+            this.ids = selection.map(item => item.deviceId)
             this.single = selection.length !== 1
             this.multiple = !selection.length
         },
@@ -307,30 +319,40 @@ export default {
             this.drawer = true;
             // });
         },
+        goback(){
+            this.$store.dispatch('tagsView/delView', this.$route)  // 关闭当前页
+            this.$router.go(-1)//跳回上页
+        },
         /** 提交按钮 */
         submitForm: function (formdata) {
-            if (formdata.id != undefined) {
-                updatelbase(formdata).then(response => {
+            if (formdata.largeId != undefined) {
+                updateCompressor(formdata).then(response => {
                     this.$modal.msgSuccess("修改成功");
-                    this.drawer = false;
-                    this.getList();
+                    // this.drawer = false;
+                    // this.getList();
+                    this.goback()
                 });
             } else {
-                addlbase(formdata).then(response => {
+                addCompressor(formdata).then(response => {
                     this.$modal.msgSuccess("新增成功");
-                    this.drawer = false;
-                    this.getList();
+                    // this.drawer = false;
+                    // this.getList();
+                    this.goback()
                 });
             }
         },
         /** 删除按钮操作 */
         handleDelete(row) {
-            const ids = row.id || this.ids;
-            this.$modal.confirm('是否确认删除设备平台_表单模板编号为"' + ids + '"的数据项？').then(function () {
-                return dellbase(ids);
-            }).then(() => {
-                this.getList();
-                this.$modal.msgSuccess("删除成功");
+            var that = this
+            const ids = row.deviceId?[row.deviceId]:this.ids;
+            this.$modal.confirm('是否确认删除？').then(function () {
+                ids.forEach(b => {
+                    that.formData.emArchivesParts.forEach((bb,ii) => {
+                        if(b == bb.deviceId){
+                            that.formData.emArchivesParts.splice(ii,1)
+                        }
+                    });
+                });
             }).catch(() => { });
         },
         // 设置字段

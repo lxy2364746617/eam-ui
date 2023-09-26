@@ -1,7 +1,7 @@
 <template>
   <div class="upload-file">
     <el-row :gutter="20">
-      <el-col :span="9" :xs="24" :sm="24">
+      <el-col :span="9" :xs="24">
         <el-upload
           multiple
           :action="uploadFileUrl"
@@ -36,7 +36,7 @@
           </span>
         </el-upload>
       </el-col>
-      <el-col :span="12" :xs="24" :sm="24">
+      <el-col :span="12" :xs="24">
         <!-- 文件列表 -->
         <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
           <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">

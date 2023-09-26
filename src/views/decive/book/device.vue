@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" style="padding-top: 0;">
     <el-row :gutter="20">
       <!--部门数据-->
       <el-col :span="6" :xs="24">
@@ -7,7 +7,7 @@
         <jm-user-tree 
           :treeData="deptOptions" 
           @handleNodeClick="handleNodeClick" 
-          style="position: fixed;top: 121px;height: calc(100vh - 141px);">
+          style="height: calc(100vh - 201px);">
         </jm-user-tree>
       </el-col>
       <!--用户数据-->
@@ -43,7 +43,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "devicebook1",
-  dicts: ['em_device_att'],
+  dicts: ['em_device_att', 'em_device_level'],
   components: { Treeselect, JmUserTree, JmTable },
   props:{
     isChoose:{
@@ -66,7 +66,7 @@ export default {
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
         { label:"财务资产编码", prop:"propertyCode",  },
         { label:"功能位置", prop:"location",  },
-        { label:"重要等级", prop:"level", formType: 'select', options:[],  }, //(A、B、C)
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
         { label:"上级设备", prop:"parentId", formType: 'select', options:[],  }, //(0 父级)
         { label:"所属组织", prop:"affDeptId",  },
         { label:"当前使用组织", prop:"currDeptId",  },
@@ -127,11 +127,13 @@ export default {
       }
       listBASE(data).then(response => {
           // 不展示自身
-          response.rows.forEach((b,i) => {
-            if(b.deviceId == this.formData.deviceId){
-              response.rows.splice(i,1)
-            }
-          });
+          if(this.formData){
+            response.rows.forEach((b,i) => {
+              if(b.deviceId == this.formData.deviceId){
+                response.rows.splice(i,1)
+              }
+            });
+          }
           this.equipmentList = response.rows;
           this.total = response.total;
           this.loading = false;

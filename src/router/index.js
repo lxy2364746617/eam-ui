@@ -166,17 +166,33 @@ export const constantRoutes = [
       }
     ]
   },
-  ///////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
   {
-    path: '/decive',
+    path: '/decive/big',
     component: Layout,
     hidden: true,
     children: [
       {
-        path: 'big/add',
-        component: () => import('@/views/equipment/big/add'),
+        path: 'lbase/add',
+        component: () => import('@/views/equipment/big/lbase/add.vue'),
         name: 'bigAdd',
-        meta: { title: '新增/编辑', icon: '' }
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑供电设备' : '新增供电设备'
+          to.query.d=='true' ? to.meta.title = '查看供电设备' : ''
+          next()
+        },
+        meta: { title: '供电设备', icon: '' }
+      },
+      {
+        path: 'compressor/add',
+        component: () => import('@/views/equipment/big/compressor/add'),
+        name: 'bigCompressor',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑空压机' : '新增空压机'
+          to.query.d=='true' ? to.meta.title = '查看空压机' : ''
+          next()
+        },
+        meta: { title: '空压机', icon: '' }
       }
     ]
   },
