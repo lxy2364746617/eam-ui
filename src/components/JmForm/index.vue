@@ -19,7 +19,7 @@
                         :class="{'hideBorder':hideBorder}"
                         :required="col.required">
                         <editor v-if="col.formType=='editor'" v-model="formData[col.prop]" :min-height="192"/>
-                        <el-select v-else-if="col.formType=='select'" v-model="formData[col.prop]" placeholder="请选择" filterable clearable :disabled="col.formDisabled || disabled">
+                        <el-select v-else-if="col.formType=='select'" v-model="formData[col.prop]" placeholder="请选择" @change="col.selectfn?col.selectfn():(()=>{})()" filterable clearable :disabled="col.formDisabled || disabled">
                             <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value">
                                 <span v-if="col.optionShowValue" style="float: left">{{ item.label }}</span>
                                 <span v-if="col.optionShowValue" style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>

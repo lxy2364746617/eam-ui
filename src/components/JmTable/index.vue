@@ -51,10 +51,11 @@
                       placeholder="选择日期">
                     </el-date-picker>
                     <el-select 
-                      v-else-if="col.formType=='select'||col.formType=='radio'" 
+                      v-else-if="col.formType=='select'||col.formType=='radio'||col.formType=='switch'" 
                       clearable
                       v-model="queryParams[col.prop]" 
                       @keyup.enter.native="handleQuery"
+                      @change="selectchange($event,col.prop)"
                       placeholder="请选择">
                         <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value">
                           <span v-if="col.optionShowValue" style="float: left">{{ item.label }}</span>
@@ -90,6 +91,14 @@
                 </div>
                 <span v-else-if="col.prop=='date'">{{ parseTime(scope.row[col.prop], '{y}-{m}-{d}') }}</span>
                 <span v-else-if="col.formType=='select'" v-html="findName(col.options,scope.row[col.prop])"></span>
+                <span v-else-if="col.formType=='switch'">
+                  <el-switch
+                    v-model="scope.row[col.prop]"
+                    @change="switchchange($event,col.prop,scope.row)"
+                    :active-value="col.options[0].value"
+                    :inactive-value="col.options[1].value">
+                  </el-switch>
+                </span>
                 <span v-else-if="col.formType=='radio'" v-html="findName(col.options,scope.row[col.prop])"></span>
                 <span v-else-if="col.formType=='selectTree'" v-html="findTreeName(col.options,scope.row[col.prop])"></span>
                 <span v-else v-html="scope.row[col.prop]"></span>
@@ -211,6 +220,9 @@ export default {
         }
     },
     methods: {
+      switchchange($event,prop,row){
+        this.$emit('switchchange',$event,prop,row)
+      },
       handleCurrentChange(currentRow, oldCurrentRow) {
         if(currentRow){
           this.currentRow = currentRow;
@@ -229,6 +241,9 @@ export default {
                 children: node.children
             };
         },
+        selectchange($event,prop){
+          this.$emit('selectchange',$event,prop)
+        },
       findName(options,value){
         var name = ''
         for (let i = 0; i < options.length; i++) {
@@ -236,7 +251,7 @@ export default {
             name = options[i].label
           }
         }
-        return name
+        return name || value
       },
       findTreeName(options,value){
         var name = ''

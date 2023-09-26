@@ -28,7 +28,7 @@
 <script>
 
 import JmTable from "@/components/JmTable";
-import { isSmEmCategoryCategory, } from "@/api/equipment/category";
+import { isSmEmCategoryCategory, exportIndexEquipment } from "@/api/equipment/category";
 import { listIndexBASE } from "@/api/equipment/BASE";
 
 export default {
@@ -66,9 +66,9 @@ export default {
     },
     methods: {
         radioInput(val){
+            this.queryParams.categoryId = this.radioColumn[val].categoryId
             this.getList({
                 ...this.queryParams,
-                categoryId: this.radioColumn[val].categoryId
             })
         },
         isSmEmCategoryRadio(){
@@ -109,14 +109,16 @@ export default {
             });
         },
         /** 导出按钮操作 */
-        handleExport(queryParams) {
-            // var obj = {
-            //     ...queryParams,
-            //     parentId: this.nowClickTreeItem.id
-            // }
-            // this.download('system/dept/export',
-            //     obj,
-            //     `config_${new Date().getTime()}.xlsx`)
+        handleExport() {
+            // exportIndexEquipment(this.queryParams.categoryId).then(response => {
+
+            // });
+            var obj = {
+                categoryId: this.queryParams.categoryId,
+            }
+            this.download('equipment/index/export',
+                obj,
+                `设备指标_${new Date().getTime()}.xlsx`)
         },
     }
 };

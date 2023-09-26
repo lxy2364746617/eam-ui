@@ -12,16 +12,18 @@ export function listBASE(query) {
 // 查询设备平台_设备档案_设备指标列表
 export function listIndexBASE(query) {
   return request({
-    url: '/equipment/base/listIndex',
+    // url: '/equipment/base/listIndex',
+    url: '/equipment/index/list',
     method: 'get',
     params: query
   })
 }
 
-// 查询设备平台_设备档案_设备指标列表
+// 查询设备平台_设备档案_特种设备列表
 export function specialListBASE(query) {
   return request({
-    url: '/equipment/base/specialList',
+    // url: '/equipment/base/specialList',
+    url: '/equipment/special/list',
     method: 'get',
     params: query
   })

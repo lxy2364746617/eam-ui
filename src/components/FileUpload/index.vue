@@ -92,7 +92,7 @@ export default {
     },
     extraData: {
       type: Object,
-      default: {}
+      default: ()=>{}
     }
   },
   data() {

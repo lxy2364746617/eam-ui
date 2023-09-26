@@ -166,6 +166,20 @@ export const constantRoutes = [
       }
     ]
   },
+  ///////////////////////////////////////////////////////////////////
+  {
+    path: '/decive',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'big/add',
+        component: () => import('@/views/equipment/big/add'),
+        name: 'bigAdd',
+        meta: { title: '新增/编辑', icon: '' }
+      }
+    ]
+  },
 ]
 
 // 动态路由，基于用户权限动态去加载

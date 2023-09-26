@@ -50,7 +50,7 @@
               </div>
               <div v-if="item.children">
                 <el-row>
-                  <el-col :span="8" v-for="item2 in item.children" :key="item.idd">
+                  <el-col :span="8" v-for="(item2,index2) in item.children" :key="item2.index">
                     <p :style="{'color': item2.color}" style="font-size: 12px;margin: 5px auto;">{{ item2.label }}</p>
                     <p style="font-size: 20px;font-weight: bold;margin: 7px auto;padding-bottom: 10px;">{{countData[item2.prop]}}</p>
                   </el-col>
@@ -241,14 +241,14 @@ export default {
       equipmentList: null,
       countData:{},
       countColumn:[
-        {label:'设备数量',prop:'sumCount',icon:'el-icon-share',idd:'1',},
-        {label:'在用数量',prop:'zyCount',icon:'el-icon-tickets',idd:'2',},
-        {label:'未审批数量',prop:'checkCount',icon:'el-icon-reading',idd:'3',},
+        {label:'设备数量',prop:'sumCount',icon:'el-icon-share',},
+        {label:'在用数量',prop:'zyCount',icon:'el-icon-tickets',},
+        {label:'未审批数量',prop:'checkCount',icon:'el-icon-reading',},
         {children:[
           {label:'A级',prop:'a', color: '#24a71e'},
           {label:'B级',prop:'b', color: '#ffb64f'},
           {label:'C级',prop:'c', color: '#fc297d'},
-        ], icon:'el-icon-pie-chart',idd:'4',},
+        ], icon:'el-icon-pie-chart',},
       ],
       // 弹出层标题
       title: "",
