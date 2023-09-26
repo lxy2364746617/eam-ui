@@ -77,14 +77,14 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
-        :importUrl="'/equipment/compressor/importData'">
+        :importUrl="'/equipment/strong/importData'">
       </file-import>
     </div>
   </div>
 </template>
         
 <script>
-import { listCompressor, getCompressor, delCompressor, addCompressor, updateCompressor, importCompressor } from "@/api/equipment/big/compressor";
+import { listStrong, getStrong, delStrong, addStrong, updateStrong, importStrong } from "@/api/equipment/big/strong";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
@@ -99,18 +99,23 @@ export default {
     // 列信息
     tablecolumns() {
       return [
-        { label: "矿井名称",prop: "mineName" },
-        { label: "设备型号",prop: "deviceModel" },
-        { label: "压缩机形式",prop: "compressModel" },
-        { label: "功率",prop: "power" },
-        { label: "台数",prop: "sum" },
-        { label: "设备厂家",prop: "equipmentManufacturer" },
-        { label: "投运时间",prop: "putTime" },
-        { label: "电压等级",prop: "vcc" },
-        { label: "公称容积流量",prop: "common" },
-        { label: "排气压力",prop: "pressure" },
-        { label: "风包有无",prop: "wind" },
-        { label: "风包容积",prop: "windBag" },
+      { label:"矿井名称", prop:"mineName", span: 8, required: true, },
+{ label:"泵房名称", prop:"waterName", span: 8, },
+{ label:"台数", prop:"sum", span: 8, },
+{ label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
+{ label:"投运时间", prop:"putTime", span: 8, formType: "date",  },
+{ label:"生产日期", prop:"produceTime", span: 8, formType: "date",  },
+{ label:"电机电压等级", prop:"vcc", span: 8, },
+{ label:"额定流量", prop:"ratedFlow", span: 8, },
+{ label:"排水出口点标高", prop:"waterTop", span: 8, },
+{ label:"排水出口点标高", prop:"waterHigh", span: 8, },
+{ label:"管路数量", prop:"pipelineSum", span: 8, },
+{ label:"管路-敷设长度", prop:"pipelineLength", span: 8, },
+{ label:"水泵型号", prop:"waterModel", span: 8, },
+{ label:"电机功率", prop:"elevatorPower", span: 8, },
+{ label:"水泵扬程", prop:"waterLength", span: 8, },
+{ label:"管路直径", prop:"pipelineWidth", span: 8, },    
+{ label:"煤安标志证号", prop:"signCode", span: 8, },
       ]
     },
   },
@@ -179,7 +184,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      importCompressor(this.importData).then(response => {
+      importStrong(this.importData).then(response => {
         loading.close();
         this.$modal.msgSuccess("上传成功");
         this.getList(this.queryParams)
@@ -191,7 +196,7 @@ export default {
     /** 查询设备平台_表单模板列表 */
     getList(queryParams) {
       this.loading = true;
-      listCompressor(queryParams).then(response => {
+      listStrong(queryParams).then(response => {
         this.templateList = response.data;
         this.total = response.total;
         this.loading = false;
@@ -235,7 +240,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/compressor/add', })
+      this.$router.push({ path: '/decive/big/strong/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -247,20 +252,20 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/compressor/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/decive/big/strong/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },
     /** 提交按钮 */
     submitForm: function (formdata) {
       if (formdata.id != undefined) {
-        updateCompressor(formdata).then(response => {
+        updateStrong(formdata).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.drawer = false;
           this.getList();
         });
       } else {
-        addCompressor(formdata).then(response => {
+        addStrong(formdata).then(response => {
           this.$modal.msgSuccess("新增成功");
           this.drawer = false;
           this.getList();
@@ -271,7 +276,7 @@ export default {
     handleDelete(row) {
       const ids = row.largeId || this.ids;
       this.$modal.confirm('是否确认删除？').then(function () {
-        return delCompressor(ids);
+        return delStrong(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -283,7 +288,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('equipment/compressor/export', {
+      this.download('equipment/strong/export', {
         ...this.queryParams
       }, `供电设备_${new Date().getTime()}.xlsx`)
     }

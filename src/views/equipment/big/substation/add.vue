@@ -74,7 +74,7 @@
 </template>
           
 <script>
-import { listlbase, getlbase, dellbase, addlbase, updatelbase, importlbase } from "@/api/equipment/big/lbase";
+import { listSubstation, getSubstation, delSubstation, addSubstation, updateSubstation, importSubstation } from "@/api/equipment/big/substation";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
@@ -91,48 +91,39 @@ export default {
         // 列信息
         columns() {
             return [
-                { label: "矿井名称", prop: "mineName", required: true, span: 8, },
-                { label: "变电所名称", prop: "ssName", required: true, span: 8, },
-                { label: "上级变电站", prop: "parentSsName", span: 8, },
-                { label: "供电电压等级", prop: "vcc", span: 8, },
-                { label: "供电距离(m)", prop: "vcm", span: 8, },
-                { label: "本回电源共几基塔杆", prop: "tb", span: 8, },
-                { label: "是否过采区塌陷区", prop: "isTx", span: 8, formType: 'select', options: this.dict.type.equipment_large_base },//(Y 是、N 否)
-                { label: "采空、塌陷区塔杆共几层", prop: "cTb", span: 8, },
-                { label: "有无地面备用发电机", prop: "isBg", span: 8, formType: 'select', options: this.dict.type.equipment_large_have },//(0 有、1 无)
-                { label: "发电机数量", prop: "cenNo", span: 8, },
-                { label: "发电机功率", prop: "cenPower", span: 8, },
-                { label: "站内母线形式", prop: "mxXs", span: 8, },
-                { label: "主变压器型号", prop: "motXh", span: 8, },
-                { label: "主变压客量(kvVA)", prop: "motKl", span: 8, },
-                { label: "主变压器运行方式", prop: "motYxfs", span: 8, },
-                { label: "主变有调压", prop: "motTy", span: 8, },//(有/无)
-                { label: "主变设备厂家", prop: "motCj", span: 8, },
-                { label: "主变投运日期", prop: "motTyTime", formType: 'date', span: 8, },
-                { label: "高压开关电压(KV)", prop: "psV", span: 8, },
-                { label: "高压开关设备型号", prop: "psXh", span: 8, },
-                { label: "高压开关台数", prop: "psTs", span: 8, },
-                { label: "高压开关断路器", prop: "psDlq", span: 8, },
-                { label: "高压开关手车电动", prop: "psScdd", span: 8, },
-                { label: "高压开关设备厂家", prop: "psCj", span: 8, },
-                { label: "高压开关投运时间", prop: "psTyTime", formType: 'date', span: 8, },
-                { label: "低压开关电压 (KV)", prop: "lvsV", span: 8, },
-                { label: "低压开关设备型号", prop: "lvsXh", span: 8, },
-                { label: "低压开关台数", prop: "lvsTs", span: 8, },
-                { label: "低压开关断路器", prop: "lvsDlq", span: 8, },
-                { label: "低压开关手车电动", prop: "lvsScdd", span: 8, formType: 'select', options: this.dict.type.equipment_large_switch  },//(是/否)
-                { label: "低压开关设备厂家", prop: "lvsCj", span: 8, },
-                { label: "低压开关投运时间", prop: "lvsTyTime", formType: 'date', span: 8, },
-                { label: "无功补偿形式", prop: "sVc", span: 8, },
-                { label: "无功补偿厂家", prop: "svCj", span: 8, },
-                { label: "直流电源形式", prop: "dcXs", span: 8, },
-                { label: "直流电源型号", prop: "dcXh", span: 8, },
-                { label: "直流电源厂家", prop: "dcCj", span: 8, },
-                { label: "综自保护型号", prop: "zzXh", span: 8, },
-                { label: "综自保护规约", prop: "zzGy", span: 8, },
-                { label: "综自保护厂家", prop: "zzCj", span: 8, },
-                { label: "五防形式", prop: "wfXs", span: 8, },
-                { label: "具备无人信守条件", prop: "wrTj", span: 8, },
+            { label:"矿井名称", prop:"mineName", span: 8, required: true, },
+{ label:"变电所名称", prop:"substationName", span: 8, },
+{ label:"电源电压等级", prop:"vcc", span: 8, },
+{ label:"电源电缆型号", prop:"cableModel", span: 8, },
+{ label:"高压开关设备型号", prop:"highPowerModel", span: 8, },
+{ label:"高压开关电压等级", prop:"highPowerLevel", span: 8, },
+{ label:"高压开关设备厂家", prop:"highManufacturer", span: 8, },
+{ label:"高压投运时间", prop:"highPutTime", span: 8, },
+{ label:"所用变容量", prop:"variableCapacity", span: 8, },
+{ label:"所用变台数", prop:"variableSum", span: 8, },
+{ label:"低压开关设备型号", prop:"lowPowerModel", span: 8, },
+{ label:"低压开关电压等级", prop:"lowPowerLevel", span: 8, },
+{ label:"低压开关设备厂家", prop:"lowManufacturer", span: 8, },
+{ label:"低压投运时间", prop:"lowPutTime", span: 8, formType: "date", },
+{ label:"监控分站供电电源", prop:"powerSupply", span: 8, },
+{ label:"监控分站台数", prop:"powerSupplySum", span: 8, },
+{ label:"监控分站自动切换", prop:"automatic", span: 8, },
+{ label:"直流电源设备型号", prop:"directModel", span: 8, },
+{ label:"智能保护型号", prop:"protectModel", span: 8, },
+{ label:"智能保护厂家", prop:"protectManufacturer", span: 8, },
+{ label:"矿井产能", prop:"producePower", span: 8, },
+{ label:"电源上级名称", prop:"topSubstationName", span: 8, },
+{ label:"电源供电距离", prop:"powerSupplyLength", span: 8, },
+{ label:"高压开关台数", prop:"highPowerSum", span: 8, },
+{ label:"所用变电设备型号", prop:"changePowerModel", span: 8, },
+{ label:"所用变投运日期", prop:"changePutTime", span: 8, formType: "date", },
+{ label:"低压开关数", prop:"lowPowerSum", span: 8, },
+{ label:"监控分站设备型号", prop:"monitorModel", span: 8, },
+{ label:"监控分站控制方式", prop:"monitorMethod", span: 8, },
+{ label:"直流电源厂家", prop:"directManufacturer", span: 8, },
+{ label:"无人值守", prop:"unmanned", span: 8, formType: "select", options: [], },//(是/否)
+
+
             ]
         },
         // 列信息
@@ -219,6 +210,7 @@ export default {
                     this.formData.emArchivesParts.push(b)
                 }
             });
+            this.formData.partIds = this.formData.emArchivesParts.map((b)=>b.deviceId)
             // this.$set(this.formData, 'parentId', row.deviceId)
             // this.$set(this.formData, 'parentDeviceName', row.deviceName)
             this.close()
@@ -271,7 +263,7 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            importlbase(this.importData).then(response => {
+            importSubstation(this.importData).then(response => {
                 loading.close();
                 this.$modal.msgSuccess("上传成功");
                 this.getList(this.queryParams)
@@ -286,7 +278,7 @@ export default {
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
-            getlbase(queryParams).then(response => {
+            getSubstation(queryParams).then(response => {
                 this.formData = response.data;
                 if (this.formData.emArchivesParts == null) {
                     this.formData.emArchivesParts = []
@@ -351,17 +343,16 @@ export default {
             this.$router.go(-1)//跳回上页
         },
         /** 提交按钮 */
-        submitForm(formdata) {
-            formdata.partIds = formdata.emArchivesParts.map((b)=>b.deviceId);
+        submitForm: function (formdata) {
             if (formdata.largeId != undefined) {
-                updatelbase(formdata).then(response => {
+                updateSubstation(formdata).then(response => {
                     this.$modal.msgSuccess("修改成功");
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
                 });
             } else {
-                addlbase(formdata).then(response => {
+                addSubstation(formdata).then(response => {
                     this.$modal.msgSuccess("新增成功");
                     // this.drawer = false;
                     // this.getList();

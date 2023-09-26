@@ -353,7 +353,7 @@ export default {
     handleExport() {
       this.download('system/supplier/export', {
         ...this.queryParams
-      }, `supplier_${new Date().getTime()}.xlsx`)
+      }, `供应商_${new Date().getTime()}.xlsx`)
     }
   }
 };

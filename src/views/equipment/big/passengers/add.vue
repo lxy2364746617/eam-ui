@@ -74,7 +74,7 @@
 </template>
           
 <script>
-import { listlbase, getlbase, dellbase, addlbase, updatelbase, importlbase } from "@/api/equipment/big/lbase";
+import { listPassengers, getPassengers, delPassengers, addPassengers, updatePassengers, importPassengers } from "@/api/equipment/big/passengers";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
@@ -91,48 +91,31 @@ export default {
         // 列信息
         columns() {
             return [
-                { label: "矿井名称", prop: "mineName", required: true, span: 8, },
-                { label: "变电所名称", prop: "ssName", required: true, span: 8, },
-                { label: "上级变电站", prop: "parentSsName", span: 8, },
-                { label: "供电电压等级", prop: "vcc", span: 8, },
-                { label: "供电距离(m)", prop: "vcm", span: 8, },
-                { label: "本回电源共几基塔杆", prop: "tb", span: 8, },
-                { label: "是否过采区塌陷区", prop: "isTx", span: 8, formType: 'select', options: this.dict.type.equipment_large_base },//(Y 是、N 否)
-                { label: "采空、塌陷区塔杆共几层", prop: "cTb", span: 8, },
-                { label: "有无地面备用发电机", prop: "isBg", span: 8, formType: 'select', options: this.dict.type.equipment_large_have },//(0 有、1 无)
-                { label: "发电机数量", prop: "cenNo", span: 8, },
-                { label: "发电机功率", prop: "cenPower", span: 8, },
-                { label: "站内母线形式", prop: "mxXs", span: 8, },
-                { label: "主变压器型号", prop: "motXh", span: 8, },
-                { label: "主变压客量(kvVA)", prop: "motKl", span: 8, },
-                { label: "主变压器运行方式", prop: "motYxfs", span: 8, },
-                { label: "主变有调压", prop: "motTy", span: 8, },//(有/无)
-                { label: "主变设备厂家", prop: "motCj", span: 8, },
-                { label: "主变投运日期", prop: "motTyTime", formType: 'date', span: 8, },
-                { label: "高压开关电压(KV)", prop: "psV", span: 8, },
-                { label: "高压开关设备型号", prop: "psXh", span: 8, },
-                { label: "高压开关台数", prop: "psTs", span: 8, },
-                { label: "高压开关断路器", prop: "psDlq", span: 8, },
-                { label: "高压开关手车电动", prop: "psScdd", span: 8, },
-                { label: "高压开关设备厂家", prop: "psCj", span: 8, },
-                { label: "高压开关投运时间", prop: "psTyTime", formType: 'date', span: 8, },
-                { label: "低压开关电压 (KV)", prop: "lvsV", span: 8, },
-                { label: "低压开关设备型号", prop: "lvsXh", span: 8, },
-                { label: "低压开关台数", prop: "lvsTs", span: 8, },
-                { label: "低压开关断路器", prop: "lvsDlq", span: 8, },
-                { label: "低压开关手车电动", prop: "lvsScdd", span: 8, formType: 'select', options: this.dict.type.equipment_large_switch  },//(是/否)
-                { label: "低压开关设备厂家", prop: "lvsCj", span: 8, },
-                { label: "低压开关投运时间", prop: "lvsTyTime", formType: 'date', span: 8, },
-                { label: "无功补偿形式", prop: "sVc", span: 8, },
-                { label: "无功补偿厂家", prop: "svCj", span: 8, },
-                { label: "直流电源形式", prop: "dcXs", span: 8, },
-                { label: "直流电源型号", prop: "dcXh", span: 8, },
-                { label: "直流电源厂家", prop: "dcCj", span: 8, },
-                { label: "综自保护型号", prop: "zzXh", span: 8, },
-                { label: "综自保护规约", prop: "zzGy", span: 8, },
-                { label: "综自保护厂家", prop: "zzCj", span: 8, },
-                { label: "五防形式", prop: "wfXs", span: 8, },
-                { label: "具备无人信守条件", prop: "wrTj", span: 8, },
+                { label:"矿井名称", prop:"mineName", span: 8, required: true, },
+                { label:"使用地点", prop:"useAddress", span: 8, },
+                { label:"煤安标志证号", prop:"signCode", span: 8, },
+                { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
+                { label:"投运时间", prop:"putTime", span: 8, formType: "date", },
+                { label:"电压等级", prop:"vcc", span: 8, },
+                { label:"最大坡度", prop:"maxSlope", span: 8, },
+                { label:"运行距离", prop:"runDistance", span: 8, },
+                { label:"运输能力", prop:"runCapacity", span: 8, },
+                { label:"驱动轮尾轮直径", prop:"drivingWheelWidth", span: 8, },
+                { label:"钢丝绳直径", prop:"wireRopeWidth", span: 8, },
+                { label:"绳径比", prop:"ropeContrast", span: 8, },
+                { label:"传动方式", prop:"moveModel", span: 8, },
+                { label:"猴车实际使用宽度", prop:"carWidth", span: 8, },
+                { label:"减速器油温检测", prop:"isHave", span: 8, formType: "select", options: [], },//0-有,1-没有.
+                { label:"架空成人装置共谱情况", prop:"common", span: 8, formType: "select", options: [], },//(皮带/轿车)
+                { label:"设备型号", prop:"deviceModel", span: 8, },    
+                { label:"生产日期", prop:"produceTime", span: 8, formType: "date", },    
+                { label:"功率", prop:"power", span: 8, },
+                { label:"运行速度", prop:"runSpeed", span: 8, },    
+                { label:"钢丝绳型号", prop:"wireRopeModel", span: 8, },
+                { label:"轮边制动器型号", prop:"wheelModel", span: 8, },
+                { label:"断轴保护措施", prop:"breakProtect", span: 8, formType: "select", options: [], },//(0-有,1-无.)
+                { label:"无人值守", prop:"unmanned", span: 8, formType: "select", options: [], },//(是/否)
+
             ]
         },
         // 列信息
@@ -219,6 +202,7 @@ export default {
                     this.formData.emArchivesParts.push(b)
                 }
             });
+            this.formData.partIds = this.formData.emArchivesParts.map((b)=>b.deviceId)
             // this.$set(this.formData, 'parentId', row.deviceId)
             // this.$set(this.formData, 'parentDeviceName', row.deviceName)
             this.close()
@@ -271,7 +255,7 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            importlbase(this.importData).then(response => {
+            importPassengers(this.importData).then(response => {
                 loading.close();
                 this.$modal.msgSuccess("上传成功");
                 this.getList(this.queryParams)
@@ -286,7 +270,7 @@ export default {
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
-            getlbase(queryParams).then(response => {
+            getPassengers(queryParams).then(response => {
                 this.formData = response.data;
                 if (this.formData.emArchivesParts == null) {
                     this.formData.emArchivesParts = []
@@ -351,17 +335,16 @@ export default {
             this.$router.go(-1)//跳回上页
         },
         /** 提交按钮 */
-        submitForm(formdata) {
-            formdata.partIds = formdata.emArchivesParts.map((b)=>b.deviceId);
+        submitForm: function (formdata) {
             if (formdata.largeId != undefined) {
-                updatelbase(formdata).then(response => {
+                updatePassengers(formdata).then(response => {
                     this.$modal.msgSuccess("修改成功");
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
                 });
             } else {
-                addlbase(formdata).then(response => {
+                addPassengers(formdata).then(response => {
                     this.$modal.msgSuccess("新增成功");
                     // this.drawer = false;
                     // this.getList();

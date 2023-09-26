@@ -193,7 +193,128 @@ export const constantRoutes = [
           next()
         },
         meta: { title: '空压机', icon: '' }
-      }
+      },
+      {
+        path: 'elevator/add',
+        component: () => import('@/views/equipment/big/elevator/add'),
+        name: 'bigElevator',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑提升机' : '新增提升机'
+          to.query.d=='true' ? to.meta.title = '查看提升机' : ''
+          next()
+        },
+        meta: { title: '提升机', icon: '' }
+      },
+      {
+        path: 'gas/add',
+        component: () => import('@/views/equipment/big/gas/add'),
+        name: 'bigGas',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑瓦斯抽放泵' : '新增瓦斯抽放泵'
+          to.query.d=='true' ? to.meta.title = '查看瓦斯抽放泵' : ''
+          next()
+        },
+        meta: { title: '瓦斯抽放泵', icon: '' }
+      },
+      {
+        path: 'gather/add',
+        component: () => import('@/views/equipment/big/gather/add'),
+        name: 'bigGather',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑采区排水/加压泵房' : '新增采区排水/加压泵房'
+          to.query.d=='true' ? to.meta.title = '查看采区排水/加压泵房' : ''
+          next()
+        },
+        meta: { title: '采区排水/加压泵房', icon: '' }
+      },
+      {
+        path: 'nitrogen/add',
+        component: () => import('@/views/equipment/big/nitrogen/add'),
+        name: 'bigNitrogen',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑制氨机' : '新增制氨机'
+          to.query.d=='true' ? to.meta.title = '查看制氨机' : ''
+          next()
+        },
+        meta: { title: '制氨机', icon: '' }
+      },
+      {
+        path: 'passengers/add',
+        component: () => import('@/views/equipment/big/passengers/add'),
+        name: 'bigPassengers',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑架空乘人装置' : '新增架空乘人装置'
+          to.query.d=='true' ? to.meta.title = '查看架空乘人装置' : ''
+          next()
+        },
+        meta: { title: '架空乘人装置', icon: '' }
+      },
+      {
+        path: 'strong/add',
+        component: () => import('@/views/equipment/big/strong/add'),
+        name: 'bigStrong',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑强排泵' : '新增强排泵'
+          to.query.d=='true' ? to.meta.title = '查看强排泵' : ''
+          next()
+        },
+        meta: { title: '强排泵', icon: '' }
+      },
+      {
+        path: 'substation/add',
+        component: () => import('@/views/equipment/big/substation/add'),
+        name: 'bigSubstation',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑井下变电所' : '新增井下变电所'
+          to.query.d=='true' ? to.meta.title = '查看井下变电所' : ''
+          next()
+        },
+        meta: { title: '井下变电所', icon: '' }
+      },
+      {
+        path: 'transport/add',
+        component: () => import('@/views/equipment/big/transport/add'),
+        name: 'bigTransport',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑主要辅助运' : '新增主要辅助运'
+          to.query.d=='true' ? to.meta.title = '查看主要辅助运' : ''
+          next()
+        },
+        meta: { title: '主要辅助运', icon: '' }
+      },
+      {
+        path: 'ventilator/add',
+        component: () => import('@/views/equipment/big/ventilator/add'),
+        name: 'bigVentilator',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑主通风机' : '新增主通风机'
+          to.query.d=='true' ? to.meta.title = '查看主通风机' : ''
+          next()
+        },
+        meta: { title: '主通风机', icon: '' }
+      },
+      {
+        path: 'water/add',
+        component: () => import('@/views/equipment/big/water/add'),
+        name: 'bigWater',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑水泵房' : '新增水泵房'
+          to.query.d=='true' ? to.meta.title = '查看水泵房' : ''
+          next()
+        },
+        meta: { title: '水泵房', icon: '' }
+      },
+      {
+        path: 'well/add',
+        component: () => import('@/views/equipment/big/well/add'),
+        name: 'bigWell',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑主井集中皮带' : '新增主井集中皮带'
+          to.query.d=='true' ? to.meta.title = '查看主井集中皮带' : ''
+          next()
+        },
+        meta: { title: '主井集中皮带', icon: '' }
+      },
     ]
   },
 ]
