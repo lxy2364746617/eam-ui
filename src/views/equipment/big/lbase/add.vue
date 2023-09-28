@@ -56,7 +56,7 @@
 
             <div style="text-align: center;margin-top: 20px;" v-if="!disabled">
                 <el-button size="mini" @click="goback">取消</el-button>
-                <el-button size="mini" @click="saveHandle" type="primary">保存</el-button>
+                <el-button size="mini" @click="saveHandle" type="primary" :loading="btnLoading">保存</el-button>
             </div>
 
             <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -66,9 +66,9 @@
             </el-drawer>
 
             <!-- 导入 -->
-            <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+            <!-- <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
                 :importUrl="'/system/supplier/importData'">
-            </file-import>
+            </file-import> -->
         </div>
     </div>
 </template>
@@ -79,13 +79,13 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/decive/book/device";
+import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 
 export default {
     name: "Template",
-    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch'],
+    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_elevator_people'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
@@ -103,6 +103,8 @@ export default {
                 { label: "发电机数量", prop: "cenNo", span: 8, },
                 { label: "发电机功率", prop: "cenPower", span: 8, },
                 { label: "站内母线形式", prop: "mxXs", span: 8, },
+                { label: "发电厂名称", prop: "powerName", span: 8, },
+                { label: "主变压器容量", prop: "hostCapacity", span: 8, },
                 { label: "主变压器型号", prop: "motXh", span: 8, },
                 { label: "主变压客量(kvVA)", prop: "motKl", span: 8, },
                 { label: "主变压器运行方式", prop: "motYxfs", span: 8, },
@@ -132,7 +134,7 @@ export default {
                 { label: "综自保护规约", prop: "zzGy", span: 8, },
                 { label: "综自保护厂家", prop: "zzCj", span: 8, },
                 { label: "五防形式", prop: "wfXs", span: 8, },
-                { label: "具备无人信守条件", prop: "wrTj", span: 8, },
+                { label: "具备无人信守条件", prop: "wrTj", span: 8, formType: "select", options: this.dict.type.equipment_elevator_people, },
             ]
         },
         // 列信息
@@ -157,6 +159,7 @@ export default {
         return {
             // 遮罩层
             loading: true,
+            btnLoading: false,
             // 选中数组
             ids: [],
             // 非单个禁用
@@ -352,6 +355,7 @@ export default {
         },
         /** 提交按钮 */
         submitForm(formdata) {
+            this.btnLoading = true;
             formdata.partIds = formdata.emArchivesParts.map((b)=>b.deviceId);
             if (formdata.largeId != undefined) {
                 updatelbase(formdata).then(response => {
@@ -359,6 +363,8 @@ export default {
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             } else {
                 addlbase(formdata).then(response => {
@@ -366,6 +372,8 @@ export default {
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             }
         },

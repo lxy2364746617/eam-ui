@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/compressor/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/compressor/importData'">
       </file-import>
     </div>
@@ -105,7 +105,7 @@ export default {
         { label: "功率",prop: "power" },
         { label: "台数",prop: "sum" },
         { label: "设备厂家",prop: "equipmentManufacturer" },
-        { label: "投运时间",prop: "putTime" },
+        { label: "投运时间",prop: "putTime", formType: "date",  },
         { label: "电压等级",prop: "vcc" },
         { label: "公称容积流量",prop: "common" },
         { label: "排气压力",prop: "pressure" },
@@ -235,7 +235,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/compressor/add', })
+      this.$router.push({ path: '/device/big/compressor/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -247,7 +247,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/compressor/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/compressor/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

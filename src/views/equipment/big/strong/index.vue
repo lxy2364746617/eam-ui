@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/strong/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/strong/importData'">
       </file-import>
     </div>
@@ -99,23 +99,15 @@ export default {
     // 列信息
     tablecolumns() {
       return [
-      { label:"矿井名称", prop:"mineName", span: 8, required: true, },
-{ label:"泵房名称", prop:"waterName", span: 8, },
-{ label:"台数", prop:"sum", span: 8, },
-{ label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-{ label:"投运时间", prop:"putTime", span: 8, formType: "date",  },
-{ label:"生产日期", prop:"produceTime", span: 8, formType: "date",  },
-{ label:"电机电压等级", prop:"vcc", span: 8, },
-{ label:"额定流量", prop:"ratedFlow", span: 8, },
-{ label:"排水出口点标高", prop:"waterTop", span: 8, },
-{ label:"排水出口点标高", prop:"waterHigh", span: 8, },
-{ label:"管路数量", prop:"pipelineSum", span: 8, },
-{ label:"管路-敷设长度", prop:"pipelineLength", span: 8, },
-{ label:"水泵型号", prop:"waterModel", span: 8, },
-{ label:"电机功率", prop:"elevatorPower", span: 8, },
-{ label:"水泵扬程", prop:"waterLength", span: 8, },
-{ label:"管路直径", prop:"pipelineWidth", span: 8, },    
-{ label:"煤安标志证号", prop:"signCode", span: 8, },
+        { label:"矿井名称", prop:"mineName", span: 8, required: true, },
+        { label:"泵房名称", prop:"waterName", span: 8, },
+        { label:"台数", prop:"sum", span: 8, },
+        { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
+        { label:"电机功率", prop:"elevatorPower", span: 8, },
+        { label:"额定流量", prop:"ratedFlow", span: 8, },
+        { label:"管路直径", prop:"pipelineWidth", span: 8, },    
+        { label:"管路数量", prop:"pipelineSum", span: 8, },
+        { label:"管路-敷设长度", prop:"pipelineLength", span: 8, },
       ]
     },
   },
@@ -240,7 +232,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/strong/add', })
+      this.$router.push({ path: '/device/big/strong/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -252,7 +244,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/strong/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/strong/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

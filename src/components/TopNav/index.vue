@@ -37,7 +37,7 @@
 import { constantRoutes } from "@/router";
 
 // 隐藏侧边栏路由
-const hideList = ['/index', '/user/profile'];
+const hideList = [];//'/index', '/user/profile'
 
 export default {
   data() {
@@ -93,20 +93,21 @@ export default {
     },
     // 默认激活的菜单
     activeMenu() {
-      const path = this.$route.path;
-      let activePath = path;
-      if (path !== undefined && path.lastIndexOf("/") > 0 && hideList.indexOf(path) === -1) {
-        const tmpPath = path.substring(1, path.length);
-        activePath = "/" + tmpPath.substring(0, tmpPath.indexOf("/"));
-        if (!this.$route.meta.link) {
-          this.$store.dispatch('app/toggleSideBarHide', false);
-        }
-      } else if(!this.$route.children) {
-        activePath = path;
-        this.$store.dispatch('app/toggleSideBarHide', true);
-      }
-      this.activeRoutes(activePath);
-      return activePath;
+      // const path = this.$route.path;
+      // let activePath = path;
+      // if (path !== undefined && path.lastIndexOf("/") > 0 && hideList.indexOf(path) === -1) {
+      //   const tmpPath = path.substring(1, path.length);
+      //   activePath = "/" + tmpPath.substring(0, tmpPath.indexOf("/"));
+      //   if (!this.$route.meta.link) {
+      //     this.$store.dispatch('app/toggleSideBarHide', false);
+      //   }
+      // } else if(!this.$route.children) {
+      //   activePath = path;
+      //   this.$store.dispatch('app/toggleSideBarHide', true);
+      // }
+      // this.activeRoutes(activePath);
+      // return activePath;
+      return this.topMenus[0].path;
     },
   },
   beforeMount() {
@@ -117,6 +118,8 @@ export default {
   },
   mounted() {
     this.setVisibleNumber();
+    // 打开第一个菜单
+    this.handleSelect(this.topMenus[0].path,[this.topMenus[0].path])
   },
   methods: {
     // 根据宽度计算设置显示栏数
@@ -160,7 +163,9 @@ export default {
       if(routes.length > 0) {
         this.$store.commit("SET_SIDEBAR_ROUTERS", routes);
       } else {
-        this.$store.dispatch('app/toggleSideBarHide', true);
+        // 隐藏首页侧边面板
+        this.$store.dispatch('app/toggleSideBarHide', false);
+        // this.$store.dispatch('app/toggleSideBarHide', true);
       }
     },
     ishttp(url) {

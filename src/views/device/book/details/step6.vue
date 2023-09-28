@@ -64,7 +64,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import parentdevice from "@/views/decive/book/device";
+import parentdevice from "@/views/device/book/device";
 
 export default {
   name: "bookadd",
@@ -244,28 +244,6 @@ export default {
       const deviceId = this.formData.parentId
       getBASE(deviceId).then(response => {
         this.parentData = response.data||null;
-        // // 第一步  特种设备
-        // if(this.parentData.emArchivesSpecial){
-        //   this.parentData.emArchivesSpecial.componentContent = JSON.parse(this.parentData.emArchivesSpecial.componentContent)
-        //   this.parentData.emArchivesSpecial.fieldValue = JSON.parse(this.parentData.emArchivesSpecial.fieldValue)
-        //   this.setFormLabel(this.parentData.emArchivesSpecial.componentContent)
-        // }
-        // // 第二步
-        // if(this.parentData.archivesOther==null){
-        //   this.parentData.archivesOther = {}
-        // }
-        // // 第二步  扩展数据
-        // if(this.parentData.emArchivesExtendAtt){
-        //   this.parentData.emArchivesExtendAtt.componentContent = JSON.parse(this.parentData.emArchivesExtendAtt.componentContent)
-        //   this.parentData.emArchivesExtendAtt.fieldValue = JSON.parse(this.parentData.emArchivesExtendAtt.fieldValue)
-        //   this.setFormLabel(this.parentData.emArchivesExtendAtt.componentContent)
-        // }
-        // // 第三步 主要指标
-        // if(this.parentData.emArchivesIndex){
-        //   this.parentData.emArchivesIndex.componentContent = JSON.parse(this.parentData.emArchivesIndex.componentContent)
-        //   this.parentData.emArchivesIndex.fieldValue = JSON.parse(this.parentData.emArchivesIndex.fieldValue)
-        //   this.setFormLabel(this.parentData.emArchivesIndex.componentContent)
-        // }
       })
       .catch(err => {
         console.log(err,333);

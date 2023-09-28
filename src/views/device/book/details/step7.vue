@@ -112,7 +112,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import childdevice from "@/views/decive/book/device";
+import childdevice from "@/views/device/book/device";
 
 export default {
   name: "bookadd",

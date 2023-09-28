@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/transport/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/transport/importData'">
       </file-import>
     </div>
@@ -99,30 +99,19 @@ export default {
     // 列信息
     tablecolumns() {
       return [
-      { label:"矿井名称", prop:"mineName", span: 8, required: true, },
-{ label:"产品名称", prop:"productName", span: 8, },
-{ label:"设备类型", prop:"deviceType", span: 8, },
-{ label:"型号", prop:"model", span: 8, },
-{ label:"运输能力", prop:"transportPower", span: 8, },
-{ label:"用途", prop:"use", span: 8, },
-{ label:"运行速度", prop:"run", span: 8, },
-{ label:"动力形式", prop:"runPower", span: 8, },
-{ label:"数量", prop:"sum", span: 8, },
-{ label:"爬坡能力", prop:"climbing", span: 8, },
-{ label:"生产厂家", prop:"produceManufacturer", span: 8, },
-{ label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
-{ label:"使用日期", prop:"useTime", span: 8, formType: "date", },
-{ label:"安全标志", prop:"safeCode", span: 8, },
-{ label:"制动距离", prop:"retardation", span: 8, },
-{ label:"使用地点", prop:"useAddress", span: 8, },
-{ label:"运行巷道平均坡度", prop:"avgSlope", span: 8, },
-{ label:"运行巷道最大坡度", prop:"maxSlope", span: 8, },
-{ label:"运输长度", prop:"transportLength", span: 8, },
-{ label:"目前状态", prop:"nowStatue", span: 8, formType: "select", options: [], },//(正常使用/备用/待修/报废/待报废)
-{ label:"无极绳", prop:"noRope", span: 8, },
-{ label:"调度绞车", prop:"winch", span: 8, },
-{ label:"回往绞车", prop:"backWinch", span: 8, },
-{ label:"指挥系统", prop:"system", span: 8, },
+        { label:"矿井名称", prop:"mineName", span: 8, required: true, },
+        { label:"设备类型", prop:"deviceType", span: 8, },
+        { label:"产品名称", prop:"productName", span: 8, },
+        { label:"数量", prop:"sum", span: 8, },
+        { label:"型号", prop:"model", span: 8, },
+        { label:"运输能力", prop:"transportPower", span: 8, },
+        { label:"运行速度", prop:"run", span: 8, },
+        { label:"爬坡能力", prop:"climbing", span: 8, },
+        { label:"用途", prop:"use", span: 8, },
+        { label:"动力形式", prop:"runPower", span: 8, },
+        { label:"生产厂家", prop:"produceManufacturer", span: 8, },
+        { label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
+        { label:"使用日期", prop:"useTime", span: 8, formType: "date", },
       ]
     },
   },
@@ -247,7 +236,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/transport/add', })
+      this.$router.push({ path: '/device/big/transport/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -259,7 +248,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/transport/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/transport/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

@@ -109,13 +109,13 @@
 <script>
 import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
-import { equipmentTree } from "@/api/equipment/category";
+import { equipmentTree,equipmentTrees_noParent } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
-import parentdevice from "@/views/decive/book/device";
+import parentdevice from "@/views/device/book/device";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
@@ -123,7 +123,7 @@ export default {
   dicts: [
     'em_device_state',  'device_run_state', 'em_is_special',  'em_device_att', 
     'em_unit',  'em_device_level',  'em_device_financing',  'em_is_lease', 
-    'em_property_type', 
+    'em_property_type', 'em_rent_out', 'em_is_relieve'
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, parentdevice,
@@ -209,6 +209,8 @@ export default {
         { label:"融资设备到期日", prop:"finanTime", formType: 'date', tableVisible: false, span: 12, },
         { label:"是否租赁设备", prop:"isLease", formType: 'select', options: this.dict.type.em_is_lease, tableVisible: false, span: 12, },//(Y 是、N 否)
         { label:"租赁设备到期日", prop:"leaseTime", formType: 'date', tableVisible: false, span: 12, },
+        { label:"出租意向", prop:"rentOut", tableVisible: false, span: 12, formType: 'select', options: this.dict.type.em_rent_out, },
+        { label:"是否跨公司调剂", prop:"isRelieve", tableVisible: false, span: 12, formType: 'select', options: this.dict.type.em_is_relieve, },
         { label:"备注", prop:"remark", formType: 'textarea', tableVisible: false, span: 24, },
       ]
     },
@@ -375,7 +377,7 @@ export default {
       this.close()
     },
     getTreeSelect(){
-      equipmentTree().then(response => {
+      equipmentTrees_noParent().then(response => {
         this.categoryOptions = response.data;
       });
       listDept().then(response => {

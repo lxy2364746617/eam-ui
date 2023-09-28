@@ -106,3 +106,12 @@ export function addParentEmBASE(data) {
     data: data
   })
 }
+
+// 查询设备平台_设备档案_复制
+export function copyBASE(query) {
+  return request({
+    url: '/equipment/base/copy',
+    method: 'get',
+    params: query
+  })
+}

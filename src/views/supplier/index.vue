@@ -110,7 +110,7 @@
       <!-- 导入 -->
       <file-import 
         @handleFileSuccess="handleFileSuccess"
-        downloadTemplateUrl=''
+        :downloadTemplateUrl="'/system/supplier/importTemplate'"
         ref="fileImport"
         :importUrl="'/system/supplier/importData'">
       </file-import>
@@ -143,13 +143,13 @@ export default {
         { label: "联系电话", prop: "phone", span:24,  },
         { label: "统一社会信用编码", prop: "societyCode", span:24,  },
         { label: "供应商地址", prop: "supplierAddress", span:24,  },
-        { label: "省份", prop: "province", formType: 'select', options: this.provs, span:24, selectfn: ()=>{this.formData.city=''}  },
+        { label: "省份", prop: "province", formType: 'select', options: this.provs, span:24, selectfn: ()=>{this.$set(this.formData,'city','') }  },
         { label: "城市", prop: "city", formType: 'select', options: this.cities[this.formData.province]||[], span:24, },
         { label: '备注', prop: 'remark', formType: 'textarea', span:24, },
         { label: '启用状态', prop: 'supplierStatue', formType: 'switch', options: this.dict.type.system_supplier_statue, span:24, formVisible: false, },
         { label: '所属组织', prop: 'supplierOrganization', span:24, formVisible: false, },
         { label: '更新人', prop: 'updateBy', span:24, formVisible: false, },
-        { label: '更新时间', prop: 'updateTime', span:24, formVisible: false, },
+        { label: '更新时间', prop: 'updateTime', span:24, formVisible: false, formType: 'date' },
       ]
     },
     // 列信息
@@ -171,7 +171,7 @@ export default {
         { label: '启用状态', prop: 'supplierStatue', formType: 'switch', options: this.dict.type.system_supplier_statue, span:24, formVisible: false, },
         { label: '所属组织', prop: 'supplierOrganization', span:24, formVisible: false, },
         { label: '更新人', prop: 'updateBy', span:24, formVisible: false, },
-        { label: '更新时间', prop: 'updateTime', span:24, formVisible: false, },
+        { label: '更新时间', prop: 'updateTime', span:24, formVisible: false, formType: 'date' },
       ]
     },
   },

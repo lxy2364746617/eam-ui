@@ -21,7 +21,7 @@
           <jm-form 
             :columns="columns" 
             :formData="formData" 
-            :labelWidth="'150px'"
+            :labelWidth="'180px'"
             @submitForm="submitForm" 
             @close="close" 
             :disabled="disabled">
@@ -51,11 +51,11 @@ export default {
       return [ 
         { label: '类别名称', prop: 'categoryName',width: 100, required: true, span:24, },
         { label: '类别编码', prop: 'categoryCode', formDisabled: true,width: 100, span:24,  },
-        { label: '上级编码', prop: 'parentId', formDisabled: true,formType: 'selectTree', options: this.deptOptions, width: 200, span:24, },
-        { label: '是否是特种设备', prop: 'isSpecial',formType: 'radio', options: this.dict.type.em_is_special ,width: 100, required: true, span:24, },
-        { label: '特种设备模板', prop: 'special',formDisabled: this.formData.isSpecial=="N",formType: 'select', options: this.special ,width: 100, span:24, },
-        { label: '是否是六大设备类型', prop: 'isSm',formType: 'radio', options: this.dict.type.em_is_sm ,width: 100, required: true, span:24, },
-        { label: '六大设备类型模板', prop: 'sm',formDisabled: this.formData.isSm=="N",formType: 'select', options: this.sm ,width: 100, span:24, },
+        { label: '上级编码', prop: 'parentCode', formDisabled: true, width: 200, span:24, },
+        { label: '是否为主要指标设备类型', prop: 'isSm', formVisible: this.formData.parentId!=0, formType: 'radio', options: this.dict.type.em_is_sm ,width: 100, required: true, span:24, },
+        { label: '主要指标项模板', prop: 'sm', formVisible: this.formData.isSm=="Y",formDisabled: this.formData.isSm=="N",formType: 'select', options: this.sm ,width: 100, span:24, },
+        { label: '是否为特种设备类别', prop: 'isSpecial',formVisible: this.formData.parentId!=0, formType: 'radio', options: this.dict.type.em_is_special ,width: 100, required: true, span:24, },
+        { label: '特种信息项模板', prop: 'special', formVisible: this.formData.isSpecial=="Y",  formDisabled: this.formData.isSpecial=="N",formType: 'select', options: this.special ,width: 100, span:24, },
         { label: '备注', prop: 'remark',width: 100, span:24, },
       ]
     }
@@ -214,7 +214,6 @@ export default {
     // 新增
     addTreeItem(){
       this.rightTitle = '新增下级组织'
-      console.log(this.nowClickTreeItem,555)
       this.formData = {
         parentId:this.nowClickTreeItem.id || 0
       }
@@ -287,6 +286,7 @@ export default {
           this.$modal.msgSuccess("修改成功");
           this.disabled = true;
           this.getCategoryFn()
+          this.getDeptTree()
         });
       } else {
         addCategory(formdata).then(response => {

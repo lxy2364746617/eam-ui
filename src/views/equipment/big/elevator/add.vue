@@ -56,7 +56,7 @@
 
             <div style="text-align: center;margin-top: 20px;" v-if="!disabled">
                 <el-button size="mini" @click="goback">取消</el-button>
-                <el-button size="mini" @click="saveHandle" type="primary">保存</el-button>
+                <el-button size="mini" @click="saveHandle" type="primary" :loading="btnLoading">保存</el-button>
             </div>
 
             <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -66,9 +66,9 @@
             </el-drawer>
 
             <!-- 导入 -->
-            <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+            <!-- <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
                 :importUrl="'/system/supplier/importData'">
-            </file-import>
+            </file-import> -->
         </div>
     </div>
 </template>
@@ -79,13 +79,13 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/decive/book/device";
+import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 
 export default {
     name: "Template",
-    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch'],
+    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_elevator_coroll','equipment_elevator_people','equipment_elvator_automatic','equipment_elevator_install','equipment_elevator_have'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
@@ -102,20 +102,20 @@ export default {
                 { label: "滚筒宽度", prop: "rollerWidth", span: 8, },
                 { label: "最大静张力", prop: "maxTension", span: 8, },
                 { label: "最大提升速度", prop: "maxSpeed", span: 8, },
-                { label: "是否有专用备用信号", prop: "hava", formType: 'select', options: [], span: 8, },//0-有,1-没有
-                { label: "并联冗余回油通路是否安装", prop: "isInstall", formType: 'select', options: [], span: 8, }, //0-是,1-否.
-                { label: "并联冗余回油通路手动还是自动", prop: "isAutomatic", formType: 'select', options: [], span: 8, },//0-自动,1-手动
+                { label: "是否有专用备用信号", prop: "hava", formType: 'select', options: this.dict.type.equipment_elevator_have, span: 8, },//0-有,1-没有
+                { label: "并联冗余回油通路是否安装", prop: "isInstall", formType: 'select', options: this.dict.type.equipment_elevator_install, span: 8, }, //0-是,1-否.
+                { label: "并联冗余回油通路手动还是自动", prop: "isAutomatic", formType: 'select', options: this.dict.type.equipment_elvator_automatic, span: 8, },//0-自动,1-手动
                 { label: "电机功率", prop: "elevatorPower", span: 8, },
                 { label: "电机电压等级", prop: "voltageLevel", span: 8, },
                 { label: "钢丝绳直径", prop: "wireRopeWidth", span: 8, },
                 { label: "立井深度/斜井长度", prop: "wellDepth", span: 8, },
-                { label: "具备无人值守条件", prop: "unmanned", formType: 'select', options: [], span: 8, }, //0=是,1=否
+                { label: "具备无人值守条件", prop: "unmanned", formType: 'select', options: this.dict.type.equipment_elevator_people, span: 8, }, //0=是,1=否
                 { label: "煤安标志证号", prop: "signCode", span: 8, },
                 { label: "设备类型", prop: "deviceType", span: 8, },
                 { label: "电压", prop: "voltage", span: 8, },
                 { label: "钢丝绳型号", prop: "wireRopeModel", span: 8, },
                 { label: "滚筒直径", prop: "rollerDiameter", span: 8, },
-                { label: "共卷情况(皮带/皮车)", prop: "coRoll", span: 8, formType: "select", options: [], },
+                { label: "共卷情况", prop: "coRoll", span: 8, formType: "select", options: this.dict.type.equipment_elevator_coroll, },//(皮带/皮车)
             ]
         },
         // 列信息
@@ -140,6 +140,7 @@ export default {
         return {
             // 遮罩层
             loading: true,
+            btnLoading: false,
             // 选中数组
             ids: [],
             // 非单个禁用
@@ -336,12 +337,16 @@ export default {
         },
         /** 提交按钮 */
         submitForm: function (formdata) {
+            this.btnLoading = true;
+            formdata.partIds = formdata.emArchivesParts.map((b)=>b.deviceId);
             if (formdata.largeId != undefined) {
                 updateElevator(formdata).then(response => {
                     this.$modal.msgSuccess("修改成功");
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             } else {
                 addElevator(formdata).then(response => {
@@ -349,6 +354,8 @@ export default {
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             }
         },

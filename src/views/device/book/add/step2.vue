@@ -1,31 +1,40 @@
 <template>
   <div>
     <el-card shadow="never" style="margin-top: 10px;">
-      <p><i class="el-icon-magic-stick"></i> 重要数据</p>
+      <p><i class="el-icon-magic-stick"></i> 财务数据</p>
       <jm-form 
         class="mr20"
         :columns="columns" 
-        :formData="formData" 
+        :formData="formData.archivesOther" 
         :showButton="false"
         ref="jmform1">
       </jm-form>
-      <p><i class="el-icon-magic-stick"></i> 常规数据</p>
+      <p><i class="el-icon-magic-stick"></i> 制造商数据</p>
       <jm-form 
         class="mr20"
         :columns="columns2" 
         :showButton="false"
-        :formData="formData" 
+        :formData="formData.archivesOther" 
         ref="jmform2">
       </jm-form>
+      <div v-if="formData.emArchivesExtendAtt!=null">
+        <p><i class="el-icon-magic-stick"></i> 扩展数据</p>
+        <jm-form 
+          class="mr20"
+          :columns="formData.emArchivesExtendAtt.componentContent" 
+          :showButton="false"
+          :formData="formData.emArchivesExtendAtt.fieldValue"
+          ref="jmform3">
+        </jm-form>
+      </div>
       <!-- 添加或修改设备平台_表单模板对话框 -->
       <el-drawer
         title="选择上级设备"
         :visible.sync="drawer"
         direction="rtl"
-        :destroy-on-close="true"
         size="80%"
         :wrapperClosable="false">
-        <parentdevice @submitRadio="submitRadio" @close="close"></parentdevice>
+        <devicebook isChoose @submitRadio="submitRadio" @close="close"></devicebook>
       </el-drawer>
     </el-card>
     <el-card shadow="never" style="margin-top: 10px;text-align: right;">
@@ -47,16 +56,15 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import parentdevice from "@/views/decive/book/device";
 
 export default {
   name: "bookadd",
   dicts: [
-    'em_device_state',  'device_run_state', 'em_is_special',  'em_device_att', 
-    'em_unit',  'em_device_level',  'em_device_financing',  'em_is_lease', 
+    'em_property_type', 
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, parentdevice,
+    Treeselect, JmUserTree, JmTable, JmForm, 
+    devicebook: ()=> import("@/views/device/book/index"),
   },
   props:{
     stepActive:{
@@ -71,87 +79,34 @@ export default {
       default: {},
       type: Object,
     },
-
-  },
-  watch:{
-    'formData.categoryId':{
-      handler(val) {
-        this.getTreeItem(val,this.categoryOptions)
-        var b = this.treeItem
-        if(b.isSm == 'Y' && b.smAttributes){
-          // this.$parent.elstep[2].visible = true
-          if(this.formData.emArchivesIndex==null){
-            this.formData.emArchivesIndex = {}
-          }
-          this.setFormLabel(b.smAttributes)
-          this.$set(this.formData.emArchivesIndex, 'componentContent', b.smAttributes)
-          this.$set(this.formData.emArchivesIndex, 'fieldValue', {})
-        }else{
-          // this.$parent.elstep[2].visible = false
-          this.$set(this.formData,'emArchivesIndex',null)
-        }
-        if(b.isSpecial == 'Y'){
-          this.$set(this.formData, 'isSpecial', 'Y')
-          
-          if(this.formData.emArchivesSpecial==null){
-            this.formData.emArchivesSpecial = {}
-          }
-          if(b.specialAttributes!=null){
-            this.$set(this.formData.emArchivesSpecial, 'componentContent', b.specialAttributes)
-            this.$set(this.formData.emArchivesSpecial, 'fieldValue', {})
-          }else{
-            this.$set(this.formData,'emArchivesSpecial',null)
-          }
-        }else{
-          this.$set(this.formData, 'isSpecial', 'N')
-          
-          this.$set(this.formData,'emArchivesSpecial',null)
-        }
-      },
-      // immediate: true,
-    }
   },
   computed:{
     // 列信息
     columns(){
       return [
-        { label:"设备名称", prop:"deviceName", span: 8, required: true, },
-        { label:"设备编码", prop:"deviceCode", span: 8, required: true, },
-        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, span: 8, required: true, },
-        { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, span: 8, },
-        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 8, required: true, },
-        { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, formDisabled:true, required: true, }, //(Y 是、N 否)
-        { label:"功能位置", prop:"location", span: 8, required: true, },
-        { label:"规格型号", prop:"sModel", span: 8, },
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 8, required: true, },  //(1 设备、2 部件)
-        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
-        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
-        { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 8, formVisible: this.formData.deviceAtt==1  }, //(0 父级)
-        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 8, }, //(A、B、C)
-        { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, required: true, },
+        { label:"财务资产编码", prop:"propertyCode", span: 8, },
+        { label:"资产原值(元)", prop:"propertyOv", span: 8, },
+        { label:"资产权属占比", prop:"propertyOs", span: 8, },
+        { label:"资产净值(元)", prop:"propertyNv", span: 8, },
+        { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.em_property_type, span: 8, },
       ]
     },
     columns2(){
       return [
-        { label:"批次编号", prop:"batchNo", tableVisible: false, span: 8, },
-        { label:"煤安标志证号", prop:"logoNo", tableVisible: false, span: 8, },
-        { label:"存放位置", prop:"position", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, },
-        { label:"防爆合格证", prop:"certificate", tableVisible: false, span: 8, },
-        { label:"计量单位", prop:"unit", formType: 'select', options: this.dict.type.em_unit, tableVisible: false, span: 8, }, //(台、个、座、件)
-        { label:"重量(千克)", prop:"weight", tableVisible: false, span: 8, },
-        { label:"大小/尺寸mm", prop:"size", tableVisible: false, span: 8, },
-        { label:"是否融资设备", prop:"isFinan", formType: 'select', options: this.dict.type.em_device_financing, tableVisible: false, span: 8, },//(Y 是、N 否)
-        { label:"融资设备到期日", prop:"finanTime", formType: 'date', tableVisible: false, span: 8, },
-        { label:"折旧年限", prop:"depLife", tableVisible: false, span: 8, },
-        { label:"是否租赁设备", prop:"isLease", formType: 'select', options: this.dict.type.em_is_lease, tableVisible: false, span: 8, },//(Y 是、N 否)
-        { label:"租赁设备到期日", prop:"leaseTime", formType: 'date', tableVisible: false, span: 8, },
-        { label:"备注", prop:"remark", formType: 'textarea', tableVisible: false, span: 24, },
+        { label:"关联购置单号", prop:"makerNo", tableVisible: false, formDisabled: true, span: 8, },
+        { label:"行号", prop:"makerLn", tableVisible: false, formDisabled: true, span: 8, },
+        { label:"启用日期", prop:"makerEnTime", formType: 'date', tableVisible: false, span: 8, },
+        { label:"制造商", prop:"maker", tableVisible: false, span: 8, },
+        { label:"入账日期", prop:"makerAoTime", formType: 'date', tableVisible: false, span: 8, }, 
+        { label:"到货日期", prop:"makerMoaTime", formType: 'date', tableVisible: false, span: 8, },
+        { label:"出厂编号", prop:"makerPdNo", tableVisible: false, span: 8, },
+        { label:"出厂日期", prop:"makerPdTime", formType: 'date', tableVisible: false, span: 8, },
+        { label:"使用年限", prop:"makerExp", tableVisible: false, span: 8, },
       ]
     },
   },
   data() {
     return {
-      treeItem: {},
       // 遮罩层
       loading: true,
       // 选中数组
@@ -170,8 +125,8 @@ export default {
       // 弹出层标题
       title: "",
       // 部门树选项
-      categoryOptions: [],
-      deptOptions: [],
+      categoryOptions: undefined,
+      deptOptions: undefined,
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -242,25 +197,6 @@ export default {
     this.getTreeSelect()
   },
   methods: {
-    getTreeItem(id,arr){
-      for (let i = 0; i < arr.length; i++) {
-        const b = arr[i];
-        if(b.id == id){
-          this.treeItem = b
-        }
-        if(b.children){
-          this.getTreeItem(id,b.children)
-        }
-      }
-    },
-    setFormLabel(arr){
-      arr.forEach(b => {
-        b.label=b.fieldName;
-        b.prop=b.fieldCode;
-        b.required = b.required=='0'?true:false;
-
-      });
-    },
     closeform(){
       this.$emit('closeform')
     },
@@ -275,12 +211,16 @@ export default {
     async save(fn){
       var jmform1 = await this.$refs.jmform1.submitForm()
       var jmform2 = await this.$refs.jmform2.submitForm()
-      if(jmform1  && jmform2){
+      var jmform3 = true
+      if(this.$refs.jmform3){
+        jmform3 = await this.$refs.jmform3.submitForm()
+      }
+      if(jmform1  && jmform2 && jmform3){
         this.submitForm(fn)
       }
     },
     /** 提交按钮 */
-    submitForm(fn) {
+    submitForm: function(fn) {
       var formData = this.$parent.getFormDataParams();
       if (formData.deviceId != undefined) {
         updateBASE(formData).then(response => {
@@ -290,7 +230,6 @@ export default {
       } else {
         addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
-          this.formData.deviceId = response.msg
           if(typeof fn == 'function') fn()
         });
       }

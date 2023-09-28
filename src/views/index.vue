@@ -1,7 +1,27 @@
 <template>
   <div class="app-container home">
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="24" :md="12" :lg="14">
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-card class="update-log">
+          <div slot="header" class="clearfix">
+            <span>流程功能列表</span>
+          </div>
+          <p>1.单节点配置表单</p>
+          <p>2.多实例会签任务</p>
+          <p>3.节点任务/执行监听器</p>
+          <p>4.动态配置任务候选人</p>
+          <p>5.其它模块优化</p>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="16">
+        <el-card class="update-log">
+          <div slot="header" class="clearfix">
+            <span>流程演示</span>
+          </div>
+          <el-skeleton :rows="5" />
+        </el-card>
+      </el-col>
+      <!-- <el-col :xs="24" :sm="24" :md="12" :lg="14">
         <el-card class="update-log">
           <div slot="header" class="clearfix">
             <span>联系信息</span>
@@ -41,9 +61,9 @@
             </p>
           </div>
         </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="10">
-        <!-- <el-card class="update-log">
+      </el-col> -->
+      <!-- <el-col :xs="24" :sm="24" :md="12" :lg="10">
+        <el-card class="update-log">
           <div slot="header" class="clearfix">
             <span>捐赠支持</span>
           </div>
@@ -57,8 +77,8 @@
             >可以请作者喝杯咖啡以示鼓励！</span
             >
           </div>
-        </el-card> -->
-      </el-col>
+        </el-card>
+      </el-col> -->
     </el-row>
     <el-divider />
     <el-row :gutter="20">
@@ -79,6 +99,11 @@
           <div slot="header" class="clearfix">
             <span>流程演示</span>
           </div>
+          <p>1.单节点配置表单</p>
+          <p>2.多实例会签任务</p>
+          <p>3.节点任务/执行监听器</p>
+          <p>4.动态配置任务候选人</p>
+          <p>5.其它模块优化</p>
           <!-- <img style="width: 850px" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f248dea817f74341b70f4087f425975b~tplv-k3u1fbpfcp-watermark.image?"/> -->
         </el-card>
       </el-col>

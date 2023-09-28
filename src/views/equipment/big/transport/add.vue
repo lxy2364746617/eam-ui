@@ -56,7 +56,7 @@
 
             <div style="text-align: center;margin-top: 20px;" v-if="!disabled">
                 <el-button size="mini" @click="goback">取消</el-button>
-                <el-button size="mini" @click="saveHandle" type="primary">保存</el-button>
+                <el-button size="mini" @click="saveHandle" type="primary" :loading="btnLoading">保存</el-button>
             </div>
 
             <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -66,9 +66,9 @@
             </el-drawer>
 
             <!-- 导入 -->
-            <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+            <!-- <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
                 :importUrl="'/system/supplier/importData'">
-            </file-import>
+            </file-import> -->
         </div>
     </div>
 </template>
@@ -79,42 +79,53 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/decive/book/device";
+import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 
 export default {
     name: "Template",
-    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch'],
+    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_transport_statue'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
         columns() {
             return [
-            { label:"矿井名称", prop:"mineName", span: 8, required: true, },
-{ label:"产品名称", prop:"productName", span: 8, },
-{ label:"设备类型", prop:"deviceType", span: 8, },
-{ label:"型号", prop:"model", span: 8, },
-{ label:"运输能力", prop:"transportPower", span: 8, },
-{ label:"用途", prop:"use", span: 8, },
-{ label:"运行速度", prop:"run", span: 8, },
-{ label:"动力形式", prop:"runPower", span: 8, },
-{ label:"数量", prop:"sum", span: 8, },
-{ label:"爬坡能力", prop:"climbing", span: 8, },
-{ label:"生产厂家", prop:"produceManufacturer", span: 8, },
-{ label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
-{ label:"使用日期", prop:"useTime", span: 8, formType: "date", },
-{ label:"安全标志", prop:"safeCode", span: 8, },
-{ label:"制动距离", prop:"retardation", span: 8, },
-{ label:"使用地点", prop:"useAddress", span: 8, },
-{ label:"运行巷道平均坡度", prop:"avgSlope", span: 8, },
-{ label:"运行巷道最大坡度", prop:"maxSlope", span: 8, },
-{ label:"运输长度", prop:"transportLength", span: 8, },
-{ label:"目前状态", prop:"nowStatue", span: 8, formType: "select", options: [], },//(正常使用/备用/待修/报废/待报废)
-{ label:"无极绳", prop:"noRope", span: 8, },
-{ label:"调度绞车", prop:"winch", span: 8, },
-{ label:"回往绞车", prop:"backWinch", span: 8, },
-{ label:"指挥系统", prop:"system", span: 8, },
+                { label:"阿巴阿巴", subTitle:true, span: 24, },
+                { label:"矿井名称", prop:"mineName", span: 8, required: true, },
+                { label:"设备类型", prop:"deviceType", span: 8, },
+
+                { label:"基本信息", subTitle:true, span: 24, },
+                { label:"产品名称", prop:"productName", span: 8, },
+                { label:"型号", prop:"model", span: 8, },
+                { label:"数量", prop:"sum", span: 8, },
+
+                { label:"运行信息", subTitle:true, span: 24, },
+                { label:"运输能力", prop:"transportPower", span: 8, },
+                { label:"运行速度", prop:"run", span: 8, },
+                { label:"爬坡能力", prop:"climbing", span: 8, },
+                { label:"用途", prop:"use", span: 8, },
+                { label:"动力形式", prop:"runPower", span: 8, },
+
+                { label:"出厂及投运信息", subTitle:true, span: 24, },
+                { label:"生产厂家", prop:"produceManufacturer", span: 8, },
+                { label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
+                { label:"使用日期", prop:"useTime", span: 8, formType: "date", },
+
+                { label:"安全信息", subTitle:true, span: 24, },
+                { label:"安全标志", prop:"safeCode", span: 8, },
+                { label:"制动距离", prop:"retardation", span: 8, },
+
+                { label:"使用情况", subTitle:true, span: 24, },
+                { label:"使用地点", prop:"useAddress", span: 8, },
+                { label:"运行巷道平均坡度", prop:"avgSlope", span: 8, },
+                { label:"运行巷道最大坡度", prop:"maxSlope", span: 8, },
+                { label:"运输长度", prop:"transportLength", span: 8, },
+                { label:"目前状态", prop:"nowStatue", span: 8, formType: "select", options: this.dict.type.equipment_transport_statue, },//(正常使用/备用/待修/报废/待报废)
+                { label:"无极绳", prop:"noRope", span: 8, },
+                { label:"调度绞车", prop:"winch", span: 8, },
+                { label:"回往绞车", prop:"backWinch", span: 8, },
+                { label:"指挥系统", prop:"system", span: 8, },
             ]
         },
         // 列信息
@@ -139,6 +150,7 @@ export default {
         return {
             // 遮罩层
             loading: true,
+            btnLoading: false,
             // 选中数组
             ids: [],
             // 非单个禁用
@@ -335,12 +347,16 @@ export default {
         },
         /** 提交按钮 */
         submitForm: function (formdata) {
+            this.btnLoading = true;
+            formdata.partIds = formdata.emArchivesParts.map((b)=>b.deviceId);
             if (formdata.largeId != undefined) {
                 updateTransport(formdata).then(response => {
                     this.$modal.msgSuccess("修改成功");
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             } else {
                 addTransport(formdata).then(response => {
@@ -348,6 +364,8 @@ export default {
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             }
         },

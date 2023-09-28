@@ -56,7 +56,7 @@
 
             <div style="text-align: center;margin-top: 20px;" v-if="!disabled">
                 <el-button size="mini" @click="goback">取消</el-button>
-                <el-button size="mini" @click="saveHandle" type="primary">保存</el-button>
+                <el-button size="mini" @click="saveHandle" type="primary" :loading="btnLoading">保存</el-button>
             </div>
 
             <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -66,9 +66,9 @@
             </el-drawer>
 
             <!-- 导入 -->
-            <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+            <!-- <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
                 :importUrl="'/system/supplier/importData'">
-            </file-import>
+            </file-import> -->
         </div>
     </div>
 </template>
@@ -79,41 +79,42 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/decive/book/device";
+import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 
 export default {
     name: "Template",
-    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch'],
+    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_ventilator_have','equipment_ventilator_lubrication','equipment_elevator_people'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
         columns() {
             return [
+                { label:"矿井名称", prop:"mineName", span: 8, required: true, },
                 { label:"机房名称", prop:"ventilatorName", span: 8, required: true, },
-{ label:"功率", prop:"ventilatorPower", span: 8, },
-{ label:"台数", prop:"psTs", span: 8, },
-{ label:"煤安标志证号", prop:"signCode", span: 8, },
-{ label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
-{ label:"电压等级", prop:"vcc", span: 8, },
-{ label:"配电装置开关型号", prop:"turnModel", span: 8, },
-{ label:"配电装置投运时间", prop:"putTime", span: 8, formType: "date", },
-{ label:"直流电源形式", prop:"dcXs", span: 8, },
-{ label:"直流电源厂家", prop:"dcCj", span: 8, },
-{ label:"标称风量", prop:"wind", span: 8, },
-{ label:"风门形式", prop:"windModel", span: 8, },
-{ label:"启动与拖动方式", prop:"moveMethod", span: 8, },
-{ label:"电源快切装置", prop:"have", span: 8, formType: "select", options: [], },
-{ label:"不停机调风叶", prop:"isCease", span: 8, formType: "select", options: [], },
-{ label:"具备无人值守条件", prop:"unmanned", span: 8, formType: "select", options: [],  },
-{ label:"设备型号", prop:"deviceModel", span: 8, },
-{ label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-{ label:"配电装置厂家", prop:"powerEquipmentManufacturer", span: 8, },
-{ label:"直流电源型号", prop:"dcPowerLevel", span: 8, },
-{ label:"标准负压", prop:"standardLevel", span: 8, },
-{ label:"一键启动和倒机", prop:"buttonStart", span: 8, },
-{ label:"润滑方式", prop:"lubricationModel", span: 8, formType: "select", options: [],  },
+                { label:"功率", prop:"ventilatorPower", span: 8, },
+                { label:"台数", prop:"psTs", span: 8, },
+                { label:"煤安标志证号", prop:"signCode", span: 8, },
+                { label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
+                { label:"电压等级", prop:"vcc", span: 8, },
+                { label:"配电装置开关型号", prop:"turnModel", span: 8, },
+                { label:"配电装置投运时间", prop:"putTime", span: 8, formType: "date", },
+                { label:"直流电源形式", prop:"dcXs", span: 8, },
+                { label:"直流电源厂家", prop:"dcCj", span: 8, },
+                { label:"标称风量", prop:"wind", span: 8, },
+                { label:"风门形式", prop:"windModel", span: 8, },
+                { label:"启动与拖动方式", prop:"moveMethod", span: 8, },
+                { label:"电源快切装置", prop:"have", span: 8, formType: "select", options: this.dict.type.equipment_ventilator_have, },
+                { label:"不停机调风叶", prop:"isCease", span: 8, },
+                { label:"具备无人值守条件", prop:"unmanned", span: 8, formType: "select", options: this.dict.type.equipment_elevator_people,  },
+                { label:"设备型号", prop:"deviceModel", span: 8, },
+                { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
+                { label:"配电装置厂家", prop:"powerEquipmentManufacturer", span: 8, },
+                { label:"直流电源型号", prop:"dcPowerLevel", span: 8, },
+                { label:"标准负压", prop:"standardLevel", span: 8, },
+                { label:"一键启动和倒机", prop:"buttonStart", span: 8, },
+                { label:"润滑方式", prop:"lubricationModel", span: 8, formType: "select", options: this.dict.type.equipment_ventilator_lubrication,  },
             ]
         },
         // 列信息
@@ -138,6 +139,7 @@ export default {
         return {
             // 遮罩层
             loading: true,
+            btnLoading: false,
             // 选中数组
             ids: [],
             // 非单个禁用
@@ -334,12 +336,16 @@ export default {
         },
         /** 提交按钮 */
         submitForm: function (formdata) {
+            this.btnLoading = true;
+            formdata.partIds = formdata.emArchivesParts.map((b)=>b.deviceId);
             if (formdata.largeId != undefined) {
                 updateVentilator(formdata).then(response => {
                     this.$modal.msgSuccess("修改成功");
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             } else {
                 addVentilator(formdata).then(response => {
@@ -347,6 +353,8 @@ export default {
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             }
         },

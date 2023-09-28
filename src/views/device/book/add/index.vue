@@ -29,11 +29,11 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
-import step1 from "@/views/decive/book/add/step1";
-import step2 from "@/views/decive/book/add/step2";
-import step3 from "@/views/decive/book/add/step3";
-import step4 from "@/views/decive/book/add/step4";
-import step5 from "@/views/decive/book/add/step5";
+import step1 from "@/views/device/book/add/step1";
+import step2 from "@/views/device/book/add/step2";
+import step3 from "@/views/device/book/add/step3";
+import step4 from "@/views/device/book/add/step4";
+import step5 from "@/views/device/book/add/step5";
 
 export default {
   name: "bookadd",
@@ -44,7 +44,7 @@ export default {
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, 
     step1, step2, step3, step4, step5,
-    devicebook: ()=> import("@/views/decive/book/index"),
+    // devicebook: ()=> import("@/views/device/book/index"),
   },
   props:{
     formTitle:{

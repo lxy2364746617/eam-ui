@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/lbase/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/lbase/importData'">
       </file-import>
     </div>
@@ -236,7 +236,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/lbase/add', })
+      this.$router.push({ path: '/device/big/lbase/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -248,7 +248,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/lbase/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/lbase/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

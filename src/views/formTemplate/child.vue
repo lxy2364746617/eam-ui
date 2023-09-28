@@ -234,7 +234,7 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
-      this.getList();
+      this.getList(this.queryParams);
     },
     /** 重置按钮操作 */
     resetQuery() {
@@ -296,7 +296,7 @@ export default {
       this.$modal.confirm('是否确认删除设备平台_表单模板编号为"' + fieldIds + '"的数据项？').then(function() {
         return delTemplate(fieldIds);
       }).then(() => {
-        this.getList();
+        this.getList(this.queryParams);
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },

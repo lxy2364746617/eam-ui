@@ -56,7 +56,7 @@
 
             <div style="text-align: center;margin-top: 20px;" v-if="!disabled">
                 <el-button size="mini" @click="goback">取消</el-button>
-                <el-button size="mini" @click="saveHandle" type="primary">保存</el-button>
+                <el-button size="mini" @click="saveHandle" type="primary" :loading="btnLoading">保存</el-button>
             </div>
 
             <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -66,9 +66,9 @@
             </el-drawer>
 
             <!-- 导入 -->
-            <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+            <!-- <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/system/supplier/importTemplate'" ref="fileImport"
                 :importUrl="'/system/supplier/importData'">
-            </file-import>
+            </file-import> -->
         </div>
     </div>
 </template>
@@ -79,13 +79,13 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/decive/book/device";
+import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 
 export default {
     name: "Template",
-    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch'],
+    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_elevator_people'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
@@ -97,14 +97,14 @@ export default {
                 { label: "功率",prop: "power", span: 8,  },
                 { label: "台数",prop: "sum", span: 8,  },
                 { label: "设备厂家",prop: "equipmentManufacturer", span: 8,  },
-                { label: "投运时间",prop: "putTime", span: 8,  },
+                { label: "投运时间",prop: "putTime", span: 8, formType: "date", },
                 { label: "电压等级",prop: "vcc", span: 8,  },
                 { label: "公称容积流量",prop: "common", span: 8,  },
                 { label: "排气压力",prop: "pressure", span: 8,  },
                 { label: "风包有无",prop: "wind", span: 8,  },
                 { label: "风包容积",prop: "windBag", span: 8,  },
                 { label: "机房名称",prop: "machineName", span: 8,  },
-                { label: "无人值守",prop: "unmanned", span: 8,  },//(是/否)
+                { label: "无人值守",prop: "unmanned", span: 8, formType: "select", options: this.dict.type.equipment_elevator_people,  },//(是/否)
             ]
         },
         // 列信息
@@ -129,6 +129,7 @@ export default {
         return {
             // 遮罩层
             loading: true,
+            btnLoading: false,
             // 选中数组
             ids: [],
             // 非单个禁用
@@ -325,12 +326,16 @@ export default {
         },
         /** 提交按钮 */
         submitForm: function (formdata) {
+            this.btnLoading = true;
+            formdata.partIds = formdata.emArchivesParts.map((b)=>b.deviceId);
             if (formdata.largeId != undefined) {
                 updateCompressor(formdata).then(response => {
                     this.$modal.msgSuccess("修改成功");
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             } else {
                 addCompressor(formdata).then(response => {
@@ -338,6 +343,8 @@ export default {
                     // this.drawer = false;
                     // this.getList();
                     this.goback()
+                }).catch((err)=>{
+                    this.btnLoading = false;
                 });
             }
         },

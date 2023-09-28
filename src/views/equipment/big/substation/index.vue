@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/substation/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/substation/importData'">
       </file-import>
     </div>
@@ -99,39 +99,17 @@ export default {
     // 列信息
     tablecolumns() {
       return [
-      { label:"矿井名称", prop:"mineName", span: 8, required: true, },
-{ label:"变电所名称", prop:"substationName", span: 8, },
-{ label:"电源电压等级", prop:"vcc", span: 8, },
-{ label:"电源电缆型号", prop:"cableModel", span: 8, },
-{ label:"高压开关设备型号", prop:"highPowerModel", span: 8, },
-{ label:"高压开关电压等级", prop:"highPowerLevel", span: 8, },
-{ label:"高压开关设备厂家", prop:"highManufacturer", span: 8, },
-{ label:"高压投运时间", prop:"highPutTime", span: 8, },
-{ label:"所用变容量", prop:"variableCapacity", span: 8, },
-{ label:"所用变台数", prop:"variableSum", span: 8, },
-{ label:"低压开关设备型号", prop:"lowPowerModel", span: 8, },
-{ label:"低压开关电压等级", prop:"lowPowerLevel", span: 8, },
-{ label:"低压开关设备厂家", prop:"lowManufacturer", span: 8, },
-{ label:"低压投运时间", prop:"lowPutTime", span: 8, formType: "date", },
-{ label:"监控分站供电电源", prop:"powerSupply", span: 8, },
-{ label:"监控分站台数", prop:"powerSupplySum", span: 8, },
-{ label:"监控分站自动切换", prop:"automatic", span: 8, },
-{ label:"直流电源设备型号", prop:"directModel", span: 8, },
-{ label:"智能保护型号", prop:"protectModel", span: 8, },
-{ label:"智能保护厂家", prop:"protectManufacturer", span: 8, },
-{ label:"矿井产能", prop:"producePower", span: 8, },
-{ label:"电源上级名称", prop:"topSubstationName", span: 8, },
-{ label:"电源供电距离", prop:"powerSupplyLength", span: 8, },
-{ label:"高压开关台数", prop:"highPowerSum", span: 8, },
-{ label:"所用变电设备型号", prop:"changePowerModel", span: 8, },
-{ label:"所用变投运日期", prop:"changePutTime", span: 8, formType: "date", },
-{ label:"低压开关数", prop:"lowPowerSum", span: 8, },
-{ label:"监控分站设备型号", prop:"monitorModel", span: 8, },
-{ label:"监控分站控制方式", prop:"monitorMethod", span: 8, },
-{ label:"直流电源厂家", prop:"directManufacturer", span: 8, },
-{ label:"无人值守", prop:"unmanned", span: 8, formType: "select", options: [], },//(是/否)
-
-
+        { label:"矿井名称", prop:"mineName", span: 8, required: true, },
+        { label:"变电所名称", prop:"substationName", span: 8, },
+        { label:"电源上级名称", prop:"topSubstationName", span: 8, },
+        { label:"电源电压等级", prop:"vcc", span: 8, },
+        { label:"电源电缆型号", prop:"cableModel", span: 8, },
+        { label:"高压开关设备型号", prop:"highPowerModel", span: 8, },
+        { label:"高压开关台数", prop:"highPowerSum", span: 8, },
+        { label:"所用变电设备型号", prop:"changePowerModel", span: 8, },
+        { label:"所用变台数", prop:"variableSum", span: 8, },
+        { label:"低压开关设备型号", prop:"lowPowerModel", span: 8, },
+        { label:"低压开关数", prop:"lowPowerSum", span: 8, },
       ]
     },
   },
@@ -256,7 +234,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/substation/add', })
+      this.$router.push({ path: '/device/big/substation/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -268,7 +246,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/substation/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/substation/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

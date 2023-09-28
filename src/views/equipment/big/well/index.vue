@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/well/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/well/importData'">
       </file-import>
     </div>
@@ -99,28 +99,20 @@ export default {
     // 列信息
     tablecolumns() {
       return [
-      { label:"矿井名称", prop:"mineName", span: 8,  required: true, },
-{ label:"使用地点", prop:"useAddress", span: 8, },
-{ label:"煤安标志证号", prop:"signCode", span: 8, },
-{ label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-{ label:"投运时间", prop:"putTime", span: 8, formType: "date",  },
-{ label:"电压等级", prop:"vcc", span: 8, },
-{ label:"皮带机长度", prop:"length", span: 8, },   
-{ label:"皮带宽度", prop:"width", span: 8, },
-{ label:"平均坡度", prop:"slope", span: 8, },
-{ label:"提升设备功率", prop:"upPower", span: 8, },
-{ label:"提升设备速度", prop:"upSpeed", span: 8, },
-{ label:"逆止器型号", prop:"backstopModel", span: 8, },
-{ label:"制动器型号", prop:"brakesModel", span: 8, },
-{ label:"制动器台数", prop:"brakesSum", span: 8, },
-{ label:"生产日期", prop:"produceTime", span: 8, formType: "date",  },
-{ label:"设备型号", prop:"deviceModel", span: 8, },
-{ label:"控制方式", prop:"controlMode", span: 8, },
-{ label:"最大坡度", prop:"maxSlope", span: 8, },
-{ label:"提升设备能力", prop:"upDevicePower", span: 8, },
-{ label:"逆止器台数", prop:"backstop", span: 8, },
-{ label:"地面远程集控", prop:"isRemote", span: 8, formType: "select", options: [], },
-
+        { label:"矿井名称", prop:"mineName", span: 8,  required: true, },
+        { label:"使用地点", prop:"useAddress", span: 8, },
+        { label:"设备型号", prop:"deviceModel", span: 8, },
+        { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
+        { label:"电压等级", prop:"vcc", span: 8, },
+        { label:"控制方式", prop:"controlMode", span: 8, },
+        { label:"皮带机长度", prop:"length", span: 8, },   
+        { label:"皮带宽度", prop:"width", span: 8, },
+        { label:"提升设备功率", prop:"upPower", span: 8, },
+        { label:"提升设备能力", prop:"upDevicePower", span: 8, },
+        { label:"逆止器型号", prop:"backstopModel", span: 8, },
+        { label:"逆止器台数", prop:"backstop", span: 8, },
+        { label:"制动器型号", prop:"brakesModel", span: 8, },
+        { label:"制动器台数", prop:"brakesSum", span: 8, },
       ]
     },
   },
@@ -245,7 +237,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/well/add', })
+      this.$router.push({ path: '/device/big/well/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -257,7 +249,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/well/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/well/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

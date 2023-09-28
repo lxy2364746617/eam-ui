@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/gather/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/gather/importData'">
       </file-import>
     </div>
@@ -92,7 +92,7 @@ import fileImport from "@/components/FileImport";
 
 export default {
   name: "Template",
-  dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue'],
+  dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue','equipment_elevator_people'],
   components: { JmTable, JmForm, child, fileImport },
   computed: {
     
@@ -111,7 +111,7 @@ export default {
         { label:"管路-敷设长度", prop:"pipelineLength", span: 8, },
         { label:"台数", prop:"sum", span: 8, },
         { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-        { label:"无人值守", prop:"unmanned", span: 8, formType: "select", options: [], }, //(是/否)
+        { label:"无人值守", prop:"unmanned", span: 8, formType: "select", options: this.dict.type.equipment_elevator_people, }, //(是/否)
       ]
     },
   },
@@ -236,7 +236,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/gather/add', })
+      this.$router.push({ path: '/device/big/gather/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -248,7 +248,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/gather/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/gather/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

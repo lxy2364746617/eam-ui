@@ -168,7 +168,7 @@ export const constantRoutes = [
   },
   ///////////////////////////////////////////////////////////
   {
-    path: '/decive/big',
+    path: '/device/big',
     component: Layout,
     hidden: true,
     children: [
@@ -314,6 +314,35 @@ export const constantRoutes = [
           next()
         },
         meta: { title: '主井集中皮带', icon: '' }
+      },
+    ]
+  },
+  {
+    path: '/device/book',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'add',
+        component: () => import('@/views/device/book/add/index.vue'),
+        name: 'bookAdd',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑设备档案' : '新增设备档案'
+          to.query.d=='true' ? to.meta.title = '查看设备档案' : ''
+          next()
+        },
+        meta: { title: '设备档案', icon: '' }
+      },
+      {
+        path: 'details',
+        component: () => import('@/views/device/book/details/index.vue'),
+        name: 'bookDetails',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.l ? '编辑设备档案' : '新增设备档案'
+          to.query.d=='true' ? to.meta.title = '查看设备档案' : ''
+          next()
+        },
+        meta: { title: '设备档案', icon: '' }
       },
     ]
   },

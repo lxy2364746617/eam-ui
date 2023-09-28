@@ -9,6 +9,15 @@ export function equipmentTree(query) {
   })
 }
 
+// 查询设备平台_设备类别 树 无最外层父级
+export function equipmentTrees_noParent(query) {
+  return request({
+    url: '/equipment/category/equipmentTrees',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询设备平台_设备类别列表
 export function listCategory(query) {
   return request({

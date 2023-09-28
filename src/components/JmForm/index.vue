@@ -13,7 +13,9 @@
             :label-width="labelWidth||'120px'" >
             <el-row :gutter="10">
                 <el-col :span="col.span||12" v-for="col in columns" :key="col.prop" v-if="col.formVisible!=false">
+                    <el-form-item v-if="col.subTitle" :label="col.label" class="subtitle"></el-form-item>
                     <el-form-item 
+                        v-else
                         :label="col.label" 
                         :prop="col.prop" 
                         :class="{'hideBorder':hideBorder}"
@@ -205,6 +207,13 @@ export default {
     }
     .el-input--prefix .el-input__inner {
         padding-left: 15px !important;
+    }
+}
+.subtitle{
+    border-bottom: 1px solid #ddd;
+    ::v-deep .el-form-item__label{
+        color: #c9a835;
+        font-weight: bold;
     }
 }
 </style>

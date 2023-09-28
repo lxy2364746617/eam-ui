@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/ventilator/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/ventilator/importData'">
       </file-import>
     </div>
@@ -99,29 +99,14 @@ export default {
     // 列信息
     tablecolumns() {
       return [
-      { label:"机房名称", prop:"ventilatorName", span: 8, required: true, },
-{ label:"功率", prop:"ventilatorPower", span: 8, },
-{ label:"台数", prop:"psTs", span: 8, },
-{ label:"煤安标志证号", prop:"signCode", span: 8, },
-{ label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
-{ label:"电压等级", prop:"vcc", span: 8, },
-{ label:"配电装置开关型号", prop:"turnModel", span: 8, },
-{ label:"配电装置投运时间", prop:"putTime", span: 8, formType: "date", },
-{ label:"直流电源形式", prop:"dcXs", span: 8, },
-{ label:"直流电源厂家", prop:"dcCj", span: 8, },
-{ label:"标称风量", prop:"wind", span: 8, },
-{ label:"风门形式", prop:"windModel", span: 8, },
-{ label:"启动与拖动方式", prop:"moveMethod", span: 8, },
-{ label:"电源快切装置", prop:"have", span: 8, formType: "select", options: [], },
-{ label:"不停机调风叶", prop:"isCease", span: 8, formType: "select", options: [], },
-{ label:"具备无人值守条件", prop:"unmanned", span: 8, formType: "select", options: [],  },
-{ label:"设备型号", prop:"deviceModel", span: 8, },
-{ label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-{ label:"配电装置厂家", prop:"powerEquipmentManufacturer", span: 8, },
-{ label:"直流电源型号", prop:"dcPowerLevel", span: 8, },
-{ label:"标准负压", prop:"standardLevel", span: 8, },
-{ label:"一键启动和倒机", prop:"buttonStart", span: 8, },
-{ label:"润滑方式", prop:"lubricationModel", span: 8, formType: "select", options: [],  },
+        { label:"矿井名称", prop:"mineName", span: 8, required: true, },
+        { label:"机房名称", prop:"ventilatorName", span: 8, required: true, },
+        { label:"设备型号", prop:"deviceModel", span: 8, },
+        { label:"功率", prop:"ventilatorPower", span: 8, },
+        { label:"台数", prop:"psTs", span: 8, },
+        { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
+        { label:"配电装置开关型号", prop:"turnModel", span: 8, },
+        { label:"直流电源型号", prop:"dcPowerLevel", span: 8, },
       ]
     },
   },
@@ -203,7 +188,7 @@ export default {
     getList(queryParams) {
       this.loading = true;
       listVentilator(queryParams).then(response => {
-        this.templateList = response.data;
+        this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -246,7 +231,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/ventilator/add', })
+      this.$router.push({ path: '/device/big/ventilator/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -258,7 +243,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/ventilator/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/ventilator/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

@@ -76,7 +76,7 @@
       </el-drawer> -->
 
       <!-- 导入 -->
-      <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
+      <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/passengers/importTemplate'" ref="fileImport"
         :importUrl="'/equipment/passengers/importData'">
       </file-import>
     </div>
@@ -101,28 +101,10 @@ export default {
       return [
         { label:"矿井名称", prop:"mineName", span: 8, required: true, },
         { label:"使用地点", prop:"useAddress", span: 8, },
-        { label:"煤安标志证号", prop:"signCode", span: 8, },
-        { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-        { label:"投运时间", prop:"putTime", span: 8, formType: "date", },
-        { label:"电压等级", prop:"vcc", span: 8, },
-        { label:"最大坡度", prop:"maxSlope", span: 8, },
-        { label:"运行距离", prop:"runDistance", span: 8, },
-        { label:"运输能力", prop:"runCapacity", span: 8, },
-        { label:"驱动轮尾轮直径", prop:"drivingWheelWidth", span: 8, },
-        { label:"钢丝绳直径", prop:"wireRopeWidth", span: 8, },
-        { label:"绳径比", prop:"ropeContrast", span: 8, },
-        { label:"传动方式", prop:"moveModel", span: 8, },
-        { label:"猴车实际使用宽度", prop:"carWidth", span: 8, },
-        { label:"减速器油温检测", prop:"isHave", span: 8, formType: "select", options: [], },//0-有,1-没有.
-        { label:"架空成人装置共谱情况", prop:"common", span: 8, formType: "select", options: [], },//(皮带/轿车)
         { label:"设备型号", prop:"deviceModel", span: 8, },    
-        { label:"生产日期", prop:"produceTime", span: 8, formType: "date", },    
-        { label:"功率", prop:"power", span: 8, },
-        { label:"运行速度", prop:"runSpeed", span: 8, },    
+        { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
         { label:"钢丝绳型号", prop:"wireRopeModel", span: 8, },
         { label:"轮边制动器型号", prop:"wheelModel", span: 8, },
-        { label:"断轴保护措施", prop:"breakProtect", span: 8, formType: "select", options: [], },//(0-有,1-无.)
-        { label:"无人值守", prop:"unmanned", span: 8, formType: "select", options: [], },//(是/否)
       ]
     },
   },
@@ -247,7 +229,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.$router.push({ path: '/decive/big/passengers/add', })
+      this.$router.push({ path: '/device/big/passengers/add', })
       // this.reset();
       // this.drawer = true;
       // this.title = "新增表单模板";
@@ -259,7 +241,7 @@ export default {
       // getlbase(id).then(response => {
       // this.formData = JSON.parse(JSON.stringify(row));
       this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
-      this.$router.push({ path: '/decive/big/passengers/add', query: {l: row.largeId, d: this.disabled }})
+      this.$router.push({ path: '/device/big/passengers/add', query: {l: row.largeId, d: this.disabled }})
       // this.drawer = true;
       // });
     },

@@ -75,8 +75,8 @@
                       placeholder="请选择" 
                       :normalizer="normalizer" 
                       :appendToBody="true"
-                      zIndex="9999"
-                      style="height: 32px;line-height: 32px;"/>
+                      :append-to-body="true"
+                      :zIndex="9999"/>
                     <el-input
                       v-else
                       v-model="queryParams[col.prop]"
@@ -309,14 +309,20 @@ export default {
   ::v-deep .el-form-item__content .el-input--small .el-input__inner,
   ::v-deep .el-form-item__content .el-select--small,
   ::v-deep .el-form-item__content .el-select--small .el-input--small,
-  ::v-deep .el-form-item__content .el-select--small .el-input--small .el-input__inner {
-    height: auto;
+  ::v-deep .el-form-item__content .el-select--small .el-input--small .el-input__inner,
+  ::v-deep .vue-treeselect,
+  ::v-deep .vue-treeselect .vue-treeselect__control{
+    height: 100%;
     border-radius: 0;
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
+  }
+  ::v-deep .vue-treeselect__placeholder, 
+  ::v-deep .vue-treeselect__single-value{
+    line-height: 46px;
   }
   ::v-deep .el-table th.el-table__cell{
     background-color: #e7f3ff;

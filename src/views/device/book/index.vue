@@ -15,7 +15,6 @@
           placement="bottom"
           title=""
           style="position: fixed;z-index: 1009;top: 55px;right: 10px;"
-          width="200"
           trigger="hover"
           content="">
           <el-button 
@@ -26,7 +25,7 @@
           <jm-user-tree 
             :treeData="categoryOptions" 
             @handleNodeClick="handleNodeClick" 
-            style="position: fixed;top: 121px;height: calc(100vh - 141px);">
+            style="height: calc(100vh - 141px);">
           </jm-user-tree>
         </el-popover>
       </div>
@@ -75,7 +74,7 @@
                 icon="el-icon-plus"
                 size="mini"
                 :loading="btnLoading"
-                @click="handleAdd"
+                @click="handleOpen"
                 v-hasPermi="['equipment:book:add']"
               >新增</el-button>
             </el-col>
@@ -84,7 +83,8 @@
                 type="primary"
                 icon="el-icon-upload2"
                 size="mini"
-                @click="handleAdd"
+                :disabled="true"
+                @click="handleImport" 
                 v-hasPermi="['equipment:book:add']"
               >导入</el-button>
             </el-col>
@@ -152,7 +152,7 @@
           </template>
         </jm-table>
       </el-col>
-      <el-col :span="18" :xs="24" v-if="addDetails">
+      <el-col :span="24" :xs="24" v-if="addDetails">
         <add-details :formData="formData" :formTitle="title" @back="back()"></add-details>
       </el-col>
 
@@ -163,6 +163,43 @@
     </div>
     <add-edit v-if="addEdit" :formTitle="title" :formData="formData" @back="back()"></add-edit>
     <device-index v-if="deviceIndexVisible" @back="deviceIndexVisible=false"></device-index>
+    <!-- 导入 -->
+    <file-import 
+      @handleFileSuccess="handleFileSuccess"
+      :downloadTemplateUrl="'/equipment/base/importTemplate'"
+      ref="fileImport"
+      :importUrl="'/equipment/base/importData'">
+    </file-import>
+    <!-- 新增 -->
+    <el-drawer
+      title="新增设备"
+      :visible.sync="addItem.addDrawer"
+      direction="rtl"
+      :wrapperClosable="false"
+      destroy-on-close>
+      <el-radio-group v-model="addItem.addRadio" style="margin-left: 20px;">
+        <el-row style="margin-bottom: 20px;margin-top: 20px;">
+          <el-col :span="10" style="line-height: 40px;"><el-radio :label="1">复制设备</el-radio></el-col>
+          <el-col :span="14" v-if="addItem.addRadio==1"><el-input readonly @click.native="addItem.choosedrawer=true" v-model="addItem.copyInputName" placeholder="请选择"></el-input></el-col>
+        </el-row>
+        <el-row style="margin-bottom: 20px;">
+          <el-col :span="24"><el-radio :label="2">新增设备</el-radio></el-col>
+        </el-row>
+      </el-radio-group>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="handleAdd" size="small">确 定</el-button>
+        <el-button @click="addItem.addDrawer=false" size="small">取 消</el-button>
+      </div>
+    </el-drawer>
+    <!-- 添加或修改设备平台_表单模板对话框 -->
+    <el-drawer
+      title="选择设备"
+      :visible.sync="addItem.choosedrawer"
+      direction="rtl"
+      size="80%"
+      :wrapperClosable="false">
+      <parentdevice :isChoose="true" @submitRadio="submitRadio2" @close="addItem.choosedrawer=false"></parentdevice>
+    </el-drawer>
   </div>
 </template>
 
@@ -170,20 +207,22 @@
 import { findByTemplateType } from "@/api/equipment/attribute";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
-import { listBASE, getBASE, delBASE, addBASE, updateBASE, countBASE, exportBASE } from "@/api/equipment/BASE";
+import { listBASE, getBASE, delBASE, addBASE, updateBASE, countBASE, exportBASE, copyBASE } from "@/api/equipment/BASE";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
-import addEdit from "@/views/decive/book/add";
-import addDetails from "@/views/decive/book/details";
-import deviceIndex from "@/views/decive/book/deviceIndex";
+import addEdit from "@/views/device/book/add";
+import addDetails from "@/views/device/book/details";
+import deviceIndex from "@/views/device/book/deviceIndex";
 import JmTable from "@/components/JmTable";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import fileImport from "@/components/FileImport";
+import parentdevice from "@/views/device/book/device";
 
 export default {
   name: "devicebook",
   dicts: [ 'em_device_state','em_device_att', 'apv_status','em_device_level'],
-  components: { Treeselect, JmUserTree, JmTable, addEdit, addDetails, deviceIndex },
+  components: { Treeselect, JmUserTree, JmTable, addEdit, addDetails, deviceIndex, fileImport, parentdevice },
   props:{
     isChoose:{
       default:false,
@@ -215,6 +254,13 @@ export default {
   },
   data() {
     return {
+      addItem: {
+        choosedrawer: false,
+        copyInputName: '',
+        copyInputId: '',
+        addDrawer: false,
+        addRadio: 1,
+      },
       btnLoading: false,
       formData: {
         archivesOther: {}, // 步骤2 值
@@ -328,7 +374,10 @@ export default {
     this.getTreeSelect();
   },
   methods: {
-    
+    /** 导入按钮操作 */
+    handleImport(){
+      this.$refs.fileImport.upload.open=true
+    },
     /** 查询设备档案下拉树结构 */
     getTree() {
       equipmentTree().then(response => {
@@ -359,10 +408,18 @@ export default {
     submitRadio(){
       this.$emit('submitRadio',this.radioRow)
     },
+    submitRadio2(row){
+      this.addItem.copyInputName = row.deviceName
+      this.addItem.copyInputId = row.deviceId
+      this.addItem.choosedrawer = false
+    },
     back(){
       this.addEdit=false
       this.addDetails=false
       this.getList(this.queryParams)
+    },
+    handleOpen(){
+      this.addItem.addDrawer=true
     },
     /** 查询用户列表 */
     getList(queryParams) {
@@ -397,7 +454,7 @@ export default {
     // 节点单击事件
     handleNodeClick(data) {
       this.addDetails = false
-      this.queryParams.categoryId = data.id;
+      this.queryParams.categoryId = data.parentId==0?'':data.id; // 如果是最外层，传空
       this.getCount({categoryId:this.queryParams.categoryId})
       this.handleQuery();
     },
@@ -450,125 +507,38 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.btnLoading = true
-      // 获取扩展数据
-      findByTemplateType({templateType: 'K'}).then(response => {
-        this.formData = this.$options.data().formData;
-        // this.formData.emArchivesExtendAtt = response.data;
-        // this.formData.emArchivesIndex = response.data;
-        // var aa = [
-        //   {
-        //       "createBy": "buyunxuyong",
-        //       "createTime": "2023-09-13 11:38:53",
-        //       "updateBy": null,
-        //       "updateTime": null,
-        //       "remark": "12",
-        //       "fieldId": 13,
-        //       "templateId": 2,
-        //       "fieldCode": "aqsq",
-        //       "fieldName": "12",
-              
-        //       "valuePath": "12",
-        //       "required": null,
-        //       "isModify": "0",
-        //       "componentType": "input",
-        //       "componentContent": "12",
-        //       "disabled": null
-        //   },
-        //   {
-        //       "createBy": "buyunxuyong",
-        //       "createTime": "2023-09-13 16:06:10",
-        //       "updateBy": null,
-        //       "updateTime": null,
-        //       "remark": "1111",
-        //       "fieldId": 21,
-        //       "templateId": 2,
-        //       "fieldCode": "dewde",
-        //       "fieldName": "1111",
-              
-        //       "valuePath": "1111",
-        //       "required": "0",
-        //       "isModify": "0",
-        //       "componentType": "input",
-        //       "componentContent": "1111",
-        //       "disabled": null
-        //   },
-        //   {
-        //       "createBy": "buyunxuyong",
-        //       "createTime": "2023-09-13 16:08:02",
-        //       "updateBy": null,
-        //       "updateTime": null,
-        //       "remark": "11",
-        //       "fieldId": 23,
-        //       "templateId": 2,
-        //       "fieldCode": "vfvf",
-        //       "fieldName": "11",
-              
-        //       "valuePath": "11",
-        //       "required": "0",
-        //       "isModify": "0",
-        //       "componentType": "input",
-        //       "componentContent": "11",
-        //       "disabled": null
-        //   },
-        //   {
-        //       "createBy": "buyunxuyong",
-        //       "createTime": "2023-09-13 16:08:57",
-        //       "updateBy": null,
-        //       "updateTime": null,
-        //       "remark": "11",
-        //       "fieldId": 24,
-        //       "templateId": 2,
-        //       "fieldCode": "cdacad",
-        //       "fieldName": "11",
-              
-        //       "valuePath": "11",
-        //       "required": "0",
-        //       "isModify": "0",
-        //       "componentType": "input",
-        //       "componentContent": "11",
-        //       "disabled": null
-        //   },
-        //   {
-        //       "createBy": "buyunxuyong",
-        //       "createTime": "2023-09-13 16:41:16",
-        //       "updateBy": null,
-        //       "updateTime": null,
-        //       "remark": "1221",
-        //       "fieldId": 28,
-        //       "templateId": 2,
-        //       "fieldCode": "vfewvf",
-        //       "fieldName": "12",
-              
-        //       "valuePath": "12",
-        //       "required": "0",
-        //       "isModify": "0",
-        //       "componentType": "input",
-        //       "componentContent": "122",
-        //       "disabled": null
-        //   }
-        // ]
-        this.setFormLabel(response.data)
-        // 扩展数据
-        this.formData.emArchivesExtendAtt = {
-          componentContent: response.data,
-          fieldValue: {},
+      this.addItem.addDrawer = false
+      if(this.addItem.addRadio == 1){
+        // 复制
+        if(this.addItem.copyInputName == ''){
+          this.$modal.msgError("复制设备不能为空");
+        }else{
+          copyBASE({deviceId: this.addItem.copyInputId}).then(response => {
+            this.btnLoading = false
+            this.getList();
+          })
         }
-        this.addEdit = true;
-        this.title = "新增设备";
-        this.btnLoading = false
-      })
-      .catch(err => {
-        this.btnLoading = false
-      });
+      }else if(this.addItem.addRadio == 2){
+        // 新增
+        // this.$router.push({ path: '/device/book/add', })
+        // 获取扩展数据
+        findByTemplateType({templateType: 'K'}).then(response => {
+          this.formData = this.$options.data().formData;
+          this.setFormLabel(response.data)
+          // 扩展数据
+          this.formData.emArchivesExtendAtt = {
+            componentContent: response.data,
+            fieldValue: {},
+          }
+          this.addEdit = true;
+          this.title = "新增设备";
+          this.btnLoading = false
+        })
+        .catch(err => {
+          this.btnLoading = false
+        });
 
-      // this.reset();
-      // getBASE().then(response => {
-      //   this.postOptions = response.posts;
-      //   this.roleOptions = response.roles;
-      //   this.open = true;
-      //   this.title = "添加用户";
-      //   this.form.password = this.initPassword;
-      // });
+      }
     },
     /** 修改按钮操作 */
     handleUpdate(row,f) {
@@ -657,11 +627,6 @@ export default {
         ...obj
       }, `device_${new Date().getTime()}.xlsx`)
     },
-    /** 导入按钮操作 */
-    handleImport() {
-      this.upload.title = "用户导入";
-      this.upload.open = true;
-    },
     /** 下载模板操作 */
     importTemplate() {
       this.download('system/user/importTemplate', {
@@ -672,12 +637,8 @@ export default {
       this.upload.isUploading = true;
     },
     // 文件上传成功处理
-    handleFileSuccess(response, file, fileList) {
-      this.upload.open = false;
-      this.upload.isUploading = false;
-      this.$refs.upload.clearFiles();
-      this.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
-      this.getList();
+    handleFileSuccess(){
+      this.getList(this.queryParams);
     },
     // 提交上传文件
     submitFileForm() {
@@ -686,3 +647,13 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.dialog-footer{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  line-height: 50px;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+</style>
