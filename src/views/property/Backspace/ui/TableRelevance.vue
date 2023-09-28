@@ -140,7 +140,7 @@ export default {
   mounted() {},
   methods: {
     /** 查询用户列表 */
-    getList(queryParams) {
+    getList(queryParams = { pageNum: 1, pageSize: 10 }) {
       this.loading = true;
       getAssociatedPlan(queryParams).then((response) => {
         this.equipmentList = response.rows;
