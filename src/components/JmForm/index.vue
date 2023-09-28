@@ -29,7 +29,7 @@
                         </el-select>
                         <el-select v-else-if="col.formType=='selectTag'" v-model="formData[col.prop]" placeholder="请选择" @change="col.selectfn?col.selectfn():(()=>{})()" filterable clearable :disabled="col.formDisabled || disabled">
                             <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value">
-                                <el-tag class="selectTag" effect="light" :type="selectTagColor[item.label]">
+                                <el-tag class="selectTag" effect="light" :type="item.raw.listClass">
                                     {{ item.label }}
                                 </el-tag>
                             </el-option>
@@ -129,21 +129,6 @@ export default {
         return {
             // form: {},
             rules: {},
-            selectTagColor: {
-                待提交: 'warning',
-                待审批: 'warning',
-                审批中: '',
-                审批通过: 'success',
-                审批驳回: 'danger',
-
-                在用: 'success',
-                修理: 'danger',
-                备用: '',
-                闲置: 'info',
-                待处置: 'warning',
-                待报废: 'warning',
-                已报废: 'info',
-            },
         }
     },
     created() {
@@ -239,7 +224,7 @@ export default {
     }
 }
 .selectTag{
-    background-color: transparent;
+    background: none!important;
     border: none;
     margin: 0;
     padding: 0;

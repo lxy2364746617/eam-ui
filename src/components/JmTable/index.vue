@@ -70,7 +70,7 @@
                       @change="selectchange($event,col.prop)"
                       placeholder="请选择">
                         <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value">
-                          <el-tag class="selectTag" effect="light" :type="selectTagColor[item.label]">
+                          <el-tag class="selectTag" effect="light" :type="item.raw.listClass">
                             {{ item.label }}
                           </el-tag>
                         </el-option>
@@ -105,7 +105,7 @@
                 <span v-else-if="col.formType=='date'">{{ parseTime(scope.row[col.prop], '{y}-{m}-{d}') }}</span>
                 <span v-else-if="col.formType=='select'||col.formType=='radio'" v-html="findName(col.options,scope.row[col.prop])"></span>
                 <span v-else-if="col.formType=='selectTag'">
-                  <el-tag class="selectTag" effect="light" :type="selectTagColor[findName(col.options,scope.row[col.prop])]">
+                  <el-tag class="selectTag" effect="light" :type="findClass(col.options,scope.row[col.prop])">
                     {{ findName(col.options,scope.row[col.prop]) }}
                   </el-tag>
                 </span>
@@ -234,21 +234,6 @@ export default {
               pageSize: 10,
           },
           tableVisible: {},
-          selectTagColor: {
-            待提交: 'warning',
-            待审批: 'warning',
-            审批中: '',
-            审批通过: 'success',
-            审批驳回: 'danger',
-
-            在用: 'success',
-            修理: 'danger',
-            备用: '',
-            闲置: 'info',
-            待处置: 'warning',
-            待报废: 'warning',
-            已报废: 'info',
-          },
         }
     },
     methods: {
@@ -276,6 +261,15 @@ export default {
         selectchange($event,prop){
           this.$emit('selectchange',$event,prop)
         },
+      findClass(options,value){
+        var name = 'primary'
+        for (let i = 0; i < options.length; i++) {
+          if(options[i].value == value){
+            name = options[i].raw.listClass
+          }
+        }
+        return name
+      },
       findName(options,value){
         var name = ''
         for (let i = 0; i < options.length; i++) {
@@ -360,7 +354,7 @@ export default {
     background-color: #e7f3ff;
   }
   .selectTag{
-    background-color: transparent;
+    background: none!important;
     border: none;
     margin: 0;
     padding: 0;
