@@ -24,12 +24,11 @@
             >新增</el-button
           >
         </el-col>
-        <el-col :span="1.5">
+        <!-- <el-col :span="1.5">
           <el-upload
-            multiple
-            :before-upload="handleBeforeUpload"
-            :action="uploadFileUrl"
-            class="upload-file-uploader"
+            :before-upload="field101BeforeUpload"
+            @click="handelImport"
+            action=""
             v-hasPermi="['equipment:book:add']"
             ><el-button type="danger" size="mini" plain icon="el-icon-upload"
               >导入</el-button
@@ -46,7 +45,7 @@
             v-hasPermi="['equipment:book:add']"
             >下载</el-button
           >
-        </el-col>
+        </el-col> -->
         <!-- <el-col :span="1.5">
               <el-button
                 type="danger"
@@ -115,10 +114,9 @@ import {
   uploadInfo,
   download,
   delId,
-} from "@/api/property/purchase";
+} from "@/api/property/backspace";
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
-import { saveAs } from "file-saver";
 export default {
   components: {
     JmTable,
@@ -133,7 +131,6 @@ export default {
     return {
       field101fileList: [],
       btnLoading: false,
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -151,15 +148,7 @@ export default {
       },
       // 弹出层标题
       title: "",
-      formData: {
-        archivesOther: {}, // 步骤2 值
-        emArchivesExtendAtt: {}, // 步骤2-扩展数据  模板 值
-        emArchivesIndex: {}, // 步骤3 主要指标  模板 值
-        emArchivesSpecial: {}, // 步骤3 特种设备  模板 值
-        archivesPartsList: [], // 步骤4  表格
-        genFileResourceList: [], // 步骤5  上传图片
-        imgFileResourceList: [], // 步骤5  上传文件
-      },
+      formData: {},
       // 表单参数
       form: {},
 
@@ -169,43 +158,37 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "购置计划编号", prop: "purchasePlanNo", tableVisible: true },
-        { label: "购置计划名称", prop: "purchasePlanName", tableVisible: true },
-        { label: "购置计划类型", prop: "purchasePlanType", tableVisible: true },
-        { label: "年度", prop: "annual", tableVisible: true },
-        { label: "计划需求数量", prop: "planDemandNum", tableVisible: true },
+        { label: "创建时间", prop: "purchasePlanNo", tableVisible: true },
+        { label: "回退单编号", prop: "purchasePlanName", tableVisible: true },
+        { label: "设备数量", prop: "purchasePlanType", tableVisible: true },
         {
-          label: "计划金额(万元)",
+          label: "业务日期",
+          prop: "annual",
+          tableVisible: true,
+          formType: "data",
+        },
+        { label: "所属组织", prop: "planDemandNum", tableVisible: true },
+        {
+          label: "申请部门",
           prop: "planDemandMount",
           tableVisible: true,
         },
         {
-          label: "开工时间",
+          label: "申请部门负责人",
           prop: "startTime",
           tableVisible: true,
-          formType: "date",
         },
         {
-          label: "竣工时间",
+          label: "调入部门",
           prop: "endTime",
           tableVisible: true,
-          formType: "date",
         },
-        { label: "申报单位", prop: "declarationUnit", tableVisible: true },
-        { label: "申报人", prop: "declarationPerson", tableVisible: true },
         {
-          label: "申报日期",
-          prop: "declarationDate",
-          formType: "date",
+          label: "调入部门负责人",
+          prop: "declarationUnit",
           tableVisible: true,
         },
-        { label: "创建人", prop: "createBy", tableVisible: true },
-        {
-          label: "创建时间",
-          prop: "createTime",
-          tableVisible: true,
-          formType: "date",
-        },
+
         {
           label: "审批状态",
           prop: "apvStatus",
@@ -267,23 +250,19 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        delId(row.id).then(async (res) => {
+        delId(row.id).then((res) => {
           if (res.code == 200) {
-            await this.getList();
             this.$message({
               type: "success",
               message: "删除成功!",
             });
           }
         });
+        this.getList();
       });
     },
     exportWarnLog(data) {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
-      download({ ids: this.ids, purchasePlanType: 1 }).then((res) => {
+      download(this.ids).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });
@@ -291,8 +270,18 @@ export default {
       });
     },
     // 导入
-
-    handleBeforeUpload(file) {},
+    field101BeforeUpload(file) {
+      let isRightSize = file.size / 1024 / 1024 < 2;
+      if (!isRightSize) {
+        this.$message.error("文件大小超过 2MB");
+      }
+      const fileData = new FormData();
+      fileData.append("files", file);
+      fileData["purchasePlanType"] = 1;
+      uploadInfo(fileData);
+      return false;
+    },
+    /** 查询用户列表 */
     async getList(
       form = {
         pageNum: 1,
@@ -316,11 +305,11 @@ export default {
       this.radioRow = selection[0];
     },
     handleAdd() {
-      this.$router.push("/property/purchase/annualAdd");
+      this.$router.push("/property/backspaceAdd");
     },
     goDetails(row) {
       this.$router.push({
-        path: "/property/purchase/annualDetails",
+        path: "/property/backspaceDetails",
         query: {
           item: { ...row, isEdit: false },
         },
@@ -328,7 +317,7 @@ export default {
     },
     goEdit(row) {
       this.$router.push({
-        path: "/property/purchase/annualEdit",
+        path: "/property/backspaceEdit",
         query: {
           item: { ...row, isEdit: true },
         },

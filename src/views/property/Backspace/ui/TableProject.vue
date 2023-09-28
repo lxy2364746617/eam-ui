@@ -8,13 +8,12 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isShow2="isShow"
       :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
     >
       <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5" v-if="!isShow">
+        <el-col :span="1.5" v-if="!this.$route.query.item ? true : false">
           <el-button
             type="primary"
             plain
@@ -23,10 +22,10 @@
             :loading="btnLoading"
             @click="handleAdd"
             v-hasPermi="['equipment:book:add']"
-            >新增</el-button
+            >选取设备</el-button
           >
         </el-col>
-        <el-col :span="1.5" v-else>
+        <el-col :span="1.5" v-if="!this.$route.query.item ? true : false">
           <el-button
             type="primary"
             plain
@@ -35,7 +34,7 @@
             :loading="btnLoading"
             @click="importHandler"
             v-hasPermi="['equipment:book:add']"
-            >下载</el-button
+            >批量设置</el-button
           >
         </el-col>
       </template>
@@ -62,129 +61,24 @@
 
     <el-drawer title="我是标题" :visible.sync="drawer" :with-header="false">
       <div class="title">&nbsp;&nbsp;{{ title }}</div>
-      <el-form
-        ref="elForm"
-        :model="formData"
-        :rules="rules"
-        size="medium"
-        label-width="100px"
-        class="from"
+      <JmTableNoPaging
+        :tableData="equipmentList2"
+        @getList="getList2"
+        @handleSelectionChange="handleSelectionChange2"
+        :total="total2"
+        ref="jmtable"
+        :isRadio="isChoose2"
+        :handleWidth="230"
+        :columns="columns2"
+        :isEdit="false"
+        v-if="!addEdit2"
       >
-        <el-form-item label="设备名称" prop="deviceName">
-          <el-input
-            v-model="formData.deviceName"
-            placeholder="请输入设备名称"
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="规格型号" prop="sModel">
-          <el-input
-            v-model="formData.sModel"
-            placeholder="请输入规格型号"
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="技术参数" prop="technologyParam">
-          <el-input
-            v-model="formData.technologyParam"
-            type="textarea"
-            placeholder="请输入技术参数"
-            :maxlength="200"
-            show-word-limit
-            :autosize="{ minRows: 4, maxRows: 4 }"
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="必要性分析" prop="necessityAnalysis">
-          <el-input
-            v-model="formData.necessityAnalysis"
-            type="textarea"
-            placeholder="请输入必要性分析"
-            :maxlength="200"
-            show-word-limit
-            :autosize="{ minRows: 4, maxRows: 4 }"
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="需求日期" prop="demandDate">
-          <el-date-picker
-            v-model="formData.demandDate"
-            format="yyyy-MM-dd"
-            value-format="yyyy-MM-dd"
-            :style="{ width: '100%' }"
-            placeholder="请选择需求日期"
-            clearable
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="需求数量" prop="demandNum">
-          <el-input-number
-            v-model="formData.demandNum"
-            placeholder="需求数量"
-            :step="1"
-            controls-position="right"
-            :max="99"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item
-          label-width="120px"
-          label="计划单价(万元)"
-          prop="planPrice"
-        >
-          <el-input-number
-            v-model="formData.planPrice"
-            placeholder="计划单价(万元)"
-            :step="1"
-            controls-position="right"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item label="需求组织" prop="demandOrganization">
-          <el-cascader
-            v-model="formData.demandOrganization"
-            :options="this.deptOptions2"
-            :props="{ expandTrigger: 'click' }"
-            @change="handleChange"
-          ></el-cascader>
-        </el-form-item>
-        <el-form-item label="项目分类" prop="projectCategory">
-          <el-input
-            v-model="formData.projectCategory"
-            placeholder="请输入项目分类"
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="子公司审查依据" prop="examinationAccording">
-          <el-input
-            v-model="formData.examinationAccording"
-            placeholder="请输入子公司审查依据"
-            clearable
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="formData.remark"
-            placeholder="请输入备注"
-            clearable
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item size="large">
-          <el-button type="primary" @click="submitFormAdd">提交</el-button>
-          <el-button @click="resetForm">重置</el-button>
-        </el-form-item>
-      </el-form>
+      </JmTableNoPaging>
     </el-drawer>
   </div>
 </template>
 <script>
-import { getProjectList, downDetailLoad } from "@/api/property/purchase";
+import { getProjectList } from "@/api/property/backspace";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTableNoPaging from "@/components/JmTableNoPaging";
 import {
@@ -196,13 +90,12 @@ import {
   removeStore,
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
-import { saveAs } from "file-saver";
 export default {
   components: {
     JmTableNoPaging,
     Treeselect,
   },
-  props: ["rowId", "isShow"],
+  props: ["rowId"],
   data() {
     return {
       // 需求组织
@@ -439,18 +332,7 @@ export default {
       this.drawer = !this.drawer;
       this.title = "新增";
     },
-    importHandler() {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
-      download(this.ids).then((res) => {
-        const blob = new Blob([res], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        saveAs(blob, `下载数据_${new Date().getTime()}`);
-      });
-    },
+    importHandler() {},
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -543,7 +425,6 @@ export default {
               setStore("updateList", [this.formData]);
             }
           } else {
-            console.log("========================", getStore("updateList"));
             setStore(
               "updateList",
               getStore("updateList").filter(
@@ -564,7 +445,7 @@ export default {
         });
 
         this.getList();
-        this.resetForm();
+        this.$refs["elForm"].resetFields();
         this.drawer = false;
         // await getProjectAdd(this.formData).then((response) => {
         //   if (response.code == 200) {

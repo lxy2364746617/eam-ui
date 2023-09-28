@@ -8,13 +8,13 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isShow2="isShow"
       :isRadio="isChoose"
+      :isShow2="isShow"
       :handleWidth="230"
       :columns="columns"
     >
       <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5" v-if="!isShow">
+        <el-col :span="1.5">
           <el-button
             type="primary"
             plain
@@ -24,18 +24,6 @@
             @click="handleAdd"
             v-hasPermi="['equipment:book:add']"
             >新增</el-button
-          >
-        </el-col>
-        <el-col :span="1.5" v-else>
-          <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            :loading="btnLoading"
-            @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
-            >下载</el-button
           >
         </el-col>
       </template>
@@ -88,9 +76,9 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="技术参数" prop="technologyParam">
+        <el-form-item label="技术参数" prop="deviceType">
           <el-input
-            v-model="formData.technologyParam"
+            v-model="formData.deviceType"
             type="textarea"
             placeholder="请输入技术参数"
             :maxlength="200"
@@ -99,73 +87,17 @@
             :style="{ width: '100%' }"
           ></el-input>
         </el-form-item>
-        <el-form-item label="必要性分析" prop="necessityAnalysis">
-          <el-input
-            v-model="formData.necessityAnalysis"
-            type="textarea"
-            placeholder="请输入必要性分析"
-            :maxlength="200"
-            show-word-limit
-            :autosize="{ minRows: 4, maxRows: 4 }"
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="需求日期" prop="demandDate">
-          <el-date-picker
-            v-model="formData.demandDate"
-            format="yyyy-MM-dd"
-            value-format="yyyy-MM-dd"
-            :style="{ width: '100%' }"
-            placeholder="请选择需求日期"
-            clearable
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="需求数量" prop="demandNum">
+
+        <el-form-item label="数量" prop="deviceNum">
           <el-input-number
-            v-model="formData.demandNum"
-            placeholder="需求数量"
+            v-model="formData.deviceNum"
+            placeholder="数量"
             :step="1"
             controls-position="right"
             :max="99"
           ></el-input-number>
         </el-form-item>
-        <el-form-item
-          label-width="120px"
-          label="计划单价(万元)"
-          prop="planPrice"
-        >
-          <el-input-number
-            v-model="formData.planPrice"
-            placeholder="计划单价(万元)"
-            :step="1"
-            controls-position="right"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item label="需求组织" prop="demandOrganization">
-          <el-cascader
-            v-model="formData.demandOrganization"
-            :options="this.deptOptions2"
-            :props="{ expandTrigger: 'click' }"
-            @change="handleChange"
-          ></el-cascader>
-        </el-form-item>
-        <el-form-item label="项目分类" prop="projectCategory">
-          <el-input
-            v-model="formData.projectCategory"
-            placeholder="请输入项目分类"
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="子公司审查依据" prop="examinationAccording">
-          <el-input
-            v-model="formData.examinationAccording"
-            placeholder="请输入子公司审查依据"
-            clearable
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
+
         <el-form-item label="备注" prop="remark">
           <el-input
             v-model="formData.remark"
@@ -184,25 +116,26 @@
   </div>
 </template>
 <script>
-import { getProjectList, downDetailLoad } from "@/api/property/purchase";
-import Treeselect from "@riophae/vue-treeselect";
+import { getProjectList } from "@/api/property/receive";
 import JmTableNoPaging from "@/components/JmTableNoPaging";
 import {
   setStore,
   getStore,
   delList,
   upName,
-  convertToTargetFormat,
   removeStore,
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
-import { saveAs } from "file-saver";
 export default {
   components: {
     JmTableNoPaging,
-    Treeselect,
   },
-  props: ["rowId", "isShow"],
+  props: {
+    isShow: {
+      default: false,
+      type: Boolean,
+    },
+  },
   data() {
     return {
       // 需求组织
@@ -224,20 +157,7 @@ export default {
       // ! 当前选中行数据
       itemValue: null,
       total: 0,
-      formData: {
-        deviceName: undefined,
-        sModel: undefined,
-        technologyParam: "",
-        necessityAnalysis: "",
-        demandDate: null,
-        demandNum: 0,
-        planPrice: 0,
-        demandOrganization: null,
-        projectCategory: undefined,
-        examinationAccording: undefined,
-        remark: undefined,
-        purchasePlanNo: "年度",
-      },
+      formData: {},
       rules: {
         deviceName: [
           {
@@ -253,57 +173,16 @@ export default {
             trigger: "blur",
           },
         ],
-        technologyParam: [
+        createTime: [
           {
-            message: "请输入技术参数",
+            message: "请选择时间",
             trigger: "blur",
           },
         ],
-        necessityAnalysis: [
+        deviceType: [
           {
             required: true,
-            message: "请输入必要性分析",
-            trigger: "blur",
-          },
-        ],
-        demandDate: [
-          {
-            required: true,
-            message: "请选择需求日期",
-            trigger: "change",
-          },
-        ],
-        demandNum: [
-          {
-            required: true,
-            message: "需求数量",
-            trigger: "blur",
-          },
-        ],
-        planPrice: [
-          {
-            required: true,
-            message: "计划单价(万元)",
-            trigger: "blur",
-          },
-        ],
-        demandOrganization: [
-          {
-            required: true,
-            message: "请至少选择一个需求组织",
-            trigger: "change",
-          },
-        ],
-        projectCategory: [
-          {
-            required: true,
-            message: "请输入项目分类",
-            trigger: "blur",
-          },
-        ],
-        examinationAccording: [
-          {
-            message: "请输入子公司审查依据",
+            message: "请输入设备类型",
             trigger: "blur",
           },
         ],
@@ -319,64 +198,52 @@ export default {
   computed: {
     columns() {
       return [
+        { label: "创建时间", prop: "createTime", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
         { label: "规格型号", prop: "sModel", tableVisible: true },
-        { label: "技术参数", prop: "technologyParam", tableVisible: true },
         {
-          label: "必要性分析",
-          prop: "necessityAnalysis",
+          label: "数量",
+          prop: "deviceNum",
           tableVisible: true,
         }, //(1 设备、2 部件)
-        { label: "项目分类", prop: "projectCategory", tableVisible: true },
         {
-          label: "子公司审查依据",
-          prop: "examinationAccording",
+          label: "备注",
+          prop: "remark",
           tableVisible: true,
         },
-        {
-          label: "需求日期",
-          prop: "demandDate",
-
-          formType: "date",
-          tableVisible: true,
-        }, //(A、B、C)
-        {
-          label: "需求数量",
-          prop: "demandNum",
-
-          tableVisible: true,
-        }, //(0 父级)
-        { label: "计划单价(万元)", prop: "planPrice", tableVisible: true },
-        {
-          label: "需求组织",
-          prop: "demandOrganization",
-          tableVisible: true,
-          formType: "selectTree",
-          options: [],
-          width: 150,
-        },
-        { label: "备注", prop: "remark", tableVisible: true },
-        { label: "行号", prop: "lineNum", tableVisible: true },
       ];
     },
   },
-  watch: {},
+  watch: {
+    formData: {
+      handler(val, oldVal) {
+        this.formData["createTime"] = this.formatTimestamp();
+      },
+      deep: true,
+    },
+  },
   async created() {
     await this.getDeptTree();
     await this.getList();
     // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "demandOrganization")
-        this.$set(b, "options", this.deptOptions);
-    });
-    this.deptOptions2 = await convertToTargetFormat(this.deptOptions);
   },
   mounted() {},
 
   methods: {
-    cancel() {
-      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      this.$router.go(-1); //跳回上页
+    formatTimestamp() {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate();
+      return `${year}-${month}-${day.toString().padStart(2, "0")}`;
+    },
+
+    getWeekNumber(date) {
+      const onejan = new Date(date.getFullYear(), 0, 1);
+      const week = Math.ceil(
+        ((date - onejan) / 86400000 + onejan.getDay() + 1) / 7
+      );
+      return week;
     },
     handleChange(value) {
       this.formData.demandOrganization = value[value.length - 1];
@@ -401,9 +268,6 @@ export default {
     },
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
-      if (this.rowId) queryParams["id"] = this.rowId;
-      queryParams["purchasePlanType"] = 1;
-
       getProjectList(queryParams).then((response) => {
         if (getStore("equipmentList")) setStore("equipmentList", []);
         if (getStore("addList") && getStore("addList").length > 0) {
@@ -438,18 +302,6 @@ export default {
     handleAdd() {
       this.drawer = !this.drawer;
       this.title = "新增";
-    },
-    importHandler() {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
-      download(this.ids).then((res) => {
-        const blob = new Blob([res], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        saveAs(blob, `下载数据_${new Date().getTime()}`);
-      });
     },
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -514,7 +366,6 @@ export default {
     submitFormAdd() {
       this.$refs["elForm"].validate(async (valid) => {
         if (!valid) return;
-        this.formData["purchasePlanNo"] = "年度";
         // this.formData["id"] = 0;
         if (this.title === "新增") {
           if (getStore("addList") && getStore("addList").length > 0) {
@@ -543,7 +394,6 @@ export default {
               setStore("updateList", [this.formData]);
             }
           } else {
-            console.log("========================", getStore("updateList"));
             setStore(
               "updateList",
               getStore("updateList").filter(
@@ -562,9 +412,9 @@ export default {
           type: "success",
           message: "修改成功",
         });
-
+        console.log("========================", this.formData);
         this.getList();
-        this.resetForm();
+        this.$refs["elForm"].resetFields();
         this.drawer = false;
         // await getProjectAdd(this.formData).then((response) => {
         //   if (response.code == 200) {
@@ -597,6 +447,17 @@ export default {
     //     this.demandOrganizationOptions = data.list;
     //   });
     // },
+  },
+  beforeDestroy() {
+    // removeStore("addList");
+    // removeStore("delList");
+    // removeStore("updateList");
+  },
+
+  destroyed() {
+    // removeStore("addList");
+    // removeStore("delList");
+    // removeStore("updateList");
   },
 };
 </script>

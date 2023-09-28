@@ -1,12 +1,13 @@
 <template>
   <Wrapper :title="title">
-    <!-- <HeadSearch></HeadSearch> -->
     <TableHome></TableHome>
   </Wrapper>
 </template>
+
 <script>
 import Wrapper from "@/components/wrapper";
 import TableHome from "./ui/TableHome.vue";
+
 export default {
   components: {
     Wrapper,
@@ -14,7 +15,6 @@ export default {
   },
   data() {
     return {
-      message: "Hello from parent!",
       title: "",
     };
   },
@@ -25,6 +25,7 @@ export default {
   methods: {},
 };
 </script>
+
 <style lang="scss" scoped>
 .submit {
   display: flex;

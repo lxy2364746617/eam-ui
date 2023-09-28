@@ -5,8 +5,8 @@
       :formData="formData"
       @formData2="receiveDataFromChild"
     ></HeadEdit>
-    <TableProject :isShow="true" :rowId="formData.id">
-      <template
+    <TableProject :isShow="false" :rowId="formData.id"
+      ><template
         ><p class="icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,7 @@
         </p></template
       ></TableProject
     >
-    <TableRelevance :isShow="true" :title="'关联附件'"
+    <TableRelevance :isShow="false" :title="'关联附件'"
       ><template>
         <p class="icon">
           <svg
@@ -41,6 +41,11 @@
         </p>
       </template></TableRelevance
     >
+    <div class="submit">
+      <el-button type="primary" @click="submit">保存</el-button>
+      <el-button type="primary">保存并提交审批</el-button>
+      <el-button>取消</el-button>
+    </div>
   </Wrapper>
 </template>
 <script>
@@ -64,48 +69,68 @@ export default {
       isEdit: true,
       // 头部表单
       formData: {
-        purchasePlanName: null,
-        purchasePlanType: 1,
+        purchasePlanName: "",
+        purchasePlanType: 2,
         annual: "2023",
         time: [],
       },
     };
   },
-  created() {
-    const routeValue = this.$route.query.item;
-
-    this.formData = routeValue;
-    this.formData.time = [routeValue.startTime, routeValue.endTime];
-    this.formData["isBtn"] = 1;
-    this.isEdit = routeValue.isEdit;
-  },
+  created() {},
   mounted() {
     this.title = this.$route.meta.title;
+    const routeValue = this.$route.query.item;
+    if (routeValue) {
+      this.formData = routeValue
+      this.formData.time = [routeValue.startTime, routeValue.endTime];
+      this.isEdit = routeValue.isEdit;
+    }
   },
   computed: {},
   methods: {
+    clear() {
+      removeStore("addList");
+      removeStore("delList");
+      removeStore("updateList");
+      removeStore("equipmentList");
+    },
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
-
+    submit() {
+      this.formData["startTime"] = this.formData.time[0];
+      this.formData["endTime"] = this.formData.time[1];
+      this.formData["purchasePlanType"] = 2;
+      this.formData["purchasePlanNo"] = 2;
+      delete this.formData.time;
+      if (getStore("addList") && getStore("addList").length > 0) {
+        this.formData["addList"] = getStore("addList");
+      }
+      if (getStore("updateList") && getStore("updateList").length > 0) {
+        this.formData["updateList"] = getStore("updateList");
+      }
+      if (getStore("delList") && getStore("delList").length > 0) {
+        this.formData["delList"] = getStore("delList");
+      }
+      setProject(this.formData).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: "success",
+            message: "保存成功!",
+          });
+        }
+        this.clear();
+        this.cancel();
+      });
+    },
     receiveDataFromChild(data) {
       this.formData = data;
     },
   },
   watch: {},
   beforeDestroy() {
-    removeStore("addList");
-    removeStore("delList");
-    removeStore("updateList");
-    removeStore("equipmentList");
-    //跳回上页
-  },
-  beforeRouteLeave(to, from, next) {
-    // 保存上一个路由信息
-    this.$store.dispatch("tagsView/delView", from); // 关闭当前页
-    this.$router.go(-1);
-    next();
+    this.clear();
   },
 };
 </script>

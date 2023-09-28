@@ -16,7 +16,7 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-upload
             :before-upload="handelAdd"
-            action=""
+            :action="uploadFileUrl"
             v-hasPermi="['equipment:book:add']"
             ><el-button type="primary" size="mini" plain icon="el-icon-upload"
               >导入</el-button
@@ -76,16 +76,8 @@
   </div>
 </template>
 <script>
-import {
-  listBASE,
-  getBASE,
-  delBASE,
-  addBASE,
-  updateBASE,
-} from "@/api/equipment/BASE";
-import { getAssociatedPlan } from "@/api/property/purchase";
+import { getAssociatedPlan } from "@/api/property/receive";
 import JmTable from "@/components/JmTable";
-import { saveAs } from "file-saver";
 export default {
   components: {
     JmTable,
@@ -93,6 +85,7 @@ export default {
   props: { isShow: false, type: Boolean },
   data() {
     return {
+      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
       btnLoading: false,
       // 查询参数
       queryParams: {
@@ -152,39 +145,20 @@ export default {
           label: "文件大小",
           prop: "deviceAtt",
           formType: "select",
-          options: [],
           tableVisible: true,
         }, //(1 设备、2 部件)
       ];
     },
   },
   watch: {},
-  created() {
-    this.getList();
-  },
-  mounted() {},
+  created() {},
+  // mounted() { this.getList() },
   methods: {
     importHandler() {},
-    handelAdd(file) {
-      let isRightSize = file.size / 1024 / 1024 < 2;
-      if (!isRightSize) {
-        this.$message.error("文件大小超过 2MB");
-      }
-      // const fileData = new FormData();
-      // fileData.append("files", file);
-      // fileData["purchasePlanType"] = 1;
-      // uploadInfo(fileData);
-      return false;
-    },
+    handelAdd(file) {},
     /** 查询用户列表 */
-    getList(
-      queryParams = {
-        pageNum: 1,
-        pageSize: 10,
-      }
-    ) {
+    getList(queryParams = { pageNum: 1, pageSize: 10 }) {
       this.loading = true;
-
       getAssociatedPlan(queryParams).then((response) => {
         this.equipmentList = response.rows;
         this.total = response.total;
@@ -198,6 +172,7 @@ export default {
       this.multiple = !selection.length;
       this.radioRow = selection[0];
     },
+    handleAdd() {},
   },
 };
 </script>
@@ -216,7 +191,6 @@ export default {
 
     padding: 0;
     margin: 0;
-    padding-bottom: 10px;
     display: flex;
     justify-content: start;
     align-items: center;

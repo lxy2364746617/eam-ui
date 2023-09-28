@@ -22,7 +22,14 @@ export default {
     this.title = this.$route.meta.title;
   },
   computed: {},
-  methods: {},
+  methods: {
+    goDetails() {
+      this.$router.push("/property/purchase/warehousingDetails");
+    },
+    goAdd() {
+      this.$router.push("/property/purchase/warehousingAdd");
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

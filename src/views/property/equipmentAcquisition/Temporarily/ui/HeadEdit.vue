@@ -135,8 +135,8 @@ export default {
       },
       purchasePlanTypeOptions: [
         {
-          label: "年度计划",
-          value: 1,
+          label: "临时计划",
+          value: 2,
         },
       ],
     };
@@ -152,7 +152,9 @@ export default {
   },
 
   created() {},
-  mounted() {},
+  mounted() {
+    console.log("========================", this.formData2);
+  },
   methods: {},
 };
 </script>

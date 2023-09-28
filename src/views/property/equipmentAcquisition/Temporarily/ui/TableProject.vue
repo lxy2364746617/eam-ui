@@ -8,13 +8,13 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isShow2="isShow"
       :isRadio="isChoose"
+      :isShow2="isShow"
       :handleWidth="230"
       :columns="columns"
     >
       <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5" v-if="!isShow">
+        <el-col :span="1.5" v-if="!this.$route.query.item ? true : false">
           <el-button
             type="primary"
             plain
@@ -184,7 +184,11 @@
   </div>
 </template>
 <script>
-import { getProjectList, downDetailLoad } from "@/api/property/purchase";
+import {
+  getProjectList,
+  getProjectAdd,
+  deleteProjectId,
+} from "@/api/property/purchase";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTableNoPaging from "@/components/JmTableNoPaging";
 import {
@@ -195,8 +199,7 @@ import {
   convertToTargetFormat,
   removeStore,
 } from "@/utils/property.js";
-import { listDept } from "@/api/system/dept";
-import { saveAs } from "file-saver";
+import { listDept } from "@/api/system/dept";import { saveAs } from 'file-saver'
 export default {
   components: {
     JmTableNoPaging,
@@ -371,7 +374,9 @@ export default {
     });
     this.deptOptions2 = await convertToTargetFormat(this.deptOptions);
   },
-  mounted() {},
+  mounted() {
+    console.log("========================", this.$route);
+  },
 
   methods: {
     cancel() {
@@ -402,7 +407,7 @@ export default {
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
       if (this.rowId) queryParams["id"] = this.rowId;
-      queryParams["purchasePlanType"] = 1;
+      queryParams["purchasePlanType"] = 2;
 
       getProjectList(queryParams).then((response) => {
         if (getStore("equipmentList")) setStore("equipmentList", []);
@@ -543,7 +548,6 @@ export default {
               setStore("updateList", [this.formData]);
             }
           } else {
-            console.log("========================", getStore("updateList"));
             setStore(
               "updateList",
               getStore("updateList").filter(
@@ -564,7 +568,7 @@ export default {
         });
 
         this.getList();
-        this.resetForm();
+        this.$refs["elForm"].resetFields();
         this.drawer = false;
         // await getProjectAdd(this.formData).then((response) => {
         //   if (response.code == 200) {
