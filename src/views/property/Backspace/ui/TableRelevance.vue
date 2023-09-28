@@ -12,30 +12,6 @@
       :handleWidth="230"
       :columns="columns"
     >
-      <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5" v-if="!isShow">
-          <el-upload
-            :before-upload="handelAdd"
-            action=""
-            v-hasPermi="['equipment:book:add']"
-            ><el-button type="primary" size="mini" plain icon="el-icon-upload"
-              >导入</el-button
-            ></el-upload
-          >
-        </el-col>
-        <el-col :span="1.5" v-else>
-          <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            :loading="btnLoading"
-            @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
-            >下载</el-button
-          >
-        </el-col>
-      </template>
       <template #end_handle="scope" v-if="!isChoose">
         <el-button
           size="mini"
@@ -85,12 +61,11 @@ import {
 } from "@/api/equipment/BASE";
 import { getAssociatedPlan } from "@/api/property/purchase";
 import JmTable from "@/components/JmTable";
-import { saveAs } from "file-saver";
 export default {
   components: {
     JmTable,
   },
-  props: { isShow: false, type: Boolean },
+  props: {},
   data() {
     return {
       btnLoading: false,
@@ -164,27 +139,9 @@ export default {
   },
   mounted() {},
   methods: {
-    importHandler() {},
-    handelAdd(file) {
-      let isRightSize = file.size / 1024 / 1024 < 2;
-      if (!isRightSize) {
-        this.$message.error("文件大小超过 2MB");
-      }
-      // const fileData = new FormData();
-      // fileData.append("files", file);
-      // fileData["purchasePlanType"] = 1;
-      // uploadInfo(fileData);
-      return false;
-    },
     /** 查询用户列表 */
-    getList(
-      queryParams = {
-        pageNum: 1,
-        pageSize: 10,
-      }
-    ) {
+    getList(queryParams = { pageNum: 1, pageSize: 10 }) {
       this.loading = true;
-
       getAssociatedPlan(queryParams).then((response) => {
         this.equipmentList = response.rows;
         this.total = response.total;
@@ -216,7 +173,6 @@ export default {
 
     padding: 0;
     margin: 0;
-    padding-bottom: 10px;
     display: flex;
     justify-content: start;
     align-items: center;

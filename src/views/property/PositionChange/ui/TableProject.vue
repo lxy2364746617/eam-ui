@@ -8,13 +8,12 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isShow2="isShow"
       :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
     >
       <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5" v-if="!isShow">
+        <el-col :span="1.5" v-if="this.$route.query.item.isEdit">
           <el-button
             type="primary"
             plain
@@ -184,7 +183,11 @@
   </div>
 </template>
 <script>
-import { getProjectList, downDetailLoad } from "@/api/property/purchase";
+import {
+  getProjectList,
+  getProjectAdd,
+  deleteProjectId,
+} from "@/api/property/purchase";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTableNoPaging from "@/components/JmTableNoPaging";
 import {
@@ -196,13 +199,12 @@ import {
   removeStore,
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
-import { saveAs } from "file-saver";
 export default {
   components: {
     JmTableNoPaging,
     Treeselect,
   },
-  props: ["rowId", "isShow"],
+  props: ["rowId"],
   data() {
     return {
       // 需求组织
@@ -371,7 +373,9 @@ export default {
     });
     this.deptOptions2 = await convertToTargetFormat(this.deptOptions);
   },
-  mounted() {},
+  mounted() {
+    console.log("========================", this.$route);
+  },
 
   methods: {
     cancel() {
@@ -430,7 +434,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
+      this.ids = selection.map((item) => item.deviceId);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.radioRow = selection[0];
@@ -439,18 +443,7 @@ export default {
       this.drawer = !this.drawer;
       this.title = "新增";
     },
-    importHandler() {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
-      download(this.ids).then((res) => {
-        const blob = new Blob([res], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        saveAs(blob, `下载数据_${new Date().getTime()}`);
-      });
-    },
+    importHandler() {},
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -543,7 +536,6 @@ export default {
               setStore("updateList", [this.formData]);
             }
           } else {
-            console.log("========================", getStore("updateList"));
             setStore(
               "updateList",
               getStore("updateList").filter(
@@ -564,7 +556,7 @@ export default {
         });
 
         this.getList();
-        this.resetForm();
+        this.$refs["elForm"].resetFields();
         this.drawer = false;
         // await getProjectAdd(this.formData).then((response) => {
         //   if (response.code == 200) {

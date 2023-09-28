@@ -5,8 +5,8 @@
       :formData="formData"
       @formData2="receiveDataFromChild"
     ></HeadEdit>
-    <TableProject :isShow="true" :rowId="formData.id">
-      <template
+    <TableProject :isShow="true" :rowId="formData.id"
+      ><template
         ><p class="icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -41,6 +41,11 @@
         </p>
       </template></TableRelevance
     >
+    <div class="submit" v-if="!formData.isBtn">
+      <el-button type="primary" @click="submit">保存</el-button>
+      <el-button type="primary">保存并提交审批</el-button>
+      <el-button @click="cancel">取消</el-button>
+    </div>
   </Wrapper>
 </template>
 <script>
@@ -65,22 +70,22 @@ export default {
       // 头部表单
       formData: {
         purchasePlanName: null,
-        purchasePlanType: 1,
+        purchasePlanType: 2,
         annual: "2023",
         time: [],
       },
     };
   },
-  created() {
-    const routeValue = this.$route.query.item;
-
-    this.formData = routeValue;
-    this.formData.time = [routeValue.startTime, routeValue.endTime];
-    this.formData["isBtn"] = 1;
-    this.isEdit = routeValue.isEdit;
-  },
+  created() {},
   mounted() {
     this.title = this.$route.meta.title;
+    const routeValue = this.$route.query.item;
+    if (routeValue) {
+      this.formData = routeValue;
+      this.formData.time = [routeValue.startTime, routeValue.endTime];
+      this.formData["isBtn"] = 1;
+      this.isEdit = routeValue.isEdit;
+    }
   },
   computed: {},
   methods: {
@@ -99,7 +104,6 @@ export default {
     removeStore("delList");
     removeStore("updateList");
     removeStore("equipmentList");
-    //跳回上页
   },
   beforeRouteLeave(to, from, next) {
     // 保存上一个路由信息

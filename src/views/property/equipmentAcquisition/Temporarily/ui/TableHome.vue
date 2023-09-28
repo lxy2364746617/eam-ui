@@ -26,10 +26,9 @@
         </el-col>
         <el-col :span="1.5">
           <el-upload
-            multiple
-            :before-upload="handleBeforeUpload"
-            :action="uploadFileUrl"
-            class="upload-file-uploader"
+            :before-upload="field101BeforeUpload"
+            @click="handelImport"
+            action=""
             v-hasPermi="['equipment:book:add']"
             ><el-button type="danger" size="mini" plain icon="el-icon-upload"
               >导入</el-button
@@ -117,25 +116,32 @@ import {
   delId,
 } from "@/api/property/purchase";
 import JmTable from "@/components/JmTable";
-import { findByTemplateType } from "@/api/equipment/attribute";
 import { saveAs } from "file-saver";
 export default {
   components: {
     JmTable,
   },
-  props: {
-    // isChoose: {
-    //     default: false,
-    //     type: Boolean,
-    // },
-  },
+  props: {},
   data() {
     return {
       field101fileList: [],
       btnLoading: false,
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
       // 查询参数
       queryParams: {
+        annual: "",
+        apvStatus: "",
+        createBy: "",
+        createTime: "",
+        declarationDate: "",
+        declarationDeptId: "",
+        declarationPerson: "",
+        ids: [0],
+        purchasePlanName: "",
+        purchasePlanNo: "",
+        purchasePlanType: "",
+        remark: "",
+        updateBy: "",
+        updateTime: "",
         pageNum: 1,
         pageSize: 10,
       },
@@ -146,20 +152,26 @@ export default {
       addEdit: false,
       total: 0,
       search: {
+        annual: "",
+        apvStatus: "",
+        createBy: "",
+        createTime: "",
+        declarationDate: "",
+        declarationDeptId: "",
+        declarationPerson: "",
+        ids: [0],
+        purchasePlanName: "",
+        purchasePlanNo: "",
+        purchasePlanType: "",
+        remark: "",
+        updateBy: "",
+        updateTime: "",
         pageNum: 1,
         pageSize: 10,
       },
       // 弹出层标题
       title: "",
-      formData: {
-        archivesOther: {}, // 步骤2 值
-        emArchivesExtendAtt: {}, // 步骤2-扩展数据  模板 值
-        emArchivesIndex: {}, // 步骤3 主要指标  模板 值
-        emArchivesSpecial: {}, // 步骤3 特种设备  模板 值
-        archivesPartsList: [], // 步骤4  表格
-        genFileResourceList: [], // 步骤5  上传图片
-        imgFileResourceList: [], // 步骤5  上传文件
-      },
+      formData: {},
       // 表单参数
       form: {},
 
@@ -261,6 +273,57 @@ export default {
   },
   mounted() {},
   methods: {
+    handelImport() {},
+    exportWarnLog(data) {
+      if (!this.ids.length) {
+        this.$message.error("请选择勾选！");
+        return;
+      }
+      download({ ids: this.ids, purchasePlanType: 2 }).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
+      });
+    },
+    // 导入
+    field101BeforeUpload(file) {
+      let isRightSize = file.size / 1024 / 1024 < 2;
+      if (!isRightSize) {
+        this.$message.error("文件大小超过 2MB");
+      }
+      const fileData = new FormData();
+      fileData.append("files", file);
+      fileData["purchasePlanType"] = 2;
+      uploadInfo(fileData);
+      return false;
+    },
+    /** 查询用户列表 */
+    async getList(
+      form = {
+        pageNum: 1,
+        pageSize: 10,
+      }
+    ) {
+      this.loading = true;
+      form["purchasePlanType"] = 2;
+      getPurchaseList(form).then((response) => {
+        this.equipmentList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.id);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
+      this.radioRow = selection[0];
+    },
+    handleAdd() {
+      this.$router.push("/property/purchase/temporarilyAdd");
+    },
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -278,49 +341,9 @@ export default {
         });
       });
     },
-    exportWarnLog(data) {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
-      download({ ids: this.ids, purchasePlanType: 1 }).then((res) => {
-        const blob = new Blob([res], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        saveAs(blob, `下载数据_${new Date().getTime()}`);
-      });
-    },
-    // 导入
-
-    handleBeforeUpload(file) {},
-    async getList(
-      form = {
-        pageNum: 1,
-        pageSize: 10,
-      }
-    ) {
-      this.loading = true;
-      form["purchasePlanType"] = 1;
-      getPurchaseList(form).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
-      this.radioRow = selection[0];
-    },
-    handleAdd() {
-      this.$router.push("/property/purchase/annualAdd");
-    },
     goDetails(row) {
       this.$router.push({
-        path: "/property/purchase/annualDetails",
+        path: "/property/purchase/temporarilyDetails",
         query: {
           item: { ...row, isEdit: false },
         },
@@ -328,7 +351,7 @@ export default {
     },
     goEdit(row) {
       this.$router.push({
-        path: "/property/purchase/annualEdit",
+        path: "/property/purchase/temporarilyEdit",
         query: {
           item: { ...row, isEdit: true },
         },
@@ -341,7 +364,6 @@ export default {
         b.required = b.required == "0" ? true : false;
       });
     },
-    handelImport() {},
   },
 };
 </script>

@@ -1,7 +1,11 @@
 <template>
   <Wrapper :title="title">
-    <HeadEdit :isEdit="true"></HeadEdit>
-    <TableProject
+    <HeadEdit
+      :isEdit="isEdit"
+      :formData="formData"
+      @formData2="receiveDataFromChild"
+    ></HeadEdit>
+    <TableProject :isShow="false"
       ><template
         ><p class="icon">
           <svg
@@ -19,7 +23,7 @@
         </p></template
       ></TableProject
     >
-    <TableRelevance :title="'关联附件'"
+    <TableRelevance :isShow="false" :title="'关联附件'"
       ><template>
         <p class="icon">
           <svg
@@ -38,9 +42,9 @@
       </template></TableRelevance
     >
     <div class="submit">
-      <el-button type="primary">保存</el-button>
+      <el-button type="primary" @click="submit">保存</el-button>
       <el-button type="primary">保存并提交审批</el-button>
-      <el-button>取消</el-button>
+      <el-button @click="cancel">取消</el-button>
     </div>
   </Wrapper>
 </template>
@@ -49,6 +53,8 @@ import Wrapper from "@/components/wrapper";
 import HeadEdit from "../ui/HeadEdit.vue";
 import TableProject from "../ui/TableProject.vue";
 import TableRelevance from "../ui/TableRelevance.vue";
+import { getStore, removeStore } from "@/utils/property.js";
+import { setProject } from "@/api/property/purchase";
 export default {
   components: {
     Wrapper,
@@ -60,13 +66,68 @@ export default {
     return {
       message: "Hello from parent!",
       title: "",
+      isEdit: true,
+      // 头部表单
+      formData: {
+        purchasePlanName: null,
+        purchasePlanType: 1,
+        annual: "2023",
+        time: [],
+      },
     };
   },
+  created() {},
   mounted() {
     this.title = this.$route.meta.title;
   },
   computed: {},
-  methods: {},
+  methods: {
+    clear() {
+      removeStore("addList");
+      removeStore("delList");
+      removeStore("updateList");
+      removeStore("equipmentList");
+    },
+    cancel() {
+      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+      this.$router.go(-1); //跳回上页
+    },
+    submit() {
+      this.formData["startTime"] = this.formData.time[0];
+      this.formData["endTime"] = this.formData.time[1];
+      this.formData["purchasePlanType"] = 1;
+      this.formData["purchasePlanNo"] = 1;
+      delete this.formData.time;
+      if (getStore("addList") && getStore("addList").length > 0) {
+        this.formData["addList"] = getStore("addList");
+      } else {
+        this.formData["addList"] = [];
+      }
+      if (getStore("updateList") && getStore("updateList").length > 0) {
+        this.formData["updateList"] = getStore("updateList");
+      }
+      if (getStore("delList") && getStore("delList").length > 0) {
+        this.formData["delList"] = getStore("delList");
+      }
+      setProject(this.formData).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: "success",
+            message: "保存成功!",
+          });
+        }
+        this.clear();
+        this.cancel();
+      });
+    },
+    receiveDataFromChild(data) {
+      this.formData = data;
+    },
+  },
+  watch: {},
+  beforeDestroy() {
+    this.clear();
+  },
 };
 </script>
 <style lang="scss" scoped>
