@@ -89,13 +89,13 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
-import step1 from "@/views/decive/book/details/step1";
-import step2 from "@/views/decive/book/details/step2";
-import step3 from "@/views/decive/book/details/step3";
-import step4 from "@/views/decive/book/details/step4";
-import step5 from "@/views/decive/book/details/step5";
-import step6 from "@/views/decive/book/details/step6";
-import step7 from "@/views/decive/book/details/step7";
+import step1 from "@/views/device/book/details/step1";
+import step2 from "@/views/device/book/details/step2";
+import step3 from "@/views/device/book/details/step3";
+import step4 from "@/views/device/book/details/step4";
+import step5 from "@/views/device/book/details/step5";
+import step6 from "@/views/device/book/details/step6";
+import step7 from "@/views/device/book/details/step7";
 
 export default {
   name: "bookadddetails",
@@ -112,7 +112,7 @@ export default {
     step5,
     step6,
     step7,
-    devicebook: () => import("@/views/decive/book/index"),
+    devicebook: () => import("@/views/device/book/index"),
   },
   computed: {
     mainImage() {

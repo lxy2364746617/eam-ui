@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import parentdevice from "@/views/decive/book/device";
+import parentdevice from "@/views/device/book/device";
 
 export default {
   components: {

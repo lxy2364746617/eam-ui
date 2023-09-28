@@ -113,7 +113,7 @@ export default {
     step3,
     step4,
     step5,
-    devicebook: () => import("@/views/decive/book/index"),
+    devicebook: () => import("@/views/device/book/index"),
   },
   props: {
     formTitle: {

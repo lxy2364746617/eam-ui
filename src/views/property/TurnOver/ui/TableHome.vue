@@ -83,7 +83,7 @@
 </template>
 <script>
 import { getTurnOverList } from "@/api/property/turnover";
-import addEdit from "@/views/decive/book/add";
+import addEdit from "@/views/device/book/add";
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
 export default {

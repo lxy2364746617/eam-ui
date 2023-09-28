@@ -72,7 +72,7 @@ export default {
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, 
-    devicebook: ()=> import("@/views/decive/book/index"),
+    devicebook: ()=> import("@/views/device/book/index"),
   },
   props:{
     formData: {
