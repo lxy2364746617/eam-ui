@@ -27,6 +27,13 @@
                                 <span v-if="col.optionShowValue" style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
                             </el-option>
                         </el-select>
+                        <el-select v-else-if="col.formType=='selectTag'" v-model="formData[col.prop]" placeholder="请选择" @change="col.selectfn?col.selectfn():(()=>{})()" filterable clearable :disabled="col.formDisabled || disabled">
+                            <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value">
+                                <el-tag class="selectTag" effect="light" :type="selectTagColor[item.label]">
+                                    {{ item.label }}
+                                </el-tag>
+                            </el-option>
+                        </el-select>
                         <el-radio-group v-else-if="col.formType=='radio'" v-model="formData[col.prop]" :disabled="col.formDisabled || disabled" @input="col.changeFn">
                             <el-radio :label="item.value" v-for="item in col.options" :key="item.value">{{item.label}}</el-radio>
                         </el-radio-group>
@@ -122,6 +129,21 @@ export default {
         return {
             // form: {},
             rules: {},
+            selectTagColor: {
+                待提交: 'warning',
+                待审批: 'warning',
+                审批中: '',
+                审批通过: 'success',
+                审批驳回: 'danger',
+
+                在用: 'success',
+                修理: 'danger',
+                备用: '',
+                闲置: 'info',
+                待处置: 'warning',
+                待报废: 'warning',
+                已报废: 'info',
+            },
         }
     },
     created() {
@@ -216,4 +238,12 @@ export default {
         font-weight: bold;
     }
 }
+.selectTag{
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+    height: auto;
+    line-height: normal;
+  }
 </style>

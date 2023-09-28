@@ -51,7 +51,7 @@
                       placeholder="选择日期">
                     </el-date-picker>
                     <el-select 
-                      v-else-if="col.formType=='select'||col.formType=='radio'||col.formType=='switch'" 
+                      v-else-if="col.formType=='select' || col.formType=='radio'||col.formType=='switch'" 
                       clearable
                       v-model="queryParams[col.prop]" 
                       @keyup.enter.native="handleQuery"
@@ -60,6 +60,19 @@
                         <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value">
                           <span v-if="col.optionShowValue" style="float: left">{{ item.label }}</span>
                           <span v-if="col.optionShowValue" style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+                        </el-option>
+                    </el-select>
+                    <el-select 
+                      v-else-if="col.formType=='selectTag'" 
+                      clearable
+                      v-model="queryParams[col.prop]" 
+                      @keyup.enter.native="handleQuery"
+                      @change="selectchange($event,col.prop)"
+                      placeholder="请选择">
+                        <el-option :label="item.label" :value="item.value" v-for="item in col.options" :key="item.value">
+                          <el-tag class="selectTag" effect="light" :type="selectTagColor[item.label]">
+                            {{ item.label }}
+                          </el-tag>
                         </el-option>
                     </el-select>
                     <treeselect 
@@ -74,9 +87,9 @@
                       @keyup.enter.native="handleQuery"
                       placeholder="请选择" 
                       :normalizer="normalizer" 
-                      :appendToBody="true"
                       :append-to-body="true"
-                      :zIndex="9999"/>
+                      :zIndex="9999"
+                      />
                     <el-input
                       v-else
                       v-model="queryParams[col.prop]"
@@ -89,8 +102,13 @@
                     是否为特种设备 -->
                   </el-form-item>
                 </div>
-                <span v-else-if="col.prop=='date'">{{ parseTime(scope.row[col.prop], '{y}-{m}-{d}') }}</span>
-                <span v-else-if="col.formType=='select'" v-html="findName(col.options,scope.row[col.prop])"></span>
+                <span v-else-if="col.formType=='date'">{{ parseTime(scope.row[col.prop], '{y}-{m}-{d}') }}</span>
+                <span v-else-if="col.formType=='select'||col.formType=='radio'" v-html="findName(col.options,scope.row[col.prop])"></span>
+                <span v-else-if="col.formType=='selectTag'">
+                  <el-tag class="selectTag" effect="light" :type="selectTagColor[findName(col.options,scope.row[col.prop])]">
+                    {{ findName(col.options,scope.row[col.prop]) }}
+                  </el-tag>
+                </span>
                 <span v-else-if="col.formType=='switch'">
                   <el-switch
                     v-model="scope.row[col.prop]"
@@ -99,7 +117,6 @@
                     :inactive-value="col.options[1].value">
                   </el-switch>
                 </span>
-                <span v-else-if="col.formType=='radio'" v-html="findName(col.options,scope.row[col.prop])"></span>
                 <span v-else-if="col.formType=='selectTree'" v-html="findTreeName(col.options,scope.row[col.prop])"></span>
                 <span v-else v-html="scope.row[col.prop]"></span>
               </template>
@@ -217,6 +234,21 @@ export default {
               pageSize: 10,
           },
           tableVisible: {},
+          selectTagColor: {
+            待提交: 'warning',
+            待审批: 'warning',
+            审批中: '',
+            审批通过: 'success',
+            审批驳回: 'danger',
+
+            在用: 'success',
+            修理: 'danger',
+            备用: '',
+            闲置: 'info',
+            待处置: 'warning',
+            待报废: 'warning',
+            已报废: 'info',
+          },
         }
     },
     methods: {
@@ -326,5 +358,16 @@ export default {
   }
   ::v-deep .el-table th.el-table__cell{
     background-color: #e7f3ff;
+  }
+  .selectTag{
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+    height: auto;
+    line-height: normal;
+  }
+  ::v-deep .vue-treeselect__portal-target{
+    width: auto!important;
   }
 </style>

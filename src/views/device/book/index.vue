@@ -15,7 +15,7 @@
           placement="bottom"
           title=""
           style="position: fixed;z-index: 1009;top: 55px;right: 10px;"
-          trigger="hover"
+          trigger="click"
           content="">
           <el-button 
             type="primary" 
@@ -237,7 +237,7 @@ export default {
         { label:"设备名称", prop:"deviceName",  },
         { label:"规格型号", prop:"sModel",  },
         { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions,   },
-        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
+        { label:"设备状态", prop:"deviceStatus", formType: 'selectTag', options: this.dict.type.em_device_state, },
         { label:"财务资产编码", prop:"propertyCode",  },
         { label:"功能位置", prop:"location",  },
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
@@ -247,7 +247,7 @@ export default {
         { label:"入账日期", prop:"makerAoTime", formType: 'date', }, 
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
         { label:"上级设备", prop:"parentDeviceName",  }, //(0 父级)
-        { label:"审批状态", prop:"apvStatus", formType: 'select', options: this.dict.type.apv_status, }, //apv_status
+        { label:"审批状态", prop:"apvStatus", formType: 'selectTag', options: this.dict.type.apv_status, }, //apv_status
         
       ]
     },
@@ -500,8 +500,28 @@ export default {
       arr.forEach(b => {
         b.label=b.fieldName;
         b.prop=b.fieldCode;
-        b.required = b.required=='0'?true:false;
-
+        b.required = b.required;
+        b.disabled = b.disabled;
+        b.formType = b.componentType;
+        switch (b.componentType) {
+          case 'select':
+            b.options = [];
+            // 字典
+            if(b.dictionaryType){
+              console.log(this,222);
+              b.options = this.dict.type[b.dictionaryType]
+            }
+            break;
+          case 'radio':
+            b.options = [];
+            if(b.dictionaryType){
+              b.options = this.dict.type[b.dictionaryType]
+            }
+            break;
+        
+          default:
+            break;
+        }
       });
     },
     /** 新增按钮操作 */
@@ -547,6 +567,7 @@ export default {
       getBASE(deviceId).then(response => {
         this.title = "编辑设备";
         this.formData = response.data;
+        
         // 第一步  特种设备
         if(this.formData.emArchivesSpecial){
           this.formData.emArchivesSpecial.componentContent = JSON.parse(this.formData.emArchivesSpecial.componentContent)
@@ -555,8 +576,8 @@ export default {
         }
         // 第二步
         if(this.formData.archivesOther==null){
-          this.formData.archivesOther = {}
-        }
+          this.formData.archivesOther={}
+        } 
         // 第二步  扩展数据
         if(this.formData.emArchivesExtendAtt){
           this.formData.emArchivesExtendAtt.componentContent = JSON.parse(this.formData.emArchivesExtendAtt.componentContent)
@@ -569,6 +590,13 @@ export default {
           this.formData.emArchivesIndex.fieldValue = JSON.parse(this.formData.emArchivesIndex.fieldValue)
           this.setFormLabel(this.formData.emArchivesIndex.componentContent)
         }
+        var obj = {
+          componentContent: [],
+          fieldValue: {},
+        }
+        if(this.formData.emArchivesExtendAtt==null) this.formData.emArchivesExtendAtt=obj
+        if(this.formData.emArchivesIndex==null) this.formData.emArchivesIndex=obj
+        if(this.formData.emArchivesSpecial==null) this.formData.emArchivesSpecial=obj
         this.btnLoading = false
         if(f=='edit'){
           this.addEdit = true;
