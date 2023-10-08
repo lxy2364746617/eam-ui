@@ -97,7 +97,7 @@
                 图片
               </el-col>
               <el-col :span="14">
-                <p>规格型号:</p>
+                <p>规格型号:{{ item.partsModel }}</p>
                 <p>设备类型:{{ item.partsType }}</p>
                 <p>功能位置:{{ item.location }}</p>
                 <p>所属子公司:{{ item.orgId }}</p>
@@ -109,7 +109,15 @@
         </el-col>
       </el-row>
     </div>
-    
+    <!-- 添加供应商对话框 -->
+    <el-drawer
+        title="选择供应商"
+        :visible.sync="drawersupplier"
+        size="60%"
+        direction="rtl"
+        :wrapperClosable="false">
+        <supplier @submitRadio="submitRadio" :isRadio="true" @close="closesupplier"></supplier>
+      </el-drawer>
   </div>
 </template>
 
@@ -119,8 +127,10 @@ import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
+import { listDept } from "@/api/system/dept";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import supplier from "@/views/device/book/supplier";
 
 export default {
   name: "bookadd",
@@ -128,7 +138,7 @@ export default {
     'em_property_type', 
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, 
+    Treeselect, JmUserTree, JmTable, JmForm, supplier, 
   },
   props:{
     formData: {
@@ -138,6 +148,20 @@ export default {
 
   },
   computed:{
+    // 列信息
+    columns(){
+      return [
+        { label:"备件名称", prop:"partsName", span: 24, },
+        { label:"备件编码", prop:"partsCode", span: 24, },
+        { label:"规格型号", prop:"partsModel", span: 24, },
+        { label:"备件类别", prop:"partsType", span: 24, },
+        { label:"单位", prop:"unit", span: 24, },
+        { label:"当前库存", prop:"stock", span: 24, },
+        { label:"供应商名称", prop:"supName", readonly: true, clickFn:()=>{this.drawersupplier=true}, span: 24, },
+        { label:"存储位置", prop:"location", span: 24, },
+        { label:"所属组织", prop:"orgId", span: 24, formType: 'selectTree', options: this.deptOptions },
+      ]
+    },
   },
   mounted(){
     
@@ -146,17 +170,17 @@ export default {
     return {
       radio3:'列表',
       // 列信息
-      columns: [
-        { label:"备件名称", prop:"partsName", span: 24, },
-        { label:"备件编码", prop:"partsCode", span: 24, },
-        { label:"规格型号", prop:"partsModel", span: 24, },
-        { label:"备件类别", prop:"partsType", span: 24, },
-        { label:"单位", prop:"unit", span: 24, },
-        { label:"当前库存", prop:"stock", span: 24, },
-        { label:"供应商名称", prop:"supName", span: 24, },
-        { label:"存储位置", prop:"location", span: 24, },
-        { label:"所属组织", prop:"orgId", span: 24, },
-      ],
+      // columns: [
+      //   { label:"备件名称", prop:"partsName", span: 24, },
+      //   { label:"备件编码", prop:"partsCode", span: 24, },
+      //   { label:"规格型号", prop:"partsModel", span: 24, },
+      //   { label:"备件类别", prop:"partsType", span: 24, },
+      //   { label:"单位", prop:"unit", span: 24, },
+      //   { label:"当前库存", prop:"stock", span: 24, },
+      //   { label:"供应商名称", prop:"supName", readonly: true, clickFn:()=>{this.drawersupplier=true}, span: 24, },
+      //   { label:"存储位置", prop:"location", span: 24, },
+      //   { label:"所属组织", prop:"orgId", span: 24, formType: 'selectTree', options: this.deptOptions },
+      // ],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -174,11 +198,12 @@ export default {
       total: 0,
       formDataNow: {},
       drawer: false,
+      drawersupplier: false,
       // 弹出层标题
       title: "",
       // 部门树选项
-      categoryOptions: undefined,
-      deptOptions: undefined,
+      categoryOptions: [],
+      deptOptions: [],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -244,8 +269,22 @@ export default {
   },
   created() {
     this.getList(this.queryParams)
+    this.getTreeSelect()
   },
   methods: {
+    getTreeSelect(){
+      listDept().then(response => {
+        this.deptOptions = response.data;
+      });
+    },
+    closesupplier(){
+      this.drawersupplier = false
+    },
+    submitRadio(row){
+      this.$set(this.formDataNow,'supName',row.supplierName)
+      // this.$set(this.formData,'parentDeviceName',row.deviceName)
+      this.closesupplier()
+    },
     /** 查询用户列表 */
     getList(queryParams) {
       queryParams.deviceId = this.queryParams.deviceId

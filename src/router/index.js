@@ -177,8 +177,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/lbase/add.vue'),
         name: 'bigAdd',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑供电设备' : '新增供电设备'
-          to.query.d=='true' ? to.meta.title = '查看供电设备' : ''
+          to.meta.title = to.query.l ? '供电设备/编辑' : '供电设备/新增'
+          to.query.d=='true' ? to.meta.title = '供电设备/查看' : ''
           next()
         },
         meta: { title: '供电设备', icon: '' }
@@ -188,8 +188,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/compressor/add'),
         name: 'bigCompressor',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑空压机' : '新增空压机'
-          to.query.d=='true' ? to.meta.title = '查看空压机' : ''
+          to.meta.title = to.query.l ? '空压机/编辑' : '空压机/新增'
+          to.query.d=='true' ? to.meta.title = '空压机/查看' : ''
           next()
         },
         meta: { title: '空压机', icon: '' }
@@ -199,8 +199,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/elevator/add'),
         name: 'bigElevator',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑提升机' : '新增提升机'
-          to.query.d=='true' ? to.meta.title = '查看提升机' : ''
+          to.meta.title = to.query.l ? '提升机/编辑' : '提升机/新增'
+          to.query.d=='true' ? to.meta.title = '提升机/查看' : ''
           next()
         },
         meta: { title: '提升机', icon: '' }
@@ -210,8 +210,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/gas/add'),
         name: 'bigGas',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑瓦斯抽放泵' : '新增瓦斯抽放泵'
-          to.query.d=='true' ? to.meta.title = '查看瓦斯抽放泵' : ''
+          to.meta.title = to.query.l ? '瓦斯抽放泵/编辑' : '瓦斯抽放泵/新增'
+          to.query.d=='true' ? to.meta.title = '瓦斯抽放泵/查看' : ''
           next()
         },
         meta: { title: '瓦斯抽放泵', icon: '' }
@@ -221,8 +221,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/gather/add'),
         name: 'bigGather',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑采区排水/加压泵房' : '新增采区排水/加压泵房'
-          to.query.d=='true' ? to.meta.title = '查看采区排水/加压泵房' : ''
+          to.meta.title = to.query.l ? '采区排水/加压泵房/编辑' : '采区排水/加压泵房/新增'
+          to.query.d=='true' ? to.meta.title = '采区排水/加压泵房/查看' : ''
           next()
         },
         meta: { title: '采区排水/加压泵房', icon: '' }
@@ -232,8 +232,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/nitrogen/add'),
         name: 'bigNitrogen',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑制氨机' : '新增制氨机'
-          to.query.d=='true' ? to.meta.title = '查看制氨机' : ''
+          to.meta.title = to.query.l ? '制氨机/编辑' : '制氨机/新增'
+          to.query.d=='true' ? to.meta.title = '制氨机/查看' : ''
           next()
         },
         meta: { title: '制氨机', icon: '' }
@@ -243,8 +243,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/passengers/add'),
         name: 'bigPassengers',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑架空乘人装置' : '新增架空乘人装置'
-          to.query.d=='true' ? to.meta.title = '查看架空乘人装置' : ''
+          to.meta.title = to.query.l ? '架空乘人装置/编辑' : '架空乘人装置/新增'
+          to.query.d=='true' ? to.meta.title = '架空乘人装置/查看' : ''
           next()
         },
         meta: { title: '架空乘人装置', icon: '' }
@@ -254,8 +254,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/strong/add'),
         name: 'bigStrong',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑强排泵' : '新增强排泵'
-          to.query.d=='true' ? to.meta.title = '查看强排泵' : ''
+          to.meta.title = to.query.l ? '强排泵/编辑' : '强排泵/新增'
+          to.query.d=='true' ? to.meta.title = '强排泵/查看' : ''
           next()
         },
         meta: { title: '强排泵', icon: '' }
@@ -265,8 +265,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/substation/add'),
         name: 'bigSubstation',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑井下变电所' : '新增井下变电所'
-          to.query.d=='true' ? to.meta.title = '查看井下变电所' : ''
+          to.meta.title = to.query.l ? '井下变电所/编辑' : '井下变电所/新增'
+          to.query.d=='true' ? to.meta.title = '井下变电所/查看' : ''
           next()
         },
         meta: { title: '井下变电所', icon: '' }
@@ -276,8 +276,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/transport/add'),
         name: 'bigTransport',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑主要辅助运' : '新增主要辅助运'
-          to.query.d=='true' ? to.meta.title = '查看主要辅助运' : ''
+          to.meta.title = to.query.l ? '主要辅助运/编辑' : '主要辅助运/新增'
+          to.query.d=='true' ? to.meta.title = '主要辅助运/查看' : ''
           next()
         },
         meta: { title: '主要辅助运', icon: '' }
@@ -287,8 +287,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/ventilator/add'),
         name: 'bigVentilator',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑主通风机' : '新增主通风机'
-          to.query.d=='true' ? to.meta.title = '查看主通风机' : ''
+          to.meta.title = to.query.l ? '主通风机/编辑' : '主通风机/新增'
+          to.query.d=='true' ? to.meta.title = '主通风机/查看' : ''
           next()
         },
         meta: { title: '主通风机', icon: '' }
@@ -298,8 +298,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/water/add'),
         name: 'bigWater',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑水泵房' : '新增水泵房'
-          to.query.d=='true' ? to.meta.title = '查看水泵房' : ''
+          to.meta.title = to.query.l ? '水泵房/编辑' : '水泵房/新增'
+          to.query.d=='true' ? to.meta.title = '水泵房/查看' : ''
           next()
         },
         meta: { title: '水泵房', icon: '' }
@@ -309,8 +309,8 @@ export const constantRoutes = [
         component: () => import('@/views/equipment/big/well/add'),
         name: 'bigWell',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑主井集中皮带' : '新增主井集中皮带'
-          to.query.d=='true' ? to.meta.title = '查看主井集中皮带' : ''
+          to.meta.title = to.query.l ? '主井集中皮带/编辑' : '主井集中皮带/新增'
+          to.query.d=='true' ? to.meta.title = '主井集中皮带/查看' : ''
           next()
         },
         meta: { title: '主井集中皮带', icon: '' }
@@ -327,8 +327,8 @@ export const constantRoutes = [
         component: () => import('@/views/device/book/add/index.vue'),
         name: 'bookAdd',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑设备档案' : '新增设备档案'
-          to.query.d=='true' ? to.meta.title = '查看设备档案' : ''
+          to.meta.title = to.query.i ? '设备档案/编辑' : '设备档案/新增'
+          to.query.d=='true' ? to.meta.title = '设备档案/查看' : ''
           next()
         },
         meta: { title: '设备档案', icon: '' }
@@ -338,8 +338,8 @@ export const constantRoutes = [
         component: () => import('@/views/device/book/details/index.vue'),
         name: 'bookDetails',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '编辑设备档案' : '新增设备档案'
-          to.query.d=='true' ? to.meta.title = '查看设备档案' : ''
+          to.meta.title = to.query.i ? '设备档案/编辑' : '设备档案/新增'
+          to.query.d=='true' ? to.meta.title = '设备档案/查看' : ''
           next()
         },
         meta: { title: '设备档案', icon: '' }

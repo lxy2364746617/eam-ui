@@ -3,7 +3,7 @@
     <el-card shadow="never">
       <el-row :gutter="12">
         <el-col :span="19">
-          <i class="el-icon-back" @click="backparent" style="color: #007bfe;cursor: pointer;"></i> 
+          <!-- <i class="el-icon-back" @click="backparent" style="color: #007bfe;cursor: pointer;"></i>  -->
           <span style="font-size: 14px;"> {{ formTitle }}</span> 
         </el-col>
         <el-col :span="5" v-if="disabled1" style="font-size: 12px;color: #888;">
@@ -13,12 +13,13 @@
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px;">
         <el-col :span="6">
-          <img :src="mainImage" alt="" srcset="" style="width: 50%;vertical-align: top;height: 100px;">
-          <img :src="qrCode" alt="" srcset="" style="width: 50%;vertical-align: top;">
+          <img v-if="mainImage.indexOf('null')==-1" :src="mainImage" alt="" srcset="" style="width: 50%;vertical-align: top;height: 100px;">
+          <img v-if="qrCode.indexOf('null')==-1" @click="opendrawer" class="qrcodeimg" :src="qrCode" alt="" srcset="">
         </el-col>
         <el-col :span="15" style="font-size: 12px;color: #888;padding-top: 4px;">
           <jm-form 
             class="mr20"
+            v-if="formData1"
             :columns="columns" 
             :formData="formData1" 
             :showButton="false"
@@ -28,8 +29,8 @@
         </el-col>
         <el-col :span="3">
           <span v-if="disabled1">
-            <el-progress type="circle" :percentage="68" :width="70"></el-progress>
-            <div style="font-size: 12px;">资料完整度68%</div> 
+            <el-progress type="circle" :percentage="formData.integrity" :width="70"></el-progress>
+            <div style="font-size: 12px;">资料完整度{{formData.integrity}}%</div> 
           </span>
           <span v-else>
             <el-button type="primary" @click="save" size="mini">确认</el-button>
@@ -40,14 +41,55 @@
       </el-row>
       <el-tabs v-model="activeName" @tab-click="tabsHandleClick">
         <el-tab-pane :label="item.label" :name="item.name" v-for="item in tabs" :key="item.label" v-if="item.visible">
-          <component :is="item.name" :formData="formData1" @submitForm="submitForm" @close="close"></component>
+          <component :is="item.name" v-if="formData1" :formData="formData1" @submitForm="submitForm" @close="close"></component>
         </el-tab-pane>
       </el-tabs>
     </el-card>
+    <!-- 添加或修改设备平台_表单模板对话框 -->
+    <el-drawer
+      title="设备二维码"
+      :visible.sync="drawer"
+      direction="rtl"
+      size="40%"
+      :destroy-on-close="true">
+      <div id="printContent">
+        <table class="qrcode" cellspacing="0">
+          <tr>
+            <td style="width: 20%;">设备名称</td>
+            <td colspan="2" style="width: 50%;">{{ formData.deviceName }}</td>
+          </tr>
+          <tr>
+            <td>设备编码</td>
+            <td>{{ formData.deviceCode }}</td>
+            <td rowspan="4" style="text-align: center;width: 30%;">
+              <img v-if="qrCode.indexOf('null')==-1" :src="qrCode" width="60%" alt="" srcset="">
+            </td>
+          </tr>
+          <tr>
+            <td>规格型号</td>
+            <td>{{ formData.sModel }}</td>
+          </tr>
+          <tr>
+            <td>设备类别</td>
+            <td>{{ categoryName }}</td>
+          </tr>
+          <tr>
+            <td>功能位置</td>
+            <td>{{ formData.location }}</td>
+          </tr>
+        </table>
+      </div>
+      <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
+        <el-button size="mini" @click="drawer=false">关闭</el-button>
+        <el-button size="mini" @click="handlePrint" type="primary">打印</el-button>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
+import { equipmentTree } from "@/api/equipment/category";
+import { getBASE } from "@/api/equipment/BASE";
 import { modifyBASE } from "@/api/equipment/BASE";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -61,6 +103,7 @@ import step4 from "@/views/device/book/details/step4";
 import step5 from "@/views/device/book/details/step5";
 import step6 from "@/views/device/book/details/step6";
 import step7 from "@/views/device/book/details/step7";
+import step8 from "@/views/device/book/details/step8";
 
 export default {
   name: "bookadddetails",
@@ -69,12 +112,12 @@ export default {
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, 
-    step1, step2, step3, step4, step5, step6, step7,
+    step1, step2, step3, step4, step5, step6, step7, step8,
     devicebook: ()=> import("@/views/device/book/index"),
   },
   computed:{
     mainImage(){
-      return process.env.VUE_APP_BASE_API + this.formData.mainImage
+      return process.env.VUE_APP_BASE_API + this.formData.mainImage 
     }, 
     qrCode(){
       return process.env.VUE_APP_BASE_API + this.formData.qrCode
@@ -90,12 +133,9 @@ export default {
     },
     tabs(){
       return [
-        { label:'基本信息', name:'step1', visible: true, },
-        { label:
-          (this.formData.emArchivesIndex?'主要指标':'')+
-          (this.formData.emArchivesIndex && this.formData.emArchivesSpecial?'/':'')+
-          (this.formData.emArchivesSpecial?'特种设备信息':''), 
-          name:'step2', visible: this.formData.emArchivesIndex || this.formData.emArchivesSpecial, },
+        { label: '基本信息', name:'step1', visible: true, },
+        { label: '主要指标', name:'step2', visible: this.formData.emArchivesIndex, },
+        { label: '特种设备信息', name:'step8', visible: this.formData.emArchivesSpecial, },  
         { label:'设备图片及位置', name:'step3', visible: true, },
         { label:'技术资料', name:'step4', visible: true, },
         { label:'备件备品', name:'step5', visible: true, },
@@ -105,38 +145,144 @@ export default {
     },
   },
   props:{
-    formTitle:{
-      default:'提示信息',
-      type: String,
-    },
-    deviceId: {
-      default:'',
-      type: String,
-    },
-    formData: {
-      default: {},
-      type: Object,
-    },
+    // formTitle:{
+    //   default:'提示信息',
+    //   type: String,
+    // },
+    // deviceId: {
+    //   default:'',
+    //   type: String,
+    // },
+    // formData: {
+    //   default: {},
+    //   type: Object,
+    // },
   },
   watch: {
-    formData: {
-      handler(val) {
-        this.formData1 = JSON.parse(JSON.stringify(val))
-      },
-      immediate: true,
-      deep: true,
-    },
+    // formData: {
+    //   handler(val) {
+    //     this.formData1 = JSON.parse(JSON.stringify(val))
+    //   },
+    //   immediate: true,
+    //   deep: true,
+    // },
   },
   data() {
     return {
       activeName: 'step1',
       disabled1: true,
-      formData1: {},
+      formData: {},
+      formData1: null,
+      formTitle: '编辑设备',
+      drawer: false,
+      // 部门树选项
+      categoryOptions: [],
+      categoryName: '',
     };
   },
   created() {
+    this.getTreeSelect()
+    // 编辑
+    const deviceId = this.$route.query.i
+    this.formTitle = this.$route.query.t
+    getBASE(deviceId).then(response => {
+      
+      // 第一步  特种设备
+      if(response.data.emArchivesSpecial){
+        response.data.emArchivesSpecial.componentContent = JSON.parse(response.data.emArchivesSpecial.componentContent)
+        response.data.emArchivesSpecial.fieldValue = JSON.parse(response.data.emArchivesSpecial.fieldValue)
+        this.setFormLabel(response.data.emArchivesSpecial.componentContent)
+      }
+      // 第二步
+      if(response.data.archivesOther==null){
+        response.data.archivesOther={}
+      } 
+      // 第二步  扩展数据
+      if(response.data.emArchivesExtendAtt){
+        response.data.emArchivesExtendAtt.componentContent = JSON.parse(response.data.emArchivesExtendAtt.componentContent)
+        response.data.emArchivesExtendAtt.fieldValue = JSON.parse(response.data.emArchivesExtendAtt.fieldValue)
+        this.setFormLabel(response.data.emArchivesExtendAtt.componentContent)
+      }
+      // 第三步 主要指标
+      if(response.data.emArchivesIndex){
+        response.data.emArchivesIndex.componentContent = JSON.parse(response.data.emArchivesIndex.componentContent)
+        response.data.emArchivesIndex.fieldValue = JSON.parse(response.data.emArchivesIndex.fieldValue)
+        this.setFormLabel(response.data.emArchivesIndex.componentContent)
+      }
+
+      this.formData = response.data;
+      this.formData1 = JSON.parse(JSON.stringify(this.formData))
+      // var obj = {
+      //   componentContent: [],
+      //   fieldValue: {},
+      // }
+      // if(this.formData.emArchivesExtendAtt==null) this.formData.emArchivesExtendAtt=obj
+      // if(this.formData.emArchivesIndex==null) this.formData.emArchivesIndex=obj
+      // if(this.formData.emArchivesSpecial==null) this.formData.emArchivesSpecial=obj
+    })
+    .catch(err => {
+    });
   },
   methods: {
+    opendrawer(){
+      // 查categoryId对应的名字
+      this.loops(this.categoryOptions,this.formData.categoryId)
+      this.drawer=true
+    },
+    getTreeSelect(){
+      equipmentTree().then(response => {
+        this.categoryOptions = response.data;
+      });
+    },
+    // 递归获取treeselect父节点
+    loops(arr,id) {
+      var that = this;
+        arr.forEach(element => {
+          if(element.id==id){
+            this.categoryName = element.label
+          }
+          if(element.children){
+            that.loops(element.children,id)
+          }
+        });
+    },
+    handlePrint(){
+      this.$print({
+      	printable: 'printContent',
+        type: 'html',
+        header: '设备二维码',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
+    setFormLabel(arr){
+      arr.forEach(b => {
+        b.label=b.fieldName;
+        b.prop=b.fieldCode;
+        // b.required = b.required;
+        b.required = b.required=='0'?true:false;
+        b.disabled = b.disabled;
+        b.formType = b.componentType;
+        switch (b.componentType) {
+          case 'select':
+            b.options = [];
+            // 字典
+            if(b.dictionaryType){
+              console.log(this,222);
+              b.options = this.dict.type[b.dictionaryType]
+            }
+            break;
+          case 'radio':
+            b.options = [];
+            if(b.dictionaryType){
+              b.options = this.dict.type[b.dictionaryType]
+            }
+            break;
+        
+          default:
+            break;
+        }
+      });
+    },
     tabsHandleClick(){},
     close(callback){
       this.formData1 = JSON.parse(JSON.stringify(this.formData))
@@ -187,3 +333,22 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.qrcode{
+  margin-right: 20px;
+  margin-left: 20px;
+  td{
+    padding: 5px;
+    border: 1px solid #ddd;
+  }
+}
+.qrcodeimg{
+  width: 50%;
+  vertical-align: top;
+  cursor: pointer;
+  transition: 0.2s all;
+  &:hover{
+    box-shadow: 0 0 5px #007bfe;
+  }
+} 
+</style>

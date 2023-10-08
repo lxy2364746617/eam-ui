@@ -98,6 +98,7 @@ export default {
             this.formData.emArchivesSpecial = {}
           }
           if(b.specialAttributes!=null){
+            this.setFormLabel(b.specialAttributes)
             this.$set(this.formData.emArchivesSpecial, 'componentContent', b.specialAttributes)
             this.$set(this.formData.emArchivesSpecial, 'fieldValue', {})
           }else{
@@ -278,7 +279,7 @@ export default {
     async save(fn){
       var jmform1 = await this.$refs.jmform1.submitForm()
       var jmform2 = await this.$refs.jmform2.submitForm()
-      if(jmform1  && jmform2){
+      if(jmform1 && jmform2){
         this.submitForm(fn)
       }
     },

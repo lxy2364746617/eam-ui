@@ -83,7 +83,6 @@
                 type="primary"
                 icon="el-icon-upload2"
                 size="mini"
-                :disabled="true"
                 @click="handleImport" 
                 v-hasPermi="['equipment:book:add']"
               >导入</el-button>
@@ -438,6 +437,15 @@ export default {
               b.emArchivesIndex?JSON.parse(b.emArchivesIndex.fieldValue):{},
               b.emArchivesSpecial?JSON.parse(b.emArchivesSpecial.fieldValue):{},
             )
+            if(b.emArchivesExtendAtt){
+              b.emArchivesExtendAtt.fieldValue=JSON.parse(b.emArchivesExtendAtt.fieldValue)
+            }
+            if(b.emArchivesIndex){
+              b.emArchivesIndex.fieldValue=JSON.parse(b.emArchivesIndex.fieldValue)
+            }
+            if(b.emArchivesSpecial){
+              b.emArchivesSpecial.fieldValue=JSON.parse(b.emArchivesSpecial.fieldValue)
+            }
           });
           this.equipmentList = response.rows;
           this.total = response.total;
@@ -496,37 +504,37 @@ export default {
           break;
       }
     },
-    setFormLabel(arr){
-      arr.forEach(b => {
-        b.label=b.fieldName;
-        b.prop=b.fieldCode;
-        b.required = b.required;
-        b.disabled = b.disabled;
-        b.formType = b.componentType;
-        switch (b.componentType) {
-          case 'select':
-            b.options = [];
-            // 字典
-            if(b.dictionaryType){
-              console.log(this,222);
-              b.options = this.dict.type[b.dictionaryType]
-            }
-            break;
-          case 'radio':
-            b.options = [];
-            if(b.dictionaryType){
-              b.options = this.dict.type[b.dictionaryType]
-            }
-            break;
+    // setFormLabel(arr){
+    //   arr.forEach(b => {
+    //     b.label=b.fieldName;
+    //     b.prop=b.fieldCode;
+    //     b.required = b.required;
+    //     b.disabled = b.disabled;
+    //     b.formType = b.componentType;
+    //     switch (b.componentType) {
+    //       case 'select':
+    //         b.options = [];
+    //         // 字典
+    //         if(b.dictionaryType){
+    //           console.log(this,222);
+    //           b.options = this.dict.type[b.dictionaryType]
+    //         }
+    //         break;
+    //       case 'radio':
+    //         b.options = [];
+    //         if(b.dictionaryType){
+    //           b.options = this.dict.type[b.dictionaryType]
+    //         }
+    //         break;
         
-          default:
-            break;
-        }
-      });
-    },
+    //       default:
+    //         break;
+    //     }
+    //   });
+    // },
     /** 新增按钮操作 */
     handleAdd() {
-      this.btnLoading = true
+      // this.btnLoading = true
       this.addItem.addDrawer = false
       if(this.addItem.addRadio == 1){
         // 复制
@@ -534,81 +542,89 @@ export default {
           this.$modal.msgError("复制设备不能为空");
         }else{
           copyBASE({deviceId: this.addItem.copyInputId}).then(response => {
-            this.btnLoading = false
+            // this.btnLoading = false
             this.getList();
           })
         }
       }else if(this.addItem.addRadio == 2){
         // 新增
-        // this.$router.push({ path: '/device/book/add', })
-        // 获取扩展数据
-        findByTemplateType({templateType: 'K'}).then(response => {
-          this.formData = this.$options.data().formData;
-          this.setFormLabel(response.data)
-          // 扩展数据
-          this.formData.emArchivesExtendAtt = {
-            componentContent: response.data,
-            fieldValue: {},
-          }
-          this.addEdit = true;
-          this.title = "新增设备";
-          this.btnLoading = false
-        })
-        .catch(err => {
-          this.btnLoading = false
-        });
+        this.$router.push({ path: '/device/book/add', })
+        // // 获取扩展数据
+        // findByTemplateType({templateType: 'K'}).then(response => {
+        //   this.formData = this.$options.data().formData;
+        //   this.setFormLabel(response.data)
+        //   // 扩展数据
+        //   this.formData.emArchivesExtendAtt = {
+        //     componentContent: response.data,
+        //     fieldValue: {},
+        //   }
+        //   this.addEdit = true;
+        //   this.title = "新增设备";
+        //   this.btnLoading = false
+        // })
+        // .catch(err => {
+        //   this.btnLoading = false
+        // });
 
       }
     },
     /** 修改按钮操作 */
     handleUpdate(row,f) {
-      this.btnLoading = true
+      // this.btnLoading = true
       const deviceId = row.deviceId
-      getBASE(deviceId).then(response => {
-        this.title = "编辑设备";
-        this.formData = response.data;
+      if(f=='edit'){
+        // this.addEdit = true;
+        this.$router.push({ path: '/device/book/add?i='+deviceId, })
+      }else if(f=='view'){
+        this.title = this.getTreeParent(row.categoryId).join(' > ') + ' > ' + row.deviceName;
+        this.$router.push({ path: '/device/book/details?i='+deviceId+'&t='+this.title, })
+        // this.addDetails = true;
+      }
+      // getBASE(deviceId).then(response => {
+      //   this.title = "编辑设备";
+      //   this.formData = response.data;
         
-        // 第一步  特种设备
-        if(this.formData.emArchivesSpecial){
-          this.formData.emArchivesSpecial.componentContent = JSON.parse(this.formData.emArchivesSpecial.componentContent)
-          this.formData.emArchivesSpecial.fieldValue = JSON.parse(this.formData.emArchivesSpecial.fieldValue)
-          this.setFormLabel(this.formData.emArchivesSpecial.componentContent)
-        }
-        // 第二步
-        if(this.formData.archivesOther==null){
-          this.formData.archivesOther={}
-        } 
-        // 第二步  扩展数据
-        if(this.formData.emArchivesExtendAtt){
-          this.formData.emArchivesExtendAtt.componentContent = JSON.parse(this.formData.emArchivesExtendAtt.componentContent)
-          this.formData.emArchivesExtendAtt.fieldValue = JSON.parse(this.formData.emArchivesExtendAtt.fieldValue)
-          this.setFormLabel(this.formData.emArchivesExtendAtt.componentContent)
-        }
-        // 第三步 主要指标
-        if(this.formData.emArchivesIndex){
-          this.formData.emArchivesIndex.componentContent = JSON.parse(this.formData.emArchivesIndex.componentContent)
-          this.formData.emArchivesIndex.fieldValue = JSON.parse(this.formData.emArchivesIndex.fieldValue)
-          this.setFormLabel(this.formData.emArchivesIndex.componentContent)
-        }
-        var obj = {
-          componentContent: [],
-          fieldValue: {},
-        }
-        if(this.formData.emArchivesExtendAtt==null) this.formData.emArchivesExtendAtt=obj
-        if(this.formData.emArchivesIndex==null) this.formData.emArchivesIndex=obj
-        if(this.formData.emArchivesSpecial==null) this.formData.emArchivesSpecial=obj
-        this.btnLoading = false
-        if(f=='edit'){
-          this.addEdit = true;
-        }else if(f=='view'){
-          this.title = this.getTreeParent(row.categoryId).join(' > ') + ' > ' + row.deviceName;
-          this.addDetails = true;
-        }
-      })
-      .catch(err => {
-        console.log(err,333);
-        this.btnLoading = false
-      });
+      //   // 第一步  特种设备
+      //   if(this.formData.emArchivesSpecial){
+      //     this.formData.emArchivesSpecial.componentContent = JSON.parse(this.formData.emArchivesSpecial.componentContent)
+      //     this.formData.emArchivesSpecial.fieldValue = JSON.parse(this.formData.emArchivesSpecial.fieldValue)
+      //     this.setFormLabel(this.formData.emArchivesSpecial.componentContent)
+      //   }
+      //   // 第二步
+      //   if(this.formData.archivesOther==null){
+      //     this.formData.archivesOther={}
+      //   } 
+      //   // 第二步  扩展数据
+      //   if(this.formData.emArchivesExtendAtt){
+      //     this.formData.emArchivesExtendAtt.componentContent = JSON.parse(this.formData.emArchivesExtendAtt.componentContent)
+      //     this.formData.emArchivesExtendAtt.fieldValue = JSON.parse(this.formData.emArchivesExtendAtt.fieldValue)
+      //     this.setFormLabel(this.formData.emArchivesExtendAtt.componentContent)
+      //   }
+      //   // 第三步 主要指标
+      //   if(this.formData.emArchivesIndex){
+      //     this.formData.emArchivesIndex.componentContent = JSON.parse(this.formData.emArchivesIndex.componentContent)
+      //     this.formData.emArchivesIndex.fieldValue = JSON.parse(this.formData.emArchivesIndex.fieldValue)
+      //     this.setFormLabel(this.formData.emArchivesIndex.componentContent)
+      //   }
+      //   // var obj = {
+      //   //   componentContent: [],
+      //   //   fieldValue: {},
+      //   // }
+      //   // if(this.formData.emArchivesExtendAtt==null) this.formData.emArchivesExtendAtt=obj
+      //   // if(this.formData.emArchivesIndex==null) this.formData.emArchivesIndex=obj
+      //   // if(this.formData.emArchivesSpecial==null) this.formData.emArchivesSpecial=obj
+      //   this.btnLoading = false
+      //   if(f=='edit'){
+      //     this.addEdit = true;
+      //   }else if(f=='view'){
+      //     this.title = this.getTreeParent(row.categoryId).join(' > ') + ' > ' + row.deviceName;
+      //     this.addDetails = true;
+      //   }
+      // })
+      // .catch(err => {
+      //   console.log(err,333);
+      //   this.btnLoading = false
+      // });
     },
     getTreeParent(id){
       const path = [];

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="formData.emArchivesIndex">
+    <!-- <div v-if="formData.emArchivesIndex">
       <p class="subtitle"><i class="el-icon-magic-stick"></i> 主要指标
         <span v-if="disabled5" class="rightbutton">
           <el-button type="text" icon="el-icon-edit" @click="disabled5=false">编辑</el-button>
@@ -19,8 +19,8 @@
         :formData="formData.emArchivesIndex.fieldValue"
         ref="jmform5">
       </jm-form>
-    </div>
-    <!-- <div v-if="formData.emArchivesSpecial">
+    </div> -->
+    <div v-if="formData.emArchivesSpecial">
       <p class="subtitle"><i class="el-icon-magic-stick"></i> 特种设备详情信息
         <span v-if="disabled4" class="rightbutton">
           <el-button type="text" icon="el-icon-edit" @click="disabled4=false">编辑</el-button>
@@ -39,7 +39,7 @@
         :formData="formData.emArchivesSpecial.fieldValue"
         ref="jmform4">
       </jm-form>
-    </div> -->
+    </div>
     <!-- 添加或修改设备平台_表单模板对话框 -->
     <el-drawer
       title="选择上级设备"
