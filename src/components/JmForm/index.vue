@@ -55,11 +55,14 @@
                             :options="col.options" 
                             clear-value-text="清除"
                             no-options-text="暂无数据"
+                            clearValueText="清除"
+                            noOptionsText="暂无数据"
                             placeholder="请选择" 
                             :default-expand-level="4"
                             :appendToBody="true"
                             :normalizer="normalizer" 
                             :disabled="col.formDisabled || disabled" 
+                            :zIndex="9999"
                             style="height: 32px;line-height: 32px;"/>
                         <el-input v-else-if="col.formType=='textarea'" type="textarea" v-model="formData[col.prop]" placeholder="请输入" :disabled="col.formDisabled || disabled"/>
                         <el-input v-else v-model="formData[col.prop]" placeholder="请输入" :readonly="col.readonly" :disabled="col.formDisabled || disabled" @click.native="col.clickFn?col.clickFn():(()=>{})()" />

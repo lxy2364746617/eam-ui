@@ -83,6 +83,8 @@
                       clearable
                       clear-value-text="清除"
                       no-options-text="暂无数据"
+                      clearValueText="清除"
+                      noOptionsText="暂无数据"
                       :default-expand-level="4"
                       @keyup.enter.native="handleQuery"
                       placeholder="请选择" 
@@ -281,16 +283,23 @@ export default {
       },
       findTreeName(options,value){
         var name = ''
-        name = this.forfn(options,value);
-        return name
+        function Name(name){
+          this.name = name;
+        }
+        var name1 = new Name('')
+        this.forfn(options,value,name1);
+        return name1.name
       },
-      forfn(options,value){
+      forfn(options,value,name1){
+        function changeName(n1,x){
+          n1.name = x
+        }
         for (let i = 0; i < options.length; i++) {
           if(options[i].id == value){
-            return options[i].label
+            changeName(name1, options[i].label)
           }
           if(options[i].children){
-            return this.forfn(options[i].children,value)
+            this.forfn(options[i].children,value,name1)
           }
         }
       },

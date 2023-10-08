@@ -70,6 +70,15 @@
           </template>
         </jm-form>
       </el-drawer>
+      <!-- 添加供应商对话框 -->
+      <el-drawer
+        title="选择供应商"
+        :visible.sync="drawersupplier"
+        size="60%"
+        direction="rtl"
+        :wrapperClosable="false">
+        <supplier @submitRadio="submitRadio" :isRadio="true" @close="closesupplier"></supplier>
+      </el-drawer>
     </el-card>
     <el-card shadow="never" style="margin-top: 10px;text-align: right;">
       <el-button size="mini" @click="closeform">取消</el-button>
@@ -89,6 +98,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
+import supplier from "@/views/device/book/supplier";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
@@ -97,7 +107,7 @@ export default {
     'em_property_type', 
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, 
+    Treeselect, JmUserTree, JmTable, JmForm, supplier, 
   },
   props:{
     stepActive:{
@@ -124,14 +134,14 @@ export default {
         { label:"备件类别", prop:"partsType", span: 24, },
         { label:"单位", prop:"unit", span: 24, },
         { label:"当前库存", prop:"stock", span: 24, },
-        { label:"供应商名称", prop:"supName", span: 24, },
+        { label:"供应商名称", prop:"supName", readonly: true, clickFn:()=>{this.drawersupplier=true}, span: 24, },
         { label:"存储位置", prop:"location", span: 24, },
-        { label:"所属组织", prop:"orgId", span: 24, },
+        { label:"所属组织", prop:"orgId", span: 24, formType: 'selectTree', options: this.deptOptions },
       ]
     },
   },
   mounted(){
-    console.log(this.formData.archivesPartsList,44);
+    // console.log(this.formData.archivesPartsList,44);
   },
   data() {
     return {
@@ -151,11 +161,12 @@ export default {
       total: 0,
       formDataNow: {},
       drawer: false,
+      drawersupplier: false,
       // 弹出层标题
       title: "",
       // 部门树选项
-      categoryOptions: undefined,
-      deptOptions: undefined,
+      categoryOptions: [],
+      deptOptions: [],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -226,6 +237,14 @@ export default {
     this.getTreeSelect()
   },
   methods: {
+    closesupplier(){
+      this.drawersupplier = false
+    },
+    submitRadio(row){
+      this.$set(this.formDataNow,'supName',row.supplierName)
+      // this.$set(this.formData,'parentDeviceName',row.deviceName)
+      this.closesupplier()
+    },
     closeform(){
       this.$emit('closeform')
     },
@@ -305,6 +324,7 @@ export default {
       });
       listDept().then(response => {
         this.deptOptions = response.data;
+        // console.log(response.data,111111111);
       });
     },
   }

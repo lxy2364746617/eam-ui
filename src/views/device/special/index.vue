@@ -30,10 +30,12 @@
 import JmTable from "@/components/JmTable";
 import { isSpecialEmCategoryCategory, } from "@/api/equipment/category";
 import { specialListBASE } from "@/api/equipment/BASE";
+import { listDept } from "@/api/system/dept";
+import { equipmentTree } from "@/api/equipment/category";
 
 export default {
   name: "deviceindex",
-  dicts: [],
+  dicts: ['em_device_state'],
   components: { JmTable },
   props: {
       formTitle: {
@@ -42,7 +44,15 @@ export default {
       },
   },
   computed: {
-
+    obj(){
+        return {
+            categoryId: { formType: 'selectTree', options: this.categoryOptions, },
+            currDeptId: { formType: 'selectTree', options: this.deptOptions, },
+            affDeptId: { formType: 'selectTree',  options: this.deptOptions, },
+            makerAoTime: { formType: 'date', },
+            deviceStatus:{formType: 'selectTag', options: this.dict.type.em_device_state, },
+        }
+    }
   },
   data() {
       return {
@@ -52,6 +62,9 @@ export default {
           total: 0,
           // 遮罩层
           loading: true,
+          // 部门树选项
+          deptOptions: [],
+          categoryOptions: [],
           // 查询参数
           queryParams: {
               pageNum: 1,
@@ -62,16 +75,31 @@ export default {
       };
   },
   created() {
+      this.getTree();
+      this.getTreeSelect();
       this.isSmEmCategoryRadio()
   },
   methods: {
+    /** 查询设备档案下拉树结构 */
+    async getTree() {
+      await equipmentTree().then(response => {
+        this.categoryOptions = response.data;
+      });
+    },
+    /** 查询部门下拉树结构 */
+    async getTreeSelect(){
+      await listDept().then(response => {
+        this.deptOptions = response.data;
+      });
+    },
       radioInput(val){
+        this.queryParams.categoryId = this.radioColumn[val].categoryId
           this.getList({
-              ...this.queryParams,
-              categoryId: this.radioColumn[val].categoryId
+              ...this.queryParams
           })
       },
       isSmEmCategoryRadio(){
+        var that = this
         isSpecialEmCategoryCategory().then(response => {
               response.data.forEach(b => {
                   if(b.tableHead){
@@ -80,6 +108,11 @@ export default {
                           bb.prop = bb.fieldCode
                           bb.formType = bb.fieldType
                           bb.tableVisible = !bb.custom
+                          for (const key in that.obj) {
+                            if(key==bb.prop){
+                                Object.assign(bb,that.obj[key])
+                            }
+                          }
                       });
                   }
               });
@@ -93,6 +126,7 @@ export default {
       /** 查询部门列表 */
       getList(queryParams) {
           this.loading = true;
+          queryParams.categoryId = this.radioColumn[this.radio].categoryId
           specialListBASE(queryParams).then(response => {
               response.rows.forEach(b => {
                   Object.assign(
@@ -117,6 +151,7 @@ export default {
           var obj = {
                 categoryId: this.queryParams.categoryId,
             }
+            console.log(obj,888);
             this.download('equipment/special/export',
                 obj,
                 `特种设备_${new Date().getTime()}.xlsx`)
