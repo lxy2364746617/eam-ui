@@ -28,9 +28,15 @@
           <el-upload
             multiple
             :before-upload="handleBeforeUpload"
+            :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
+            v-hasPermi="['equipment:book:add']"
+            name="file"
+            :show-file-list="false"
+            :headers="headers"
+            ref="upload"
             :action="uploadFileUrl"
             class="upload-file-uploader"
-            v-hasPermi="['equipment:book:add']"
             ><el-button type="danger" size="mini" plain icon="el-icon-upload"
               >导入</el-button
             ></el-upload
@@ -119,10 +125,13 @@ import {
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
 import { saveAs } from "file-saver";
+import { getToken } from "@/utils/auth";
+import { listDept } from "@/api/system/dept";
 export default {
   components: {
     JmTable,
   },
+  dicts: ["apv_status"],
   props: {
     // isChoose: {
     //     default: false,
@@ -134,6 +143,9 @@ export default {
       field101fileList: [],
       btnLoading: false,
       uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -151,19 +163,12 @@ export default {
       },
       // 弹出层标题
       title: "",
-      formData: {
-        archivesOther: {}, // 步骤2 值
-        emArchivesExtendAtt: {}, // 步骤2-扩展数据  模板 值
-        emArchivesIndex: {}, // 步骤3 主要指标  模板 值
-        emArchivesSpecial: {}, // 步骤3 特种设备  模板 值
-        archivesPartsList: [], // 步骤4  表格
-        genFileResourceList: [], // 步骤5  上传图片
-        imgFileResourceList: [], // 步骤5  上传文件
-      },
+      formData: {},
       // 表单参数
       form: {},
 
       radioRow: {},
+      deptOptions: null,
     };
   },
   computed: {
@@ -171,7 +176,22 @@ export default {
       return [
         { label: "购置计划编号", prop: "purchasePlanNo", tableVisible: true },
         { label: "购置计划名称", prop: "purchasePlanName", tableVisible: true },
-        { label: "购置计划类型", prop: "purchasePlanType", tableVisible: true },
+        {
+          label: "购置计划类型",
+          prop: "purchasePlanType",
+          formType: "select",
+          options: [
+            {
+              value: 1,
+              label: "年度计划",
+            },
+            // {
+            //   value: 2,
+            //   label: "临时计划",
+            // },
+          ],
+          tableVisible: true,
+        },
         { label: "年度", prop: "annual", tableVisible: true },
         { label: "计划需求数量", prop: "planDemandNum", tableVisible: true },
         {
@@ -191,7 +211,14 @@ export default {
           tableVisible: true,
           formType: "date",
         },
-        { label: "申报单位", prop: "declarationUnit", tableVisible: true },
+        {
+          label: "申报单位",
+          prop: "declarationDeptId",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          width: 150,
+        },
         { label: "申报人", prop: "declarationPerson", tableVisible: true },
         {
           label: "申报日期",
@@ -199,68 +226,32 @@ export default {
           formType: "date",
           tableVisible: true,
         },
-        { label: "创建人", prop: "createBy", tableVisible: true },
-        {
-          label: "创建时间",
-          prop: "createTime",
-          tableVisible: true,
-          formType: "date",
-        },
+
         {
           label: "审批状态",
           prop: "apvStatus",
           tableVisible: true,
-          formType: "select",
-          options: [
-            {
-              value: 1,
-              label: "待审批",
-            },
-            {
-              value: 2,
-              label: "审批中",
-            },
-            {
-              value: 3,
-              label: "审批通过",
-            },
-            {
-              value: 4,
-              label: "审批驳回",
-            },
-          ],
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
         },
       ];
     },
   },
   watch: {},
   async created() {
+    await this.getDeptTree();
     // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "apvStatus")
-        this.$set(b, "options", [
-          {
-            value: 1,
-            label: "待审批",
-          },
-          {
-            value: 2,
-            label: "审批中",
-          },
-          {
-            value: 3,
-            label: "审批通过",
-          },
-          {
-            value: 4,
-            label: "审批驳回",
-          },
-        ]);
-    });
+    this.columns.forEach((b) => {});
     await this.getList();
   },
   mounted() {},
   methods: {
+    /** 查询部门下拉树结构 */
+    async getDeptTree() {
+      await listDept(this.formParams).then((response) => {
+        this.deptOptions = response.data;
+      });
+    },
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -292,7 +283,22 @@ export default {
     },
     // 导入
 
-    handleBeforeUpload(file) {},
+    // 上传前校检格式和大小
+    handleBeforeUpload(file) {
+      // 校检文件大小
+      if (this.fileSize) {
+        const isLt = file.size / 1024 / 1024 < this.fileSize;
+        if (!isLt) {
+          this.$message.error(`上传文件大小不能超过 ${this.fileSize} MB!`);
+          return false;
+        }
+      }
+      return true;
+    },
+    handleUploadSuccess(res, file) {},
+    handleUploadError() {
+      this.$message.error("图片插入失败");
+    },
     async getList(
       form = {
         pageNum: 1,

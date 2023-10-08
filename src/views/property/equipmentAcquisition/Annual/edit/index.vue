@@ -5,7 +5,7 @@
       :formData="formData"
       @formData2="receiveDataFromChild"
     ></HeadEdit>
-    <TableProject :isShow="false" :rowId="formData.id"
+    <TableProject :isShow="false" :rowId="formData.purchasePlanNo"
       ><template
         ><p class="icon">
           <svg
@@ -23,7 +23,10 @@
         </p></template
       ></TableProject
     >
-    <TableRelevance :isShow="false" :title="'关联附件'"
+    <TableRelevance
+      :isShow="false"
+      :title="'关联附件'"
+      :busNo="formData.purchasePlanNo"
       ><template>
         <p class="icon">
           <svg
@@ -54,7 +57,7 @@ import HeadEdit from "../ui/HeadEdit.vue";
 import TableProject from "../ui/TableProject.vue";
 import TableRelevance from "../ui/TableRelevance.vue";
 import { getStore, removeStore } from "@/utils/property.js";
-import { setProject } from "@/api/property/purchase";
+import { updateProject } from "@/api/property/purchase";
 export default {
   components: {
     Wrapper,
@@ -76,18 +79,16 @@ export default {
       },
     };
   },
-  created() {},
-  mounted() {
+  created() {
     this.title = this.$route.meta.title;
     const routeValue = this.$route.query.item;
     if (routeValue) {
-      this.formData.annual = routeValue.annual;
-      this.formData.purchasePlanName = routeValue.purchasePlanName;
-      this.formData.purchasePlanType = routeValue.purchasePlanType;
+      this.formData = routeValue;
       this.formData.time = [routeValue.startTime, routeValue.endTime];
       this.isEdit = routeValue.isEdit;
     }
   },
+  mounted() {},
   computed: {},
   methods: {
     clear() {
@@ -95,12 +96,17 @@ export default {
       removeStore("delList");
       removeStore("updateList");
       removeStore("equipmentList");
+      removeStore("addFileList");
+      removeStore("delFileList");
+      removeStore("fileList");
     },
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
     submit() {
+      if (!this.formData.id) return;
+
       this.formData["startTime"] = this.formData.time[0];
       this.formData["endTime"] = this.formData.time[1];
       this.formData["purchasePlanType"] = 1;
@@ -117,7 +123,18 @@ export default {
       if (getStore("delList") && getStore("delList").length > 0) {
         this.formData["delList"] = getStore("delList");
       }
-      setProject(this.formData).then((res) => {
+      if (getStore("addFileList") && getStore("addFileList").length > 0) {
+        this.formData["addFileList"] = getStore("addFileList");
+      } else {
+        this.formData["addFileList"] = [];
+      }
+      if (getStore("delFileList") && getStore("delFileList").length > 0) {
+        this.formData["delFileList"] = getStore("delFileList");
+      } else {
+        this.formData["delFileList"] = [];
+      }
+
+      updateProject(this.formData).then((res) => {
         if (res.code === 200) {
           this.$message({
             type: "success",

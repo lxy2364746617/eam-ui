@@ -43,6 +43,15 @@ export function setProject(data) {
     data: data,
   });
 }
+
+// 新增计划
+export function updateProject(data) {
+  return request({
+    url: "/property/purchase/plan/updatePlan",
+    method: "post",
+    data: data,
+  });
+}
 // 计划页面-导入
 export function uploadInfo(data) {
   return request({

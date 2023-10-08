@@ -14,15 +14,20 @@
     >
       <template slot="headerLeft" v-if="!isChoose">
         <el-col :span="1.5" v-if="!isShow">
-          <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            :loading="btnLoading"
-            @click="handleAdd"
+          <el-upload
+            multiple
+            :action="uploadFileUrl"
+            :before-upload="handleBeforeUpload"
+            :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
             v-hasPermi="['equipment:book:add']"
-            >上传</el-button
+            name="file"
+            :show-file-list="false"
+            :headers="headers"
+            ref="upload"
+            ><el-button type="primary" size="mini" plain icon="el-icon-upload"
+              >导入</el-button
+            ></el-upload
           >
         </el-col>
         <el-col :span="1.5" v-else>
@@ -46,18 +51,11 @@
           :loading="btnLoading"
           @click="handleUpdate(scope.row, 'view')"
           v-hasPermi="['equipment:book:edit']"
-          >详情</el-button
+          >下载</el-button
         >
+
         <el-button
-          size="mini"
-          type="text"
-          icon="el-icon-edit"
-          :loading="btnLoading"
-          @click="handleUpdate(scope.row, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
-          >修改</el-button
-        >
-        <el-button
+          v-if="!isShow"
           size="mini"
           type="text"
           icon="el-icon-delete"
@@ -71,7 +69,7 @@
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['equipment:book:edit']"
-          >提交</el-button
+          >预览</el-button
         >
       </template>
     </jm-table>
@@ -80,21 +78,32 @@
 <script>
 import { getAssociatedPlan } from "@/api/property/purchase";
 import JmTable from "@/components/JmTable";
+import { getToken } from "@/utils/auth";
+import {
+  setStore,
+  getStore,
+  delList,
+  formatDateFromTimestamp,
+} from "@/utils/property.js";
 import { saveAs } from "file-saver";
+import Search from "@/components/HeaderSearch";
 export default {
   components: {
     JmTable,
   },
-  props: { isShow: false, type: Boolean },
+  props: { isShow: false, type: Boolean, busNo: "", type: String },
   data() {
     return {
+      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
       btnLoading: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
       },
-      equipmentList: null,
       isChoose: false,
       // 遮罩层
       loading: true,
@@ -134,41 +143,156 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "序号", prop: "deviceCode", tableVisible: true },
-        { label: "文件名", prop: "deviceName", tableVisible: true },
+        { label: "文件名", prop: "originalFileName", tableVisible: true },
         {
           label: "上传时间",
-          prop: "sModel",
+          prop: "createTime",
           formType: "data",
           tableVisible: true,
         },
-        { label: "上传人员", prop: "categoryId", tableVisible: true },
+        { label: "上传人员", prop: "createBy", tableVisible: true },
         {
           label: "文件大小",
-          prop: "deviceAtt",
-          formType: "select",
-          options: [],
+          prop: "fileSize",
+
           tableVisible: true,
         }, //(1 设备、2 部件)
       ];
     },
   },
   watch: {},
-  created() {},
-  mounted() {
-    this.getList();
+  async created() {
+    await this.getList();
   },
+  mounted() {},
   methods: {
+    // 上传前校检格式和大小
+    handleBeforeUpload(file) {
+      // 校检文件大小
+      if (this.fileSize) {
+        const isLt = file.size / 1024 / 1024 < this.fileSize;
+        if (!isLt) {
+          this.$message.error(`上传文件大小不能超过 ${this.fileSize} MB!`);
+          return false;
+        }
+      }
+      return true;
+    },
+    async handleUploadSuccess(res, file) {
+      if (res.code === 200) {
+        res["createImport"] = Date.now();
+        let msg = {
+          fileName: res.originalFileName,
+          originalFileName: res.originalFileName,
+          newFileName: res.newFileName,
+          fileSize: res.fileSize,
+          fileType: file.raw.type,
+          createImport: res.createImport,
+          createBy: this.$store.state.user.name,
+          createTime: await formatDateFromTimestamp(res.createImport),
+        };
+        if (getStore("addFileList") && getStore("addFileList").length > 0) {
+          setStore("addFileList", getStore("addFileList").concat(msg));
+        } else {
+          setStore("addFileList", [msg]);
+        }
+
+        await this.getList();
+        this.$message.success("文件上传成功！");
+      }
+    },
+
+    handleUploadError() {
+      this.$message.error("文件上传失败！");
+    },
+
     /** 查询用户列表 */
-    getList(queryParams) {
+    async getList(
+      queryParams = {
+        pageNum: 1,
+        pageSize: 10,
+      }
+    ) {
       this.loading = true;
-      getAssociatedPlan((queryParams = { pageNum: 1, pageSize: 10 })).then(
-        (response) => {
-          this.equipmentList = response.rows;
-          this.total = response.total;
+      if (this.busNo) queryParams["busNo"] = this.busNo;
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      delete search.busNo;
+
+      getAssociatedPlan(queryParams).then((response) => {
+        let res = response;
+        if (!res.data) res.data = [];
+        if (getStore("fileList")) setStore("fileList", []);
+        if (getStore("addFileList") && getStore("addFileList").length > 0) {
+          setStore("fileList", res.data.concat(getStore("addFileList")));
+        } else {
+          setStore("fileList", res.data);
           this.loading = false;
         }
-      );
+        if (getStore("delFileList") && getStore("delFileList").length > 0) {
+          setStore(
+            "fileList",
+            delList(getStore("fileList"), getStore("delFileList"))
+          );
+        }
+        let matches = getStore("fileList").filter((item) => {
+          for (let key in search) {
+            if (item[key] !== search[key]) {
+              return false;
+            }
+          }
+          return true;
+        });
+        this.equipmentList = matches;
+        this.total = matches.length;
+        this.loading = false;
+      });
+    },
+    handleDelete(row) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        if (!row.id) {
+          setStore(
+            "fileList",
+            this.equipmentList.filter(
+              (item) => item.newFileName !== row.newFileName
+            )
+          );
+          setStore(
+            "addFileList",
+            getStore("addFileList").filter(
+              (item) => item.newFileName !== row.newFileName
+            )
+          );
+        } else {
+          if (getStore("delFileList") && getStore("delFileList").length > 0) {
+            setStore("delFileList", [
+              ...getStore("delFileList").concat(
+                this.equipmentList.filter((item) => item.id == row.id)
+              ),
+            ]);
+          } else {
+            setStore(
+              "delFileList",
+              this.equipmentList.filter((item) => item.id == row.id)
+            );
+          }
+        }
+        setStore(
+          "fileList",
+          this.equipmentList.filter((item) => item.id != row.id)
+        );
+
+        this.getList();
+        this.$message({
+          type: "success",
+          message: "删除成功!",
+        });
+      });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -195,6 +319,7 @@ export default {
 
     padding: 0;
     margin: 0;
+    padding-bottom: 10px;
     display: flex;
     justify-content: start;
     align-items: center;

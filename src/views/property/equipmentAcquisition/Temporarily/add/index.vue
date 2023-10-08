@@ -79,14 +79,6 @@ export default {
   created() {},
   mounted() {
     this.title = this.$route.meta.title;
-    // const routeValue = this.$route.query.item;
-    // if (routeValue) {
-    //   this.formData.annual = routeValue.annual;
-    //   this.formData.purchasePlanName = routeValue.purchasePlanName;
-    //   this.formData.purchasePlanType = routeValue.purchasePlanType;
-    //   this.formData.time = [routeValue.startTime, routeValue.endTime];
-    //   this.isEdit = routeValue.isEdit;
-    // }
   },
   computed: {},
   methods: {
@@ -95,6 +87,8 @@ export default {
       removeStore("delList");
       removeStore("updateList");
       removeStore("equipmentList");
+      removeStore("addFileList");
+      removeStore("fileList");
     },
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
@@ -107,12 +101,19 @@ export default {
       delete this.formData.time;
       if (getStore("addList") && getStore("addList").length > 0) {
         this.formData["addList"] = getStore("addList");
+      } else {
+        this.formData["addList"] = [];
       }
       if (getStore("updateList") && getStore("updateList").length > 0) {
         this.formData["updateList"] = getStore("updateList");
       }
       if (getStore("delList") && getStore("delList").length > 0) {
         this.formData["delList"] = getStore("delList");
+      }
+      if (getStore("addFileList") && getStore("addFileList").length > 0) {
+        this.formData["addFileList"] = getStore("addFileList");
+      } else {
+        this.formData["addFileList"] = [];
       }
       setProject(this.formData).then((res) => {
         if (res.code === 200) {

@@ -5,7 +5,7 @@
       :formData="formData"
       @formData2="receiveDataFromChild"
     ></HeadEdit>
-    <TableProject :isShow="true" :rowId="formData.id">
+    <TableProject :isShow="true" :rowId="formData.purchasePlanNo">
       <template
         ><p class="icon">
           <svg
@@ -23,7 +23,10 @@
         </p></template
       ></TableProject
     >
-    <TableRelevance :isShow="true" :title="'关联附件'"
+    <TableRelevance
+      :isShow="true"
+      :title="'关联附件'"
+      :busNo="formData.purchasePlanNo"
       ><template>
         <p class="icon">
           <svg
@@ -99,6 +102,8 @@ export default {
     removeStore("delList");
     removeStore("updateList");
     removeStore("equipmentList");
+    removeStore("addFileList");
+    removeStore("fileList");
     //跳回上页
   },
   beforeRouteLeave(to, from, next) {

@@ -5,7 +5,7 @@
       :formData="formData"
       @formData2="receiveDataFromChild"
     ></HeadEdit>
-    <TableProject :isShow="false" :rowId="formData.id"
+    <TableProject :isShow="false" :rowId="formData.purchasePlanNo"
       ><template
         ><p class="icon">
           <svg
@@ -23,7 +23,10 @@
         </p></template
       ></TableProject
     >
-    <TableRelevance :isShow="false" :title="'关联附件'"
+    <TableRelevance
+      :isShow="false"
+      :title="'关联附件'"
+      :busNo="formData.purchasePlanNo"
       ><template>
         <p class="icon">
           <svg
@@ -44,7 +47,7 @@
     <div class="submit">
       <el-button type="primary" @click="submit">保存</el-button>
       <el-button type="primary">保存并提交审批</el-button>
-      <el-button>取消</el-button>
+      <el-button @click="cancel">取消</el-button>
     </div>
   </Wrapper>
 </template>
@@ -54,7 +57,7 @@ import HeadEdit from "../ui/HeadEdit.vue";
 import TableProject from "../ui/TableProject.vue";
 import TableRelevance from "../ui/TableRelevance.vue";
 import { getStore, removeStore } from "@/utils/property.js";
-import { setProject } from "@/api/property/purchase";
+import { updateProject } from "@/api/property/purchase";
 export default {
   components: {
     Wrapper,
@@ -76,16 +79,16 @@ export default {
       },
     };
   },
-  created() {},
-  mounted() {
+  created() {
     this.title = this.$route.meta.title;
     const routeValue = this.$route.query.item;
     if (routeValue) {
-      this.formData = routeValue
+      this.formData = routeValue;
       this.formData.time = [routeValue.startTime, routeValue.endTime];
       this.isEdit = routeValue.isEdit;
     }
   },
+  mounted() {},
   computed: {},
   methods: {
     clear() {
@@ -93,19 +96,25 @@ export default {
       removeStore("delList");
       removeStore("updateList");
       removeStore("equipmentList");
+      removeStore("addFileList");
+      removeStore("delFileList");
+      removeStore("fileList");
     },
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
     submit() {
+      if (!this.formData.id) return;
+
       this.formData["startTime"] = this.formData.time[0];
       this.formData["endTime"] = this.formData.time[1];
       this.formData["purchasePlanType"] = 2;
-      this.formData["purchasePlanNo"] = 2;
       delete this.formData.time;
       if (getStore("addList") && getStore("addList").length > 0) {
         this.formData["addList"] = getStore("addList");
+      } else {
+        this.formData["addList"] = [];
       }
       if (getStore("updateList") && getStore("updateList").length > 0) {
         this.formData["updateList"] = getStore("updateList");
@@ -113,7 +122,18 @@ export default {
       if (getStore("delList") && getStore("delList").length > 0) {
         this.formData["delList"] = getStore("delList");
       }
-      setProject(this.formData).then((res) => {
+      if (getStore("addFileList") && getStore("addFileList").length > 0) {
+        this.formData["addFileList"] = getStore("addFileList");
+      } else {
+        this.formData["addFileList"] = [];
+      }
+      if (getStore("delFileList") && getStore("delFileList").length > 0) {
+        this.formData["delFileList"] = getStore("delFileList");
+      } else {
+        this.formData["delFileList"] = [];
+      }
+
+      updateProject(this.formData).then((res) => {
         if (res.code === 200) {
           this.$message({
             type: "success",

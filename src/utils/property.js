@@ -37,7 +37,26 @@ const removeStore = (name) => {
     window.sessionStorage.removeItem(name);
   }
 };
+
 const delList = (array1, array2) => {
+  let indicesToRemove = [];
+
+  for (let i = 0; i < array1.length; i++) {
+    let idToCheck = array1[i].id;
+
+    let existsInArray2 = array2.some((obj) => obj.id === idToCheck);
+
+    if (existsInArray2) {
+      indicesToRemove.push(i);
+    }
+  }
+
+  for (let i = indicesToRemove.length - 1; i >= 0; i--) {
+    array1.splice(indicesToRemove[i], 1);
+  }
+  return array1;
+};
+const delFileList = (array1, array2) => {
   let indicesToRemove = [];
 
   for (let i = 0; i < array1.length; i++) {
@@ -82,9 +101,17 @@ const convertToTargetFormat = (data) => {
     children: item.children ? convertToTargetFormat(item.children) : undefined,
   }));
 };
-/**
- * 导出
- **/
+const formatDateFromTimestamp = (timestamp) => {
+  const date = new Date(timestamp); // 创建日期对象
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份从0开始，需要加1
+  const day = String(date.getDate()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 export {
   setStore,
   getStore,
@@ -92,4 +119,6 @@ export {
   delList,
   upName,
   convertToTargetFormat,
+  delFileList,
+  formatDateFromTimestamp,
 };

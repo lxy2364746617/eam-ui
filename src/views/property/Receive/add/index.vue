@@ -54,7 +54,7 @@ import HeadEdit from "../ui/HeadEdit.vue";
 import TableProject from "../ui/TableProject.vue";
 import TableRelevance from "../ui/TableRelevance.vue";
 import { getStore, removeStore } from "@/utils/property.js";
-import { setProject } from "@/api/property/receive.js";
+import { setProject } from "@/api/property/receive";
 export default {
   components: {
     Wrapper,
@@ -68,20 +68,17 @@ export default {
       title: "",
       isEdit: true,
       // 头部表单
-      formData: {},
+      formData: {
+        purchasePlanName: null,
+        purchasePlanType: 1,
+        annual: "2023",
+        time: [],
+      },
     };
   },
   created() {},
   mounted() {
     this.title = this.$route.meta.title;
-    // const routeValue = this.$route.query.item;
-    // if (routeValue) {
-    //   this.formData.annual = routeValue.annual;
-    //   this.formData.purchasePlanName = routeValue.purchasePlanName;
-    //   this.formData.purchasePlanType = routeValue.purchasePlanType;
-    //   this.formData.time = [routeValue.startTime, routeValue.endTime];
-    //   this.isEdit = routeValue.isEdit;
-    // }
   },
   computed: {},
   methods: {
@@ -90,28 +87,34 @@ export default {
       removeStore("delList");
       removeStore("updateList");
       removeStore("equipmentList");
+      removeStore("addFileList");
+      removeStore("fileList");
     },
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
     submit() {
+      this.formData["startTime"] = this.formData.time[0];
+      this.formData["endTime"] = this.formData.time[1];
+      this.formData["purchasePlanType"] = 1;
+      this.formData["purchasePlanNo"] = 1;
+      delete this.formData.time;
       if (getStore("addList") && getStore("addList").length > 0) {
         this.formData["addList"] = getStore("addList");
       } else {
         this.formData["addList"] = [];
       }
-      if (getStore("addFileList") && getStore("addFileList").length > 0) {
-        this.formData["addFileList"] = getStore("addFileList");
-      } else {
-        this.formData["addFileList"] = [];
-      }
-
       if (getStore("updateList") && getStore("updateList").length > 0) {
         this.formData["updateList"] = getStore("updateList");
       }
       if (getStore("delList") && getStore("delList").length > 0) {
         this.formData["delList"] = getStore("delList");
+      }
+      if (getStore("addFileList") && getStore("addFileList").length > 0) {
+        this.formData["addFileList"] = getStore("addFileList");
+      } else {
+        this.formData["addFileList"] = [];
       }
       setProject(this.formData).then((res) => {
         if (res.code === 200) {
@@ -120,7 +123,7 @@ export default {
             message: "保存成功!",
           });
         }
-        this.clear;
+        this.clear();
         this.cancel();
       });
     },

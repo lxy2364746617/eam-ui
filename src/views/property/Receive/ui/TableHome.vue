@@ -91,7 +91,7 @@ export default {
     JmTable,
     addEdit,
   },
-
+  dicts: ["apv_status"],
   props: {
     // isChoose: {
     //     default: false,
@@ -144,8 +144,8 @@ export default {
           label: "审批状态",
           prop: "apvStatus",
           tableVisible: true,
-          options: [],
-          formType: "select",
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
         },
       ];
     },
@@ -153,27 +153,7 @@ export default {
   watch: {},
   async created() {
     // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "apvStatus")
-        this.$set(b, "options", [
-          {
-            value: 1,
-            label: "待审批",
-          },
-          {
-            value: 2,
-            label: "审批中",
-          },
-          {
-            value: 3,
-            label: "审批通过",
-          },
-          {
-            value: 4,
-            label: "审批驳回",
-          },
-        ]);
-    });
+    this.columns.forEach((b) => {});
     await this.getList();
   },
   mounted() {},

@@ -8,13 +8,13 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isRadio="isChoose"
       :isShow2="isShow"
+      :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
     >
       <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5">
+        <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
             plain
@@ -24,6 +24,18 @@
             @click="handleAdd"
             v-hasPermi="['equipment:book:add']"
             >新增</el-button
+          >
+        </el-col>
+        <el-col :span="1.5" v-else>
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            :loading="btnLoading"
+            @click="importHandler"
+            v-hasPermi="['equipment:book:add']"
+            >下载</el-button
           >
         </el-col>
       </template>
@@ -116,26 +128,26 @@
   </div>
 </template>
 <script>
-import { getProjectList } from "@/api/property/receive";
+import { getProjectList, downDetailLoad } from "@/api/property/receive";
+import Treeselect from "@riophae/vue-treeselect";
 import JmTableNoPaging from "@/components/JmTableNoPaging";
 import {
   setStore,
   getStore,
   delList,
   upName,
+  convertToTargetFormat,
   removeStore,
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
+import { saveAs } from "file-saver";
 export default {
   components: {
     JmTableNoPaging,
+    Treeselect,
   },
-  props: {
-    isShow: {
-      default: false,
-      type: Boolean,
-    },
-  },
+  dicts: ["apv_status"],
+  props: ["rowId", "isShow"],
   data() {
     return {
       // 需求组织
@@ -214,36 +226,21 @@ export default {
       ];
     },
   },
-  watch: {
-    formData: {
-      handler(val, oldVal) {
-        this.formData["createTime"] = this.formatTimestamp();
-      },
-      deep: true,
-    },
-  },
+  watch: {},
   async created() {
     await this.getDeptTree();
     await this.getList();
+
     // data赋值
+    this.columns.forEach((b) => {});
+    this.deptOptions2 = await convertToTargetFormat(this.deptOptions);
   },
   mounted() {},
 
   methods: {
-    formatTimestamp() {
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate();
-      return `${year}-${month}-${day.toString().padStart(2, "0")}`;
-    },
-
-    getWeekNumber(date) {
-      const onejan = new Date(date.getFullYear(), 0, 1);
-      const week = Math.ceil(
-        ((date - onejan) / 86400000 + onejan.getDay() + 1) / 7
-      );
-      return week;
+    cancel() {
+      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+      this.$router.go(-1); //跳回上页
     },
     handleChange(value) {
       this.formData.demandOrganization = value[value.length - 1];
@@ -268,6 +265,12 @@ export default {
     },
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
+      if (this.rowId) queryParams["neckNo"] = this.rowId;
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      delete search.purchasePlanType;
+      delete search.purchasePlanNo;
       getProjectList(queryParams).then((response) => {
         if (getStore("equipmentList")) setStore("equipmentList", []);
         if (getStore("addList") && getStore("addList").length > 0) {
@@ -289,7 +292,15 @@ export default {
             delList(getStore("equipmentList"), getStore("delList"))
           );
         }
-        this.equipmentList = getStore("equipmentList");
+        let matches = getStore("equipmentList").filter((item) => {
+          for (let key in search) {
+            if (item[key] !== search[key]) {
+              return false;
+            }
+          }
+          return true;
+        });
+        this.equipmentList = matches;
       });
     },
     // 多选框选中数据
@@ -302,6 +313,18 @@ export default {
     handleAdd() {
       this.drawer = !this.drawer;
       this.title = "新增";
+    },
+    importHandler() {
+      if (!this.ids.length) {
+        this.$message.error("请选择勾选！");
+        return;
+      }
+      download(this.ids).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
+      });
     },
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -366,7 +389,6 @@ export default {
     submitFormAdd() {
       this.$refs["elForm"].validate(async (valid) => {
         if (!valid) return;
-        // this.formData["id"] = 0;
         if (this.title === "新增") {
           if (getStore("addList") && getStore("addList").length > 0) {
             setStore("addList", getStore("addList").concat(this.formData));
@@ -412,9 +434,9 @@ export default {
           type: "success",
           message: "修改成功",
         });
-        console.log("========================", this.formData);
+
         this.getList();
-        this.$refs["elForm"].resetFields();
+        this.resetForm();
         this.drawer = false;
         // await getProjectAdd(this.formData).then((response) => {
         //   if (response.code == 200) {
@@ -437,27 +459,6 @@ export default {
       name = this.forfn(options, value);
       return name;
     },
-    // getDemandOrganizationOptions() {
-    //   // 注意：this.$axios是通过Vue.prototype.$axios = axios挂载产生的
-    //   this.$axios({
-    //     method: "get",
-    //     url: "/property/purchase/plan/selectDetailPage",
-    //   }).then((resp) => {
-    //     var { data } = resp;
-    //     this.demandOrganizationOptions = data.list;
-    //   });
-    // },
-  },
-  beforeDestroy() {
-    // removeStore("addList");
-    // removeStore("delList");
-    // removeStore("updateList");
-  },
-
-  destroyed() {
-    // removeStore("addList");
-    // removeStore("delList");
-    // removeStore("updateList");
   },
 };
 </script>

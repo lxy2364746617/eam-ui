@@ -104,6 +104,8 @@ export default {
     removeStore("delList");
     removeStore("updateList");
     removeStore("equipmentList");
+    removeStore("addFileList");
+    removeStore("fileList");
   },
   beforeRouteLeave(to, from, next) {
     // 保存上一个路由信息

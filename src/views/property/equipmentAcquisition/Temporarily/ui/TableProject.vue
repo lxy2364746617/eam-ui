@@ -199,7 +199,8 @@ import {
   convertToTargetFormat,
   removeStore,
 } from "@/utils/property.js";
-import { listDept } from "@/api/system/dept";import { saveAs } from 'file-saver'
+import { listDept } from "@/api/system/dept";
+import { saveAs } from "file-saver";
 export default {
   components: {
     JmTableNoPaging,
@@ -408,7 +409,11 @@ export default {
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
       if (this.rowId) queryParams["id"] = this.rowId;
       queryParams["purchasePlanType"] = 2;
-
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      delete search.purchasePlanType;
+      delete search.id;
       getProjectList(queryParams).then((response) => {
         if (getStore("equipmentList")) setStore("equipmentList", []);
         if (getStore("addList") && getStore("addList").length > 0) {
@@ -430,7 +435,15 @@ export default {
             delList(getStore("equipmentList"), getStore("delList"))
           );
         }
-        this.equipmentList = getStore("equipmentList");
+        let matches = getStore("equipmentList").filter((item) => {
+          for (let key in search) {
+            if (item[key] !== search[key]) {
+              return false;
+            }
+          }
+          return true;
+        });
+        this.equipmentList = matches;
       });
     },
     // 多选框选中数据

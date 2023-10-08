@@ -117,10 +117,13 @@ import {
 } from "@/api/property/purchase";
 import JmTable from "@/components/JmTable";
 import { saveAs } from "file-saver";
+import { listDept } from "@/api/system/dept";
 export default {
   components: {
     JmTable,
   },
+  dicts: ["em_device_state", "em_device_att", "apv_status", "em_device_level"],
+
   props: {},
   data() {
     return {
@@ -176,6 +179,7 @@ export default {
       form: {},
 
       radioRow: {},
+      deptOptions: null,
     };
   },
   computed: {
@@ -203,7 +207,14 @@ export default {
           tableVisible: true,
           formType: "date",
         },
-        { label: "申报单位", prop: "declarationUnit", tableVisible: true },
+        {
+          label: "申报单位",
+          prop: "declarationDeptId",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          width: 150,
+        },
         { label: "申报人", prop: "declarationPerson", tableVisible: true },
         {
           label: "申报日期",
@@ -211,68 +222,32 @@ export default {
           formType: "date",
           tableVisible: true,
         },
-        { label: "创建人", prop: "createBy", tableVisible: true },
-        {
-          label: "创建时间",
-          prop: "createTime",
-          tableVisible: true,
-          formType: "date",
-        },
+
         {
           label: "审批状态",
           prop: "apvStatus",
           tableVisible: true,
-          formType: "select",
-          options: [
-            {
-              value: 1,
-              label: "待审批",
-            },
-            {
-              value: 2,
-              label: "审批中",
-            },
-            {
-              value: 3,
-              label: "审批通过",
-            },
-            {
-              value: 4,
-              label: "审批驳回",
-            },
-          ],
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
         },
       ];
     },
   },
   watch: {},
   async created() {
+    await this.getDeptTree();
     // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "apvStatus")
-        this.$set(b, "options", [
-          {
-            value: 1,
-            label: "待审批",
-          },
-          {
-            value: 2,
-            label: "审批中",
-          },
-          {
-            value: 3,
-            label: "审批通过",
-          },
-          {
-            value: 4,
-            label: "审批驳回",
-          },
-        ]);
-    });
+    this.columns.forEach((b) => {});
     await this.getList();
   },
   mounted() {},
   methods: {
+    /** 查询部门下拉树结构 */
+    async getDeptTree() {
+      await listDept(this.formParams).then((response) => {
+        this.deptOptions = response.data;
+      });
+    },
     handelImport() {},
     exportWarnLog(data) {
       if (!this.ids.length) {

@@ -33,9 +33,10 @@ export function delProject(id) {
 }
 
 // ! 关联附件列表   购置计划的
-export function getAssociatedPlan() {
+export function getAssociatedPlan(data) {
   return request({
     url: "/property/purchase/plan/getRelateFileList",
     method: "post",
+    data: data,
   });
 }

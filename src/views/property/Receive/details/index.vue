@@ -5,8 +5,8 @@
       :formData="formData"
       @formData2="receiveDataFromChild"
     ></HeadEdit>
-    <TableProject :isShow="true" :rowId="formData.id"
-      ><template
+    <TableProject :isShow="true" :rowId="formData.neckNo">
+      <template
         ><p class="icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,7 @@
         </p></template
       ></TableProject
     >
-    <TableRelevance :isShow="true" :title="'关联附件'"
+    <TableRelevance :isShow="true" :title="'关联附件'" :busNo="formData.neckNo"
       ><template>
         <p class="icon">
           <svg
@@ -49,7 +49,6 @@ import HeadEdit from "../ui/HeadEdit.vue";
 import TableProject from "../ui/TableProject.vue";
 import TableRelevance from "../ui/TableRelevance.vue";
 import { getStore, removeStore } from "@/utils/property.js";
-import { setProject } from "@/api/property/purchase";
 export default {
   components: {
     Wrapper,
@@ -66,23 +65,18 @@ export default {
       formData: {},
     };
   },
-  async created() {
-    await this.getRouter();
+  created() {
+    const routeValue = this.$route.query.item;
+    console.log("========================", routeValue);
+    this.formData = routeValue;
+    this.formData["isBtn"] = 1;
+    this.isEdit = routeValue.isEdit;
   },
   mounted() {
     this.title = this.$route.meta.title;
   },
   computed: {},
   methods: {
-    async getRouter() {
-      const routeValue = this.$route.query.item;
-      if (routeValue) {
-        this.formData = routeValue;
-
-        this.isEdit = routeValue.isEdit;
-        console.log("========================", this.formData);
-      }
-    },
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
@@ -97,6 +91,8 @@ export default {
     removeStore("addList");
     removeStore("delList");
     removeStore("updateList");
+    removeStore("equipmentList");
+    //跳回上页
   },
   beforeRouteLeave(to, from, next) {
     // 保存上一个路由信息

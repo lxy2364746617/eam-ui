@@ -69,7 +69,11 @@
           >详情</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus === 4 ||
+            scope.row.apvStatus === 1 ||
+            scope.row.apvStatus === null
+          "
           size="mini"
           type="text"
           icon="el-icon-edit"
@@ -79,7 +83,11 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus === 4 ||
+            scope.row.apvStatus === 1 ||
+            scope.row.apvStatus === null
+          "
           size="mini"
           type="text"
           icon="el-icon-delete"
@@ -88,7 +96,11 @@
           >删除</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus === 4 ||
+            scope.row.apvStatus === 1 ||
+            scope.row.apvStatus === null
+          "
           size="mini"
           type="text"
           icon="el-icon-document-add"
@@ -121,6 +133,7 @@ export default {
   components: {
     JmTable,
   },
+  dicts: ["apv_status"],
   props: {
     // isChoose: {
     //     default: false,
@@ -193,25 +206,8 @@ export default {
           label: "审批状态",
           prop: "apvStatus",
           tableVisible: true,
-          formType: "select",
-          options: [
-            {
-              value: 1,
-              label: "待审批",
-            },
-            {
-              value: 2,
-              label: "审批中",
-            },
-            {
-              value: 3,
-              label: "审批通过",
-            },
-            {
-              value: 4,
-              label: "审批驳回",
-            },
-          ],
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
         },
       ];
     },
@@ -219,27 +215,7 @@ export default {
   watch: {},
   async created() {
     // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "apvStatus")
-        this.$set(b, "options", [
-          {
-            value: 1,
-            label: "待审批",
-          },
-          {
-            value: 2,
-            label: "审批中",
-          },
-          {
-            value: 3,
-            label: "审批通过",
-          },
-          {
-            value: 4,
-            label: "审批驳回",
-          },
-        ]);
-    });
+    this.columns.forEach((b) => {});
     await this.getList();
   },
   mounted() {},
@@ -289,7 +265,6 @@ export default {
       }
     ) {
       this.loading = true;
-      form["purchasePlanType"] = 1;
       getPurchaseList(form).then((response) => {
         this.equipmentList = response.rows;
         this.total = response.total;

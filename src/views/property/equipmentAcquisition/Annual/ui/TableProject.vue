@@ -202,6 +202,7 @@ export default {
     JmTableNoPaging,
     Treeselect,
   },
+  dicts: ["em_device_state", "em_device_att", "apv_status", "em_device_level"],
   props: ["rowId", "isShow"],
   data() {
     return {
@@ -352,7 +353,7 @@ export default {
           prop: "demandOrganization",
           tableVisible: true,
           formType: "selectTree",
-          options: [],
+          options: this.deptOptions,
           width: 150,
         },
         { label: "备注", prop: "remark", tableVisible: true },
@@ -364,11 +365,9 @@ export default {
   async created() {
     await this.getDeptTree();
     await this.getList();
+
     // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "demandOrganization")
-        this.$set(b, "options", this.deptOptions);
-    });
+    this.columns.forEach((b) => {});
     this.deptOptions2 = await convertToTargetFormat(this.deptOptions);
   },
   mounted() {},
@@ -401,9 +400,13 @@ export default {
     },
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
-      if (this.rowId) queryParams["id"] = this.rowId;
+      if (this.rowId) queryParams["purchasePlanNo"] = this.rowId;
       queryParams["purchasePlanType"] = 1;
-
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      delete search.purchasePlanType;
+      delete search.purchasePlanNo;
       getProjectList(queryParams).then((response) => {
         if (getStore("equipmentList")) setStore("equipmentList", []);
         if (getStore("addList") && getStore("addList").length > 0) {
@@ -425,7 +428,15 @@ export default {
             delList(getStore("equipmentList"), getStore("delList"))
           );
         }
-        this.equipmentList = getStore("equipmentList");
+        let matches = getStore("equipmentList").filter((item) => {
+          for (let key in search) {
+            if (item[key] !== search[key]) {
+              return false;
+            }
+          }
+          return true;
+        });
+        this.equipmentList = matches;
       });
     },
     // 多选框选中数据
@@ -587,16 +598,6 @@ export default {
       name = this.forfn(options, value);
       return name;
     },
-    // getDemandOrganizationOptions() {
-    //   // 注意：this.$axios是通过Vue.prototype.$axios = axios挂载产生的
-    //   this.$axios({
-    //     method: "get",
-    //     url: "/property/purchase/plan/selectDetailPage",
-    //   }).then((resp) => {
-    //     var { data } = resp;
-    //     this.demandOrganizationOptions = data.list;
-    //   });
-    // },
   },
 };
 </script>

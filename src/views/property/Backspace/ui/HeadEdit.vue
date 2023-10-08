@@ -196,7 +196,7 @@ export default {
   overflow: hidden;
   margin-top: 20px;
   width: 100%;
-  height: 220px;
+  height: 230px;
   border-radius: 6px;
   border: 1px solid #e9eaef;
   background: #f7fbff;
@@ -209,7 +209,7 @@ export default {
 
     padding: 0;
     margin: 0;
-    padding-bottom: 25px;
+    padding-bottom: 15px;
     display: flex;
     justify-content: start;
     align-items: center;

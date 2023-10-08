@@ -137,6 +137,7 @@ import JmTable from "@/components/JmTable";
 import JmTableNoPaging from "@/components/JmTableNoPaging/index2";
 import addEdit from "@/views/property/equipmentAcquisition/Warehousing/add";
 import addDetails from "@/views/property/equipmentAcquisition/Warehousing/details";
+import { listDept } from "@/api/system/dept";
 export default {
   components: {
     JmTable,
@@ -153,6 +154,7 @@ export default {
     "em_device_level",
     "em_device_financing",
     "em_is_lease",
+    "apv_status",
   ],
   props: {},
   data() {
@@ -199,6 +201,7 @@ export default {
       form: {},
 
       radioRow: {},
+      deptOptions: null,
     };
   },
   computed: {
@@ -239,25 +242,8 @@ export default {
           label: "审批状态",
           prop: "apvStatus",
           tableVisible: true,
-          formType: "select",
-          options: [
-            {
-              value: 1,
-              label: "待审批",
-            },
-            {
-              value: 2,
-              label: "审批中",
-            },
-            {
-              value: 3,
-              label: "审批通过",
-            },
-            {
-              value: 4,
-              label: "审批驳回",
-            },
-          ],
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
         },
 
         {
@@ -365,27 +351,7 @@ export default {
   },
   async created() {
     // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "apvStatus")
-        this.$set(b, "options", [
-          {
-            value: 1,
-            label: "待审批",
-          },
-          {
-            value: 2,
-            label: "审批中",
-          },
-          {
-            value: 3,
-            label: "审批通过",
-          },
-          {
-            value: 4,
-            label: "审批驳回",
-          },
-        ]);
-    });
+    this.columns.forEach((b) => {});
     await this.getList();
     await this.getList2();
   },
@@ -397,10 +363,12 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        deleteBASE(4).then(async (res) => {
+        deleteBASE(row.id).then(async (res) => {
           if ((res.code = 200)) {
             this.getList();
-            this.$message.success(res.message);
+            res.message
+              ? this.$message.success(res.message)
+              : this.$message.success("删除成功！");
           } else {
             this.$message.success("删除失败！");
           }
