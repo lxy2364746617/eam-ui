@@ -61,7 +61,7 @@ export default {
       return [
         { label:"设备编码", prop:"deviceCode",  },
         { label:"设备名称", prop:"deviceName",  },
-        { label:"规格型号", prop:"sModel",  },
+        { label:"规格型号", prop:"specs",  },
         { label:"设备类别", prop:"categoryId",  },
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
         { label:"财务资产编码", prop:"propertyCode",  },

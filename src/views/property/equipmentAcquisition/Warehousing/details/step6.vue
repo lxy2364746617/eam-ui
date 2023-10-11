@@ -98,7 +98,7 @@ export default {
       return [
         { label:"设备编码", prop:"deviceCode", span: 24,  },
         { label:"设备名称", prop:"deviceName", span: 24,  },
-        { label:"规格型号", prop:"sModel", span: 24, },
+        { label:"规格型号", prop:"specs", span: 24, },
         { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 24,  },
         { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, span: 24,  },
         { label:"功能位置", prop:"location", span: 24,  },

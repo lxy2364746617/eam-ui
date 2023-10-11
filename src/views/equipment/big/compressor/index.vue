@@ -101,7 +101,7 @@ export default {
       return [
         { label: "矿井名称",prop: "mineName" },
         { label: "设备型号",prop: "deviceModel" },
-        { label: "压缩机形式",prop: "compressModel" },
+        { label: "压缩机形式",prop: "compresspecs" },
         { label: "功率",prop: "power" },
         { label: "台数",prop: "sum" },
         { label: "设备厂家",prop: "equipmentManufacturer" },

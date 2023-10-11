@@ -130,7 +130,7 @@ export default {
         { label: "设备编码", prop: "deviceName", tableVisible: true },
         {
           label: "设备名称",
-          prop: "sModel",
+          prop: "specs",
           formType: "data",
           tableVisible: true,
         },

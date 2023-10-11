@@ -118,7 +118,7 @@ export default {
         { label: "文件名", prop: "deviceName", tableVisible: true },
         {
           label: "上传时间",
-          prop: "sModel",
+          prop: "specs",
           formType: "data",
           tableVisible: true,
         },

@@ -228,7 +228,7 @@ export default {
           span: 12,
           required: true,
         },
-        { label: "规格型号", prop: "sModel", span: 12 },
+        { label: "规格型号", prop: "specs", span: 12 },
         { label: "功能位置", prop: "location", span: 12, required: true },
         {
           label: "所属组织",

@@ -182,7 +182,7 @@ export default {
         { label: "创建时间", prop: "deviceName", tableVisible: true },
         {
           label: "设备名称",
-          prop: "sModel",
+          prop: "specs",
           formType: "data",
           tableVisible: true,
         },
@@ -212,7 +212,7 @@ export default {
     equipSelectColumns() {
       return [
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "sModel", tableVisible: true },
+        { label: "规格型号", prop: "specs", tableVisible: true },
         { label: "自设设备编码", prop: "selfEquipNo", tableVisible: true },
         {
           label: "设备状态",

@@ -103,7 +103,7 @@ export default {
                 { label:"提升设备功率", prop:"upPower", span: 8, },
                 { label:"提升设备速度", prop:"upSpeed", span: 8, },
                 { label:"逆止器型号", prop:"backstopModel", span: 8, },
-                { label:"制动器型号", prop:"brakesModel", span: 8, },
+                { label:"制动器型号", prop:"brakespecs", span: 8, },
                 { label:"制动器台数", prop:"brakesSum", span: 8, },
                 { label:"生产日期", prop:"produceTime", span: 8, formType: "date",  },
                 { label:"设备型号", prop:"deviceModel", span: 8, },
@@ -120,7 +120,7 @@ export default {
             return [
                 { label: "设备编码", prop: "deviceCode", },
                 { label: "设备名称", prop: "deviceName", },
-                { label: "规格型号", prop: "sModel", },
+                { label: "规格型号", prop: "specs", },
                 { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, },
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
                 { label: "功能位置", prop: "location", },

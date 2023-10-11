@@ -187,7 +187,7 @@ export default {
           required: true,
         }, //(Y 是、N 否)
         { label: "功能位置", prop: "location", span: 8, required: true },
-        { label: "规格型号", prop: "sModel", span: 8 },
+        { label: "规格型号", prop: "specs", span: 8 },
         {
           label: "设备属性",
           prop: "deviceAtt",

@@ -186,7 +186,7 @@ export default {
     columns(){
       return [
         { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 12, required: true, },
-        { label:"规格型号", prop:"sModel", span: 12, },
+        { label:"规格型号", prop:"specs", span: 12, },
         { label:"功能位置", prop:"location", span: 12, required: true, },
         { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },
         { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },

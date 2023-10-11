@@ -185,7 +185,7 @@ export default {
       return [
         { label: "创建时间", prop: "createDate", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "sModel", tableVisible: true },
+        { label: "规格型号", prop: "specs", tableVisible: true },
         { label: "设备编码", prop: "deviceCode", tableVisible: true },
         {
           label: "设备类别",
@@ -222,7 +222,7 @@ export default {
       return [
         { label: "设备编码", prop: "deviceCode" },
         { label: "设备名称", prop: "deviceName" },
-        { label: "规格型号", prop: "sModel" },
+        { label: "规格型号", prop: "specs" },
         {
           label: "设备类别",
           prop: "categoryId",
@@ -422,21 +422,21 @@ export default {
             "equipmentList",
             this.equipmentList.filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.specs != row.deviceName + item.specs
             )
           );
           setStore(
             "addList",
             getStore("addList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.specs != row.deviceName + item.specs
             )
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.specs != row.deviceName + item.specs
             )
           );
         } else {
@@ -507,8 +507,8 @@ export default {
               "updateList",
               getStore("updateList").filter(
                 (item) =>
-                  item.deviceName + item.sModel !=
-                  this.itemValue.deviceName + this.itemValue.sModel
+                  item.deviceName + item.specs !=
+                  this.itemValue.deviceName + this.itemValue.specs
               )
             );
             setStore(

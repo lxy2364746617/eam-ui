@@ -97,7 +97,7 @@
                 图片
               </el-col>
               <el-col :span="14">
-                <p>规格型号:{{ item.partsModel }}</p>
+                <p>规格型号:{{ item.partspecs }}</p>
                 <p>设备类型:{{ item.partsType }}</p>
                 <p>功能位置:{{ item.location }}</p>
                 <p>所属子公司:{{ item.orgId }}</p>
@@ -153,7 +153,7 @@ export default {
       return [
         { label:"备件名称", prop:"partsName", span: 24, },
         { label:"备件编码", prop:"partsCode", span: 24, },
-        { label:"规格型号", prop:"partsModel", span: 24, },
+        { label:"规格型号", prop:"partspecs", span: 24, },
         { label:"备件类别", prop:"partsType", span: 24, },
         { label:"单位", prop:"unit", span: 24, },
         { label:"当前库存", prop:"stock", span: 24, },
@@ -173,7 +173,7 @@ export default {
       // columns: [
       //   { label:"备件名称", prop:"partsName", span: 24, },
       //   { label:"备件编码", prop:"partsCode", span: 24, },
-      //   { label:"规格型号", prop:"partsModel", span: 24, },
+      //   { label:"规格型号", prop:"partspecs", span: 24, },
       //   { label:"备件类别", prop:"partsType", span: 24, },
       //   { label:"单位", prop:"unit", span: 24, },
       //   { label:"当前库存", prop:"stock", span: 24, },

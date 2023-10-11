@@ -111,7 +111,7 @@ export default {
         { label:"提升设备能力", prop:"upDevicePower", span: 8, },
         { label:"逆止器型号", prop:"backstopModel", span: 8, },
         { label:"逆止器台数", prop:"backstop", span: 8, },
-        { label:"制动器型号", prop:"brakesModel", span: 8, },
+        { label:"制动器型号", prop:"brakespecs", span: 8, },
         { label:"制动器台数", prop:"brakesSum", span: 8, },
       ]
     },

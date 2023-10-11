@@ -79,9 +79,9 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="规格型号" prop="sModel">
+        <el-form-item label="规格型号" prop="specs">
           <el-input
-            v-model="formData.sModel"
+            v-model="formData.specs"
             placeholder="请输入规格型号"
             clearable
             :style="{ width: '100%' }"
@@ -227,7 +227,7 @@ export default {
       total: 0,
       formData: {
         deviceName: undefined,
-        sModel: undefined,
+        specs: undefined,
         technologyParam: "",
         necessityAnalysis: "",
         demandDate: null,
@@ -247,7 +247,7 @@ export default {
             trigger: "blur",
           },
         ],
-        sModel: [
+        specs: [
           {
             required: true,
             message: "请输入规格型号",
@@ -321,7 +321,7 @@ export default {
     columns() {
       return [
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "sModel", tableVisible: true },
+        { label: "规格型号", prop: "specs", tableVisible: true },
         { label: "技术参数", prop: "technologyParam", tableVisible: true },
         {
           label: "必要性分析",
@@ -473,21 +473,21 @@ export default {
             "equipmentList",
             this.equipmentList.filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.specs != row.deviceName + item.specs
             )
           );
           setStore(
             "addList",
             getStore("addList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.specs != row.deviceName + item.specs
             )
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.specs != row.deviceName + item.specs
             )
           );
         } else {
@@ -559,8 +559,8 @@ export default {
               "updateList",
               getStore("updateList").filter(
                 (item) =>
-                  item.deviceName + item.sModel !=
-                  this.itemValue.deviceName + this.itemValue.sModel
+                  item.deviceName + item.specs !=
+                  this.itemValue.deviceName + this.itemValue.specs
               )
             );
             setStore(

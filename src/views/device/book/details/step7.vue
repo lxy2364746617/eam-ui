@@ -77,7 +77,7 @@
                 图片
               </el-col>
               <el-col :span="14">
-                <p>规格型号:{{ item.sModel }}</p>
+                <p>规格型号:{{ item.specs }}</p>
                 <p>设备类型:{{ item.categoryId }}</p>
                 <p>功能位置:{{ item.location }}</p>
                 <p>所属子公司:{{ item.aaaa }}</p>
@@ -136,7 +136,7 @@ export default {
       return [
         { label:"设备编码", prop:"deviceCode", },
         { label:"设备名称", prop:"deviceName", },
-        { label:"规格型号", prop:"sModel", },
+        { label:"规格型号", prop:"specs", },
         { label:"设备类型", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions,   },
         { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
         { label:"功能位置", prop:"location",  },

@@ -78,7 +78,7 @@ export default {
       return [
         { label: "设备编码", prop: "deviceCode", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "sModel", tableVisible: true },
+        { label: "规格型号", prop: "specs", tableVisible: true },
         {
           label: "设备类别",
           prop: "categoryId",

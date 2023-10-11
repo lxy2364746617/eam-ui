@@ -14,7 +14,7 @@
           <el-form-item label="设备名称" prop="deviceName" required>
             <el-input disabled style="width: 100%"></el-input>
           </el-form-item>
-          <el-form-item label="规格型号" prop="sModel" required>
+          <el-form-item label="规格型号" prop="specs" required>
             <el-input disabled style="width: 100%"></el-input>
           </el-form-item>
           <el-form-item label="设备类别" prop="deviceType" required>

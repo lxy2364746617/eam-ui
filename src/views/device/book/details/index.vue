@@ -67,7 +67,7 @@
           </tr>
           <tr>
             <td>规格型号</td>
-            <td>{{ formData.sModel }}</td>
+            <td>{{ formData.specs }}</td>
           </tr>
           <tr>
             <td>设备类别</td>
