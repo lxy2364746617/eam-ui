@@ -9,24 +9,26 @@
           @handleNodeClick="handleNodeClick" 
           style="position: fixed;top: 121px;height: calc(100vh - 141px);">
         </jm-user-tree>
-      </el-col> -->
+      </el-col>-->
       <div>
         <el-popover
           placement="bottom"
-          title=""
+          title
           style="position: fixed;z-index: 1009;top: 55px;right: 10px;"
           trigger="click"
-          content="">
-          <el-button 
-            type="primary" 
-            size="small" 
-            icon="el-icon-c-scale-to-original" 
-            slot="reference"></el-button>
-          <jm-user-tree 
-            :treeData="categoryOptions" 
-            @handleNodeClick="handleNodeClick" 
-            style="height: calc(100vh - 141px);">
-          </jm-user-tree>
+          content
+        >
+          <el-button
+            type="primary"
+            size="small"
+            icon="el-icon-c-scale-to-original"
+            slot="reference"
+          ></el-button>
+          <jm-user-tree
+            :treeData="categoryOptions"
+            @handleNodeClick="handleNodeClick"
+            style="height: calc(100vh - 141px);"
+          ></jm-user-tree>
         </el-popover>
       </div>
       <!--用户数据-->
@@ -35,7 +37,9 @@
           <el-col :span="6" :xs="24" v-for="item in countColumn" :key="item.prop">
             <div style="background-color: #f7fbff;padding-top:15px;">
               <div style="font-size: 30px;">
-                <p style="width: 50px;height: 50px;margin: 0 auto;display: inline-block;color: #fff;background-color: #007bfe;border-radius: 50%;">
+                <p
+                  style="width: 50px;height: 50px;margin: 0 auto;display: inline-block;color: #fff;background-color: #007bfe;border-radius: 50%;"
+                >
                   <i :class="item.icon" style="margin-top: 9px;"></i>
                 </p>
               </div>
@@ -43,15 +47,22 @@
                 <el-row>
                   <el-col :span="24">
                     <p style="color: #666;font-size: 12px;margin: 5px auto;">{{ item.label }}</p>
-                    <p style="font-size: 20px;font-weight: bold;margin: 7px auto;padding-bottom: 10px;">{{countData[item.prop]}}</p>
+                    <p
+                      style="font-size: 20px;font-weight: bold;margin: 7px auto;padding-bottom: 10px;"
+                    >{{countData[item.prop]}}</p>
                   </el-col>
                 </el-row>
               </div>
               <div v-if="item.children">
                 <el-row>
                   <el-col :span="8" v-for="(item2,index2) in item.children" :key="item2.index">
-                    <p :style="{'color': item2.color}" style="font-size: 12px;margin: 5px auto;">{{ item2.label }}</p>
-                    <p style="font-size: 20px;font-weight: bold;margin: 7px auto;padding-bottom: 10px;">{{countData[item2.prop]}}</p>
+                    <p
+                      :style="{'color': item2.color}"
+                      style="font-size: 12px;margin: 5px auto;"
+                    >{{ item2.label }}</p>
+                    <p
+                      style="font-size: 20px;font-weight: bold;margin: 7px auto;padding-bottom: 10px;"
+                    >{{countData[item2.prop]}}</p>
                   </el-col>
                 </el-row>
               </div>
@@ -66,7 +77,8 @@
           ref="jmtable"
           :isRadio="isChoose"
           :handleWidth="230"
-          :columns="columns">
+          :columns="columns"
+        >
           <template slot="headerLeft" v-if="!isChoose">
             <el-col :span="1.5">
               <el-button
@@ -83,7 +95,7 @@
                 type="primary"
                 icon="el-icon-upload2"
                 size="mini"
-                @click="handleImport" 
+                @click="handleImport"
                 v-hasPermi="['equipment:book:add']"
               >导入</el-button>
             </el-col>
@@ -115,7 +127,7 @@
                 @click="handleDelete"
                 v-hasPermi="['equipment:book:remove']"
               >删除</el-button>
-            </el-col> -->
+            </el-col>-->
           </template>
           <template #end_handle="scope" v-if="!isChoose">
             <el-button
@@ -154,35 +166,49 @@
       <el-col :span="24" :xs="24" v-if="addDetails">
         <add-details :formData="formData" :formTitle="title" @back="back()"></add-details>
       </el-col>
-
     </el-row>
-    <div v-if="isChoose" style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
+    <div
+      v-if="isChoose"
+      style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;"
+    >
       <el-button size="mini" @click="close">取消</el-button>
       <el-button size="mini" @click="submitRadio" type="primary" :disabled="multiple">确定</el-button>
     </div>
     <add-edit v-if="addEdit" :formTitle="title" :formData="formData" @back="back()"></add-edit>
     <device-index v-if="deviceIndexVisible" @back="deviceIndexVisible=false"></device-index>
     <!-- 导入 -->
-    <file-import 
+    <file-import
       @handleFileSuccess="handleFileSuccess"
       :downloadTemplateUrl="'/equipment/base/importTemplate'"
       ref="fileImport"
-      :importUrl="'/equipment/base/importData'">
-    </file-import>
+      :importUrl="'/equipment/base/importData'"
+    ></file-import>
     <!-- 新增 -->
     <el-drawer
       title="新增设备"
       :visible.sync="addItem.addDrawer"
       direction="rtl"
       :wrapperClosable="false"
-      destroy-on-close>
+      destroy-on-close
+    >
       <el-radio-group v-model="addItem.addRadio" style="margin-left: 20px;">
         <el-row style="margin-bottom: 20px;margin-top: 20px;">
-          <el-col :span="10" style="line-height: 40px;"><el-radio :label="1">复制设备</el-radio></el-col>
-          <el-col :span="14" v-if="addItem.addRadio==1"><el-input readonly @click.native="addItem.choosedrawer=true" v-model="addItem.copyInputName" placeholder="请选择"></el-input></el-col>
+          <el-col :span="10" style="line-height: 40px;">
+            <el-radio :label="1">复制设备</el-radio>
+          </el-col>
+          <el-col :span="14" v-if="addItem.addRadio==1">
+            <el-input
+              readonly
+              @click.native="addItem.choosedrawer=true"
+              v-model="addItem.copyInputName"
+              placeholder="请选择"
+            ></el-input>
+          </el-col>
         </el-row>
         <el-row style="margin-bottom: 20px;">
-          <el-col :span="24"><el-radio :label="2">新增设备</el-radio></el-col>
+          <el-col :span="24">
+            <el-radio :label="2">新增设备</el-radio>
+          </el-col>
         </el-row>
       </el-radio-group>
       <div class="dialog-footer">
@@ -196,58 +222,118 @@
       :visible.sync="addItem.choosedrawer"
       direction="rtl"
       size="80%"
-      :wrapperClosable="false">
-      <parentdevice :isChoose="true" @submitRadio="submitRadio2" @close="addItem.choosedrawer=false"></parentdevice>
+      :wrapperClosable="false"
+    >
+      <parentdevice
+        :isChoose="true"
+        @submitRadio="submitRadio2"
+        @close="addItem.choosedrawer=false"
+      ></parentdevice>
     </el-drawer>
   </div>
 </template>
 
 <script>
-import { findByTemplateType } from "@/api/equipment/attribute";
-import { listDept } from "@/api/system/dept";
-import { equipmentTree } from "@/api/equipment/category";
-import { listBASE, getBASE, delBASE, addBASE, updateBASE, countBASE, exportBASE, copyBASE } from "@/api/equipment/BASE";
-import { getToken } from "@/utils/auth";
-import Treeselect from "@riophae/vue-treeselect";
-import addEdit from "@/views/device/book/add";
-import addDetails from "@/views/device/book/details";
-import deviceIndex from "@/views/device/book/deviceIndex";
-import JmTable from "@/components/JmTable";
-import JmUserTree from "@/components/JmUserTree";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/device/book/device";
+import { findByTemplateType } from '@/api/equipment/attribute'
+import { listDept } from '@/api/system/dept'
+import { equipmentTree } from '@/api/equipment/category'
+import {
+  listBASE,
+  getBASE,
+  delBASE,
+  addBASE,
+  updateBASE,
+  countBASE,
+  exportBASE,
+  copyBASE,
+} from '@/api/equipment/BASE'
+import { getToken } from '@/utils/auth'
+import Treeselect from '@riophae/vue-treeselect'
+import addEdit from '@/views/device/book/add'
+import addDetails from '@/views/device/book/details'
+import deviceIndex from '@/views/device/book/deviceIndex'
+import JmTable from '@/components/JmTable'
+import JmUserTree from '@/components/JmUserTree'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import fileImport from '@/components/FileImport'
+import parentdevice from '@/views/device/book/device'
 
 export default {
-  name: "devicebook",
-  dicts: [ 'em_device_state','em_device_att', 'apv_status','em_device_level'],
-  components: { Treeselect, JmUserTree, JmTable, addEdit, addDetails, deviceIndex, fileImport, parentdevice },
-  props:{
-    isChoose:{
-      default:false,
-      type: Boolean,
-    }
+  name: 'devicebook',
+  dicts: ['em_device_state', 'em_device_att', 'apv_status', 'em_device_level'],
+  components: {
+    Treeselect,
+    JmUserTree,
+    JmTable,
+    addEdit,
+    addDetails,
+    deviceIndex,
+    fileImport,
+    parentdevice,
   },
-  computed:{
+  props: {
+    isChoose: {
+      default: false,
+      type: Boolean,
+    },
+  },
+  computed: {
     // 列信息
-    columns(){
+    columns() {
       return [
-        { label:"设备编码", prop:"deviceCode",  },
-        { label:"设备名称", prop:"deviceName",  },
-        { label:"规格型号", prop:"specs",  },
-        { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions,   },
-        { label:"设备状态", prop:"deviceStatus", formType: 'selectTag', options: this.dict.type.em_device_state, },
-        { label:"财务资产编码", prop:"propertyCode",  },
-        { label:"功能位置", prop:"location",  },
-        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
+        { label: '设备编码', prop: 'deviceCode' },
+        { label: '设备名称', prop: 'deviceName' },
+        { label: '规格型号', prop: 'specs' },
+        {
+          label: '设备类别',
+          prop: 'categoryId',
+          formType: 'selectTree',
+          options: this.categoryOptions,
+          width: 280,
+        },
+        {
+          label: '设备状态',
+          prop: 'deviceStatus',
+          formType: 'selectTag',
+          options: this.dict.type.em_device_state,
+        },
+        { label: '财务资产编码', prop: 'propertyCode' },
+        { label: '功能位置', prop: 'location' },
+        {
+          label: '重要等级',
+          prop: 'level',
+          formType: 'select',
+          options: this.dict.type.em_device_level,
+        }, //(A、B、C)
         // { label:"所属子公司", prop:"",  },
-        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions,  },
-        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, },
-        { label:"入账日期", prop:"makerAoTime", formType: 'date', }, 
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
-        { label:"上级设备", prop:"parentDeviceName",  }, //(0 父级)
-        { label:"审批状态", prop:"apvStatus", formType: 'selectTag', options: this.dict.type.apv_status, }, //apv_status
-        
+        {
+          label: '所属组织',
+          prop: 'affDeptId',
+          formType: 'selectTree',
+          options: this.deptOptions,
+          width: 180,
+        },
+        {
+          label: '当前使用组织',
+          prop: 'currDeptId',
+          formType: 'selectTree',
+          options: this.deptOptions,
+          width: 180,
+        },
+        { label: '入账日期', prop: 'makerAoTime', formType: 'date' },
+        {
+          label: '设备属性',
+          prop: 'deviceAtt',
+          formType: 'select',
+          options: this.dict.type.em_device_att,
+        }, //(1 设备、2 部件)
+        { label: '上级设备', prop: 'parentDeviceName' }, //(0 父级)
+        {
+          label: '审批状态',
+          prop: 'apvStatus',
+          formType: 'selectTag',
+          options: this.dict.type.apv_status,
+        }, //apv_status
       ]
     },
   },
@@ -267,8 +353,8 @@ export default {
         emArchivesIndex: {}, // 步骤3 主要指标  模板 值
         emArchivesSpecial: {}, // 步骤3 特种设备  模板 值
         archivesPartsList: [], // 步骤4  表格
-        genFileResourceList: [],  // 步骤5  上传图片
-        imgFileResourceList: [],  // 步骤5  上传文件
+        genFileResourceList: [], // 步骤5  上传图片
+        imgFileResourceList: [], // 步骤5  上传文件
       },
       // 遮罩层
       loading: true,
@@ -284,19 +370,22 @@ export default {
       total: 0,
       // 表格数据
       equipmentList: null,
-      countData:{},
-      countColumn:[
-        {label:'设备数量',prop:'sumCount',icon:'el-icon-share',},
-        {label:'在用数量',prop:'zyCount',icon:'el-icon-tickets',},
-        {label:'未审批数量',prop:'checkCount',icon:'el-icon-reading',},
-        {children:[
-          {label:'A级',prop:'a', color: '#24a71e'},
-          {label:'B级',prop:'b', color: '#ffb64f'},
-          {label:'C级',prop:'c', color: '#fc297d'},
-        ], icon:'el-icon-pie-chart',},
+      countData: {},
+      countColumn: [
+        { label: '设备数量', prop: 'sumCount', icon: 'el-icon-share' },
+        { label: '在用数量', prop: 'zyCount', icon: 'el-icon-tickets' },
+        { label: '未审批数量', prop: 'checkCount', icon: 'el-icon-reading' },
+        {
+          children: [
+            { label: 'A级', prop: 'a', color: '#24a71e' },
+            { label: 'B级', prop: 'b', color: '#ffb64f' },
+            { label: 'C级', prop: 'c', color: '#fc297d' },
+          ],
+          icon: 'el-icon-pie-chart',
+        },
       ],
       // 弹出层标题
-      title: "",
+      title: '',
       // 部门树选项
       deptOptions: undefined,
       categoryOptions: undefined,
@@ -321,15 +410,15 @@ export default {
         // 是否显示弹出层（用户导入）
         open: false,
         // 弹出层标题（用户导入）
-        title: "",
+        title: '',
         // 是否禁用上传
         isUploading: false,
         // 是否更新已经存在的用户数据
         updateSupport: 0,
         // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
+        headers: { Authorization: 'Bearer ' + getToken() },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/system/user/importData"
+        url: process.env.VUE_APP_BASE_API + '/system/user/importData',
       },
       // 查询参数
       queryParams: {
@@ -341,167 +430,186 @@ export default {
       // 表单校验
       rules: {
         userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
-          { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
+          { required: true, message: '用户名称不能为空', trigger: 'blur' },
+          {
+            min: 2,
+            max: 20,
+            message: '用户名称长度必须介于 2 和 20 之间',
+            trigger: 'blur',
+          },
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
+          { required: true, message: '用户昵称不能为空', trigger: 'blur' },
         ],
         password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+          { required: true, message: '用户密码不能为空', trigger: 'blur' },
+          {
+            min: 5,
+            max: 20,
+            message: '用户密码长度必须介于 5 和 20 之间',
+            trigger: 'blur',
+          },
         ],
         email: [
           {
-            type: "email",
-            message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
-          }
+            type: 'email',
+            message: '请输入正确的邮箱地址',
+            trigger: ['blur', 'change'],
+          },
         ],
         phonenumber: [
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-            message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
-        ]
-      }
-    };
+            message: '请输入正确的手机号码',
+            trigger: 'blur',
+          },
+        ],
+      },
+    }
   },
   created() {
-    this.getTree();
-    this.getTreeSelect();
+    this.getTree()
+    this.getTreeSelect()
   },
   methods: {
     /** 导入按钮操作 */
-    handleImport(){
-      this.$refs.fileImport.upload.open=true
+    handleImport() {
+      this.$refs.fileImport.upload.open = true
     },
     /** 查询设备档案下拉树结构 */
     getTree() {
-      equipmentTree().then(response => {
-        this.categoryOptions = response.data;
+      equipmentTree().then((response) => {
+        this.categoryOptions = response.data
         // 方便获取父级tree
         this.loops(this.categoryOptions)
-      });
+      })
     },
     /** 查询部门下拉树结构 */
-    getTreeSelect(){
-      listDept().then(response => {
-        this.deptOptions = response.data;
-      });
+    getTreeSelect() {
+      listDept().then((response) => {
+        this.deptOptions = response.data
+      })
     },
     // 设备指标
-    handleDevice(){
+    handleDevice() {
       this.deviceIndexVisible = true
       // var obj = {
       //   categoryId: this.queryParams.categoryId
       // }
       // listIndexBASE(obj).then(response => {
-        
+
       // });
     },
-    close(){
+    close() {
       this.$emit('close')
     },
-    submitRadio(){
-      this.$emit('submitRadio',this.radioRow)
+    submitRadio() {
+      this.$emit('submitRadio', this.radioRow)
     },
-    submitRadio2(row){
+    submitRadio2(row) {
       this.addItem.copyInputName = row.deviceName
       this.addItem.copyInputId = row.deviceId
       this.addItem.choosedrawer = false
     },
-    back(){
-      this.addEdit=false
-      this.addDetails=false
+    back() {
+      this.addEdit = false
+      this.addDetails = false
       this.getList(this.queryParams)
     },
-    handleOpen(){
-      this.addItem.addDrawer=true
+    handleOpen() {
+      this.addItem.addDrawer = true
     },
     /** 查询用户列表 */
     getList(queryParams) {
-      this.loading = true;
+      this.loading = true
       var data = {
-        categoryId:this.queryParams.categoryId,
-        ...queryParams
+        categoryId: this.queryParams.categoryId,
+        ...queryParams,
       }
       this.getCount(data)
-      listBASE(data).then(response => {
-          response.rows.forEach(b => {
-            Object.assign(
-              b,
-              b.archivesOther?b.archivesOther:{},
-              b.emArchivesExtendAtt?JSON.parse(b.emArchivesExtendAtt.fieldValue):{},
-              b.emArchivesIndex?JSON.parse(b.emArchivesIndex.fieldValue):{},
-              b.emArchivesSpecial?JSON.parse(b.emArchivesSpecial.fieldValue):{},
+      listBASE(data).then((response) => {
+        response.rows.forEach((b) => {
+          Object.assign(
+            b,
+            b.archivesOther ? b.archivesOther : {},
+            b.emArchivesExtendAtt
+              ? JSON.parse(b.emArchivesExtendAtt.fieldValue)
+              : {},
+            b.emArchivesIndex ? JSON.parse(b.emArchivesIndex.fieldValue) : {},
+            b.emArchivesSpecial
+              ? JSON.parse(b.emArchivesSpecial.fieldValue)
+              : {}
+          )
+          if (b.emArchivesExtendAtt) {
+            b.emArchivesExtendAtt.fieldValue = JSON.parse(
+              b.emArchivesExtendAtt.fieldValue
             )
-            if(b.emArchivesExtendAtt){
-              b.emArchivesExtendAtt.fieldValue=JSON.parse(b.emArchivesExtendAtt.fieldValue)
-            }
-            if(b.emArchivesIndex){
-              b.emArchivesIndex.fieldValue=JSON.parse(b.emArchivesIndex.fieldValue)
-            }
-            if(b.emArchivesSpecial){
-              b.emArchivesSpecial.fieldValue=JSON.parse(b.emArchivesSpecial.fieldValue)
-            }
-          });
-          this.equipmentList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        }
-      );
+          }
+          if (b.emArchivesIndex) {
+            b.emArchivesIndex.fieldValue = JSON.parse(
+              b.emArchivesIndex.fieldValue
+            )
+          }
+          if (b.emArchivesSpecial) {
+            b.emArchivesSpecial.fieldValue = JSON.parse(
+              b.emArchivesSpecial.fieldValue
+            )
+          }
+        })
+        this.equipmentList = response.rows
+        this.total = response.total
+        this.loading = false
+      })
     },
     /** 查询统计 */
     getCount(queryParams) {
-      countBASE(queryParams).then(response => {
-          this.countData = response.data;
-        });
+      countBASE(queryParams).then((response) => {
+        this.countData = response.data
+      })
     },
     // 节点单击事件
     handleNodeClick(data) {
       this.addDetails = false
-      this.queryParams.categoryId = data.parentId==0?'':data.id; // 如果是最外层，传空
-      this.getCount({categoryId:this.queryParams.categoryId})
-      this.handleQuery();
+      this.queryParams.categoryId = data.parentId == 0 ? '' : data.id // 如果是最外层，传空
+      this.getCount({ categoryId: this.queryParams.categoryId })
+      this.handleQuery()
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList(this.queryParams);
+      this.queryParams.pageNum = 1
+      this.getList(this.queryParams)
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.dateRange = [];
-      this.resetForm("queryForm");
-      this.queryParams.deptId = undefined;
-      this.$refs.tree.setCurrentKey(null);
-      this.handleQuery();
+      this.dateRange = []
+      this.resetForm('queryForm')
+      this.queryParams.deptId = undefined
+      this.$refs.tree.setCurrentKey(null)
+      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.deviceId);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
+      this.ids = selection.map((item) => item.deviceId)
+      this.single = selection.length != 1
+      this.multiple = !selection.length
       this.radioRow = selection[0]
     },
     // 更多操作触发
     handleCommand(command, row) {
       switch (command) {
-        case "handleResetPwd":
-          this.handleResetPwd(row);
-          break;
-        case "handleAuthRole":
-          this.handleAuthRole(row);
-          break;
+        case 'handleResetPwd':
+          this.handleResetPwd(row)
+          break
+        case 'handleAuthRole':
+          this.handleAuthRole(row)
+          break
         default:
-          break;
+          break
       }
     },
     // setFormLabel(arr){
@@ -526,7 +634,7 @@ export default {
     //           b.options = this.dict.type[b.dictionaryType]
     //         }
     //         break;
-        
+
     //       default:
     //         break;
     //     }
@@ -536,19 +644,19 @@ export default {
     handleAdd() {
       // this.btnLoading = true
       this.addItem.addDrawer = false
-      if(this.addItem.addRadio == 1){
+      if (this.addItem.addRadio == 1) {
         // 复制
-        if(this.addItem.copyInputName == ''){
-          this.$modal.msgError("复制设备不能为空");
-        }else{
-          copyBASE({deviceId: this.addItem.copyInputId}).then(response => {
+        if (this.addItem.copyInputName == '') {
+          this.$modal.msgError('复制设备不能为空')
+        } else {
+          copyBASE({ deviceId: this.addItem.copyInputId }).then((response) => {
             // this.btnLoading = false
-            this.getList();
+            this.getList()
           })
         }
-      }else if(this.addItem.addRadio == 2){
+      } else if (this.addItem.addRadio == 2) {
         // 新增
-        this.$router.push({ path: '/device/book/add', })
+        this.$router.push({ path: '/device/book/add' })
         // // 获取扩展数据
         // findByTemplateType({templateType: 'K'}).then(response => {
         //   this.formData = this.$options.data().formData;
@@ -565,25 +673,29 @@ export default {
         // .catch(err => {
         //   this.btnLoading = false
         // });
-
       }
     },
     /** 修改按钮操作 */
-    handleUpdate(row,f) {
+    handleUpdate(row, f) {
       // this.btnLoading = true
       const deviceId = row.deviceId
-      if(f=='edit'){
+      if (f == 'edit') {
         // this.addEdit = true;
-        this.$router.push({ path: '/device/book/add?i='+deviceId, })
-      }else if(f=='view'){
-        this.title = this.getTreeParent(row.categoryId).join(' > ') + ' > ' + row.deviceName;
-        this.$router.push({ path: '/device/book/details?i='+deviceId+'&t='+this.title, })
+        this.$router.push({ path: '/device/book/add?i=' + deviceId })
+      } else if (f == 'view') {
+        this.title =
+          this.getTreeParent(row.categoryId).join(' > ') +
+          ' > ' +
+          row.deviceName
+        this.$router.push({
+          path: '/device/book/details?i=' + deviceId + '&t=' + this.title,
+        })
         // this.addDetails = true;
       }
       // getBASE(deviceId).then(response => {
       //   this.title = "编辑设备";
       //   this.formData = response.data;
-        
+
       //   // 第一步  特种设备
       //   if(this.formData.emArchivesSpecial){
       //     this.formData.emArchivesSpecial.componentContent = JSON.parse(this.formData.emArchivesSpecial.componentContent)
@@ -593,7 +705,7 @@ export default {
       //   // 第二步
       //   if(this.formData.archivesOther==null){
       //     this.formData.archivesOther={}
-      //   } 
+      //   }
       //   // 第二步  扩展数据
       //   if(this.formData.emArchivesExtendAtt){
       //     this.formData.emArchivesExtendAtt.componentContent = JSON.parse(this.formData.emArchivesExtendAtt.componentContent)
@@ -626,12 +738,12 @@ export default {
       //   this.btnLoading = false
       // });
     },
-    getTreeParent(id){
-      const path = [];
-      let current = this.valueMap[id];
+    getTreeParent(id) {
+      const path = []
+      let current = this.valueMap[id]
       while (current) {
-        path.unshift(current.label);
-        current = current.parent;
+        path.unshift(current.label)
+        current = current.parent
       }
       return path
     },
@@ -641,21 +753,25 @@ export default {
         const node = (this.valueMap[id] = {
           parent,
           label,
-          id
-        });
-        node.children = this.loops(children, node);
-        return node;
-      });
+          id,
+        })
+        node.children = this.loops(children, node)
+        return node
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const deviceIds = row.deviceId || this.ids;
-      this.$modal.confirm('是否确认删除用户编号为"' + deviceIds + '"的数据项？').then(function() {
-        return delBASE(deviceIds);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      const deviceIds = row.deviceId || this.ids
+      this.$modal
+        .confirm('是否确认删除用户编号为"' + deviceIds + '"的数据项？')
+        .then(function () {
+          return delBASE(deviceIds)
+        })
+        .then(() => {
+          this.getList()
+          this.$modal.msgSuccess('删除成功')
+        })
+        .catch(() => {})
     },
     /** 导出按钮操作 */
     // handleExport() {
@@ -663,36 +779,43 @@ export default {
     //     ...this.queryParams
     //   }, `user_${new Date().getTime()}.xlsx`)
     // },
-    handleExport(){
+    handleExport() {
       var obj = {
-        categoryId: this.queryParams.categoryId
+        categoryId: this.queryParams.categoryId,
       }
-      this.download('equipment/base/export', {
-        ...obj
-      }, `device_${new Date().getTime()}.xlsx`)
+      this.download(
+        'equipment/base/export',
+        {
+          ...obj,
+        },
+        `device_${new Date().getTime()}.xlsx`
+      )
     },
     /** 下载模板操作 */
     importTemplate() {
-      this.download('system/user/importTemplate', {
-      }, `user_template_${new Date().getTime()}.xlsx`)
+      this.download(
+        'system/user/importTemplate',
+        {},
+        `user_template_${new Date().getTime()}.xlsx`
+      )
     },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
-      this.upload.isUploading = true;
+      this.upload.isUploading = true
     },
     // 文件上传成功处理
-    handleFileSuccess(){
-      this.getList(this.queryParams);
+    handleFileSuccess() {
+      this.getList(this.queryParams)
     },
     // 提交上传文件
     submitFileForm() {
-      this.$refs.upload.submit();
-    }
-  }
-};
+      this.$refs.upload.submit()
+    },
+  },
+}
 </script>
 <style scoped lang="scss">
-.dialog-footer{
+.dialog-footer {
   position: absolute;
   bottom: 0;
   width: 100%;
