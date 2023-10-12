@@ -7,13 +7,13 @@
       @getList="getList"
       @handleSelectionChange="handleSelectionChange"
       :total="total"
-      ref="jmtable"
       :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
+      :isShow="isShow"
     >
       <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5" v-if="this.$route.query.item.isEdit">
+        <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
             plain
@@ -22,7 +22,19 @@
             :loading="btnLoading"
             @click="handleAdd"
             v-hasPermi="['equipment:book:add']"
-            >新增</el-button
+            >选取设备</el-button
+          >
+        </el-col>
+        <el-col :span="1.5" v-if="!isShow">
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            :loading="btnLoading"
+            @click="handleUpdate"
+            v-hasPermi="['equipment:book:add']"
+            >批量设置</el-button
           >
         </el-col>
         <el-col :span="1.5" v-else>
@@ -44,7 +56,7 @@
           type="text"
           icon="el-icon-edit"
           :loading="btnLoading"
-          @click="handleUpdate(scope.row, scope.index, 'edit')"
+          @click="handleUpdate(scope.row, scope.index, 'edit', 1)"
           v-hasPermi="['equipment:book:edit']"
           >编辑</el-button
         >
@@ -59,119 +71,56 @@
       </template>
     </JmTableNoPaging>
 
-    <el-drawer title="我是标题" :visible.sync="drawer" :with-header="false">
-      <div class="title">&nbsp;&nbsp;{{ title }}</div>
+    <!-- 选择设备 -->
+    <el-dialog
+      title="设备档案"
+      :visible.sync="showEquipSelectDialog"
+      width="80%"
+    >
+      <jm-table
+        :columns="equipSelectColumns"
+        :tableData="equipData"
+        @getList="getList2"
+        @handleSelectionChange="handleSelectionChange2"
+        :total="total2"
+        ref="jmtable"
+        :isRadio="isChoose2"
+        :handleWidth="230"
+      ></jm-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleSelectionCancel">取 消</el-button>
+        <el-button type="primary" @click="handleSelectionSubmit"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
+    <!-- 批量配置 -->
+
+    <el-dialog :title="title" :visible.sync="editor" width="40%">
       <el-form
         ref="elForm"
         :model="formData"
         :rules="rules"
         size="medium"
-        label-width="100px"
+        label-width="140px"
         class="from"
       >
-        <el-form-item label="设备名称" prop="deviceName">
+        <el-form-item label="目标功能位置" prop="targetLocation">
           <el-input
-            v-model="formData.deviceName"
+            v-model="formData.targetLocation"
             placeholder="请输入设备名称"
             clearable
             :style="{ width: '100%' }"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="规格型号" prop="specs">
-          <el-input
-            v-model="formData.specs"
-            placeholder="请输入规格型号"
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="技术参数" prop="technologyParam">
-          <el-input
-            v-model="formData.technologyParam"
-            type="textarea"
-            placeholder="请输入技术参数"
-            :maxlength="200"
-            show-word-limit
-            :autosize="{ minRows: 4, maxRows: 4 }"
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="必要性分析" prop="necessityAnalysis">
-          <el-input
-            v-model="formData.necessityAnalysis"
-            type="textarea"
-            placeholder="请输入必要性分析"
-            :maxlength="200"
-            show-word-limit
-            :autosize="{ minRows: 4, maxRows: 4 }"
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="需求日期" prop="demandDate">
-          <el-date-picker
-            v-model="formData.demandDate"
-            format="yyyy-MM-dd"
-            value-format="yyyy-MM-dd"
-            :style="{ width: '100%' }"
-            placeholder="请选择需求日期"
-            clearable
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="需求数量" prop="demandNum">
-          <el-input-number
-            v-model="formData.demandNum"
-            placeholder="需求数量"
-            :step="1"
-            controls-position="right"
-            :max="99"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item
-          label-width="120px"
-          label="计划单价(万元)"
-          prop="planPrice"
-        >
-          <el-input-number
-            v-model="formData.planPrice"
-            placeholder="计划单价(万元)"
-            :step="1"
-            controls-position="right"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item label="需求组织" prop="demandOrganization">
+        <el-form-item label="模板设备状态" prop="targetDeviceStatus">
           <el-cascader
-            v-model="formData.demandOrganization"
-            :options="this.deptOptions2"
+            clearable
+            v-model="formData.targetDeviceStatus"
+            :options="dict.type.em_device_state"
             :props="{ expandTrigger: 'click' }"
-            @change="handleChange"
           ></el-cascader>
-        </el-form-item>
-        <el-form-item label="项目分类" prop="projectCategory">
-          <el-input
-            v-model="formData.projectCategory"
-            placeholder="请输入项目分类"
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="子公司审查依据" prop="examinationAccording">
-          <el-input
-            v-model="formData.examinationAccording"
-            placeholder="请输入子公司审查依据"
-            clearable
-            :style="{ width: '100%' }"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="formData.remark"
-            placeholder="请输入备注"
-            clearable
-            :style="{ width: '100%' }"
-          ></el-input>
         </el-form-item>
 
         <el-form-item size="large">
@@ -179,43 +128,46 @@
           <el-button @click="resetForm">重置</el-button>
         </el-form-item>
       </el-form>
-    </el-drawer>
+    </el-dialog>
   </div>
 </template>
 <script>
-import {
-  getProjectList,
-  getProjectAdd,
-  deleteProjectId,
-} from "@/api/property/purchase";
+import { getProjectList, downDetailLoad } from "@/api/property/positionchange";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTableNoPaging from "@/components/JmTableNoPaging";
+import JmTable from "@/components/JmTable";
 import {
   setStore,
   getStore,
   delList,
-  upName,
+  upName2,
   convertToTargetFormat,
   removeStore,
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
+import { equipmentTree } from "@/api/equipment/category";
+import { listBASE, countBASE } from "@/api/equipment/BASE";
+import { formatDate } from "../../../../utils";
 export default {
   components: {
     JmTableNoPaging,
     Treeselect,
+    JmTable,
   },
-  props: ["rowId"],
+  dicts: ["em_device_state", "em_device_att", "apv_status", "em_device_level"],
+  props: ["rowId", "isShow"],
   data() {
     return {
+      countData: null,
       // 需求组织
       deptOptions: null,
       deptOptions2: null,
       // 新增or编辑框 title
       title: "",
       drawer: false,
-      equipmentList: null,
       btnLoading: false,
       isChoose: false,
+      isChoose2: false,
       // 遮罩层
       loading: true,
       // 查询参数
@@ -226,93 +178,49 @@ export default {
       // ! 当前选中行数据
       itemValue: null,
       total: 0,
-      formData: {
-        deviceName: undefined,
-        specs: undefined,
-        technologyParam: "",
-        necessityAnalysis: "",
-        demandDate: null,
-        demandNum: 0,
-        planPrice: 0,
-        demandOrganization: null,
-        projectCategory: undefined,
-        examinationAccording: undefined,
-        remark: undefined,
-        purchasePlanNo: "年度",
-      },
+      total2: 0,
+      // 选中数组
+      ids: [],
+      ids2: [],
+      // 非单个禁用
+      single: true,
+      single2: true,
+      // 非多个禁用
+      multiple: true,
+      multiple2: true,
+      // 显示搜索条件
+      showSearch: true,
+      showSearch2: true,
+      // 总条数
+      total: 0,
+      total2: 0,
+      // 表格数据
+      equipmentList: null,
+      formData: {},
+      valueMap: {},
+      categoryOptions: [],
+      // 选择设备弹框
+      showEquipSelectDialog: false,
+      // 设备档案列表
+      equipData: [],
+      // 批量配置弹框
+      showBatchConfigDialog: false,
+      rowArr: [],
+      // 编辑弹框
+      editor: false,
       rules: {
-        deviceName: [
+        targetLocation: [
           {
             required: true,
-            message: "请输入设备名称",
+            message: "请输入目标功能位置",
             trigger: "blur",
           },
         ],
-        specs: [
+        targetDeviceStatus: [
           {
             required: true,
-            message: "请输入规格型号",
-            trigger: "blur",
-          },
-        ],
-        technologyParam: [
-          {
-            message: "请输入技术参数",
-            trigger: "blur",
-          },
-        ],
-        necessityAnalysis: [
-          {
-            required: true,
-            message: "请输入必要性分析",
-            trigger: "blur",
-          },
-        ],
-        demandDate: [
-          {
-            required: true,
-            message: "请选择需求日期",
+            message: "请选择目标设备状态",
             trigger: "change",
-          },
-        ],
-        demandNum: [
-          {
-            required: true,
-            message: "需求数量",
-            trigger: "blur",
-          },
-        ],
-        planPrice: [
-          {
-            required: true,
-            message: "计划单价(万元)",
-            trigger: "blur",
-          },
-        ],
-        demandOrganization: [
-          {
-            required: true,
-            message: "请至少选择一个需求组织",
-            trigger: "change",
-          },
-        ],
-        projectCategory: [
-          {
-            required: true,
-            message: "请输入项目分类",
-            trigger: "blur",
-          },
-        ],
-        examinationAccording: [
-          {
-            message: "请输入子公司审查依据",
-            trigger: "blur",
-          },
-        ],
-        remark: [
-          {
-            message: "请输入备注",
-            trigger: "blur",
           },
         ],
       },
@@ -321,69 +229,111 @@ export default {
   computed: {
     columns() {
       return [
+        { label: "创建时间", prop: "createTime", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
-        { label: "技术参数", prop: "technologyParam", tableVisible: true },
+        { label: "规格型号", prop: "sModel", tableVisible: true },
+        { label: "设备编码", prop: "deviceCode", tableVisible: true },
         {
-          label: "必要性分析",
-          prop: "necessityAnalysis",
-          tableVisible: true,
-        }, //(1 设备、2 部件)
-        { label: "项目分类", prop: "projectCategory", tableVisible: true },
+          label: "设备类别",
+          prop: "deviceType",
+          // formType: "selectTree",
+          // options: this.categoryOptions,
+          // width: 200,
+        },
+        { label: "功能位置", prop: "location", tableVisible: true },
         {
-          label: "子公司审查依据",
-          prop: "examinationAccording",
+          label: "设备批次号",
+          prop: "batchNo",
           tableVisible: true,
         },
         {
-          label: "需求日期",
-          prop: "demandDate",
-
-          formType: "date",
+          label: "设备状态",
+          prop: "deviceStatus",
+          formType: "selectTag",
+          options: this.dict.type.em_device_state,
           tableVisible: true,
-        }, //(A、B、C)
+        },
         {
-          label: "需求数量",
-          prop: "demandNum",
-
+          label: "目标功能位置",
+          prop: "targetLocation",
           tableVisible: true,
         }, //(0 父级)
-        { label: "计划单价(万元)", prop: "planPrice", tableVisible: true },
         {
-          label: "需求组织",
-          prop: "demandOrganization",
-          tableVisible: true,
-          formType: "selectTree",
-          options: [],
-          width: 150,
+          label: "目标设备状态",
+          prop: "targetDeviceStatus",
+          formType: "selectTag",
+          options: this.dict.type.em_device_state,
         },
-        { label: "备注", prop: "remark", tableVisible: true },
-        { label: "行号", prop: "lineNum", tableVisible: true },
+      ];
+    },
+    equipSelectColumns() {
+      return [
+        { label: "设备编码", prop: "deviceCode" },
+        { label: "设备名称", prop: "deviceName" },
+        { label: "规格型号", prop: "sModel" },
+        {
+          label: "设备类别",
+          prop: "categoryId",
+          formType: "selectTree",
+          options: this.categoryOptions,
+          width: 200,
+        },
+        {
+          label: "设备状态",
+          prop: "deviceStatus",
+          formType: "selectTag",
+          options: this.dict.type.em_device_state,
+        },
+        { label: "财务资产编码", prop: "propertyCode" },
+        { label: "功能位置", prop: "location" },
+        {
+          label: "重要等级",
+          prop: "level",
+          formType: "select",
+          options: this.dict.type.em_device_level,
+        }, //(A、B、C)
+        // { label:"所属子公司", prop:"",  },
+        {
+          label: "所属组织",
+          prop: "affDeptId",
+          formType: "selectTree",
+          options: this.deptOptions,
+        },
+        {
+          label: "当前使用组织",
+          prop: "currDeptId",
+          formType: "selectTree",
+          options: this.deptOptions,
+        },
+        { label: "入账日期", prop: "makerAoTime", formType: "date" },
+        {
+          label: "设备属性",
+          prop: "deviceAtt",
+          formType: "select",
+          options: this.dict.type.em_device_att,
+        }, //(1 设备、2 部件)
+        { label: "上级设备", prop: "parentDeviceName" }, //(0 父级)
+        {
+          label: "审批状态",
+          prop: "apvStatus",
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
+        }, //apv_status
       ];
     },
   },
   watch: {},
   async created() {
-    await this.getDeptTree();
+    await this.getTreeSelect();
+    await this.getTree();
     await this.getList();
-    // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "demandOrganization")
-        this.$set(b, "options", this.deptOptions);
-    });
-    this.deptOptions2 = await convertToTargetFormat(this.deptOptions);
   },
-  mounted() {
-    console.log("========================", this.$route);
-  },
+  mounted() {},
 
   methods: {
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
-    },
-    handleChange(value) {
-      this.formData.demandOrganization = value[value.length - 1];
     },
 
     /** 转换部门数据结构 */
@@ -397,19 +347,62 @@ export default {
         children: node.children,
       };
     },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        });
+        node.children = this.loops(children, node);
+        return node;
+      });
+    },
+    /** 查询设备档案下拉树结构 */
+    getTree() {
+      equipmentTree().then(async (response) => {
+        this.categoryOptions = response.data;
+        // 方便获取父级tree
+        await this.loops(this.categoryOptions);
+      });
+    },
     /** 查询部门下拉树结构 */
-    async getDeptTree() {
-      await listDept(this.formParams).then((response) => {
+    async getTreeSelect() {
+      await listDept().then((response) => {
         this.deptOptions = response.data;
       });
     },
+    // 根据设备ID查找
+    upDeviceId(array1, array2) {
+      let indicesToRemove = [];
+
+      for (let i = 0; i < array1.length; i++) {
+        let nameToCheck = array1[i].deviceId;
+        let existsInArray2 = array2.some((obj) => obj.deviceId === nameToCheck);
+
+        if (existsInArray2) {
+          indicesToRemove.push(i);
+        }
+      }
+
+      for (let i = indicesToRemove.length - 1; i >= 0; i--) {
+        array1.splice(indicesToRemove[i], 1);
+      }
+
+      array1 = array1.concat(array2);
+      return array1;
+    },
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
-      if (this.rowId) queryParams["id"] = this.rowId;
-      queryParams["purchasePlanType"] = 1;
-
-      getProjectList(queryParams).then((response) => {
-        if (getStore("equipmentList")) setStore("equipmentList", []);
+      if (this.rowId) queryParams["changeNo"] = this.rowId;
+      if (!this.rowId) queryParams["changeNo"] = 1;
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      delete search.changeNo;
+      await getProjectList(queryParams).then((response) => {
+        if (getStore("equipmentList")) setStore("equipmentList", response.data);
         if (getStore("addList") && getStore("addList").length > 0) {
           setStore("equipmentList", response.data.concat(getStore("addList")));
         } else {
@@ -420,7 +413,7 @@ export default {
         if (getStore("updateList") && getStore("updateList").length > 0) {
           setStore(
             "equipmentList",
-            upName(getStore("equipmentList"), getStore("updateList"))
+            upName2(getStore("equipmentList"), getStore("updateList"))
           );
         }
         if (getStore("delList") && getStore("delList").length > 0) {
@@ -429,21 +422,128 @@ export default {
             delList(getStore("equipmentList"), getStore("delList"))
           );
         }
-        this.equipmentList = getStore("equipmentList");
+        let matches = getStore("equipmentList").filter((item) => {
+          for (let key in search) {
+            if (item[key] !== search[key]) {
+              if (search[key] == "") return true;
+              return false;
+            }
+          }
+          return true;
+        });
+        this.equipmentList = matches;
+      });
+    },
+    /** 查询统计 */
+    getCount(queryParams) {
+      countBASE(queryParams).then((response) => {
+        this.countData = response.data;
+      });
+    },
+
+    async getList2(queryParams = { pageNum: 1, pageSize: 10 }) {
+      this.loading = true;
+      var data = {
+        categoryId: this.queryParams.categoryId,
+        ...queryParams,
+      };
+      this.getCount(data);
+      await listBASE(data).then((response) => {
+        response.rows.forEach((b) => {
+          Object.assign(
+            b,
+            b.archivesOther ? b.archivesOther : {},
+            b.emArchivesExtendAtt
+              ? JSON.parse(b.emArchivesExtendAtt.fieldValue)
+              : {},
+            b.emArchivesIndex ? JSON.parse(b.emArchivesIndex.fieldValue) : {},
+            b.emArchivesSpecial
+              ? JSON.parse(b.emArchivesSpecial.fieldValue)
+              : {}
+          );
+        });
+        this.equipData = response.rows;
+        this.total = response.total;
+        this.loading = false;
       });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.deviceId);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
-      this.radioRow = selection[0];
+      if (this.title === "批量设置") {
+        this.ids = selection.map((item) => item.id);
+        this.single = selection.length != 1;
+        this.multiple = !selection.length;
+        this.radioRow = selection[0];
+        this.rowArr = selection;
+      }
     },
-    handleAdd() {
-      this.drawer = !this.drawer;
+    // 多选框选中数据
+    handleSelectionChange2(selection) {
+      this.ids2 = selection.map((item) => item.id);
+      this.single2 = selection.length != 1;
+      this.multiple2 = !selection.length;
+      this.radioRow2 = selection[0];
+      this.rowArr = selection;
+    },
+    deduplicateByDeviceId(inputArray) {
+      const deviceIdSet = new Set();
+      return inputArray.reduce((result, item) => {
+        if (!deviceIdSet.has(item.deviceId)) {
+          deviceIdSet.add(item.deviceId);
+          result.push(item);
+        }
+        return result;
+      }, []);
+    },
+    async handleSelectionSubmit() {
+      this.rowArr.forEach((item) => {
+        item["deviceType"] = item.categoryName;
+        item["orgId"] = item.otherId;
+        item["deptId"] = item.affDeptId;
+      });
+
+      if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
+        getStore("equipmentList").forEach((t) => {
+          this.rowArr = this.rowArr.filter((item) => {
+            return (
+              item.sModel + item.deviceCode + item.deviceName + item.batchNo !==
+              t.sModel + t.deviceCode + t.deviceName + t.batchNo
+            );
+          });
+        });
+      }
+      if (getStore("addList") && getStore("addList").length > 0) {
+        setStore(
+          "addList",
+          this.deduplicateByDeviceId(getStore("addList").concat(this.rowArr))
+        );
+      } else {
+        setStore("addList", this.rowArr);
+      }
+      this.$message({
+        type: "success",
+        message: "选取设备成功",
+      });
+      this.showEquipSelectDialog = false;
+      await this.getList();
+    },
+    handleSelectionCancel() {
+      this.rowArr = [];
+      this.showEquipSelectDialog = false;
+    },
+    async handleAdd() {
+      this.showEquipSelectDialog = !this.showEquipSelectDialog;
       this.title = "新增";
+      await this.getList2();
     },
-    importHandler() {},
+    importHandler() {
+      downDetailLoad(this.ids).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
+      });
+    },
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -453,26 +553,23 @@ export default {
         if (!row.id) {
           setStore(
             "equipmentList",
-            this.equipmentList.filter(
-              (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
-            )
+            this.equipmentList.filter((item) => item.deviceId != row.deviceId)
           );
           setStore(
             "addList",
-            getStore("addList").filter(
-              (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
-            )
+            getStore("addList").filter((item) => item.deviceId != row.deviceId)
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
-              (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
+              (item) => item.deviceId != row.deviceId
             )
           );
         } else {
+          setStore(
+            "updateList",
+            getStore("updateList").filter((item) => item.id != row.id)
+          );
           if (getStore("delList") && getStore("delList").length > 0) {
             setStore("delList", [
               ...getStore("delList").concat(
@@ -498,97 +595,70 @@ export default {
         });
       });
     },
-    handleUpdate(row, index) {
-      this.title = "编辑";
-      this.formData = row;
-      this.drawer = true;
-      this.itemValue = row;
+    handleUpdate(row, index, exit, isRow) {
+      if (!isRow) {
+        this.title = "批量设置";
+        if (this.ids.length) {
+          this.formData = {};
+          this.editor = true;
+          this.itemValue = this.rowArr;
+        } else {
+          this.$message.error("请选择一行数据进行修改!");
+          return;
+        }
+      } else {
+        this.title = "单个设置";
+        this.editor = true;
+        this.formData = row;
+        this.itemValue = [row];
+      }
     },
     submitFormAdd() {
       this.$refs["elForm"].validate(async (valid) => {
         if (!valid) return;
-        this.formData["purchasePlanNo"] = "年度";
-        // this.formData["id"] = 0;
-        if (this.title === "新增") {
-          if (getStore("addList") && getStore("addList").length > 0) {
-            setStore("addList", getStore("addList").concat(this.formData));
-          } else {
-            setStore("addList", [this.formData]);
-          }
-          this.$message({
-            type: "success",
-            message: "提交成功",
-          });
-        } else {
-          if (this.itemValue.id) {
+        this.itemValue.forEach((i) => {
+          i["targetDeviceStatus"] = this.formData["targetDeviceStatus"][0];
+          i["targetLocation"] = this.formData["targetLocation"];
+          console.log("========================", this.formData.orgId);
+          if (i.id) {
             if (getStore("updateList") && getStore("updateList").length > 0) {
               setStore(
                 "updateList",
-                getStore("updateList").filter(
-                  (item) => item.id != this.itemValue.id
-                )
+                getStore("updateList").filter((item) => item.id != i.id)
               );
-              setStore(
-                "updateList",
-                getStore("updateList").concat(this.formData)
-              );
+              setStore("updateList", getStore("updateList").concat(i));
+              console.log("========================", i);
             } else {
-              setStore("updateList", [this.formData]);
+              setStore("updateList", [i]);
             }
           } else {
-            setStore(
-              "updateList",
-              getStore("updateList").filter(
-                (item) =>
-                  item.deviceName + item.specs !=
-                  this.itemValue.deviceName + this.itemValue.specs
-              )
-            );
-            setStore(
-              "updateList",
-              getStore("updateList").concat(this.formData)
-            );
+            if (getStore("addList") && getStore("addList").length > 0) {
+              setStore(
+                "addList",
+                getStore("addList").filter(
+                  (item) => item.deviceId != i.deviceId
+                )
+              );
+              setStore("addList", getStore("addList").concat(i));
+            } else {
+              setStore("addList", [i]);
+            }
           }
-        }
+        });
+
         this.$message({
           type: "success",
           message: "修改成功",
         });
 
         this.getList();
-        this.$refs["elForm"].resetFields();
-        this.drawer = false;
-        // await getProjectAdd(this.formData).then((response) => {
-        //   if (response.code == 200) {
-        //     this.$message({
-        //       type: "success",
-        //       message: "提交成功",
-        //     });
-        //     this.getList();
-        //     this.$refs["elForm"].resetFields();
-        //     this.drawer = false;
-        //   }
-        // });
+        this.resetForm();
+        this.editor = false;
       });
     },
     resetForm() {
       this.$refs["elForm"].resetFields();
     },
-    findTreeName(options, value) {
-      var name = "";
-      name = this.forfn(options, value);
-      return name;
-    },
-    // getDemandOrganizationOptions() {
-    //   // 注意：this.$axios是通过Vue.prototype.$axios = axios挂载产生的
-    //   this.$axios({
-    //     method: "get",
-    //     url: "/property/purchase/plan/selectDetailPage",
-    //   }).then((resp) => {
-    //     var { data } = resp;
-    //     this.demandOrganizationOptions = data.list;
-    //   });
-    // },
   },
 };
 </script>

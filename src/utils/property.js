@@ -78,8 +78,32 @@ const upName = (array1, array2) => {
   let indicesToRemove = [];
 
   for (let i = 0; i < array1.length; i++) {
-    let nameToCheck = array1[i].demandDate;
-    let existsInArray2 = array2.some((obj) => obj.demandDate === nameToCheck);
+    let nameToCheck =
+      array1[i].deviceName + array1[i].sModel + array1[i].deviceCode;
+    let existsInArray2 = array2.some(
+      (obj) => obj.deviceName + obj.sModel + obj.deviceCode === nameToCheck
+    );
+
+    if (existsInArray2) {
+      indicesToRemove.push(i);
+    }
+  }
+
+  for (let i = indicesToRemove.length - 1; i >= 0; i--) {
+    array1.splice(indicesToRemove[i], 1);
+  }
+
+  array1 = array1.concat(array2);
+  return array1;
+};
+const upName2 = (array1, array2) => {
+  let indicesToRemove = [];
+
+  for (let i = 0; i < array1.length; i++) {
+    let nameToCheck = array1[i].deviceName + array1[i].sModel;
+    let existsInArray2 = array2.some(
+      (obj) => obj.deviceName + obj.sModel === nameToCheck
+    );
 
     if (existsInArray2) {
       indicesToRemove.push(i);
@@ -121,4 +145,5 @@ export {
   convertToTargetFormat,
   delFileList,
   formatDateFromTimestamp,
+  upName2,
 };

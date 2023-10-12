@@ -8,7 +8,7 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isShow2="isShow"
+      :isShow="isShow"
       :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
@@ -79,9 +79,9 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="规格型号" prop="specs">
+        <el-form-item label="规格型号" prop="sModel">
           <el-input
-            v-model="formData.specs"
+            v-model="formData.sModel"
             placeholder="请输入规格型号"
             clearable
             :style="{ width: '100%' }"
@@ -144,8 +144,8 @@
         <el-form-item label="需求组织" prop="demandOrganization">
           <el-cascader
             v-model="formData.demandOrganization"
-            :options="this.deptOptions2"
-            :props="{ expandTrigger: 'click' }"
+            :options="deptOptions"
+            :props="{ expandTrigger: 'hover', checkStrictly: true }"
             @change="handleChange"
           ></el-cascader>
         </el-form-item>
@@ -227,7 +227,7 @@ export default {
       total: 0,
       formData: {
         deviceName: undefined,
-        specs: undefined,
+        sModel: undefined,
         technologyParam: "",
         necessityAnalysis: "",
         demandDate: null,
@@ -247,7 +247,7 @@ export default {
             trigger: "blur",
           },
         ],
-        specs: [
+        sModel: [
           {
             required: true,
             message: "请输入规格型号",
@@ -321,7 +321,7 @@ export default {
     columns() {
       return [
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
+        { label: "规格型号", prop: "sModel", tableVisible: true },
         { label: "技术参数", prop: "technologyParam", tableVisible: true },
         {
           label: "必要性分析",
@@ -361,7 +361,16 @@ export default {
       ];
     },
   },
-  watch: {},
+  watch: {
+    drawer: {
+      handler(newValue) {
+        if (!newValue) {
+          this.$refs["elForm"].resetFields();
+          this.formData = {};
+        }
+      },
+    },
+  },
   async created() {
     await this.getDeptTree();
     await this.getList();
@@ -378,7 +387,8 @@ export default {
       this.$router.go(-1); //跳回上页
     },
     handleChange(value) {
-      this.formData.demandOrganization = value[value.length - 1];
+      if (value.length)
+        this.formData.demandOrganization = value[value.length - 1];
     },
 
     /** 转换部门数据结构 */
@@ -401,6 +411,7 @@ export default {
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
       if (this.rowId) queryParams["purchasePlanNo"] = this.rowId;
+      if (!this.rowId) queryParams["purchasePlanNo"] = 1;
       queryParams["purchasePlanType"] = 1;
       let search = JSON.parse(JSON.stringify(queryParams));
       delete search.pageNum;
@@ -431,6 +442,7 @@ export default {
         let matches = getStore("equipmentList").filter((item) => {
           for (let key in search) {
             if (item[key] !== search[key]) {
+              if (search[key] == "") return true;
               return false;
             }
           }
@@ -451,11 +463,7 @@ export default {
       this.title = "新增";
     },
     importHandler() {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
-      download(this.ids).then((res) => {
+      downDetailLoad(this.ids).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });
@@ -473,24 +481,28 @@ export default {
             "equipmentList",
             this.equipmentList.filter(
               (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
+                item.deviceName + item.sModel != row.deviceName + item.sModel
             )
           );
           setStore(
             "addList",
             getStore("addList").filter(
               (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
+                item.deviceName + item.sModel != row.deviceName + item.sModel
             )
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
               (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
+                item.deviceName + item.sModel != row.deviceName + item.sModel
             )
           );
         } else {
+          setStore(
+            "updateList",
+            getStore("updateList").filter((item) => item.id != row.id)
+          );
           if (getStore("delList") && getStore("delList").length > 0) {
             setStore("delList", [
               ...getStore("delList").concat(
@@ -519,6 +531,9 @@ export default {
     handleUpdate(row, index) {
       this.title = "编辑";
       this.formData = row;
+      this.formData.demandOrganization = Number(
+        this.formData.demandOrganization
+      );
       this.drawer = true;
       this.itemValue = row;
     },
@@ -559,8 +574,8 @@ export default {
               "updateList",
               getStore("updateList").filter(
                 (item) =>
-                  item.deviceName + item.specs !=
-                  this.itemValue.deviceName + this.itemValue.specs
+                  item.deviceName + item.sModel !=
+                  this.itemValue.deviceName + this.itemValue.sModel
               )
             );
             setStore(
@@ -577,17 +592,6 @@ export default {
         this.getList();
         this.resetForm();
         this.drawer = false;
-        // await getProjectAdd(this.formData).then((response) => {
-        //   if (response.code == 200) {
-        //     this.$message({
-        //       type: "success",
-        //       message: "提交成功",
-        //     });
-        //     this.getList();
-        //     this.$refs["elForm"].resetFields();
-        //     this.drawer = false;
-        //   }
-        // });
       });
     },
     resetForm() {

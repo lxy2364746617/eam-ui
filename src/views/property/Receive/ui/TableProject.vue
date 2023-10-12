@@ -8,7 +8,7 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isShow2="isShow"
+      :isShow="isShow"
       :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
@@ -79,9 +79,9 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="规格型号" prop="specs">
+        <el-form-item label="规格型号" prop="sModel">
           <el-input
-            v-model="formData.specs"
+            v-model="formData.sModel"
             placeholder="请输入规格型号"
             clearable
             :style="{ width: '100%' }"
@@ -135,7 +135,7 @@ import {
   setStore,
   getStore,
   delList,
-  upName,
+  upName2,
   convertToTargetFormat,
   removeStore,
 } from "@/utils/property.js";
@@ -178,7 +178,7 @@ export default {
             trigger: "blur",
           },
         ],
-        specs: [
+        sModel: [
           {
             required: true,
             message: "请输入规格型号",
@@ -212,7 +212,7 @@ export default {
       return [
         { label: "创建时间", prop: "createTime", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
+        { label: "规格型号", prop: "sModel", tableVisible: true },
         {
           label: "数量",
           prop: "deviceNum",
@@ -228,6 +228,7 @@ export default {
   },
   watch: {},
   async created() {
+    console.log("========================", this.isShow);
     await this.getDeptTree();
     await this.getList();
 
@@ -283,7 +284,7 @@ export default {
         if (getStore("updateList") && getStore("updateList").length > 0) {
           setStore(
             "equipmentList",
-            upName(getStore("equipmentList"), getStore("updateList"))
+            upName2(getStore("equipmentList"), getStore("updateList"))
           );
         }
         if (getStore("delList") && getStore("delList").length > 0) {
@@ -295,6 +296,7 @@ export default {
         let matches = getStore("equipmentList").filter((item) => {
           for (let key in search) {
             if (item[key] !== search[key]) {
+              if (search[key] == "") return true;
               return false;
             }
           }
@@ -315,10 +317,7 @@ export default {
       this.title = "新增";
     },
     importHandler() {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
+      
       download(this.ids).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
@@ -337,21 +336,21 @@ export default {
             "equipmentList",
             this.equipmentList.filter(
               (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
+                item.deviceName + item.sModel != row.deviceName + item.sModel
             )
           );
           setStore(
             "addList",
             getStore("addList").filter(
               (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
+                item.deviceName + item.sModel != row.deviceName + item.sModel
             )
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
               (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
+                item.deviceName + item.sModel != row.deviceName + item.sModel
             )
           );
         } else {
@@ -420,8 +419,8 @@ export default {
               "updateList",
               getStore("updateList").filter(
                 (item) =>
-                  item.deviceName + item.specs !=
-                  this.itemValue.deviceName + this.itemValue.specs
+                  item.deviceName + item.sModel !=
+                  this.itemValue.deviceName + this.itemValue.sModel
               )
             );
             setStore(
@@ -438,17 +437,6 @@ export default {
         this.getList();
         this.resetForm();
         this.drawer = false;
-        // await getProjectAdd(this.formData).then((response) => {
-        //   if (response.code == 200) {
-        //     this.$message({
-        //       type: "success",
-        //       message: "提交成功",
-        //     });
-        //     this.getList();
-        //     this.$refs["elForm"].resetFields();
-        //     this.drawer = false;
-        //   }
-        // });
       });
     },
     resetForm() {

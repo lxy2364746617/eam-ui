@@ -1,47 +1,433 @@
-import Wrapper from '@/components/wrapper';
 <template>
   <Wrapper :title="title">
-    <dir class="header">
-      <div class="chart">
-        <dir class="tag">可调剂设备子公司分布</dir>
-        <BarChart></BarChart>
+    <el-row :gutter="20" v-show="!addEdit && !deviceIndexVisible">
+      <!--部门数据-->
+      <!-- <el-col :span="6" :xs="24">
+        <p style="color: transparent;">1</p>
+        <jm-user-tree 
+          :treeData="categoryOptions" 
+          @handleNodeClick="handleNodeClick" 
+          style="position: fixed;top: 121px;height: calc(100vh - 141px);">
+        </jm-user-tree>
+      </el-col> -->
+      <div>
+        <el-popover
+          placement="bottom"
+          title=""
+          style="position: fixed; z-index: 1009; top: 55px; right: 10px"
+          trigger="click"
+          content=""
+        >
+          <el-button
+            type="primary"
+            size="small"
+            icon="el-icon-c-scale-to-original"
+            slot="reference"
+          ></el-button>
+          <jm-user-tree
+            :treeData="categoryOptions"
+            @handleNodeClick="handleNodeClick"
+            style="height: calc(100vh - 141px)"
+          >
+          </jm-user-tree>
+        </el-popover>
       </div>
-      <div class="chart">
-        <dir class="tag">可调剂设备状态分布</dir>
-        <BarChart></BarChart>
-      </div>
-      <div class="chart">
-        <div class="tag">可调剂设备重要等级</div>
-        <BarChart></BarChart>
-      </div>
-    </dir>
-    <TableHome></TableHome>
+      <!--用户数据-->
+      <el-col :span="24" :xs="24" v-show="!addDetails">
+        <dir class="header">
+          <div class="chart">
+            <dir class="tag">可调剂设备子公司分布</dir>
+            <BarChart v-if="flag" :data="chartData.subComp"></BarChart>
+          </div>
+          <div class="chart">
+            <dir class="tag">可调剂设备状态分布</dir>
+            <BarChartBar
+              v-if="flag"
+              :data="chartData.deviceStatus"
+            ></BarChartBar>
+          </div>
+          <div class="chart">
+            <div class="tag">可调剂设备重要等级</div>
+            <BarChartBar
+              v-if="flag"
+              :data="chartData.deviceLevel"
+            ></BarChartBar>
+          </div>
+        </dir>
+        <jm-table
+          :tableData="equipmentList"
+          @getList="getList"
+          @handleSelectionChange="handleSelectionChange"
+          :total="total"
+          ref="jmtable"
+          :isRadio="isChoose"
+          :handleWidth="230"
+          :columns="columns"
+        >
+          <template slot="headerLeft" v-if="!isChoose">
+            <el-col :span="1.5">
+              <el-button
+                type="primary"
+                icon="el-icon-download"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['equipment:book:add']"
+                >下载</el-button
+              >
+            </el-col>
+          </template>
+        </jm-table>
+      </el-col>
+    </el-row>
   </Wrapper>
 </template>
+
 <script>
+import { findByTemplateType } from "@/api/equipment/attribute";
+import { listDept } from "@/api/system/dept";
+import { equipmentTree } from "@/api/equipment/category";
+import { getDispensingChart } from "@/api/property/prescription";
+
+import {
+  listBASE,
+  getBASE,
+  delBASE,
+  addBASE,
+  updateBASE,
+  countBASE,
+  exportBASE,
+  copyBASE,
+} from "@/api/equipment/BASE";
+import { getToken } from "@/utils/auth";
+import Treeselect from "@riophae/vue-treeselect";
+
+import JmTable from "@/components/JmTable";
+import JmUserTree from "@/components/JmUserTree";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Wrapper from "@/components/wrapper";
 import BarChart from "./ui/BarChart.vue";
-import TableHome from "./ui/TableHome.vue";
+import BarChartBar from "./ui/BarChartBar.vue";
 
 export default {
+  name: "devicebook",
+  dicts: ["em_device_state", "em_device_att", "apv_status", "em_device_level"],
   components: {
+    Treeselect,
+    JmUserTree,
+    JmTable,
     Wrapper,
     BarChart,
-    TableHome,
+    BarChartBar,
+  },
+  props: {
+    isChoose: {
+      default: false,
+      type: Boolean,
+    },
+  },
+  computed: {
+    // 列信息
+    columns() {
+      return [
+        { label: "设备编码", prop: "deviceCode" },
+        { label: "设备名称", prop: "deviceName" },
+        { label: "规格型号", prop: "sModel" },
+        {
+          label: "设备类别",
+          prop: "categoryId",
+          formType: "selectTree",
+          options: this.categoryOptions,
+        },
+        {
+          label: "设备状态",
+          prop: "deviceStatus",
+          formType: "selectTag",
+          options: this.dict.type.em_device_state,
+        },
+        { label: "财务资产编码", prop: "propertyCode" },
+        { label: "功能位置", prop: "location" },
+        {
+          label: "重要等级",
+          prop: "level",
+          formType: "select",
+          options: this.dict.type.em_device_level,
+        }, //(A、B、C)
+        // { label:"所属子公司", prop:"",  },
+        {
+          label: "所属组织",
+          prop: "affDeptId",
+          formType: "selectTree",
+          options: this.deptOptions,
+        },
+        {
+          label: "当前使用组织",
+          prop: "currDeptId",
+          formType: "selectTree",
+          options: this.deptOptions,
+        },
+        { label: "入账日期", prop: "makerAoTime", formType: "date" },
+        {
+          label: "设备属性",
+          prop: "deviceAtt",
+          formType: "select",
+          options: this.dict.type.em_device_att,
+        }, //(1 设备、2 部件)
+        { label: "上级设备", prop: "parentDeviceName" }, //(0 父级)
+        {
+          label: "审批状态",
+          prop: "apvStatus",
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
+        }, //apv_status
+      ];
+    },
   },
   data() {
     return {
+      btnLoading: false,
+      formData: {},
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 表格数据
+      equipmentList: null,
+      countData: {},
+      chartData: {},
+      // 弹出层标题
       title: "",
+      // 部门树选项
+      deptOptions: undefined,
+      categoryOptions: undefined,
+      // 是否显示弹出层
+      open: false,
+      // 默认密码
+      initPassword: undefined,
+      // 日期范围
+      dateRange: [],
+      // 岗位选项
+      postOptions: [],
+      addEdit: false,
+      addDetails: false,
+      valueMap: {},
+      // 角色选项
+      roleOptions: [],
+      // 表单参数
+      form: {},
+      radioRow: {},
+      // 用户导入参数
+
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        categoryId: undefined,
+      },
+      deviceIndexVisible: false,
+      flag: false,
     };
+  },
+  created() {
+    this.getTree();
+    this.getTreeSelect();
   },
   mounted() {
     this.title = this.$route.meta.title;
   },
-  computed: {},
-  methods: {},
+  methods: {
+    /** 导入按钮操作 */
+    handleImport() {
+      this.$refs.fileImport.upload.open = true;
+    },
+    /** 查询设备档案下拉树结构 */
+    getTree() {
+      equipmentTree().then((response) => {
+        this.categoryOptions = response.data;
+        // 方便获取父级tree
+        this.loops(this.categoryOptions);
+      });
+    },
+    /** 查询部门下拉树结构 */
+    getTreeSelect() {
+      listDept().then((response) => {
+        this.deptOptions = response.data;
+      });
+    },
+
+    submitRadio() {
+      this.$emit("submitRadio", this.radioRow);
+    },
+    submitRadio2(row) {
+      this.addItem.copyInputName = row.deviceName;
+      this.addItem.copyInputId = row.deviceId;
+      this.addItem.choosedrawer = false;
+    },
+    back() {
+      this.addEdit = false;
+      this.addDetails = false;
+      this.getList(this.queryParams);
+    },
+    handleOpen() {
+      this.addItem.addDrawer = true;
+    },
+    /** 查询用户列表 */
+    getList(queryParams) {
+      this.loading = true;
+      var data = {
+        categoryId: this.queryParams.categoryId,
+        ...queryParams,
+      };
+      this.getCount(data);
+      listBASE(data).then((response) => {
+        response.rows.forEach((b) => {
+          Object.assign(
+            b,
+            b.archivesOther ? b.archivesOther : {},
+            b.emArchivesExtendAtt
+              ? JSON.parse(b.emArchivesExtendAtt.fieldValue)
+              : {},
+            b.emArchivesIndex ? JSON.parse(b.emArchivesIndex.fieldValue) : {},
+            b.emArchivesSpecial
+              ? JSON.parse(b.emArchivesSpecial.fieldValue)
+              : {}
+          );
+          if (b.emArchivesExtendAtt) {
+            b.emArchivesExtendAtt.fieldValue = JSON.parse(
+              b.emArchivesExtendAtt.fieldValue
+            );
+          }
+          if (b.emArchivesIndex) {
+            b.emArchivesIndex.fieldValue = JSON.parse(
+              b.emArchivesIndex.fieldValue
+            );
+          }
+          if (b.emArchivesSpecial) {
+            b.emArchivesSpecial.fieldValue = JSON.parse(
+              b.emArchivesSpecial.fieldValue
+            );
+          }
+        });
+        this.equipmentList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+    /** 查询统计 */
+    getCount(queryParams) {
+      countBASE(queryParams).then((response) => {
+        this.countData = response.data;
+      });
+    },
+    /** 查询统计图 */
+    getChart(queryParams) {
+      this.flag = false;
+      getDispensingChart(queryParams).then((response) => {
+        this.chartData = response.data;
+        this.flag = true;
+      });
+    },
+    // 节点单击事件
+    handleNodeClick(data) {
+      this.addDetails = false;
+      this.queryParams.categoryId = data.parentId == 0 ? "" : data.id; // 如果是最外层，传空
+      this.getCount({ categoryId: this.queryParams.categoryId });
+      this.getChart({ categoryId: this.queryParams.categoryId });
+      this.handleQuery();
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList(this.queryParams);
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRange = [];
+      this.resetForm("queryForm");
+      this.queryParams.deptId = undefined;
+      this.$refs.tree.setCurrentKey(null);
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.deviceId);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
+      this.radioRow = selection[0];
+    },
+
+    getTreeParent(id) {
+      const path = [];
+      let current = this.valueMap[id];
+      while (current) {
+        path.unshift(current.label);
+        current = current.parent;
+      }
+      return path;
+    },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        });
+        node.children = this.loops(children, node);
+        return node;
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const deviceIds = row.deviceId || this.ids;
+      this.$modal
+        .confirm('是否确认删除用户编号为"' + deviceIds + '"的数据项？')
+        .then(function () {
+          return delBASE(deviceIds);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
+    },
+
+    handleExport() {
+      var obj = {
+        categoryId: this.queryParams.categoryId,
+      };
+      this.download(
+        "equipment/base/export",
+        {
+          ...obj,
+        },
+        `device_${new Date().getTime()}.xlsx`
+      );
+    },
+    /** 下载模板操作 */
+    importTemplate() {
+      this.download(
+        "system/user/importTemplate",
+        {},
+        `user_template_${new Date().getTime()}.xlsx`
+      );
+    },
+  },
 };
 </script>
-<style lang='scss' scoped>
+<style scoped lang="scss">
 .header {
   width: 100%;
   height: 337px;
@@ -51,6 +437,7 @@ export default {
   justify-content: space-around;
   align-items: center;
   margin-right: 15px;
+  background-color: #f7fbff;
   .chart {
     width: 460px;
     height: 270px;
@@ -65,7 +452,7 @@ export default {
       background-size: contain;
       position: absolute;
       left: -7px;
-      bottom: -18px;
+      bottom: -8%;
       z-index: 2;
     }
     .tag {

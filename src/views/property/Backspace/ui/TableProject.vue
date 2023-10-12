@@ -7,13 +7,13 @@
       @getList="getList"
       @handleSelectionChange="handleSelectionChange"
       :total="total"
-      ref="jmtable"
       :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
+      :isShow="isShow"
     >
       <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5" v-if="!this.$route.query.item ? true : false">
+        <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
             plain
@@ -25,14 +25,14 @@
             >选取设备</el-button
           >
         </el-col>
-        <el-col :span="1.5" v-if="!this.$route.query.item ? true : false">
+        <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
             plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
-            @click="importHandler"
+            @click="handleUpdate"
             v-hasPermi="['equipment:book:add']"
             >批量设置</el-button
           >
@@ -44,7 +44,7 @@
           type="text"
           icon="el-icon-edit"
           :loading="btnLoading"
-          @click="handleUpdate(scope.row, scope.index, 'edit')"
+          @click="handleUpdate(scope.row, scope.index, 'edit', 1)"
           v-hasPermi="['equipment:book:edit']"
           >编辑</el-button
         >
@@ -76,32 +76,46 @@
         :handleWidth="230"
       ></jm-table>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showEquipSelectDialog = false">取 消</el-button>
-        <el-button type="primary" @click="showEquipSelectDialog = false"
+        <el-button @click="handleSelectionCancel">取 消</el-button>
+        <el-button type="primary" @click="handleSelectionSubmit"
           >确 定</el-button
         >
       </span>
     </el-dialog>
     <!-- 批量配置 -->
-    <el-dialog
-      title="批量配置"
-      :visible.sync="showBatchConfigDialog"
-      width="30%"
-    >
-      <el-form class="form" label-width="110px">
-        <el-form-item label="目标功能位置" required>
-          <el-select :style="{ width: '100%' }"></el-select>
+
+    <el-dialog :title="title" :visible.sync="editor" width="40%">
+      <el-form
+        ref="elForm"
+        :model="formData"
+        :rules="rules"
+        size="medium"
+        label-width="140px"
+        class="from"
+      >
+        <el-form-item label="目标功能位置" prop="targetLocation">
+          <el-input
+            v-model="formData.targetLocation"
+            placeholder="请输入设备名称"
+            clearable
+            :style="{ width: '100%' }"
+          >
+          </el-input>
         </el-form-item>
-        <el-form-item label="目标设备状态" required>
-          <el-select :style="{ width: '100%' }"></el-select>
+        <el-form-item label="模板设备状态" prop="targetDeviceStatus">
+          <el-cascader
+            clearable
+            v-model="formData.targetDeviceStatus"
+            :options="dict.type.em_device_state"
+            :props="{ expandTrigger: 'click' }"
+          ></el-cascader>
+        </el-form-item>
+
+        <el-form-item size="large">
+          <el-button type="primary" @click="submitFormAdd">提交</el-button>
+          <el-button @click="resetForm">重置</el-button>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showBatchConfigDialog = false">取 消</el-button>
-        <el-button type="primary" @click="showBatchConfigDialog = false"
-          >确 定</el-button
-        >
-      </span>
     </el-dialog>
   </div>
 </template>
@@ -114,13 +128,14 @@ import {
   setStore,
   getStore,
   delList,
-  upName,
+  upName2,
   convertToTargetFormat,
   removeStore,
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { listBASE, countBASE } from "@/api/equipment/BASE";
+import { formatDate } from "../../../../utils";
 export default {
   components: {
     JmTableNoPaging,
@@ -128,7 +143,7 @@ export default {
     JmTable,
   },
   dicts: ["em_device_state", "em_device_att", "apv_status", "em_device_level"],
-  props: ["rowId"],
+  props: ["rowId", "isShow"],
   data() {
     return {
       countData: null,
@@ -170,28 +185,49 @@ export default {
       // 表格数据
       equipmentList: null,
       formData: {},
-      deptOptions: null,
-      categoryOptions: null,
+      valueMap: {},
+      categoryOptions: [],
       // 选择设备弹框
       showEquipSelectDialog: false,
       // 设备档案列表
       equipData: [],
       // 批量配置弹框
       showBatchConfigDialog: false,
+      rowArr: [],
+      // 编辑弹框
+      editor: false,
+      rules: {
+        targetLocation: [
+          {
+            required: true,
+            message: "请输入目标功能位置",
+            trigger: "blur",
+          },
+        ],
+        targetDeviceStatus: [
+          {
+            required: true,
+            message: "请选择目标设备状态",
+            trigger: "change",
+          },
+        ],
+      },
     };
   },
   computed: {
     columns() {
       return [
-        { label: "创建时间", prop: "createDate", tableVisible: true },
+        { label: "创建时间", prop: "createTime", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
+        { label: "规格型号", prop: "sModel", tableVisible: true },
         { label: "设备编码", prop: "deviceCode", tableVisible: true },
         {
           label: "设备类别",
+          prop: "deviceType",
           formType: "selectTree",
           options: this.categoryOptions,
-        }, //(1 设备、2 部件)
+          width: 200,
+        },
         { label: "功能位置", prop: "location", tableVisible: true },
         {
           label: "设备批次号",
@@ -201,20 +237,20 @@ export default {
         {
           label: "设备状态",
           prop: "deviceStatus",
-
           formType: "selectTag",
           options: this.dict.type.em_device_state,
-        }, //(A、B、C)
+          tableVisible: true,
+        },
         {
           label: "目标功能位置",
           prop: "targetLocation",
-
           tableVisible: true,
         }, //(0 父级)
         {
           label: "目标设备状态",
           prop: "targetDeviceStatus",
-          tableVisible: true,
+          formType: "selectTag",
+          options: this.dict.type.em_device_state,
         },
       ];
     },
@@ -228,6 +264,7 @@ export default {
           prop: "categoryId",
           formType: "selectTree",
           options: this.categoryOptions,
+          width: 200,
         },
         {
           label: "设备状态",
@@ -275,12 +312,10 @@ export default {
   },
   watch: {},
   async created() {
-    await this.getDeptTree();
-    await this.getTree();
+    await this.getTreeSelect();
+
     await this.getList();
-    // data赋值
-    this.columns.forEach((b) => {});
-    this.deptOptions2 = await convertToTargetFormat(this.deptOptions);
+    await this.getTree();
   },
   mounted() {},
 
@@ -288,9 +323,6 @@ export default {
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
-    },
-    handleChange(value) {
-      this.formData.demandOrganization = value[value.length - 1];
     },
 
     /** 转换部门数据结构 */
@@ -317,25 +349,49 @@ export default {
       });
     },
     /** 查询设备档案下拉树结构 */
-    async getTree() {
-      await equipmentTree().then((response) => {
+    getTree() {
+      equipmentTree().then(async (response) => {
         this.categoryOptions = response.data;
         // 方便获取父级tree
-        this.loops(this.categoryOptions);
+        await this.loops(this.categoryOptions);
       });
     },
     /** 查询部门下拉树结构 */
-    async getDeptTree() {
-      await listDept(this.formParams).then((response) => {
+    async getTreeSelect() {
+      await listDept().then((response) => {
         this.deptOptions = response.data;
       });
     },
+    // 根据设备ID查找
+    upDeviceId(array1, array2) {
+      let indicesToRemove = [];
+
+      for (let i = 0; i < array1.length; i++) {
+        let nameToCheck = array1[i].deviceId;
+        let existsInArray2 = array2.some((obj) => obj.deviceId === nameToCheck);
+
+        if (existsInArray2) {
+          indicesToRemove.push(i);
+        }
+      }
+
+      for (let i = indicesToRemove.length - 1; i >= 0; i--) {
+        array1.splice(indicesToRemove[i], 1);
+      }
+
+      array1 = array1.concat(array2);
+      return array1;
+    },
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
-      if (this.rowId) queryParams["id"] = this.rowId;
-
-      getProjectList(queryParams).then((response) => {
-        if (getStore("equipmentList")) setStore("equipmentList", []);
+      if (this.rowId) queryParams["backNo"] = this.rowId;
+      if (!this.rowId) queryParams["backNo"] = 1;
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      delete search.backNo;
+      await getProjectList(queryParams).then((response) => {
+        if (getStore("equipmentList")) setStore("equipmentList", response.data);
         if (getStore("addList") && getStore("addList").length > 0) {
           setStore("equipmentList", response.data.concat(getStore("addList")));
         } else {
@@ -346,7 +402,7 @@ export default {
         if (getStore("updateList") && getStore("updateList").length > 0) {
           setStore(
             "equipmentList",
-            upName(getStore("equipmentList"), getStore("updateList"))
+            upName2(getStore("equipmentList"), getStore("updateList"))
           );
         }
         if (getStore("delList") && getStore("delList").length > 0) {
@@ -355,7 +411,16 @@ export default {
             delList(getStore("equipmentList"), getStore("delList"))
           );
         }
-        this.equipmentList = getStore("equipmentList");
+        let matches = getStore("equipmentList").filter((item) => {
+          for (let key in search) {
+            if (item[key] !== search[key]) {
+              if (search[key] == "") return true;
+              return false;
+            }
+          }
+          return true;
+        });
+        this.equipmentList = matches;
       });
     },
     /** 查询统计 */
@@ -364,7 +429,7 @@ export default {
         this.countData = response.data;
       });
     },
-    /** 查询用户列表 */
+
     async getList2(queryParams = { pageNum: 1, pageSize: 10 }) {
       this.loading = true;
       var data = {
@@ -393,10 +458,13 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
-      this.radioRow = selection[0];
+      if (this.title === "批量设置") {
+        this.ids = selection.map((item) => item.id);
+        this.single = selection.length != 1;
+        this.multiple = !selection.length;
+        this.radioRow = selection[0];
+        this.rowArr = selection;
+      }
     },
     // 多选框选中数据
     handleSelectionChange2(selection) {
@@ -404,6 +472,54 @@ export default {
       this.single2 = selection.length != 1;
       this.multiple2 = !selection.length;
       this.radioRow2 = selection[0];
+      this.rowArr = selection;
+    },
+    deduplicateByDeviceId(inputArray) {
+      const deviceIdSet = new Set();
+      return inputArray.reduce((result, item) => {
+        let uniqueKey = `${item.sModel}${item.deviceCode}${item.deviceName}${item.batchNo}`;
+        console.log("========================", uniqueKey);
+        if (!deviceIdSet.has(uniqueKey)) {
+          deviceIdSet.add(uniqueKey);
+          result.push(item);
+        }
+        return result;
+      }, []);
+    },
+    async handleSelectionSubmit() {
+      this.rowArr.forEach((item) => {
+        item["deviceType"] = item.categoryId;
+      });
+
+      if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
+        getStore("equipmentList").forEach((t) => {
+          this.rowArr = this.rowArr.filter((item) => {
+            return (
+              item.sModel + item.deviceCode + item.deviceName + item.batchNo !==
+              t.sModel + t.deviceCode + t.deviceName + t.batchNo
+            );
+          });
+        });
+      }
+      console.log("========================", this.rowArr);
+      if (getStore("addList") && getStore("addList").length > 0) {
+        setStore(
+          "addList",
+          this.deduplicateByDeviceId(getStore("addList").concat(this.rowArr))
+        );
+      } else {
+        setStore("addList", this.rowArr);
+      }
+      this.$message({
+        type: "success",
+        message: "选取设备成功",
+      });
+      this.showEquipSelectDialog = false;
+      await this.getList();
+    },
+    handleSelectionCancel() {
+      this.rowArr = [];
+      this.showEquipSelectDialog = false;
     },
     async handleAdd() {
       this.showEquipSelectDialog = !this.showEquipSelectDialog;
@@ -420,26 +536,23 @@ export default {
         if (!row.id) {
           setStore(
             "equipmentList",
-            this.equipmentList.filter(
-              (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
-            )
+            this.equipmentList.filter((item) => item.deviceId != row.deviceId)
           );
           setStore(
             "addList",
-            getStore("addList").filter(
-              (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
-            )
+            getStore("addList").filter((item) => item.deviceId != row.deviceId)
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
-              (item) =>
-                item.deviceName + item.specs != row.deviceName + item.specs
+              (item) => item.deviceId != row.deviceId
             )
           );
         } else {
+          setStore(
+            "updateList",
+            getStore("updateList").filter((item) => item.id != row.id)
+          );
           if (getStore("delList") && getStore("delList").length > 0) {
             setStore("delList", [
               ...getStore("delList").concat(
@@ -465,97 +578,69 @@ export default {
         });
       });
     },
-    handleUpdate(row, index) {
-      this.title = "编辑";
-      this.formData = row;
-      this.drawer = true;
-      this.itemValue = row;
+    handleUpdate(row, index, exit, isRow) {
+      if (!isRow) {
+        this.title = "批量设置";
+        if (this.ids.length) {
+          this.formData = {};
+          this.editor = true;
+          this.itemValue = this.rowArr;
+        } else {
+          this.$message.error("请选择一行数据进行修改!");
+          return;
+        }
+      } else {
+        this.title = "单个设置";
+        this.editor = true;
+        this.formData = row;
+        this.itemValue = [row];
+      }
     },
     submitFormAdd() {
       this.$refs["elForm"].validate(async (valid) => {
         if (!valid) return;
-        this.formData["purchasePlanNo"] = "年度";
-        // this.formData["id"] = 0;
-        if (this.title === "新增") {
-          if (getStore("addList") && getStore("addList").length > 0) {
-            setStore("addList", getStore("addList").concat(this.formData));
-          } else {
-            setStore("addList", [this.formData]);
-          }
-          this.$message({
-            type: "success",
-            message: "提交成功",
-          });
-        } else {
-          if (this.itemValue.id) {
+        this.itemValue.forEach((i) => {
+          i["targetDeviceStatus"] = this.formData["targetDeviceStatus"][0];
+          i["targetLocation"] = this.formData["targetLocation"];
+          if (i.id) {
             if (getStore("updateList") && getStore("updateList").length > 0) {
               setStore(
                 "updateList",
-                getStore("updateList").filter(
-                  (item) => item.id != this.itemValue.id
-                )
+                getStore("updateList").filter((item) => item.id != i.id)
               );
-              setStore(
-                "updateList",
-                getStore("updateList").concat(this.formData)
-              );
+              setStore("updateList", getStore("updateList").concat(i));
+              console.log("========================", i);
             } else {
-              setStore("updateList", [this.formData]);
+              setStore("updateList", [i]);
             }
           } else {
-            setStore(
-              "updateList",
-              getStore("updateList").filter(
-                (item) =>
-                  item.deviceName + item.specs !=
-                  this.itemValue.deviceName + this.itemValue.specs
-              )
-            );
-            setStore(
-              "updateList",
-              getStore("updateList").concat(this.formData)
-            );
+            if (getStore("addList") && getStore("addList").length > 0) {
+              setStore(
+                "addList",
+                getStore("addList").filter(
+                  (item) => item.deviceId != i.deviceId
+                )
+              );
+              setStore("addList", getStore("addList").concat(i));
+            } else {
+              setStore("addList", [i]);
+            }
           }
-        }
+        });
+
         this.$message({
           type: "success",
           message: "修改成功",
         });
 
         this.getList();
-        this.$refs["elForm"].resetFields();
-        this.drawer = false;
-        // await getProjectAdd(this.formData).then((response) => {
-        //   if (response.code == 200) {
-        //     this.$message({
-        //       type: "success",
-        //       message: "提交成功",
-        //     });
-        //     this.getList();
-        //     this.$refs["elForm"].resetFields();
-        //     this.drawer = false;
-        //   }
-        // });
+        this.resetForm();
+        this.editor = false;
       });
     },
     resetForm() {
       this.$refs["elForm"].resetFields();
     },
-    findTreeName(options, value) {
-      var name = "";
-      name = this.forfn(options, value);
-      return name;
-    },
-    // getDemandOrganizationOptions() {
-    //   // 注意：this.$axios是通过Vue.prototype.$axios = axios挂载产生的
-    //   this.$axios({
-    //     method: "get",
-    //     url: "/property/purchase/plan/selectDetailPage",
-    //   }).then((resp) => {
-    //     var { data } = resp;
-    //     this.demandOrganizationOptions = data.list;
-    //   });
-    // },
   },
 };
 </script>

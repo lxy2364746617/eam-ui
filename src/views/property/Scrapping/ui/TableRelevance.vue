@@ -70,12 +70,10 @@
 import { equipmentTree } from "@/api/equipment/category";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
-import AddDetailDrawer from "../add/AddDetailDrawer";
 export default {
   components: {
     JmTable,
     JmForm,
-    AddDetailDrawer,
   },
   props: {},
   data() {
@@ -130,7 +128,7 @@ export default {
         { label: "设备编码", prop: "deviceName", tableVisible: true },
         {
           label: "设备名称",
-          prop: "specs",
+          prop: "sModel",
           formType: "data",
           tableVisible: true,
         },

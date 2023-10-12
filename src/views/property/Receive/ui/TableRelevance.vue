@@ -202,7 +202,15 @@ export default {
         this.$message.success("文件上传成功！");
       }
     },
-
+    importHandler() {
+      
+      download(this.ids).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
+      });
+    },
     handleUploadError() {
       this.$message.error("文件上传失败！");
     },
@@ -241,6 +249,7 @@ export default {
         let matches = getStore("fileList").filter((item) => {
           for (let key in search) {
             if (item[key] !== search[key]) {
+              if (search[key] == "") return true;
               return false;
             }
           }

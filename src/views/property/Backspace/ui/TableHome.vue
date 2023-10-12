@@ -129,6 +129,7 @@ import {
 } from "@/api/property/backspace";
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
+import { listDept } from "@/api/system/dept";
 export default {
   components: {
     JmTable,
@@ -166,39 +167,51 @@ export default {
       form: {},
 
       radioRow: {},
+      // 部门树选项
+      deptOptions: [],
     };
   },
   computed: {
     columns() {
       return [
-        { label: "创建时间", prop: "purchasePlanNo", tableVisible: true },
-        { label: "回退单编号", prop: "purchasePlanName", tableVisible: true },
-        { label: "设备数量", prop: "purchasePlanType", tableVisible: true },
+        { label: "创建时间", prop: "createTime", tableVisible: true },
+        { label: "回退单编号", prop: "backNo", tableVisible: true },
+        { label: "设备数量", prop: "deviceNum", tableVisible: true },
         {
           label: "业务日期",
-          prop: "annual",
+          prop: "createDate",
           tableVisible: true,
           formType: "data",
         },
-        { label: "所属组织", prop: "planDemandNum", tableVisible: true },
+        {
+          label: "所属组织",
+          prop: "affDeptId",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+        },
         {
           label: "申请部门",
-          prop: "planDemandMount",
+          prop: "applyDeptId",
           tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
         },
         {
           label: "申请部门负责人",
-          prop: "startTime",
+          prop: "applyDeptPerson",
           tableVisible: true,
         },
         {
           label: "调入部门",
-          prop: "endTime",
+          prop: "inDeptId",
           tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
         },
         {
           label: "调入部门负责人",
-          prop: "declarationUnit",
+          prop: "inDeptPerson",
           tableVisible: true,
         },
 
@@ -214,27 +227,34 @@ export default {
   },
   watch: {},
   async created() {
+    await this.getTreeSelect();
     // data赋值
-    this.columns.forEach((b) => {});
+
     await this.getList();
   },
   mounted() {},
   methods: {
+    /** 查询部门下拉树结构 */
+    getTreeSelect() {
+      listDept().then((response) => {
+        this.deptOptions = response.data;
+      });
+    },
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        delId(row.id).then((res) => {
+        delId(row.id).then(async (res) => {
           if (res.code == 200) {
+            await this.getList();
             this.$message({
               type: "success",
               message: "删除成功!",
             });
           }
         });
-        this.getList();
       });
     },
     exportWarnLog(data) {

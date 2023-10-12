@@ -187,7 +187,22 @@ export default {
       return [
         { label: "购置计划编号", prop: "purchasePlanNo", tableVisible: true },
         { label: "购置计划名称", prop: "purchasePlanName", tableVisible: true },
-        { label: "购置计划类型", prop: "purchasePlanType", tableVisible: true },
+        {
+          label: "购置计划类型",
+          prop: "purchasePlanType",
+          formType: "select",
+          tableVisible: true,
+          options: [
+            // {
+            //   value: 1,
+            //   label: "年度计划",
+            // },
+            {
+              value: 2,
+              label: "临时计划",
+            },
+          ],
+        },
         { label: "年度", prop: "annual", tableVisible: true },
         { label: "计划需求数量", prop: "planDemandNum", tableVisible: true },
         {
@@ -250,10 +265,7 @@ export default {
     },
     handelImport() {},
     exportWarnLog(data) {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
+      
       download({ ids: this.ids, purchasePlanType: 2 }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",

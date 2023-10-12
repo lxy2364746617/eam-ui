@@ -25,18 +25,33 @@
         <el-button type="primary" plain icon="el-icon-upload" size="mini"
           >导入</el-button
         >
-        <el-button type="primary" plain icon="el-icon-download" size="mini"
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="exportWarnLog"
+          v-hasPermi="['equipment:book:add']"
           >下载</el-button
         >
       </template>
       <template #end_handle="scope" v-if="!isChoose">
+        <el-button
+          size="mini"
+          type="text"
+          icon="el-icon-view"
+          :loading="btnLoading"
+          @click="goDetails(scope.row, 'view')"
+          v-hasPermi="['equipment:book:edit']"
+          >详情</el-button
+        >
         <el-button
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           icon="el-icon-edit"
           :loading="btnLoading"
-          @click="goDetails(scope.row, 'edit')"
+          @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['equipment:book:edit']"
           >编辑</el-button
         >
@@ -49,15 +64,7 @@
           v-hasPermi="['equipment:book:remove']"
           >删除</el-button
         >
-        <el-button
-          size="mini"
-          type="text"
-          icon="el-icon-view"
-          :loading="btnLoading"
-          @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
-          >详情</el-button
-        >
+
         <el-button
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
@@ -86,15 +93,17 @@
   </div>
 </template>
 <script>
-import { getScrappedList } from "@/api/property/scrapping.js";
+import { getScrappedList, delId, download } from "@/api/property/scrapping.js";
 import addEdit from "@/views/device/book/add";
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
+import { listDept } from "@/api/system/dept";
 export default {
   components: {
     JmTable,
     addEdit,
   },
+  dicts: ["apv_status", "em_scrap_way"],
   props: {
     // isChoose: {
     //     default: false,
@@ -123,34 +132,50 @@ export default {
       form: {},
 
       radioRow: {},
+      deptOptions: [],
     };
   },
   computed: {
     columns() {
       return [
-        { label: "报废编号", prop: "createTime", tableVisible: true },
-        { label: "业务名称", prop: "neckNo", tableVisible: true },
-        { label: "报废方式", prop: "deviceNum", tableVisible: true },
-        { label: "报废数量", prop: "neckDate", tableVisible: true },
-        { label: "报废单位", prop: "affDeptId", tableVisible: true },
+        { label: "报废编号", prop: "scrapNo", tableVisible: true },
+        { label: "业务名称", prop: "busName", tableVisible: true },
+        {
+          label: "报废方式",
+          prop: "scrapType",
+          tableVisible: true,
+          formType: "selectTag",
+          options: this.dict.type.em_scrap_way,
+        },
+        { label: "报废数量", prop: "scrapNum", tableVisible: true },
+        {
+          label: "报废单位",
+          prop: "scrapUnitId",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          width: 180,
+        },
         {
           label: "报废人",
-          prop: "applyDeptId",
+          prop: "scrapPerson",
           tableVisible: true,
         },
         {
           label: "报废日期",
-          prop: "applyDeptPerson",
+          prop: "scrapDate",
           tableVisible: true,
         },
         {
           label: "审批状态",
-          prop: "applyDeptId",
+          prop: "apvStatus",
           tableVisible: true,
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
         },
         {
           label: "备注",
-          prop: "applyDeptId",
+          prop: "remark",
           tableVisible: true,
         },
       ];
@@ -158,55 +183,41 @@ export default {
   },
   watch: {},
   async created() {
+    await this.getTreeSelect();
     // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "apvStatus")
-        this.$set(b, "options", [
-          {
-            value: 1,
-            label: "待审批",
-          },
-          {
-            value: 2,
-            label: "审批中",
-          },
-          {
-            value: 3,
-            label: "审批通过",
-          },
-          {
-            value: 4,
-            label: "审批驳回",
-          },
-        ]);
-    });
     await this.getList();
   },
   mounted() {},
   methods: {
+    handleDelete(row) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        delId(row.scrapNo).then(async (res) => {
+          if (res.code == 200) {
+            await this.getList();
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+          }
+        });
+      });
+    },
+    /** 查询部门下拉树结构 */
+    getTreeSelect() {
+      listDept().then((response) => {
+        this.deptOptions = response.data;
+      });
+    },
     exportWarnLog(data) {
-      download(data).then((res) => {
-        // window.location.href = res.url;
-        const { data, response } = res;
-        let disposition = decodeURI(
-          response.headers.get("content-disposition")
-        );
-        // 从响应头中获取文件名称
-        let fileName = disposition.substring(
-          disposition.indexOf("filename=") + 9,
-          disposition.length
-        );
-
-        let url = window.URL.createObjectURL(new Blob([data]));
-
-        let a = document.createElement("a");
-        a.style.display = "none";
-        a.href = url;
-        a.setAttribute("download", fileName);
-        document.body.appendChild(a);
-        a.click(); //执行下载
-        window.URL.revokeObjectURL(a.href);
-        document.body.removeChild(a);
+      download({ ids: this.ids }).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
       });
     },
     // 导入
@@ -217,7 +228,6 @@ export default {
       }
       const fileData = new FormData();
       fileData.append("files", file);
-      fileData["purchasePlanType"] = 1;
       uploadInfo(fileData);
       return false;
     },
@@ -230,8 +240,8 @@ export default {
     ) {
       this.loading = true;
       getScrappedList(form).then((response) => {
-        this.dataList = response.rows;
-        this.total = response.total;
+        this.dataList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
@@ -248,13 +258,21 @@ export default {
       this.radioRow = selection[0];
     },
     handleAdd() {
-      this.$router.push("/property/scrappingAdd");
+      this.$router.push("/property/ScrappingAdd");
     },
     goDetails(row) {
       this.$router.push({
-        path: "/property/scrappingAdd",
+        path: "/property/scrappingDetails",
         query: {
           item: { ...row, isEdit: false },
+        },
+      });
+    },
+    goEdit(row) {
+      this.$router.push({
+        path: "/property/scrappingEdit",
+        query: {
+          item: { ...row, isEdit: true },
         },
       });
     },

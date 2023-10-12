@@ -92,6 +92,9 @@ export default {
     removeStore("delList");
     removeStore("updateList");
     removeStore("equipmentList");
+    removeStore("addFileList");
+    removeStore("fileList");
+    removeStore("delFileList");
     //跳回上页
   },
   beforeRouteLeave(to, from, next) {

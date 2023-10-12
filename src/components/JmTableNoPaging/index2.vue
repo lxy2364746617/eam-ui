@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <el-row :gutter="10" class="mb8" style="margin-bottom: 20px">
@@ -108,6 +107,29 @@
                       >
                     </el-option>
                   </el-select>
+                  <el-select
+                    v-else-if="col.formType == 'selectTag'"
+                    clearable
+                    v-model="queryParams[col.prop]"
+                    @keyup.enter.native="handleQuery"
+                    @change="selectchange($event, col.prop)"
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      :label="item.label"
+                      :value="item.value"
+                      v-for="item in col.options"
+                      :key="item.value"
+                    >
+                      <el-tag
+                        class="selectTag"
+                        effect="light"
+                        :type="item.raw.listClass"
+                      >
+                        {{ item.label }}
+                      </el-tag>
+                    </el-option>
+                  </el-select>
                   <treeselect
                     size="small"
                     v-else-if="col.formType == 'selectTree'"
@@ -120,9 +142,8 @@
                     @keyup.enter.native="handleQuery"
                     placeholder="请选择"
                     :normalizer="normalizer"
-                    :appendToBody="true"
-                    zIndex="9999"
-                    style="height: 32px; line-height: 32px"
+                    :append-to-body="true"
+                    :zIndex="9999"
                   />
                   <el-input
                     v-else
@@ -136,13 +157,22 @@
                     是否为特种设备 -->
                 </el-form-item>
               </div>
-              <span v-else-if="col.prop == 'date'">{{
+              <span v-else-if="col.formType == 'date'">{{
                 parseTime(scope.row[col.prop], "{y}-{m}-{d}")
               }}</span>
               <span
-                v-else-if="col.formType == 'select'"
+                v-else-if="col.formType == 'select' || col.formType == 'radio'"
                 v-html="findName(col.options, scope.row[col.prop])"
               ></span>
+              <span v-else-if="col.formType == 'selectTag'">
+                <el-tag
+                  class="selectTag"
+                  effect="light"
+                  :type="findClass(col.options, scope.row[col.prop])"
+                >
+                  {{ findName(col.options, scope.row[col.prop]) }}
+                </el-tag>
+              </span>
               <span v-else-if="col.formType == 'switch'">
                 <el-switch
                   v-model="scope.row[col.prop]"
@@ -153,10 +183,6 @@
                 </el-switch>
               </span>
               <span
-                v-else-if="col.formType == 'radio'"
-                v-html="findName(col.options, scope.row[col.prop])"
-              ></span>
-              <span
                 v-else-if="col.formType == 'selectTree'"
                 v-html="findTreeName(col.options, scope.row[col.prop])"
               ></span>
@@ -164,14 +190,57 @@
             </template>
           </el-table-column>
         </template>
+        <!-- <el-table-column
+          
+          label="操作"
+          align="center"
+          fixed="right"
+          class-name="small-padding fixed-width"
+          :min-width="handleWidth || 120"
+        >
+          <template slot-scope="scope">
+            <div v-if="scope.$index == 0 && showSearch">
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-search"
+                @click="handleQuery"
+                >搜索</el-button
+              >
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-refresh"
+                @click="resetQuery"
+                >重置</el-button
+              >
+            </div>
+            <div v-else>
+              <slot
+                name="end_handle"
+                :row="scope.row"
+                :index="scope.$index"
+              ></slot>
+            </div>
+          </template>
+        </el-table-column> -->
       </el-table>
     </el-form>
+
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="pagination"
+    />
   </div>
 </template>
 <script>
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
+  name: "JmTable",
   components: { Treeselect },
   props: {
     tableData: {
@@ -187,6 +256,7 @@ export default {
       default: true,
       type: Boolean,
     },
+
     // 表格列
     columns: {
       default: () => [],
@@ -274,6 +344,15 @@ export default {
     selectchange($event, prop) {
       this.$emit("selectchange", $event, prop);
     },
+    findClass(options, value) {
+      var name = "primary";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].raw.listClass;
+        }
+      }
+      return name;
+    },
     findName(options, value) {
       var name = "";
       for (let i = 0; i < options.length; i++) {
@@ -342,8 +421,10 @@ export default {
   .el-form-item__content
   .el-select--small
   .el-input--small
-  .el-input__inner {
-  height: auto;
+  .el-input__inner,
+::v-deep .vue-treeselect,
+::v-deep .vue-treeselect .vue-treeselect__control {
+  height: 100%;
   border-radius: 0;
   position: absolute;
   top: 0;
@@ -351,7 +432,22 @@ export default {
   bottom: 0;
   right: 0;
 }
+::v-deep .vue-treeselect__placeholder,
+::v-deep .vue-treeselect__single-value {
+  line-height: 46px;
+}
 ::v-deep .el-table th.el-table__cell {
   background-color: #e7f3ff;
+}
+.selectTag {
+  background: none !important;
+  border: none;
+  margin: 0;
+  padding: 0;
+  height: auto;
+  line-height: normal;
+}
+::v-deep .vue-treeselect__portal-target {
+  width: auto !important;
 }
 </style>

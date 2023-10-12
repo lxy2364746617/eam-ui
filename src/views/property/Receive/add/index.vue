@@ -68,12 +68,7 @@ export default {
       title: "",
       isEdit: true,
       // 头部表单
-      formData: {
-        purchasePlanName: null,
-        purchasePlanType: 1,
-        annual: "2023",
-        time: [],
-      },
+      formData: {},
     };
   },
   created() {},
@@ -89,17 +84,13 @@ export default {
       removeStore("equipmentList");
       removeStore("addFileList");
       removeStore("fileList");
+      removeStore("delFileList");
     },
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
     submit() {
-      this.formData["startTime"] = this.formData.time[0];
-      this.formData["endTime"] = this.formData.time[1];
-      this.formData["purchasePlanType"] = 1;
-      this.formData["purchasePlanNo"] = 1;
-      delete this.formData.time;
       if (getStore("addList") && getStore("addList").length > 0) {
         this.formData["addList"] = getStore("addList");
       } else {
@@ -116,6 +107,15 @@ export default {
       } else {
         this.formData["addFileList"] = [];
       }
+      this.formData.affDeptId = this.formData.affDeptId
+        ? this.formData.affDeptId[this.formData.affDeptId.length - 1]
+        : null;
+      this.formData.applyDeptId = this.formData.applyDeptId
+        ? this.formData.applyDeptId[this.formData.applyDeptId.length - 1]
+        : null;
+      this.formData.outDeptId = this.formData.outDeptId
+        ? this.formData.outDeptId[this.formData.outDeptId.length - 1]
+        : null;
       setProject(this.formData).then((res) => {
         if (res.code === 200) {
           this.$message({
