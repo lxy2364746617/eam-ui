@@ -166,6 +166,15 @@ export default {
   },
   mounted() {},
   methods: {
+    importHandler() {
+     
+      download(this.ids).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
+      });
+    },
     // 上传前校检格式和大小
     handleBeforeUpload(file) {
       // 校检文件大小
@@ -239,6 +248,7 @@ export default {
         let matches = getStore("fileList").filter((item) => {
           for (let key in search) {
             if (item[key] !== search[key]) {
+              if (search[key] == "") return true;
               return false;
             }
           }

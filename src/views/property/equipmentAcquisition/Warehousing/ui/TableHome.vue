@@ -145,17 +145,7 @@ export default {
     JmTableNoPaging,
     addDetails,
   },
-  dicts: [
-    "em_device_state",
-    "device_run_state",
-    "em_is_special",
-    "em_device_att",
-    "em_unit",
-    "em_device_level",
-    "em_device_financing",
-    "em_is_lease",
-    "apv_status",
-  ],
+  dicts: ["em_device_att", "em_device_level", "apv_status"],
   props: {},
   data() {
     return {
@@ -187,7 +177,7 @@ export default {
       equipmentList: null,
       equipmentList2: null,
       isChoose: false,
-      isChoose2: false,
+      isChoose2: true,
       // 遮罩层
       loading: true,
       addEdit: false,
@@ -210,7 +200,7 @@ export default {
         { label: "业务编码", prop: "wareHousingNo", tableVisible: true },
         { label: "设备编码", prop: "deviceCode", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
+        { label: "规格型号", prop: "sModel", tableVisible: true },
         { label: "设备类别", prop: "deviceType", tableVisible: true },
         {
           label: "设备状态",
@@ -283,7 +273,7 @@ export default {
     columns2() {
       return [
         { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
+        { label: "规格型号", prop: "sModel", tableVisible: true },
         { label: "技术参数", prop: "technologyParam", tableVisible: true },
 
         {
@@ -409,10 +399,7 @@ export default {
     },
 
     exportWarnLog(data) {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
+     
       download(this.ids).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
@@ -611,5 +598,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-top: 30px;
 }
 </style>

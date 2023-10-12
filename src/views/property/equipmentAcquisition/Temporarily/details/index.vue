@@ -41,11 +41,6 @@
         </p>
       </template></TableRelevance
     >
-    <div class="submit" v-if="!formData.isBtn">
-      <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary">保存并提交审批</el-button>
-      <el-button @click="cancel">取消</el-button>
-    </div>
   </Wrapper>
 </template>
 <script>

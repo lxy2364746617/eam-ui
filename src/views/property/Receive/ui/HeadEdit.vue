@@ -50,20 +50,20 @@
         <el-form-item label="所属组织" prop="affDeptId">
           <el-cascader
             v-if="isEdit"
+            clearable
             v-model="formData.affDeptId"
             :options="deptOptions"
-            :props="{ expandTrigger: 'click' }"
-            @change="handleChange1"
+            :props="{ expandTrigger: 'hover', checkStrictly: true }"
           ></el-cascader>
           <span v-else-if="!isEdit">{{ formData2.affDeptName }}</span>
         </el-form-item>
         <el-form-item label="调出部门" prop="outDeptId">
           <el-cascader
             v-if="isEdit"
+            clearable
             v-model="formData.outDeptId"
             :options="deptOptions"
-            :props="{ expandTrigger: 'click' }"
-            @change="handleChange2"
+            :props="{ expandTrigger: 'hover', checkStrictly: true }"
           ></el-cascader>
 
           <span v-else-if="!isEdit">{{ formData2.outDeptId }}</span>
@@ -73,17 +73,21 @@
           prop="outDeptPerson"
           label-width="120px"
         >
-          <el-input v-if="isEdit" v-model="formData.outDeptPerson"></el-input>
+          <el-input
+            disabled
+            v-if="isEdit"
+            v-model="formData.outDeptPerson"
+          ></el-input>
 
           <span v-else-if="!isEdit">{{ formData2.outDeptPerson }}</span>
         </el-form-item>
         <el-form-item label="申请部门" prop="applyDeptId">
           <el-cascader
             v-if="isEdit"
+            clearable
             v-model="formData.applyDeptId"
             :options="deptOptions"
-            :props="{ expandTrigger: 'click' }"
-            @change="handleChange3"
+            :props="{ expandTrigger: 'hover', checkStrictly: true }"
           ></el-cascader>
 
           <span v-else-if="!isEdit">{{ formData2.applyDeptName }}</span>
@@ -141,10 +145,11 @@ export default {
         applyDeptId: [
           {
             required: true,
-            message: "请输入选择申请部门",
+            message: "请选择申请部门",
             trigger: "change",
           },
         ],
+
         applyDeptPerson: [
           {
             required: true,
@@ -170,7 +175,6 @@ export default {
   },
   mounted() {},
   methods: {
-    handleChange(e) {},
     handleChange1(e) {
       this.formData.affDeptId = e[0];
     },
@@ -196,12 +200,11 @@ export default {
   overflow: hidden;
   margin-top: 20px;
   width: 100%;
-  height: 230px;
+  height: 250px;
   border-radius: 6px;
   border: 1px solid #e9eaef;
   background: #f7fbff;
   padding: 14px 15px;
-
   .icon {
     span {
       padding-left: 10px;

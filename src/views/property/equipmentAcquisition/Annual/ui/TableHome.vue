@@ -270,10 +270,7 @@ export default {
       });
     },
     exportWarnLog(data) {
-      if (!this.ids.length) {
-        this.$message.error("请选择勾选！");
-        return;
-      }
+      
       download({ ids: this.ids, purchasePlanType: 1 }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",

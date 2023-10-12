@@ -191,6 +191,7 @@
           </el-table-column>
         </template>
         <el-table-column
+          v-if="!isShow"
           label="操作"
           align="center"
           fixed="right"
@@ -227,12 +228,12 @@
     </el-form>
 
     <!-- <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="pagination"
-      /> -->
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="pagination"
+    /> -->
   </div>
 </template>
 <script>
@@ -247,6 +248,10 @@ export default {
       type: Array,
     },
     isRadio: {
+      default: false,
+      type: Boolean,
+    },
+    isShow: {
       default: false,
       type: Boolean,
     },

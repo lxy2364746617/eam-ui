@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-// 资产管理-设备购置-分页
+// 入库-分页
 export function getPurchaseList(data) {
   return request({
     url: "/device/warehousing/selectPage",

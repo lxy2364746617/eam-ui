@@ -44,7 +44,7 @@ export function setProject(data) {
   });
 }
 
-// 新增计划
+// 编辑计划
 export function updateProject(data) {
   return request({
     url: "/property/purchase/plan/updatePlan",
@@ -75,7 +75,7 @@ export function downDetailLoad(ids) {
   return request({
     url: "/property/purchase/plan/downloadDetails",
     method: "post",
-    data: data,
+    data: { ids: ids },
     responseType: "blob",
   });
 }

@@ -152,7 +152,7 @@ export default {
       return [
         { label: "备件名称", prop: "partsName", span: 24 },
         { label: "备件编码", prop: "partsCode", span: 24 },
-        { label: "规格型号", prop: "partspecs", span: 24 },
+        { label: "规格型号", prop: "partsModel", span: 24 },
         { label: "备件类别", prop: "partsType", span: 24 },
         { label: "单位", prop: "unit", span: 24 },
         { label: "当前库存", prop: "stock", span: 24 },

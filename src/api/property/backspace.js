@@ -9,19 +9,27 @@ export function getPurchaseList(data) {
   });
 }
 
-// // 查询计划明细
-// export function getProjectList(data) {
-//   return request({
-//     url: "/property/purchase/plan/listDetail",
-//     method: "post",
-//     data: data,
-//   });
-// }
+// 查询计划明细
+export function getProjectList(data) {
+  return request({
+    url: "/device/back/detail/list",
+    method: "post",
+    data: data,
+  });
+}
 
 // 新增回退
 export function setProject(data) {
   return request({
     url: "/device/back/addDeviceBack",
+    method: "post",
+    data: data,
+  });
+}
+// 编辑回退
+export function updateProject(data) {
+  return request({
+    url: "/device/back/updateDeviceBack",
     method: "post",
     data: data,
   });

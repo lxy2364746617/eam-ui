@@ -22,18 +22,33 @@
           v-hasPermi="['equipment:book:add']"
           >新增</el-button
         >
-        <el-button type="primary" plain icon="el-icon-download" size="mini"
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="exportWarnLog"
+          v-hasPermi="['equipment:book:add']"
           >下载</el-button
         >
       </template>
       <template #end_handle="scope" v-if="!isChoose">
+        <el-button
+          size="mini"
+          type="text"
+          icon="el-icon-view"
+          :loading="btnLoading"
+          @click="goDetails(scope.row, 'view')"
+          v-hasPermi="['equipment:book:edit']"
+          >详情</el-button
+        >
         <el-button
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           icon="el-icon-edit"
           :loading="btnLoading"
-          @click="goDetails(scope.row, 'edit')"
+          @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['equipment:book:edit']"
           >编辑</el-button
         >
@@ -46,15 +61,7 @@
           v-hasPermi="['equipment:book:remove']"
           >删除</el-button
         >
-        <el-button
-          size="mini"
-          type="text"
-          icon="el-icon-view"
-          :loading="btnLoading"
-          @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
-          >详情</el-button
-        >
+
         <el-button
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
@@ -83,15 +90,21 @@
   </div>
 </template>
 <script>
-import { getPositionChangeList } from "@/api/property/positionchange.js";
+import {
+  getPositionChangeList,
+  delId,
+  download,
+} from "@/api/property/positionchange.js";
 import addEdit from "@/views/device/book/add";
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
+import { listDept } from "@/api/system/dept";
 export default {
   components: {
     JmTable,
     addEdit,
   },
+  dicts: ["apv_status"],
   props: {
     // isChoose: {
     //     default: false,
@@ -120,6 +133,7 @@ export default {
       form: {},
 
       radioRow: {},
+      deptOptions: [],
     };
   },
   computed: {
@@ -131,86 +145,82 @@ export default {
           tableVisible: true,
           formType: "date",
         },
-        { label: "变动单号", prop: "neckNo", tableVisible: true },
+        { label: "变动单号", prop: "changeNo", tableVisible: true },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         {
           label: "业务日期",
-          prop: "neckDate",
+          prop: "busDate",
           tableVisible: true,
           formType: "date",
         },
         {
           label: "所属组织",
-          prop: "affDeptId",
+          prop: "affOrgId",
           tableVisible: true,
-          formType: "select",
+          formType: "selectTree",
+          options: this.deptOptions,
         },
         {
           label: "申请部门",
           prop: "applyDeptId",
           tableVisible: true,
-          formType: "select",
+          formType: "selectTree",
+          options: this.deptOptions,
         },
         {
           label: "申请部门负责人",
-          prop: "applyDeptPerson",
+          prop: "applyPersonName",
           tableVisible: true,
         },
         {
           label: "审批状态",
-          prop: "applyDeptId",
+          prop: "apvStatus",
           tableVisible: true,
-          formType: "select",
-          options: [
-            {
-              label: "审批中",
-              value: "1",
-            },
-            {
-              label: "审批通过",
-              value: "2",
-            },
-            {
-              label: "审批驳回",
-              value: "3",
-            },
-            {
-              label: "待提交",
-              value: "4",
-            },
-          ],
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
         },
       ];
     },
   },
   watch: {},
   async created() {
-    // data赋值
-    this.columns.forEach((b) => {
-      if (b.prop == "apvStatus")
-        this.$set(b, "options", [
-          {
-            value: 1,
-            label: "待审批",
-          },
-          {
-            value: 2,
-            label: "审批中",
-          },
-          {
-            value: 3,
-            label: "审批通过",
-          },
-          {
-            value: 4,
-            label: "审批驳回",
-          },
-        ]);
-    });
+    await this.getTreeSelect();
     await this.getList();
   },
   mounted() {},
   methods: {
+    exportWarnLog(data) {
+      
+      download({ ids: this.ids }).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
+      });
+    },
+    handleDelete(row) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        delId(row.changeNo).then(async (res) => {
+          if (res.code == 200) {
+            await this.getList();
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+          }
+        });
+      });
+    },
+    /** 查询部门下拉树结构 */
+    getTreeSelect() {
+      listDept().then((response) => {
+        this.deptOptions = response.data;
+      });
+    },
     exportWarnLog(data) {
       download(data).then((res) => {
         // window.location.href = res.url;
@@ -257,9 +267,8 @@ export default {
     ) {
       this.loading = true;
       getPositionChangeList(form).then((response) => {
-        console.log("response====>", response);
-        this.dataList = response.rows;
-        this.total = response.total;
+        this.dataList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
@@ -280,9 +289,17 @@ export default {
     },
     goDetails(row) {
       this.$router.push({
-        path: "/property/positionChangeAdd",
+        path: "/property/positionChangeDetails",
         query: {
           item: { ...row, isEdit: false },
+        },
+      });
+    },
+    goEdit(row) {
+      this.$router.push({
+        path: "/property/positionChangeEdit",
+        query: {
+          item: { ...row, isEdit: true },
         },
       });
     },

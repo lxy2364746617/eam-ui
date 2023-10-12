@@ -4,6 +4,7 @@
 
     <jm-table
       :tableData="equipmentList"
+      @getList="getList"
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
@@ -11,29 +12,36 @@
       :handleWidth="230"
       :columns="columns"
     >
-      <template slot="headerLeft">
-        <el-button
-          type="primary"
-          plain
-          size="mini"
-          @click="showEquipSelectDialog = true"
-          >选取设备</el-button
-        >
-        <el-button
-          type="primary"
-          plain
-          size="mini"
-          @click="showBatchConfigDialog = true"
-          >批量配置</el-button
-        >
-        <el-button
-          type="danger"
-          plain
-          size="mini"
-          icon="el-icon-delete"
-          @click="handleDelete()"
-          >删除</el-button
-        >
+      <template slot="headerLeft" v-if="!isChoose">
+        <el-col :span="1.5" v-if="!isShow">
+          <el-upload
+            multiple
+            :action="uploadFileUrl"
+            :before-upload="handleBeforeUpload"
+            :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
+            v-hasPermi="['equipment:book:add']"
+            name="file"
+            :show-file-list="false"
+            :headers="headers"
+            ref="upload"
+            ><el-button type="primary" size="mini" plain icon="el-icon-upload"
+              >导入</el-button
+            ></el-upload
+          >
+        </el-col>
+        <el-col :span="1.5" v-else>
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            :loading="btnLoading"
+            @click="importHandler"
+            v-hasPermi="['equipment:book:add']"
+            >下载</el-button
+          >
+        </el-col>
       </template>
       <template #end_handle="scope" v-if="!isChoose">
         <el-button
@@ -43,18 +51,11 @@
           :loading="btnLoading"
           @click="handleUpdate(scope.row, 'view')"
           v-hasPermi="['equipment:book:edit']"
-          >详情</el-button
+          >下载</el-button
         >
+
         <el-button
-          size="mini"
-          type="text"
-          icon="el-icon-edit"
-          :loading="btnLoading"
-          @click="handleUpdate(scope.row, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
-          >修改</el-button
-        >
-        <el-button
+          v-if="!isShow"
           size="mini"
           type="text"
           icon="el-icon-delete"
@@ -68,74 +69,41 @@
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['equipment:book:edit']"
-          >提交</el-button
+          >预览</el-button
         >
       </template>
     </jm-table>
-    <el-form style="margin-top: 10px">
-      <el-form-item label="设备回退附件" required>
-        <el-upload>
-          <el-button type="primary" plain size="mini" icon="el-icon-upload"
-            >上传</el-button
-          >
-        </el-upload>
-      </el-form-item>
-    </el-form>
-
-    <!-- 选择设备 -->
-    <el-dialog
-      title="设备档案"
-      :visible.sync="showEquipSelectDialog"
-      width="80%"
-    >
-      <jm-table :columns="equipSelectColumns" :tableData="equipData"></jm-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showEquipSelectDialog = false">取 消</el-button>
-        <el-button type="primary" @click="showEquipSelectDialog = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
-    <!-- 批量配置 -->
-    <el-dialog
-      title="批量配置"
-      :visible.sync="showBatchConfigDialog"
-      width="30%"
-    >
-      <el-form class="form" label-width="110px">
-        <el-form-item label="目标功能位置" required>
-          <el-select :style="{ width: '100%' }"></el-select>
-        </el-form-item>
-        <el-form-item label="目标设备状态" required>
-          <el-select :style="{ width: '100%' }"></el-select>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showBatchConfigDialog = false">取 消</el-button>
-        <el-button type="primary" @click="showBatchConfigDialog = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
-import { getEquipList } from "@/api/property/turnover.js";
+import { getAssociatedPlan } from "@/api/property/receive";
 import JmTable from "@/components/JmTable";
+import { getToken } from "@/utils/auth";
+import {
+  setStore,
+  getStore,
+  delList,
+  formatDateFromTimestamp,
+} from "@/utils/property.js";
+import { saveAs } from "file-saver";
+import Search from "@/components/HeaderSearch";
 export default {
   components: {
     JmTable,
   },
-  props: {},
+  props: { isShow: false, type: Boolean, busNo: "", type: String },
   data() {
     return {
+      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
       btnLoading: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
       },
-      equipmentList: [],
       isChoose: false,
       // 遮罩层
       loading: true,
@@ -149,6 +117,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      // 表格数据
+      equipmentList: null,
       // 弹出层标题
       title: "",
       // 部门树选项
@@ -168,99 +138,178 @@ export default {
       // 表单参数
       form: {},
       radioRow: {},
-      // 选择设备弹框
-      showEquipSelectDialog: false,
-      // 设备档案列表
-      equipData: [],
-      // 批量配置弹框
-      showBatchConfigDialog: false,
     };
   },
   computed: {
     columns() {
       return [
-        { label: "创建时间", prop: "deviceName", tableVisible: true },
+        { label: "文件名", prop: "originalFileName", tableVisible: true },
         {
-          label: "设备名称",
-          prop: "specs",
+          label: "上传时间",
+          prop: "createTime",
           formType: "data",
           tableVisible: true,
         },
-        { label: "规格型号", prop: "categoryId", tableVisible: true },
+        { label: "上传人员", prop: "createBy", tableVisible: true },
         {
-          label: "自设设备编码",
-          prop: "deviceAtt",
-          formType: "select",
-          options: [],
+          label: "文件大小",
+          prop: "fileSize",
+
           tableVisible: true,
         }, //(1 设备、2 部件)
-        { label: "设备类别", prop: "categoryId", tableVisible: true },
-        { label: "功能位置", prop: "categoryId", tableVisible: true },
-        { label: "设备编号", prop: "categoryId", tableVisible: true },
-        { label: "使用部门", prop: "categoryId", tableVisible: true },
-        { label: "所属组织", prop: "categoryId", tableVisible: true },
-        { label: "当前使用组织", prop: "categoryId", tableVisible: true },
-        { label: "设备状态", prop: "categoryId", tableVisible: true },
-        {
-          label: "目标功能位置",
-          prop: "categoryId",
-          tableVisible: true,
-        },
-        { label: "目标设备状态", prop: "categoryId", tableVisible: true },
-      ];
-    },
-    equipSelectColumns() {
-      return [
-        { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
-        { label: "自设设备编码", prop: "selfEquipNo", tableVisible: true },
-        {
-          label: "设备状态",
-          prop: "deviceStatus",
-          tableVisible: true,
-        },
-        {
-          label: "设备类别",
-          prop: "categoryName",
-          tableVisible: true,
-        },
-        { label: "功能位置", prop: "location", tableVisible: true },
-        { label: "使用部门", prop: "useDeptName", tableVisible: true },
-        {
-          label: "所属组织",
-          prop: "affDeptName",
-          tableVisible: true,
-        },
-        {
-          label: "当前使用组织",
-          prop: "currDeptName",
-          tableVisible: true,
-        },
-        { label: "设备编码", prop: "deviceCode", tableVisible: true },
       ];
     },
   },
-  created() {
-    this.getListOfEquip();
+  watch: {},
+  async created() {
+    await this.getList();
   },
+  mounted() {},
   methods: {
-    // 删除设备
+    importHandler() {},
+    // 上传前校检格式和大小
+    handleBeforeUpload(file) {
+      // 校检文件大小
+      if (this.fileSize) {
+        const isLt = file.size / 1024 / 1024 < this.fileSize;
+        if (!isLt) {
+          this.$message.error(`上传文件大小不能超过 ${this.fileSize} MB!`);
+          return false;
+        }
+      }
+      return true;
+    },
+    async handleUploadSuccess(res, file) {
+      if (res.code === 200) {
+        res["createImport"] = Date.now();
+        let msg = {
+          fileName: res.originalFileName,
+          originalFileName: res.originalFileName,
+          newFileName: res.newFileName,
+          fileSize: res.fileSize,
+          fileType: file.raw.type,
+          createImport: res.createImport,
+          createBy: this.$store.state.user.name,
+          createTime: await formatDateFromTimestamp(res.createImport),
+        };
+        if (getStore("addFileList") && getStore("addFileList").length > 0) {
+          setStore("addFileList", getStore("addFileList").concat(msg));
+        } else {
+          setStore("addFileList", [msg]);
+        }
+
+        await this.getList();
+        this.$message.success("文件上传成功！");
+      }
+    },
+
+    handleUploadError() {
+      this.$message.error("文件上传失败！");
+    },
+    importHandler() {
+      download(this.ids).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
+      });
+    },
+    /** 查询用户列表 */
+    async getList(
+      queryParams = {
+        pageNum: 1,
+        pageSize: 10,
+      }
+    ) {
+      this.loading = true;
+      if (this.busNo) queryParams["transferNo"] = this.busNo;
+      if (!this.busNo) queryParams["transferNo"] = 1;
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      delete search.busNo;
+
+      getAssociatedPlan(queryParams).then((response) => {
+        let res = response;
+        if (!res.data) res.data = [];
+        if (getStore("fileList")) setStore("fileList", []);
+        if (getStore("addFileList") && getStore("addFileList").length > 0) {
+          setStore("fileList", res.data.concat(getStore("addFileList")));
+        } else {
+          setStore("fileList", res.data);
+          this.loading = false;
+        }
+        if (getStore("delFileList") && getStore("delFileList").length > 0) {
+          setStore(
+            "fileList",
+            delList(getStore("fileList"), getStore("delFileList"))
+          );
+        }
+        let matches = getStore("fileList").filter((item) => {
+          for (let key in search) {
+            if (item[key] !== search[key]) {
+              if (search[key] == "") return true;
+              return false;
+            }
+          }
+          return true;
+        });
+        this.equipmentList = matches;
+        this.total = matches.length;
+        this.loading = false;
+      });
+    },
     handleDelete(row) {
-      console.log("row=====>", row);
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        if (!row.id) {
+          setStore(
+            "fileList",
+            this.equipmentList.filter(
+              (item) => item.newFileName !== row.newFileName
+            )
+          );
+          setStore(
+            "addFileList",
+            getStore("addFileList").filter(
+              (item) => item.newFileName !== row.newFileName
+            )
+          );
+        } else {
+          if (getStore("delFileList") && getStore("delFileList").length > 0) {
+            setStore("delFileList", [
+              ...getStore("delFileList").concat(
+                this.equipmentList.filter((item) => item.id == row.id)
+              ),
+            ]);
+          } else {
+            setStore(
+              "delFileList",
+              this.equipmentList.filter((item) => item.id == row.id)
+            );
+          }
+        }
+        setStore(
+          "fileList",
+          this.equipmentList.filter((item) => item.id != row.id)
+        );
+
+        this.getList();
+        this.$message({
+          type: "success",
+          message: "删除成功!",
+        });
+      });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.deviceId);
+      this.ids = selection.map((item) => item.id);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.radioRow = selection[0];
-    },
-    getListOfEquip() {
-      console.log("queryParams=====>", this.queryParams);
-      getEquipList(this.queryParams).then((res) => {
-        this.equipData = res.rows;
-        this.total = res.total;
-      });
     },
   },
 };
@@ -280,6 +329,7 @@ export default {
 
     padding: 0;
     margin: 0;
+    padding-bottom: 10px;
     display: flex;
     justify-content: start;
     align-items: center;
@@ -314,8 +364,5 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-}
-.form {
-  width: 100%;
 }
 </style>

@@ -96,7 +96,7 @@ import step4 from "@/views/device/book/details/step4";
 import step5 from "@/views/device/book/details/step5";
 import step6 from "@/views/device/book/details/step6";
 import step7 from "@/views/device/book/details/step7";
-
+import step8 from "@/views/device/book/details/step8";
 export default {
   name: "bookadddetails",
   dicts: ["em_device_state", "device_run_state"],
@@ -112,6 +112,7 @@ export default {
     step5,
     step6,
     step7,
+    step8,
     devicebook: () => import("@/views/device/book/index"),
   },
   computed: {
@@ -147,15 +148,14 @@ export default {
       return [
         { label: "基本信息", name: "step1", visible: true },
         {
-          label:
-            (this.formData.emArchivesIndex ? "主要指标" : "") +
-            (this.formData.emArchivesIndex && this.formData.emArchivesSpecial
-              ? "/"
-              : "") +
-            (this.formData.emArchivesSpecial ? "特种设备信息" : ""),
+          label: "主要指标",
           name: "step2",
-          visible:
-            this.formData.emArchivesIndex || this.formData.emArchivesSpecial,
+          visible: this.formData.emArchivesIndex,
+        },
+        {
+          label: "特种设备信息",
+          name: "step8",
+          visible: this.formData.emArchivesSpecial,
         },
         { label: "设备图片及位置", name: "step3", visible: true },
         { label: "技术资料", name: "step4", visible: true },

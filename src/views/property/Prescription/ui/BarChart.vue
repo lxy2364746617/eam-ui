@@ -10,15 +10,17 @@
 <script>
 import { chartOption } from "./echarts.config";
 export default {
+  props: ["data"],
   data() {
     return {
       chart: null, // 用来获取实例
       mySetionChart: null, // 改变指向
-      datas: [20, 40, 30, 50], // 数据
+      datas: this.data, // 数据
     };
   },
+  watch: {},
   created() {
-    if (this.datas.length) this.initChart();
+    if (this.data && this.data.length) this.initChart();
   },
   methods: {
     initChart() {

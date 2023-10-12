@@ -1,14 +1,22 @@
 import * as echarts from "echarts";
 
 export function chartOption() {
+  let arrX = [];
+  let arrY = [];
+  JSON.parse(JSON.stringify(this.datas)).forEach((item) => {
+    arrX.push(item.countNum);
+    arrY.push(item.groupName);
+  });
   const myBarChart = echarts.init(this.$refs.chart);
   myBarChart.setOption({
+    backgroundColor: "#fff",
     tooltip: {
       trigger: "axis",
       axisPointer: {
         type: "shadow",
       },
       backgroundColor: "#fff",
+
       textStyle: {
         color: "#000",
       },
@@ -38,7 +46,7 @@ export function chartOption() {
       axisTick: {
         show: false,
       },
-      data: ["山西", "四川", "西藏", "北京"],
+      data: arrY,
     },
     yAxis: [
       {
@@ -81,7 +89,7 @@ export function chartOption() {
           },
         },
         color: "#2DB1EF",
-        data: this.datas,
+        data: arrX,
       },
 
       {
@@ -100,7 +108,7 @@ export function chartOption() {
         symbolBoundingData: 60,
         symbolClip: true,
         z: 2,
-        data: this.datas,
+        data: arrX,
         animationEasing: "elasticOut",
       },
       {
@@ -116,7 +124,7 @@ export function chartOption() {
         symbolPosition: "end",
 
         animation: false,
-        data: this.datas,
+        data: arrX,
       },
       {
         type: "pictorialBar",
@@ -131,7 +139,7 @@ export function chartOption() {
         symbolOffset: [0, 0],
         symbolPosition: "start",
         animation: false,
-        data: this.datas,
+        data: arrX,
       },
     ],
   });

@@ -124,7 +124,15 @@ export default {
       } else {
         this.formData["delFileList"] = [];
       }
-
+      this.formData.affDeptId = this.formData.affDeptId
+        ? this.formData.affDeptId[this.formData.affDeptId.length - 1]
+        : null;
+      this.formData.applyDeptId = this.formData.applyDeptId
+        ? this.formData.applyDeptId[this.formData.applyDeptId.length - 1]
+        : null;
+      this.formData.outDeptId = this.formData.outDeptId
+        ? this.formData.outDeptId[this.formData.outDeptId.length - 1]
+        : null;
       updateProject(this.formData).then((res) => {
         if (res.code === 200) {
           this.$message({
