@@ -1,150 +1,34 @@
 <template>
   <div class="app-container">
-    <el-form
-      :model="queryParams"
-      ref="queryForm"
-      size="small"
-      :inline="true"
-      v-show="showSearch"
-      label-width="68px"
-    >
-      <el-form-item label="巡点检项目编码" prop="itemCode">
-        <el-input
-          v-model="queryParams.itemCode"
-          placeholder="请输入巡点检项目编码"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="巡点检方法" prop="itemMethod">
-        <el-input
-          v-model="queryParams.itemMethod"
-          placeholder="请输入巡点检方法"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          clearable
-          v-model="queryParams.createTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择创建时间"
-        ></el-date-picker>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+    <jm-table :tableData="itemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
+      ref="jmtable" :handleWidth="230" :columns="columns" :isIndex="false" @switchchange="handleStatusChange">
+      <template slot="headerLeft">
+        <el-col :span="1.5">
+          <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+            v-hasPermi="['maintain:item:add']">新增</el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+            v-hasPermi="['maintain:item:edit']">修改</el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+            v-hasPermi="['maintain:item:remove']">删除</el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+            v-hasPermi="['maintain:item:export']">导出</el-button>
+        </el-col>
+      </template>
+      <template #end_handle="scope">
+        <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+          v-hasPermi="['maintain:item:edit']">修改</el-button>
+        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+          v-hasPermi="['maintain:item:remove']">删除</el-button>
+      </template>
+    </jm-table>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['maintain:item:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['maintain:item:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['maintain:item:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['maintain:item:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
 
-    <el-table v-loading="loading" :data="itemList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="序号" align="center" prop="itemId" />
-      <el-table-column label="巡点检项目编码" align="center" prop="itemCode" />
-      <el-table-column label="巡点检内容" align="center" prop="itemContent" />
-      <el-table-column label="巡点检方法" align="center" prop="itemMethod" />
-      <el-table-column label="巡点检类型" align="center" prop="itemType">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.mro_item_type" :value="scope.row.itemType"></dict-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center" prop="itemStatus">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.itemStatus"
-            active-value="0"
-            inactive-value="1"
-            @change="handleStatusChange(scope.row)"
-          ></el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建人" align="center" prop="createBy" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="修改人" align="center" prop="updateBy" />
-      <el-table-column label="修改时间" align="center" prop="updateTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['maintain:item:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['maintain:item:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
 
     <!-- 添加或修改维护计划_巡点检项目对话框 -->
     <el-drawer :title="title" :visible.sync="open" size="30%" append-to-body>
@@ -157,33 +41,20 @@
         </el-form-item>
         <el-form-item label="巡点检方法:" prop="itemMethod">
           <el-select v-model="form.itemMethod" placeholder="请选择巡点检方法">
-            <el-option
-              class="p_input"
-              v-for="dict in dict.type.mro_item_method"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
+            <el-option class="p_input" v-for="dict in dict.type.mro_item_method" :key="dict.value" :label="dict.label"
+              :value="dict.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="巡点检类型:" prop="itemType">
           <el-select v-model="form.itemType" placeholder="请选择巡点检类型">
-            <el-option
-              class="p_input"
-              v-for="dict in dict.type.mro_item_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
+            <el-option class="p_input" v-for="dict in dict.type.mro_item_type" :key="dict.value" :label="dict.label"
+              :value="dict.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="itemStatus">
           <el-radio-group v-model="form.itemStatus">
-            <el-radio
-              v-for="dict in dict.type.sys_normal_disable"
-              :key="dict.value"
-              :label="dict.value"
-            >{{dict.label}}</el-radio>
+            <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label
+            }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注:">
@@ -207,10 +78,11 @@ import {
   updateItem,
   changeItemStatus,
 } from '@/api/maintain/item'
-
+import JmTable from '@/components/JmTable'
 export default {
   name: 'Item',
   dicts: ['sys_normal_disable', 'mro_item_method', 'mro_item_type'],
+  components: { JmTable },
   data() {
     return {
       // 遮罩层
@@ -263,23 +135,41 @@ export default {
           { required: true, message: '状态不能为空', trigger: 'blur' },
         ],
       },
+
     }
   },
+  computed: {
+    // 列信息
+    columns() {
+      return [
+        { label: '序号', prop: 'itemId' },
+        { label: '巡点检项目编码', prop: 'itemCode' },
+        { label: '巡点检内容', prop: 'itemContent' },
+        { label: '巡点检方法', prop: 'itemMethod',formType: 'select', options: this.dict.type.mro_item_method, },
+        { label: '巡点检类型', prop: 'itemType',formType: 'select', options: this.dict.type.mro_item_type, },
+        { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span:24, formVisible: false,},
+        { label: '创建人', prop: 'createBy' },
+        { label: '创建时间', prop: 'createTime', formType: 'date' },
+        { label: '修改人', prop状态: 'updateBy' },
+        { label: '修改时间', prop: 'updateTime', formType: 'date' }
+      ]
+    },
+  },
   created() {
-    this.getList()
+    this.getList(this.queryParams)
   },
   methods: {
     /** 查询维护计划_巡点检项目列表 */
-    getList() {
+    getList(queryParams) {
       this.loading = true
-      listItem(this.queryParams).then((response) => {
+      listItem(queryParams).then((response) => {
         this.itemList = response.rows
         this.total = response.total
         this.loading = false
       })
     },
     // 巡点检项目状态修改
-    handleStatusChange(row) {
+    handleStatusChange(event,prop,row) {
       let text = row.itemStatus === '0' ? '启用' : '停用'
       this.$modal
         .confirm('确认要"' + text + '""' + row.itemContent + '"吗？')
@@ -318,7 +208,7 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm('queryForm')
+      this.resetForm('jmtable')
       this.handleQuery()
     },
     // 多选框选中数据
@@ -377,7 +267,7 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -396,6 +286,7 @@ export default {
 .p_input {
   width: 90%;
 }
+
 .p_form {
   height: calc(100vh - 139px);
 }

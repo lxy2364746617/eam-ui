@@ -21,7 +21,7 @@
                 <el-radio v-model="radio" :label="scope.$index" v-if="scope.$index!=0 && showSearch">&nbsp;</el-radio>
             </template>
           </el-table-column>
-          <el-table-column label="序号" align="center" prop="noticeId" width="50">
+          <el-table-column label="序号" align="center" prop="noticeId" width="50" v-if="isIndex">
             <template slot-scope="scope">
               <div v-if="scope.$index != 0" v-html="scope.$index"></div>
             </template>
@@ -146,7 +146,6 @@
             </template>
           </el-table-column>
         </el-table>
-      
       </el-form>
   
   
@@ -177,6 +176,11 @@ export default {
         },
         // 显示搜索条件
         showSearch:{
+          default: true,
+          type: Boolean
+        },
+        // 显示序号
+        isIndex: {
           default: true,
           type: Boolean
         },
