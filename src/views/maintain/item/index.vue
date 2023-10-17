@@ -91,7 +91,11 @@
       <el-table-column label="巡点检项目编码" align="center" prop="itemCode" />
       <el-table-column label="巡点检内容" align="center" prop="itemContent" />
       <el-table-column label="巡点检方法" align="center" prop="itemMethod" />
-      <el-table-column label="巡点检类型" align="center" prop="itemType" />
+      <el-table-column label="巡点检类型" align="center" prop="itemType">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.mro_item_type" :value="scope.row.itemType"></dict-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" prop="itemStatus">
         <template slot-scope="scope">
           <el-switch
@@ -201,6 +205,7 @@ import {
   delItem,
   addItem,
   updateItem,
+  changeItemStatus,
 } from '@/api/maintain/item'
 
 export default {
@@ -275,18 +280,17 @@ export default {
     },
     // 巡点检项目状态修改
     handleStatusChange(row) {
-      alert(1)
       let text = row.itemStatus === '0' ? '启用' : '停用'
       this.$modal
-        .confirm('确认要"' + text + '""' + row.userName + '"用户吗？')
+        .confirm('确认要"' + text + '""' + row.itemContent + '"吗？')
         .then(function () {
-          return changeUserStatus(row.userId, row.status)
+          return changeItemStatus(row.itemId, row.itemStatus)
         })
         .then(() => {
           this.$modal.msgSuccess(text + '成功')
         })
         .catch(function () {
-          row.status = row.status === '0' ? '1' : '0'
+          row.itemStatus = row.itemStatus === '0' ? '1' : '0'
         })
     },
     // 取消按钮
