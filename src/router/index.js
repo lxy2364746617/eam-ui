@@ -346,6 +346,25 @@ export const constantRoutes = [
       },
     ]
   },
+
+  {
+    path: '/maintain/patrol',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'p_standard/add',
+        component: () => import('@/views/maintain/standard/add.vue'),
+        name: 'PStandardAdd',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.i ? '巡点检标准管理 /编辑' : '巡点检标准管理 /新增'
+          to.query.d=='true' ? to.meta.title = '巡点检标准管理 /查看' : ''
+          next()
+        },
+        meta: { title: '巡点检标准管理 ', icon: '' }
+      },
+    ]
+  },
 ]
 
 // 动态路由，基于用户权限动态去加载

@@ -1,20 +1,24 @@
 <template>
   <div class="app-container">
     <jm-table :tableData="itemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" :isIndex="false" @switchchange="handleStatusChange">
+      ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:item:add']">新增</el-button>
         </el-col>
         <el-col :span="1.5">
+          <el-button type="primary" plain icon="el-icon-upload2" size="mini" @click="handleImport"
+            v-hasPermi="['equipment:book:add']">导入</el-button>
+        </el-col>
+        <el-col :span="1.5">
           <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
             v-hasPermi="['maintain:item:edit']">修改</el-button>
         </el-col>
-        <el-col :span="1.5">
+        <!-- <el-col :span="1.5">
           <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
             v-hasPermi="['maintain:item:remove']">删除</el-button>
-        </el-col>
+        </el-col> -->
         <el-col :span="1.5">
           <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
             v-hasPermi="['maintain:item:export']">导出</el-button>
@@ -28,7 +32,9 @@
       </template>
     </jm-table>
 
-
+    <!-- 导入 -->
+    <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/maintain/item/importTemplate'"
+      ref="fileImport" :importUrl="'/maintain/item/importData'"></file-import>
 
     <!-- 添加或修改维护计划_巡点检项目对话框 -->
     <el-drawer :title="title" :visible.sync="open" size="30%" append-to-body>
@@ -78,11 +84,12 @@ import {
   updateItem,
   changeItemStatus,
 } from '@/api/maintain/item'
-import JmTable from '@/components/JmTable'
+import JmTable from '@/components/JmTable';
+import fileImport from '@/components/FileImport'
 export default {
   name: 'Item',
   dicts: ['sys_normal_disable', 'mro_item_method', 'mro_item_type'],
-  components: { JmTable },
+  components: { JmTable, fileImport },
   data() {
     return {
       // 遮罩层
@@ -142,15 +149,15 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: '序号', prop: 'itemId' },
+        // { label: '序号', prop: 'itemId' },
         { label: '巡点检项目编码', prop: 'itemCode' },
         { label: '巡点检内容', prop: 'itemContent' },
-        { label: '巡点检方法', prop: 'itemMethod',formType: 'select', options: this.dict.type.mro_item_method, },
-        { label: '巡点检类型', prop: 'itemType',formType: 'select', options: this.dict.type.mro_item_type, },
-        { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span:24, formVisible: false,},
+        { label: '巡点检方法', prop: 'itemMethod', formType: 'select', options: this.dict.type.mro_item_method, },
+        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_item_type, },
+        { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
         { label: '创建人', prop: 'createBy' },
         { label: '创建时间', prop: 'createTime', formType: 'date' },
-        { label: '修改人', prop状态: 'updateBy' },
+        { label: '修改人', prop: 'updateBy' },
         { label: '修改时间', prop: 'updateTime', formType: 'date' }
       ]
     },
@@ -159,6 +166,14 @@ export default {
     this.getList(this.queryParams)
   },
   methods: {
+    /** 导入按钮操作 */
+    handleImport() {
+      this.$refs.fileImport.upload.open = true
+    },
+    // 文件上传成功处理
+    handleFileSuccess() {
+      this.getList(this.queryParams)
+    },
     /** 查询维护计划_巡点检项目列表 */
     getList(queryParams) {
       this.loading = true
@@ -169,7 +184,7 @@ export default {
       })
     },
     // 巡点检项目状态修改
-    handleStatusChange(event,prop,row) {
+    handleStatusChange(event, prop, row) {
       let text = row.itemStatus === '0' ? '启用' : '停用'
       this.$modal
         .confirm('确认要"' + text + '""' + row.itemContent + '"吗？')

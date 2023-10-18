@@ -10,7 +10,7 @@
       <el-upload
         ref="upload"
         :limit="1"
-        style="margin: 0 auto;margin-left: 10px;"
+        style="margin: 0 auto;text-align: center;"
         accept=".xlsx, .xls"
         :headers="uploadConfig.headers"
         :action="uploadConfig.importUrl + '?updateSupport=' + upload.updateSupport"

@@ -18,7 +18,7 @@
           <el-table-column v-if="!isRadio" type="selection" width="55" align="center" :selectable="(row,index)=>index!=0 || !showSearch"/>
           <el-table-column v-if="isRadio" width="50">
             <template slot-scope="scope">
-                <el-radio v-model="radio" :label="scope.$index" v-if="scope.$index!=0 && showSearch">&nbsp;</el-radio>
+                <el-radio v-model="radio" :label="scope.$index" v-if="scope.$index!=0 && showSearch" class="leftRadio">&nbsp;</el-radio>
             </template>
           </el-table-column>
           <el-table-column label="序号" align="center" prop="noticeId" width="50" v-if="isIndex">
@@ -376,5 +376,9 @@ export default {
   }
   ::v-deep .vue-treeselect__portal-target{
     width: auto!important;
+  }
+
+  ::v-deep .leftRadio .el-radio__label{
+    display: none;
   }
 </style>
