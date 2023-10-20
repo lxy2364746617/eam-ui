@@ -37,7 +37,7 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: '巡点检路线编码', prop: 'lineCode' },
+        { label: '巡点检路线编码', prop: 'lineCode', class: true },
         { label: '巡点检路线名称', prop: 'lineName', },
         { label: '启用状态', prop: 'lineStatus', formType: 'select', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
       ]

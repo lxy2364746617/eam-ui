@@ -120,7 +120,7 @@
                   </el-switch>
                 </span>
                 <span v-else-if="col.formType=='selectTree'" v-html="findTreeName(col.options,scope.row[col.prop])"></span>
-                <span v-else v-html="scope.row[col.prop]"></span>
+                <span v-else v-html="scope.row[col.prop]" :class="{ 'active' : col.class  }"></span>
               </template>
             </el-table-column>
           </template>
@@ -380,5 +380,11 @@ export default {
 
   ::v-deep .leftRadio .el-radio__label{
     display: none;
+  }
+
+  .active{
+    color: #007bfe;
+    cursor: pointer;
+    text-decoration: underline;
   }
 </style>

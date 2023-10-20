@@ -84,17 +84,84 @@
             <el-button type="text" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
-        <jm-table :tableData="plineList" ref="jmtable1" :columns="columns1" :showSearch="false"></jm-table>
-        <!-- 添加或修改设备平台_表单模板对话框 -->
+        <jm-table :tableData.sync="plineList" ref="jmtable1" :columns="columns1" :showSearch="false"
+            @switchchange="handleStatusChange" style="margin-top:20px">
+            <template #end_handle="scope">
+                <el-button size="mini" type="text" icon="el-icon-view" @click="showLine(scope.row)"
+                    v-hasPermi="['maintain:pline:remove']">查看</el-button>
+                <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope)"
+                    v-hasPermi="['maintain:pline:remove']">删除</el-button>
+            </template>
+        </jm-table>
+        <div class="title">关联文档
+            <el-button type="text" icon="el-icon-plus" @click="AddFile" v-hasPermi="['equipment:book:add']">上传</el-button>
+        </div>
+
+        <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false" style="margin-top:20px">
+            <template #end_handle="scope">
+                <el-button size="mini" type="text" icon="el-icon-view" @click="downloadFile(scope.row)"
+                    v-hasPermi="['equipment:book:edit']">下载</el-button>
+                <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete2(scope.row)"
+                    v-hasPermi="['equipment:book:remove']">删除</el-button>
+                <!-- <el-button size="mini" type="text" icon="el-icon-document-add" v-if="fileType.includes(scope.row.fileType)"
+                    @click="handlePreview(scope.row)" v-hasPermi="['equipment:book:edit']">预览</el-button> -->
+            </template>
+        </jm-table>
+
+        <!-- 添加巡点检路线 -->
         <el-drawer title="巡点检路线" :visible.sync="plineForm.choosedrawer" direction="rtl" size="40%" :wrapperClosable="false">
             <pline :isChoose="false" @submitRadio="submitRadio2" @close="plineForm.choosedrawer = false"
-              :formData="plineForm" v-if="plineForm.choosedrawer"></pline>
+                :formData="plineForm" v-if="plineForm.choosedrawer"></pline>
+        </el-drawer>
+        <el-drawer title="关联巡点检项" :visible.sync="deviceForm.choosedrawer" direction="rtl" size="80%"
+            :wrapperClosable="false">
+            <el-table v-loading="deviceForm.loading" :data="deviceList" ref="queryTable2">
+                <el-table-column type="selection" width="55" align="center" />
+                <el-table-column label="序号" align="center" type="index" />
+                <el-table-column label="设备编码" align="center" prop="deviceCode" min-width="150" />
+                <el-table-column label="设备名称" align="center" prop="deviceName" min-width="150"></el-table-column>
+                <el-table-column label="规格型号" align="center" prop="specs" min-width="150" />
+                <el-table-column label="设备类别" align="center" prop="categoryName" min-width="150"></el-table-column>
+                <el-table-column label="功能位置" align="center" prop="location" min-width="150"></el-table-column>
+                <el-table-column label="所属子公司" align="center" prop="subCompanyName" min-width="150"></el-table-column>
+                <el-table-column label="所属组织" align="center" prop="affDeptName" min-width="150" />
+                <el-table-column label="设备状态" align="center" prop="deviceStatus">
+                    <template slot-scope="scope">
+                        <span v-html="findName(dict.type.em_device_state, scope.row.deviceStatus)"></span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="日常点检" align="center" prop="dayNum" min-width="150">
+                    <template slot-scope="scope">
+                        <span class="viewSpan" @click="viewFun('RCDJ', scope.row.deviceId, scope.row.dayNum)">{{
+                            scope.row.dayNum }} 浏览</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="精密点检" align="center" prop="preNum" min-width="150">
+                    <template slot-scope="scope">
+                        <span class="viewSpan" @click="viewFun('JMDJ', scope.row.deviceId, scope.row.preNum)">{{
+                            scope.row.preNum }} 浏览</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="专职点检" align="center" prop="fullNum" min-width="150">
+                    <template slot-scope="scope">
+                        <span class="viewSpan" @click="viewFun('ZZDJ', scope.row.deviceId, scope.row.fullNum)">{{
+                            scope.row.fullNum }} 浏览</span>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-drawer>
+        <el-drawer :title="title" :visible.sync="drawer" direction="rtl" size="60%" :wrapperClosable="false">
+            <jm-table :tableData="lineList" ref="jmtable" :columns="columns">
+            </jm-table>
         </el-drawer>
 
-        <!-- <el-drawer :title="title" :visible.sync="drawer" direction="rtl" size="80%" :wrapperClosable="false">
-            <jm-table :tableData="plineList" ref="jmtable" :columns="columns">
-            </jm-table>
-        </el-drawer> -->
+
+        <!-- 上传文件 -->
+        <el-drawer title="选择文件" :visible.sync="filedrawer" direction="rtl" :destroy-on-close="true"
+            :wrapperClosable="false">
+            <file-upload :drag="true" @uploadChange="uploadChange2" :listType="'picture-card'" style="margin-left: 20%;">
+            </file-upload>
+        </el-drawer>
 
         <div style="width: 100%; height: 68px;"></div>
         <div
@@ -106,21 +173,31 @@
 </template>
           
 <script>
-import { getPplan, addPplan, updatePplan, findByDeviceId, findByDeviceIdAndItemType } from "@/api/maintain/pline";
+import { getPplan, addPplan, updatePplan, } from "@/api/maintain/pplan";
+import { larchivesList, findByDeviceIdAndItemType } from "@/api/maintain/pline";
+import { listResource, addResource, delResource } from "@/api/system/resource";
 import JmTable from "@/components/JmTable";
 import pline from '@/views/maintain/pplan/pline'
 export default {
     name: "Template",
-    dicts: ['sys_normal_disable', 'mro_item_type', 'mro_plan_cycle_type', 'mro_s_check_status', 'mro_is_photo'],
+    dicts: ['sys_normal_disable', 'mro_item_type', 'mro_plan_cycle_type', 'mro_s_check_status', 'mro_is_photo', 'em_device_state'],
     components: { JmTable, pline },
     computed: {
         columns1() {
             return [
-                { label: '巡点检路线编码', prop: 'lineCode' },
-                { label: '巡点检路线名称', prop: 'lineName', },
+                { label: '巡点检路线编码', prop: 'lineCode', class: true },
+                { label: '巡点检路线名称', prop: 'lineName', class: true },
                 { label: '巡点检设备数量', prop: 'deviceNum', },
                 { label: '日常巡点检', prop: 'sCheckNum', },
                 { label: '是否拍照', prop: 'isPhoto', formType: 'switch', options: this.dict.type.mro_is_photo, span: 24, },
+            ]
+        },
+        columns2() {
+            return [
+                { label: '文件名', prop: 'originalFileName', class: true },
+                { label: '创建时间', prop: 'createTime', formType: 'date' },
+                { label: '创建人', prop: 'createBy', },
+                { label: '文件大小', prop: 'fileSize', },
             ]
         },
         // 列信息
@@ -180,9 +257,6 @@ export default {
                 updateBy: null,
                 updateTime: null,
             },
-            // 关联点检测项目
-            lineList: [],
-            drawer: false,
             // 弹出层标题
             title: "关键点检测",
             //线路数组
@@ -192,7 +266,22 @@ export default {
             plineForm: {
                 choosedrawer: false,
                 disIds: []
-            }
+            },
+            //设备弹窗
+            deviceForm: {
+                choosedrawer: false,
+                loading: false,
+            },
+            deviceList: [],
+            // 关联点检测项目
+            lineList: [],
+            drawer: false,
+            title: '',
+            //文档
+            fileList: [],
+            filedrawer: false,
+            fileType: ['.xlsx'],
+            fileResourceList:[]
         };
     },
     created() {
@@ -207,20 +296,21 @@ export default {
     },
     methods: {
         submitRadio2(row) {
-            let row1=row.map(item=>{
-                item.isPhoto='Y';
+            let row1 = row.map(item => {
+                item.isPhoto = 'Y';
                 return item
             })
-            this.plineList = this.lineList.concat(row1)
+            this.plineList = this.plineList.concat(row1)
             this.$set(this.plineForm, 'choosedrawer', false)
         },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
             getPplan(queryParams).then(response => {
-                let { mroPatrolPlanLineList, ...other } = response.data;
+                let { mroPatrolPlanLineList,fileResourceList, ...other } = response.data;
                 this.form = other;
                 this.plineList = mroPatrolPlanLineList || [];
+                this.fileResourceList=fileResourceList||[];
                 this.loading = false;
             }).catch(() => {
                 this.loading = false;
@@ -261,9 +351,10 @@ export default {
             this.btnLoading = true;
             let data = {
                 ...this.form,
-                mroPatrolPlanLineList: this.lineList.map(item => {
+                mroPatrolPlanLineList: this.plineList.map(item => {
                     return { lineId: item.lineId, isPhoto: item.isPhoto }
                 }),
+                fileResourceList:this.fileResourceList
             }
             if (this.planId != '' && this.planId) {
                 updatePplan(data).then(response => {
@@ -307,10 +398,70 @@ export default {
                     deviceId
                 }
                 findByDeviceIdAndItemType(data).then(res => {
-                    this.plineList = res.data
+                    this.lineList = res.data
                     this.drawer = true;
                 })
             }
+        },
+        //巡点检路线列表修改拍照状态
+        handleStatusChange(event, prop, row) {
+            this.plineList.forEach((item, index) => {
+                if (item.lineId == row.lineId) {
+                    item.isPhoto = row.isPhoto
+                }
+            })
+        },
+        findName(options, value) {
+            var name = ''
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value == value) {
+                    name = options[i].label
+                }
+            }
+            return name || value
+        },
+        //查看线路下的设备 
+        showLine(row) {
+            this.$set(this.deviceForm, 'loading', true)
+            this.$set(this.deviceForm, 'choosedrawer', true)
+            larchivesList({ lineId: row.lineId }).then(res => {
+                this.deviceList = res.data || [];
+                this.$set(this.deviceForm, 'loading', false)
+            }).catch(() => {
+                this.$set(this.deviceForm, 'loading', false)
+            });
+        },
+        //上传文件
+        AddFile() {
+            this.fileList = []
+            this.filedrawer = true;
+        },
+        uploadChange2(val) {
+            this.fileResourceList=this.fileResourceList.concat(val)
+            this.fileList=[];
+            this.filedrawer = false 
+        },
+        /** 删除按钮操作 */
+        handleDelete2(row) {
+            var name = row.originalFileName;
+            let that=this;
+            this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function () {
+                return delResource(id);
+            }).then(() => {
+                that.fileResourceList.forEach((element,index) => {
+                    if(element.name == row.name){
+                        that.fileResourceList.splice(index, 1);
+                    }
+                });
+            }).catch(() => { });
+        },
+        downloadFile(row) {
+            this.download('common/download', {
+                fileName: row.fileName
+            }, row.originalFileName)
+        },
+        handlePreview(row) {
+            window.open(process.env.VUE_APP_BASE_API + row.fileName)
         },
     }
 };
@@ -350,6 +501,7 @@ export default {
 .viewSpan {
     color: #007bfe;
     cursor: pointer;
+    text-decoration: underline;
 }
 </style>
           

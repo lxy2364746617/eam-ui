@@ -42,19 +42,19 @@
             <el-table-column label="日常点检" align="center" prop="dayNum" min-width="150">
                 <template slot-scope="scope">
                     <span class="viewSpan" @click="viewFun('RCDJ', scope.row.deviceId, scope.row.dayNum)">{{
-                        scope.row.dayNum }}_浏览</span>
+                        scope.row.dayNum }} 浏览</span>
                 </template>
             </el-table-column>
             <el-table-column label="精密点检" align="center" prop="preNum" min-width="150">
                 <template slot-scope="scope">
                     <span class="viewSpan" @click="viewFun('JMDJ', scope.row.deviceId, scope.row.preNum)">{{
-                        scope.row.preNum }}_浏览</span>
+                        scope.row.preNum }} 浏览</span>
                 </template>
             </el-table-column>
             <el-table-column label="专职点检" align="center" prop="fullNum" min-width="150">
                 <template slot-scope="scope">
                     <span class="viewSpan" @click="viewFun('ZZDJ', scope.row.deviceId, scope.row.fullNum)">{{
-                        scope.row.fullNum }}_浏览</span>
+                        scope.row.fullNum }} 浏览</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="150">
@@ -314,6 +314,7 @@ export default {
 .viewSpan {
     color: #007bfe;
     cursor: pointer;
+    text-decoration: underline;
 }
 </style>
           
