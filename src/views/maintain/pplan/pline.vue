@@ -14,8 +14,8 @@
 
 <script>
 import {
-  listItem,
-} from '@/api/maintain/item'
+  listPline,
+} from '@/api/maintain/pline'
 import JmTable from "@/components/JmTable";
 
 export default {
@@ -37,11 +37,9 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: '巡点检项目编码', prop: 'itemCode' },
-        { label: '巡点检内容', prop: 'itemContent' },
-        { label: '巡点检方法', prop: 'itemMethod', formType: 'select', options: this.dict.type.mro_item_method, },
-        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_item_type, },
-        { label: '状态', prop: 'itemStatus', formType: 'selectTag', options: this.dict.type.sys_normal_disable, span: 24 },
+        { label: '巡点检路线编码', prop: 'lineCode' },
+        { label: '巡点检路线名称', prop: 'lineName', },
+        { label: '启用状态', prop: 'lineStatus', formType: 'select', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
       ]
     },
   },
@@ -67,11 +65,13 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        itemCode: null,
-        itemContent: null,
-        itemMethod: null,
-        itemType: null,
-        itemStatus: null,
+        lineCode: null,
+        lineName: null,
+        lineStatus: null,
+        createBy: null,
+        createTime: null,
+        updateBy: null,
+        updateTime: null,
       },
     };
   },
@@ -94,9 +94,9 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true
-      listItem(queryParams).then((response) => {
+      listPline(queryParams).then((response) => {
         this.itemList = response.rows.filter(item => {
-          if (this.formData.disIds.includes(item.itemCode)) {
+          if (this.formData.disIds.includes(item.lineId)) {
             return false
           } else {
             return true

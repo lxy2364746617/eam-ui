@@ -1,44 +1,44 @@
 <template>
-    <div class="app-container">
-        <div style="min-height: calc(100vh - 210px);">
-            <div class="title">基本信息</div>
-            <el-form ref="form" :model="form" label-width="160px" size="small" style="margin-top: 10px;">
+    <div class="app-container2">
+        <div class="container-box1">
+            <div class="title">设备信息</div>
+            <el-form ref="form" :model="form" label-width="140px" size="small" style="margin: 10px auto; width: 70%;">
                 <el-row :gutter="10" style="padding: 0 40px;">
                     <el-col :span="12">
-                        <el-form-item label="设备名称" prop="deviceName" @click.native="form.choosedrawer = true">
-                            <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
+                        <el-form-item label="设备名称" prop="deviceName" @click.native="openSb">
+                            <el-input v-model="form.deviceName" placeholder="请输入设备名称">
+                                <i slot="suffix" class="el-input__icon el-icon-search"></i>
+                            </el-input>
                         </el-form-item></el-col>
                     <el-col :span="12">
                         <el-form-item label="设备编码" prop="deviceCode">
                             <el-input v-model="form.deviceCode" placeholder="请输入设备编码" disabled />
                         </el-form-item></el-col>
                     <el-col :span="12">
+                        <el-form-item label="设备规格" prop="specs">
+                            <el-input v-model="form.specs" placeholder="请输入规格型号" disabled />
+                        </el-form-item></el-col>
+                    <el-col :span="12">
                         <el-form-item label="设备类别" prop="categoryName">
                             <el-input v-model="form.categoryName" placeholder="请输入设备类别" disabled />
                         </el-form-item></el-col>
                     <el-col :span="12">
-                        <el-form-item label="是否特种设备" prop="isSpecial">
-                            <el-select v-model="form.isSpecial" disabled>
-                                <el-option :label="dict.label" :value="dict.value" v-for="dict in dict.type.em_is_special"
-                                    :key="dict.value">
-                                </el-option>
-                            </el-select>
-                        </el-form-item></el-col>
-                    <el-col :span="12">
-                        <el-form-item label="功能位置" prop="location">
+                        <el-form-item label="功能位置(工作面)" prop="location">
                             <el-input v-model="form.location" placeholder="请输入功能位置" disabled />
                         </el-form-item></el-col>
-                    <el-col :span="12">
-                        <el-form-item label="规格型号" prop="specs">
-                            <el-input v-model="form.specs" placeholder="请输入规格型号" disabled />
+                    <el-col :span="12"> <el-form-item label="所属组织" prop="affDeptName">
+                            <el-input v-model="form.affDeptName" placeholder="请输入所属组织" disabled />
                         </el-form-item></el-col>
                     <el-col :span="12">
                         <el-form-item label="当前使用组织" prop="currDeptName">
                             <el-input v-model="form.currDeptName" placeholder="请输入当前使用组织" disabled />
                         </el-form-item></el-col>
-                    <el-col :span="12"> <el-form-item label="所属组织" prop="affDeptName">
-                            <el-input v-model="form.affDeptName" placeholder="请输入所属组织" disabled />
+                    <el-col :span="12">
+                        <el-form-item label="是否特种设备" prop="isSpecial">
+                            <el-radio disabled v-model="form.isSpecial" :label="dict.value"
+                                v-for="dict in dict.type.em_is_special" :key="dict.value">{{ dict.label }}</el-radio>
                         </el-form-item></el-col>
+
                     <!-- <el-col :span="8"><el-form-item label="状态" prop="standardStatus">
                             <el-select v-model="form.standardStatus">
                                 <el-option :label="dict.label" :value="dict.value"
@@ -59,27 +59,27 @@
                 <el-tab-pane label="精密点检" name="second"></el-tab-pane>
                 <el-tab-pane label="专职点检" name="third"></el-tab-pane>
             </el-tabs>
-            <div class="title">关联点检测项目
+            <div class="title">关联巡点检项
                 <el-button type="text" icon="el-icon-edit" @click="handleAdd">添加</el-button>
             </div>
             <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column label="序号" align="center" type="index" />
-                <el-table-column label="巡点检项目编码" align="center" prop="itemCode" />
+                <el-table-column label="巡点检项目编码" align="center" prop="itemCode" min-width="150" />
                 <el-table-column label="部件" align="center" prop="partsName">
                     <template slot-scope="scope">
                         <el-input v-model="scope.row.partsName" placeholder="请输入部件" v-if="scope.row.editType" />
                         <span v-else v-html="scope.row.partsName"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检内容" align="center" prop="itemContent" />
-                <el-table-column label="巡点检点数" align="center" prop="checkNum">
+                <el-table-column label="巡点检内容" align="center" prop="itemContent" min-width="150" />
+                <el-table-column label="巡点检点数" align="center" prop="checkNum" min-width="150">
                     <template slot-scope="scope">
                         <el-input v-model="scope.row.checkNum" placeholder="请输入巡点检点数" v-if="scope.row.editType" />
                         <span v-else v-html="scope.row.checkNum"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检状态" align="center" prop="checkStatus">
+                <el-table-column label="巡点检状态" align="center" prop="checkStatus" min-width="150">
                     <template slot-scope="scope">
                         <el-select v-if="scope.row.editType" v-model="scope.row.checkStatus" placeholder="请选择巡点检结果类型"
                             clearable>
@@ -89,14 +89,14 @@
                         <span v-else v-html="findName(dict.type.mro_s_check_status, scope.row.checkStatus)"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检标准" align="center" prop="checkStandard">
+                <el-table-column label="巡点检标准" align="center" prop="checkStandard" min-width="150">
                     <template slot-scope="scope">
                         <el-input v-model="scope.row.checkStandard" placeholder="请输入巡点检标准" v-if="scope.row.editType" />
                         <span v-else v-html="scope.row.checkStandard"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检方法" align="center" prop="itemMethod" />
-                <el-table-column label="巡点检结果类型" align="center" prop="checkResType">
+                <el-table-column label="巡点检方法" align="center" prop="itemMethod" min-width="150" />
+                <el-table-column label="巡点检结果类型" align="center" prop="checkResType" min-width="150">
                     <template slot-scope="scope">
                         <el-select v-if="scope.row.editType" v-model="scope.row.checkResType" placeholder="请选择巡点检结果类型"
                             clearable>
@@ -106,40 +106,55 @@
                         <span v-else v-html="findName(dict.type.mro_s_check_res_type, scope.row.checkResType)"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检结果设置" align="center" prop="checkResult">
+                <el-table-column label="巡点检结果设置" align="center" prop="checkResult" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.checkResult" placeholder="请输入巡点检标准" v-if="scope.row.editType" />
-                        <span v-else v-html="scope.row.checkResult"></span>
+                        <template v-if="scope.row.checkResType == '模拟'">
+                            <el-input v-model="scope.row.checkResult" placeholder="请输入巡点检标准" v-if="scope.row.editType" />
+                            <span v-else v-html="scope.row.checkResult"></span>
+                        </template>
                     </template>
                 </el-table-column>
-                <el-table-column label="定量值" align="center" prop="quotaValue">
+                <el-table-column label="定量值" align="center" prop="quotaValue" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.quotaValue" placeholder="请输入定量值" v-if="scope.row.editType" />
-                        <span v-else v-html="scope.row.quotaValue"></span>
+                        <template v-if="scope.row.checkResType == '数字'">
+                            <el-input v-model="scope.row.quotaValue" type="number" placeholder="请输入定量值"
+                                v-if="scope.row.editType" />
+                            <span v-else v-html="scope.row.quotaValue"></span>
+                        </template>
+
                     </template>
                 </el-table-column>
-                <el-table-column label="定量上限" align="center" prop="remark">
+                <el-table-column label="定量上限" align="center" prop="quotaUpper" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.quotaUpper" placeholder="请输入定量上限" v-if="scope.row.editType" />
-                        <span v-else v-html="scope.row.quotaUpper"></span>
+                        <template v-if="scope.row.checkResType == '数字'">
+                            <el-input v-model="scope.row.quotaUpper" type="number" placeholder="请输入定量上限"
+                                v-if="scope.row.editType" @blur="UpperFun($event, scope.row.quotaLower)"/>
+                            <span v-else v-html="scope.row.quotaUpper"></span>
+                        </template>
                     </template>
                 </el-table-column>
-                <el-table-column label="定量下限" align="center" prop="quotaLower">
+                <el-table-column label="定量下限" align="center" prop="quotaLower" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.quotaLower" placeholder="请输入定量下限" v-if="scope.row.editType" />
-                        <span v-else v-html="scope.row.quotaLower"></span>
+                        <template v-if="scope.row.checkResType == '数字'">
+                            <el-input v-model="scope.row.quotaLower" type="number" placeholder="请输入定量下限"
+                                v-if="scope.row.editType" @blur="LowerFun($event, scope.row.quotaUpper)"/>
+                            <span v-else v-html="scope.row.quotaLower"></span>
+                        </template>
                     </template>
                 </el-table-column>
-                <el-table-column label="定量单位" align="center" prop="quotaUnit">
+                <el-table-column label="定量单位" align="center" prop="quotaUnit" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.quotaUnit" placeholder="请输入定量单位" v-if="scope.row.editType" />
-                        <span v-else v-html="scope.row.quotaUnit"></span>
+                        <template v-if="scope.row.checkResType == '数字'">
+                            <el-input v-model="scope.row.quotaUnit" placeholder="请输入定量下限" v-if="scope.row.editType" />
+                            <span v-else v-html="scope.row.quotaLower"></span>
+                        </template>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+                <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
+                    min-width="150">
                     <template slot-scope="scope">
                         <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope)"
-                            v-hasPermi="['maintain:standard:edit']">修改</el-button>
+                            v-hasPermi="['maintain:standard:edit']">{{ scope.row.editType ? '保存' : '编辑' }}</el-button>
                         <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope)"
                             v-hasPermi="['maintain:standard:remove']">删除</el-button>
                     </template>
@@ -152,19 +167,17 @@
                 </parentdevice>
             </el-drawer>
 
-            <el-drawer :title="title" :visible.sync="pointItemForm.drawer" direction="rtl" size="80%"
+            <el-drawer :title="title" :visible.sync="pointItemForm.drawer" direction="rtl" size="40%"
                 :wrapperClosable="false">
-                <pointItem :isChoose="true" :formData="pointItemForm" @submitRadio="submitRadio1"
+                <pointItem :isChoose="false" :formData="pointItemForm" @submitRadio="submitRadio1"
                     @close="pointItemForm.drawer = false" ref="itemForm" v-if="pointItemForm.drawer">
                 </pointItem>
             </el-drawer>
         </div>
 
-        <div style="width: 100%; height: 68px;"></div>
-        <div
-            style="position: fixed;bottom: 0px;width: calc(100% - 235px);background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;z-index: 2;">
+        <div class="container-box2">
+            <el-button size="mini" @click="submitForm" type="primary" :loading="btnLoading">提交</el-button>
             <el-button size="mini" @click="goback">取消</el-button>
-            <el-button size="mini" @click="submitForm" type="primary" :loading="btnLoading">确定</el-button>
         </div>
     </div>
 </template>
@@ -176,7 +189,8 @@ import JmForm from "@/components/JmForm";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 import parentdevice from '@/views/device/book/device'
-import pointItem from './pointItem'
+import pointItem from '@/views/maintain/standard/pointItem'
+import { number } from 'echarts';
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_is_special', 'mro_s_check_res_type', 'mro_s_check_status'],
@@ -320,22 +334,23 @@ export default {
                 return node;
             });
         },
-
         submitRadio2(row) {
-            console.log(row)
             this.form = {
                 ...row,
-                choosedrawer: false
+                // choosedrawer: false
             };
+            this.$set(this.form, 'choosedrawer', false)
         },
         submitRadio1(row) {
             if (this.pointItemForm.type == 'add') {
-                let { ...data } = row;
-                this.standardList.push(data)
+                this.standardList = this.standardList.concat(row)
             } else {
                 this.standardList.splice(this.pointItemForm.index, 1, row)
             }
             Object.assign(this.$data.pointItemForm, this.$options.data().pointItemForm)
+        },
+        openSb() {
+            this.$set(this.form, 'choosedrawer', true)
         },
         getList(queryParams) {
             this.loading = false;
@@ -345,10 +360,10 @@ export default {
             getStandard(queryParams).then(response => {
                 let { dayMroPatrolStandardCheckList, preMroPatrolStandardCheckList, fullMroPatrolStandardCheckList, ...other } = response.data
                 this.activeName = 'first';
-                this.standardList = dayMroPatrolStandardCheckList;
-                this.standardList1 = dayMroPatrolStandardCheckList;
-                this.standardList2 = preMroPatrolStandardCheckList;
-                this.standardList3 = fullMroPatrolStandardCheckList;
+                this.standardList = dayMroPatrolStandardCheckList || [];
+                this.standardList1 = dayMroPatrolStandardCheckList || [];
+                this.standardList2 = preMroPatrolStandardCheckList || [];
+                this.standardList3 = fullMroPatrolStandardCheckList || [];
                 this.form = other;
             });
         },
@@ -359,15 +374,15 @@ export default {
         },
         /** 新增按钮操作 */
         handleAdd() {
-            let disIds1 = [...this.standardList1, ...this.standardList2, ...this.standardList3];
-            let disIds2 = disIds1.length == 0 ? [] : disIds1.map(item => { return item.itemCode })
+            let disIds = this.standardList.length == 0 ? [] : this.standardList.map(item => { return item.itemCode })
             this.pointItemForm = {
                 drawer: true,
                 type: 'add',
                 index: 0,
-                disIds: disIds2
+                disIds: disIds
             }
-            this.$refs.queryTable.doLayout()
+            this.$forceUpdate()
+            // this.$refs.queryTable.doLayout()
         },
         /** 修改按钮操作 */
         handleUpdate(scope) {
@@ -382,7 +397,6 @@ export default {
         },
         /** 切换选项卡 */
         handleClick(tab, event) {
-            console.log(tab);
             switch (tab.name) {
                 case "first":
                     this.standardList = [...this.standardList1];
@@ -396,7 +410,7 @@ export default {
                 default:
                     break;
             }
-            this.$refs.itemForm.doLayout()
+            // this.$refs.itemForm.doLayout()
         },
         goback() {
             this.$store.dispatch('tagsView/delView', this.$route)  // 关闭当前页
@@ -407,11 +421,12 @@ export default {
             this.btnLoading = true;
             let data = {
                 ...this.form,
-                dayMroPatrolStandardCheckList: [...this.standardList1],
-                preMroPatrolStandardCheckList: [...this.standardList2],
-                fullMroPatrolStandardCheckList: [...this.standardList1],
+                dayMroPatrolStandardCheckList: [...this.standardList1] || [],
+                preMroPatrolStandardCheckList: [...this.standardList2] || [],
+                fullMroPatrolStandardCheckList: [...this.standardList3] || [],
             }
             if (this.standardId != '' && this.standardId) {
+                data.standardStatus = 0;
                 updateStandard(data).then(response => {
                     this.$modal.msgSuccess("修改成功");
                     this.goback()
@@ -438,10 +453,45 @@ export default {
             }
             return name || value
         },
+        UpperFun(e, quotaLower) {
+            console.log(e)
+            if(e.target.value - quotaLower<0){
+                e.target.value = quotaLower;
+                this.standardList.splice(1,0)
+            }
+        },
+        LowerFun(event, quotaUpper) {
+            if(event.target.value - quotaUpper>0){
+                event.target.value = quotaUpper;
+                this.standardList.splice(1,0)
+            }
+        }
     }
 };
 </script>
 <style scoped lang="scss">
+.app-container2 {
+    position: relative;
+    height: calc(100vh - 102px);
+    display: flex;
+    flex-direction: column;
+
+    .container-box1 {
+        padding: 20px;
+        flex: 1;
+        overflow-y: scroll;
+    }
+
+    .container-box2 {
+        flex-shrink: 0;
+        background-color: #fff;
+        text-align: center;
+        padding: 20px;
+        border-top: 1px solid #ddd;
+        z-index: 2;
+    }
+}
+
 ::v-deep {
     .el-select {
         width: 100%;
@@ -450,6 +500,10 @@ export default {
     .el-tabs__nav-scroll {
         width: 50% !important;
         margin: 0 auto !important;
+    }
+
+    .el-tabs__nav-wrap {
+        padding-top: 10px;
     }
 
     .el-tabs__nav-wrap::after {
@@ -465,6 +519,5 @@ export default {
     font-size: 18px;
     background: rgba(0, 116, 217, 0.08);
     justify-content: space-between;
-}
-</style>
+}</style>
           

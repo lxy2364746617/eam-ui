@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
-    <jm-table :tableData="standardList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
+    <jm-table v-if="showstate" :tableData="standardList" @getList="getList" @handleSelectionChange="handleSelectionChange"
+      :total="total" ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:standard:add']">新增</el-button>
         </el-col>
         <el-col :span="1.5">
-          <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+          <el-button type="primary" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
             v-hasPermi="['maintain:standard:remove']">删除</el-button>
         </el-col>
         <el-col :span="1.5">
-          <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+          <el-button type="primary" plain icon="el-icon-download" size="mini" @click="handleExport"
             v-hasPermi="['maintain:standard:export']">导出</el-button>
         </el-col>
       </template>
@@ -50,7 +50,9 @@ export default {
         { label: '设备名称', prop: 'deviceName' },
         { label: '设备编码', prop: 'deviceCode', },
         {
-          label: '设备类别', prop: 'categoryId', formType: 'selectTree',
+          label: '设备类别',
+          prop: 'categoryId',
+          formType: 'selectTree',
           options: this.categoryOptions,
           width: 280,
         },
@@ -67,7 +69,7 @@ export default {
           options: this.deptOptions,
           width: 180,
         },
-        { label: '状态', prop: 'standardStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
+        { label: '状态', prop: 'standardStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24 },
         { label: '备注', prop: 'remark' },
         { label: '创建者', prop: 'createBy' },
         { label: '创建时间', prop: 'createTime', formType: 'date' },
@@ -130,6 +132,7 @@ export default {
       // 部门树选项
       deptOptions: [],
       categoryOptions: [],
+      showstate: true
     }
   },
   created() {
@@ -140,10 +143,13 @@ export default {
   methods: {
     /** 查询设备档案下拉树结构 */
     getTree() {
+      this.showstate = false;
       equipmentTree().then((response) => {
         this.categoryOptions = response.data
-        // 方便获取父级tree
+        // 方便获取父级tree;
         this.loops(this.categoryOptions)
+      }).then(() => {
+        this.showstate = true;
       })
     },
     /** 查询部门下拉树结构 */
@@ -201,19 +207,23 @@ export default {
         })
         .catch(() => { })
     },
-     // 巡点检项目状态修改
+    // 巡点检项目状态修改
     handleStatusChange(event, prop, row) {
-      let text = row.itemStatus === '0' ? '启用' : '停用'
+      let text = row.standardStatus === '0' ? '启用' : '停用'
+      let { ...data } = row;
+      data.standardStatus = data.standardStatus === '0' ? '1' : '0';
+      let that = this;
       this.$modal
-        .confirm('确认要"' + text + '""' + row.itemContent + '"吗？')
+        .confirm('确认要"' + text + '""' + row.deviceName + '"吗？')
         .then(function () {
-          // return changeItemStatus(row.itemId, row.itemStatus)
+          updateStandard(data)
         })
         .then(() => {
+          this.getList()
           this.$modal.msgSuccess(text + '成功')
         })
         .catch(function () {
-          row.itemStatus = row.itemStatus === '0' ? '1' : '0'
+          row.standardStatus = row.standardStatus === '0' ? '1' : '0'
         })
     },
     /** 导出按钮操作 */

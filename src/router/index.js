@@ -346,7 +346,6 @@ export const constantRoutes = [
       },
     ]
   },
-
   {
     path: '/maintain/patrol',
     component: Layout,
@@ -362,6 +361,28 @@ export const constantRoutes = [
           next()
         },
         meta: { title: '巡点检标准管理 ', icon: '' }
+      },
+      {
+        path: 'pline/add',
+        component: () => import('@/views/maintain/pline/add.vue'),
+        name: 'PlineAdd',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.i ? '巡点检路线/编辑' : '巡点检路线/新增'
+          to.query.d=='true' ? to.meta.title = '巡点检路线/查看' : ''
+          next()
+        },
+        meta: { title: '巡点检路线管理', icon: '' }
+      },
+      {
+        path: 'pplan/add',
+        component: () => import('@/views/maintain/pplan/add.vue'),
+        name: 'PplanAdd',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.i ? '巡点检计划/编辑' : '巡点检计划/新增'
+          to.query.d=='true' ? to.meta.title = '巡点检计划/查看' : ''
+          next()
+        },
+        meta: { title: '巡点检计划管理', icon: '' }
       },
     ]
   },
