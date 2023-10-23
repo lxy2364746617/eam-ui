@@ -134,7 +134,13 @@ export default {
               }
             });
           }
-          this.equipmentList = response.rows;
+          this.equipmentList= response.rows.filter(item => {
+            if (this.formData.disIds.includes(item.deviceId)) {
+              return false
+            } else {
+              return true
+            }
+          });
           this.total = response.total;
           this.loading = false;
         }

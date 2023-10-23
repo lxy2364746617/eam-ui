@@ -67,7 +67,7 @@
 
         <!-- 添加或修改设备平台_表单模板对话框 -->
         <el-drawer title="选择设备" :visible.sync="form.choosedrawer" direction="rtl" size="80%" :wrapperClosable="false">
-            <parentdevice :isChoose="false" @submitRadio="submitRadio2" @close="form.choosedrawer = false">
+            <parentdevice :isChoose="false" @submitRadio="submitRadio2" @close="form.choosedrawer = false"  :formData="form" v-if="form.choosedrawer">
             </parentdevice>
         </el-drawer>
 
@@ -187,6 +187,8 @@ export default {
         /** 新增按钮操作 */
         handleAdd() {
             this.$set(this.form, 'choosedrawer', true)
+            let lineIds = this.lineList.map(item => item.deviceId) || [];
+            this.$set(this.form, 'disIds', lineIds)
         },
         /** 删除按钮操作 */
         handleDelete(scope) {

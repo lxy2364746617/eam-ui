@@ -159,7 +159,7 @@
         <!-- 上传文件 -->
         <el-drawer title="选择文件" :visible.sync="filedrawer" direction="rtl" :destroy-on-close="true"
             :wrapperClosable="false">
-            <file-upload :drag="true" @uploadChange="uploadChange2" :listType="'picture-card'" style="margin-left: 20%;">
+            <file-upload :drag="true" @uploadChange="uploadChange2" :listType="'picture-card'" style="padding: 0 20px;">
             </file-upload>
         </el-drawer>
 
