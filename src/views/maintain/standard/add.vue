@@ -2,7 +2,8 @@
     <div class="app-container2">
         <div class="container-box1">
             <div class="title">设备信息</div>
-            <el-form ref="form" :model="form" label-width="140px" size="small" style="margin: 10px auto; width: 70%;">
+            <el-form ref="form" :model="form" label-width="140px" :rules="rules" size="small"
+                style="margin: 10px auto; width: 70%;">
                 <el-row :gutter="10" style="padding: 0 40px;">
                     <el-col :span="12">
                         <el-form-item label="设备名称" prop="deviceName" @click.native="openSb">
@@ -128,7 +129,7 @@
                     <template slot-scope="scope">
                         <template v-if="scope.row.checkResType == '数字'">
                             <el-input v-model="scope.row.quotaUpper" type="number" placeholder="请输入定量上限"
-                                v-if="scope.row.editType" @blur="UpperFun($event, scope.row.quotaLower)"/>
+                                v-if="scope.row.editType" @blur="UpperFun($event, scope.row.quotaLower)" />
                             <span v-else v-html="scope.row.quotaUpper"></span>
                         </template>
                     </template>
@@ -137,7 +138,7 @@
                     <template slot-scope="scope">
                         <template v-if="scope.row.checkResType == '数字'">
                             <el-input v-model="scope.row.quotaLower" type="number" placeholder="请输入定量下限"
-                                v-if="scope.row.editType" @blur="LowerFun($event, scope.row.quotaUpper)"/>
+                                v-if="scope.row.editType" @blur="LowerFun($event, scope.row.quotaUpper)" />
                             <span v-else v-html="scope.row.quotaLower"></span>
                         </template>
                     </template>
@@ -293,6 +294,33 @@ export default {
                 index: 0,
                 disIds: []
             },
+            // 表单校验
+            rules: {
+                deviceName: [
+                    { required: true, message: '设备名称不能为空', trigger: 'blur' },
+                ],
+                deviceCode: [
+                    { required: true, message: '设备编码不能为空', trigger: 'blur' },
+                ],
+                specs: [
+                    { required: true, message: '设备规格不能为空', trigger: 'blur' },
+                ],
+                categoryName: [
+                    { required: true, message: '设备类别不能为空', trigger: 'blur' },
+                ],
+                location: [
+                    { required: true, message: '功能位置(工作面)不能为空', trigger: 'blur' },
+                ],
+                affDeptName: [
+                    { required: true, message: '所属组织不能为空', trigger: 'blur' },
+                ],
+                currDeptName: [
+                    { required: true, message: '当前使用组织不能为空', trigger: 'blur' },
+                ],
+                isSpecial: [
+                    { required: true, message: '是否特种设备不能为空', trigger: 'blur' },
+                ],
+            },
         };
     },
     created() {
@@ -418,30 +446,36 @@ export default {
         },
         /** 提交按钮 */
         submitForm() {
-            this.btnLoading = true;
-            let data = {
-                ...this.form,
-                dayMroPatrolStandardCheckList: [...this.standardList1] || [],
-                preMroPatrolStandardCheckList: [...this.standardList2] || [],
-                fullMroPatrolStandardCheckList: [...this.standardList3] || [],
-            }
-            if (this.standardId != '' && this.standardId) {
-                data.standardStatus = 0;
-                updateStandard(data).then(response => {
-                    this.$modal.msgSuccess("修改成功");
-                    this.goback()
-                }).catch((err) => {
-                    this.btnLoading = false;
-                });
-            } else {
-                addStandard(data).then(response => {
-                    this.$modal.msgSuccess("新增成功");
-                    // this.getList();
-                    this.goback()
-                }).catch((err) => {
-                    this.btnLoading = false;
-                });
-            }
+            let that = this;
+            this.$refs['form'].validate((valid) => {
+                if (valid) {
+                    that.btnLoading = true;
+                    let data = {
+                        ...that.form,
+                        dayMroPatrolStandardCheckList: [...that.standardList1] || [],
+                        preMroPatrolStandardCheckList: [...that.standardList2] || [],
+                        fullMroPatrolStandardCheckList: [...that.standardList3] || [],
+                    }
+                    if (that.standardId != '' && that.standardId) {
+                        data.standardStatus = 0;
+
+                        updateStandard(data).then(response => {
+                            that.$modal.msgSuccess("修改成功");
+                            that.goback()
+                        }).catch((err) => {
+                            that.btnLoading = false;
+                        });
+                    } else {
+                        addStandard(data).then(response => {
+                            that.$modal.msgSuccess("新增成功");
+                            // this.getList();
+                            that.goback()
+                        }).catch((err) => {
+                            that.btnLoading = false;
+                        });
+                    }
+                }
+            })
         },
         handleSelectionChange() { },
         findName(options, value) {
@@ -455,15 +489,15 @@ export default {
         },
         UpperFun(e, quotaLower) {
             console.log(e)
-            if(e.target.value - quotaLower<0){
+            if (e.target.value - quotaLower < 0) {
                 e.target.value = quotaLower;
-                this.standardList.splice(1,0)
+                this.standardList.splice(1, 0)
             }
         },
         LowerFun(event, quotaUpper) {
-            if(event.target.value - quotaUpper>0){
+            if (event.target.value - quotaUpper > 0) {
                 event.target.value = quotaUpper;
-                this.standardList.splice(1,0)
+                this.standardList.splice(1, 0)
             }
         }
     }
@@ -519,5 +553,6 @@ export default {
     font-size: 18px;
     background: rgba(0, 116, 217, 0.08);
     justify-content: space-between;
-}</style>
+}
+</style>
           

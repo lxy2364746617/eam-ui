@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
         <div class="title">巡点检路线名称</div>
-        <el-form ref="form" :model="form" label-width="140px" size="small" style="margin: 10px auto;">
+        <el-form ref="form" :model="form" :rules="rules" label-width="140px" size="small" style="margin: 10px auto;">
             <el-row :gutter="10" style="padding: 0 20px;">
                 <el-col :span="8">
                     <el-form-item label="路线编码" prop="lineCode">
@@ -147,7 +147,16 @@ export default {
             title: "关键点检测",
             plineList: [],
             selectArr: [],
-            sortable: null
+            sortable: null,
+            // 表单校验
+            rules: {
+                lineName: [
+                    { required: true, message: '路线名称不能为空', trigger: 'blur' },
+                ],
+                lineStatus: [
+                    { required: true, message: '状态不能为空', trigger: 'blur' },
+                ],
+            },
         };
     },
     mounted() {
@@ -157,7 +166,7 @@ export default {
                 const targetRow = this.lineList.splice(e.oldIndex, 1)[0];
                 this.lineList.splice(e.newIndex, 0, targetRow);
                 let dragId = this.lineList[e.newIndex].deviceCode;//拖动行的id 
-                let oneId,twoId //拖动行的前一行 
+                let oneId, twoId //拖动行的前一行 
                 if (this.lineList[e.newIndex - 1]) { oneId = this.lineList[e.newIndex - 1].id; } else { oneId = "" } //拖动行的后一行 
                 if (this.lineList[e.newIndex + 1]) { twoId = this.lineList[e.newIndex + 1].id; } else { twoId = "" }
                 console.log("拖动行：" + dragId); console.log("前一行：" + oneId); console.log("后一行：" + twoId); //然后就可以发送请求了...... 
@@ -234,29 +243,34 @@ export default {
         },
         /** 提交按钮 */
         submitForm() {
-            this.btnLoading = true;
-            let data = {
-                ...this.form,
-                mroPatrolLineArchivesList: this.lineList.map(item => {
-                    return { deviceId: item.deviceId }
-                }),
-            }
-            if (this.lineId != '' && this.lineId) {
-                updatePline(data).then(response => {
-                    this.$modal.msgSuccess("修改成功");
-                    this.goback()
-                }).catch((err) => {
-                    this.btnLoading = false;
-                });
-            } else {
-                addPline(data).then(response => {
-                    this.$modal.msgSuccess("新增成功");
-                    // this.getList();
-                    this.goback()
-                }).catch((err) => {
-                    this.btnLoading = false;
-                });
-            }
+            let that = this;
+            this.$refs['form'].validate((valid) => {
+                if (valid) {
+                    that.btnLoading = true;
+                    let data = {
+                        ...that.form,
+                        mroPatrolLineArchivesList: that.lineList.map(item => {
+                            return { deviceId: item.deviceId }
+                        }),
+                    }
+                    if (that.lineId != '' && that.lineId) {
+                        updatePline(data).then(response => {
+                            that.$modal.msgSuccess("修改成功");
+                            that.goback()
+                        }).catch((err) => {
+                            that.btnLoading = false;
+                        });
+                    } else {
+                        addPline(data).then(response => {
+                            that.$modal.msgSuccess("新增成功");
+                            // this.getList();
+                            that.goback()
+                        }).catch((err) => {
+                            that.btnLoading = false;
+                        });
+                    }
+                }
+            })
         },
         handleSelectionChange(selection) {
             this.selectArr = selection;

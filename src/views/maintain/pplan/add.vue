@@ -1,8 +1,8 @@
 <template>
     <div class="app-container">
-        <div class="title">计划信息</div>
-        <el-form ref="form" :model="form" label-width="140px" size="small" style="margin: 10px auto;">
-            <el-row :gutter="10" style="padding: 0 40px;">
+        <el-form ref="form" :model="form" :rules="rules" label-width="140px" size="small" style="">
+            <div class="title">计划信息</div>
+            <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                 <el-col :span="12">
                     <el-form-item label="巡点检计划编码" prop="planCode">
                         <el-input v-model="form.planCode" placeholder="请输入路线编码" disabled />
@@ -62,10 +62,8 @@
                         <el-input v-model="form.remark" placeholder="请输入备注" />
                     </el-form-item></el-col>
             </el-row>
-        </el-form>
-        <div class="title">人员配置</div>
-        <el-form ref="form2" :model="form" label-width="140px" size="small" style="margin: 10px auto;">
-            <el-row :gutter="10" style="padding: 0 40px;">
+            <div class="title">人员配置</div>
+            <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                 <el-col :span="8">
                     <el-form-item label="巡点检班组" prop="groupId">
                         <el-input v-model="form.groupId" placeholder="请输入巡点检班组" />
@@ -97,7 +95,8 @@
             <el-button type="text" icon="el-icon-plus" @click="AddFile" v-hasPermi="['equipment:book:add']">上传</el-button>
         </div>
 
-        <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false" style="margin-top:20px">
+        <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
+            style="margin-top:20px">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" icon="el-icon-view" @click="downloadFile(scope.row)"
                     v-hasPermi="['equipment:book:edit']">下载</el-button>
@@ -281,7 +280,46 @@ export default {
             fileList: [],
             filedrawer: false,
             fileType: ['.xlsx'],
-            fileResourceList:[]
+            fileResourceList: [],
+            // 表单校验
+            rules: {
+                planName: [
+                    { required: true, message: '巡点检计划名称不能为空', trigger: 'blur' },
+                ],
+                lineStatus: [
+                    { required: true, message: '计划状态不能为空', trigger: 'blur' },
+                ],
+                itemType: [
+                    { required: true, message: '巡点检类型不能为空', trigger: 'blur' },
+                ],
+                planCycle: [
+                    { required: true, message: '巡点检周期不能为空', trigger: 'blur' },
+                ],
+                planCycleType: [
+                    { required: true, message: '巡点检周期类别不能为空', trigger: 'blur' },
+                ],
+                planBeginTime: [
+                    { required: true, message: '计划开始时间不能为空', trigger: 'blur' },
+                ],
+                planEndTime: [
+                    { required: true, message: '计划结束时间不能为空', trigger: 'blur' },
+                ],
+                thisExecuteTime: [
+                    { required: true, message: '本次执行日期不能为空', trigger: 'blur' },
+                ],
+                nextExecuteTime: [
+                    { required: true, message: '下次执行日期不能为空', trigger: 'blur' },
+                ],
+                groupId: [
+                    { required: true, message: '巡点检班组不能为空', trigger: 'blur' },
+                ],
+                executor: [
+                    { required: true, message: '巡点检执行人日期不能为空', trigger: 'blur' },
+                ],
+                director: [
+                    { required: true, message: '巡点检负责人不能为空', trigger: 'blur' },
+                ],
+            },
         };
     },
     created() {
@@ -307,10 +345,10 @@ export default {
         getDetails(queryParams) {
             this.loading = true;
             getPplan(queryParams).then(response => {
-                let { mroPatrolPlanLineList,fileResourceList, ...other } = response.data;
+                let { mroPatrolPlanLineList, fileResourceList, ...other } = response.data;
                 this.form = other;
                 this.plineList = mroPatrolPlanLineList || [];
-                this.fileResourceList=fileResourceList||[];
+                this.fileResourceList = fileResourceList || [];
                 this.loading = false;
             }).catch(() => {
                 this.loading = false;
@@ -348,30 +386,35 @@ export default {
         },
         /** 提交按钮 */
         submitForm() {
-            this.btnLoading = true;
-            let data = {
-                ...this.form,
-                mroPatrolPlanLineList: this.plineList.map(item => {
-                    return { lineId: item.lineId, isPhoto: item.isPhoto }
-                }),
-                fileResourceList:this.fileResourceList
-            }
-            if (this.planId != '' && this.planId) {
-                updatePplan(data).then(response => {
-                    this.$modal.msgSuccess("修改成功");
-                    this.goback()
-                }).catch((err) => {
-                    this.btnLoading = false;
-                });
-            } else {
-                addPplan(data).then(response => {
-                    this.$modal.msgSuccess("新增成功");
-                    // this.getList();
-                    this.goback()
-                }).catch((err) => {
-                    this.btnLoading = false;
-                });
-            }
+            let that = this;
+            that.$refs['form'].validate((valid) => {
+                if (valid) {
+                    that.btnLoading = true;
+                    let data = {
+                        ...that.form,
+                        mroPatrolPlanLineList: that.plineList.map(item => {
+                            return { lineId: item.lineId, isPhoto: item.isPhoto }
+                        }),
+                        fileResourceList: that.fileResourceList
+                    }
+                    if (that.planId != '' && that.planId) {
+                        updatePplan(data).then(response => {
+                            that.$modal.msgSuccess("修改成功");
+                            that.goback()
+                        }).catch((err) => {
+                            that.btnLoading = false;
+                        });
+                    } else {
+                        addPplan(data).then(response => {
+                            that.$modal.msgSuccess("新增成功");
+                            // this.getList();
+                            that.goback()
+                        }).catch((err) => {
+                            that.btnLoading = false;
+                        });
+                    }
+                }
+            })
         },
         handleSelectionChange(selection) {
             this.selectArr = selection;
@@ -437,19 +480,19 @@ export default {
             this.filedrawer = true;
         },
         uploadChange2(val) {
-            this.fileResourceList=this.fileResourceList.concat(val)
-            this.fileList=[];
-            this.filedrawer = false 
+            this.fileResourceList = this.fileResourceList.concat(val)
+            this.fileList = [];
+            this.filedrawer = false
         },
         /** 删除按钮操作 */
         handleDelete2(row) {
             var name = row.originalFileName;
-            let that=this;
+            let that = this;
             this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function () {
                 return delResource(id);
             }).then(() => {
-                that.fileResourceList.forEach((element,index) => {
-                    if(element.name == row.name){
+                that.fileResourceList.forEach((element, index) => {
+                    if (element.name == row.name) {
                         that.fileResourceList.splice(index, 1);
                     }
                 });
