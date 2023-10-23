@@ -24,7 +24,8 @@
             <el-button type="text" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
-        <el-table v-loading="loading" :data="lineList" @selection-change="handleSelectionChange" ref="queryTable">
+        <el-table v-loading="loading" :data="lineList" @selection-change="handleSelectionChange" ref="queryTable"
+            row-key="deviceCode">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column label="序号" align="center" type="index" />
             <el-table-column label="设备编码" align="center" prop="deviceCode" min-width="150" />
@@ -67,7 +68,8 @@
 
         <!-- 添加或修改设备平台_表单模板对话框 -->
         <el-drawer title="选择设备" :visible.sync="form.choosedrawer" direction="rtl" size="80%" :wrapperClosable="false">
-            <parentdevice :isChoose="false" @submitRadio="submitRadio2" @close="form.choosedrawer = false"  :formData="form" v-if="form.choosedrawer">
+            <parentdevice :isChoose="false" @submitRadio="submitRadio2" @close="form.choosedrawer = false" :formData="form"
+                v-if="form.choosedrawer">
             </parentdevice>
         </el-drawer>
 
@@ -90,6 +92,7 @@ import { getPline, addPline, updatePline, findByDeviceId, findByDeviceIdAndItemT
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import parentdevice from '@/views/device/book/device'
+import Sortable from 'sortablejs'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_device_state', 'mro_s_check_status'],
@@ -143,8 +146,23 @@ export default {
             // 弹出层标题
             title: "关键点检测",
             plineList: [],
-            selectArr: []
+            selectArr: [],
+            sortable: null
         };
+    },
+    mounted() {
+        const el = this.$refs.queryTable.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0];
+        this.sortable = Sortable.create(el, {
+            onEnd: e => { //onEnd是结束拖拽时触发，onUpdate是列表内元素顺序更新的时候触发，更多请看文末配置项 //e.oldIndex为拖动一行原来的位置，e.newIndex为拖动后新的位置 
+                const targetRow = this.lineList.splice(e.oldIndex, 1)[0];
+                this.lineList.splice(e.newIndex, 0, targetRow);
+                let dragId = this.lineList[e.newIndex].deviceCode;//拖动行的id 
+                let oneId,twoId //拖动行的前一行 
+                if (this.lineList[e.newIndex - 1]) { oneId = this.lineList[e.newIndex - 1].id; } else { oneId = "" } //拖动行的后一行 
+                if (this.lineList[e.newIndex + 1]) { twoId = this.lineList[e.newIndex + 1].id; } else { twoId = "" }
+                console.log("拖动行：" + dragId); console.log("前一行：" + oneId); console.log("后一行：" + twoId); //然后就可以发送请求了...... 
+            }
+        })
     },
     created() {
         this.disabled = this.$route.query.d == 'true';
@@ -175,9 +193,9 @@ export default {
             getPline(queryParams).then(response => {
                 this.form = response.data;
                 // if (mroPatrolLineArchivesList.length > 0) {
-                    larchivesList({ lineId:this.form.lineId} ).then(res => {
-                        this.lineList = res.data || [];
-                    })
+                larchivesList({ lineId: this.form.lineId }).then(res => {
+                    this.lineList = res.data || [];
+                })
                 // }
                 this.loading = false;
             }).catch(() => {

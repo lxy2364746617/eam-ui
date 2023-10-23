@@ -23,7 +23,7 @@
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip text-center" slot="tip">
-          <div class="el-upload__tip" slot="tip">
+          <div class="el-upload__tip" slot="tip"  v-if="isUpdate">
             <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的用户数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
@@ -53,6 +53,10 @@ export default {
       default: '',
       type: String
     },
+    isUpdate:{
+      default: true,
+      type: Boolean
+    }
   },
   computed:{
     uploadConfig() {
@@ -91,6 +95,9 @@ export default {
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
       this.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
+      // console.log(response)
+      // console.log(file)
+      // console.log(fileList)
       this.$emit('handleFileSuccess')
     },
     /** 下载模板操作 */

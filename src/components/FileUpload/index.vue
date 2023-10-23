@@ -22,14 +22,12 @@
       </span>
     </el-upload>
     <!-- 文件列表 -->
-    <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
-      <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
-        <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
+    <transition-group class="el-upload-list" name="el-fade-in-linear" tag="ul">
+      <li :key="file.url" class="el-upload-list__item" v-for="(file, index) in fileList">
+        <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank" class="fileaName">
           <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
         </el-link>
-        <div class="ele-upload-list__item-content-action">
-          <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
-        </div>
+        <el-button @click="handleDelete(index)" type="text" class="btn">删除</el-button>
       </li>
     </transition-group>
   </div>
@@ -219,24 +217,31 @@ export default {
   width: 100%;
 }
 
-.upload-file-list .el-upload-list__item {
+.el-upload-list .el-upload-list__item {
   border: 1px solid #e4e7ed;
   line-height: 2;
   margin-bottom: 10px;
   position: relative;
-}
-
-.upload-file-list .ele-upload-list__item-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: inherit;
-}
- .ele-upload-list__item-content-action .el-link {
-  margin-right: 10px;
-  margin-left: 0;
+  padding: 0 10px;
 }
 
+.el-upload-list__item .fileaName  {
+  margin-left: 0;
+  overflow: hidden;
+}
+
+::v-deep .fileaName .el-link{
+  justify-content: left;
+}
+
+.el-upload-list__item .btn{
+  flex-shrink: 0;
+  margin-left: 10px;
+}
 ::v-deep .el-upload--picture-card {
   line-height: 46px;
   width: 100%;

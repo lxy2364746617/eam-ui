@@ -34,7 +34,7 @@
 
     <!-- 导入 -->
     <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/maintain/item/importTemplate'"
-      ref="fileImport" :importUrl="'/maintain/item/importData'"></file-import>
+      ref="fileImport" :importUrl="'/maintain/item/importData'" :isUpdate="false"></file-import>
 
     <!-- 添加或修改维护计划_巡点检项目对话框 -->
     <el-drawer :title="title" :visible.sync="open" size="30%" append-to-body>
