@@ -42,3 +42,16 @@ export function delMitem(itemId) {
     method: 'delete'
   })
 }
+
+// 用户状态修改
+export function changeItemStatus(itemId, itemStatus) {
+  const data = {
+    itemId,
+    itemStatus,
+  };
+  return request({
+    url: "/maintain/mitem/changeStatus",
+    method: "put",
+    data: data,
+  });
+}

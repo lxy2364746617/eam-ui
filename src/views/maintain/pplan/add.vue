@@ -12,7 +12,7 @@
                         <el-input v-model="form.planName" placeholder="请输入路线名称" />
                     </el-form-item></el-col>
                 <el-col :span="12">
-                    <el-form-item label="计划状态" prop="lineStatus">
+                    <el-form-item label="计划状态" prop="planStatus">
                         <el-radio-group v-model="form.planStatus">
                             <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{
                                 dict.label }}</el-radio>
@@ -27,7 +27,7 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="巡点检周期" prop="planCycle">
-                        <el-input v-model="form.planCycle" placeholder="请输入巡点检周期" />
+                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入巡点检周期"></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="巡点检周期类别" prop="planCycleType">
@@ -39,27 +39,27 @@
                 <el-col :span="12">
                     <el-form-item label="计划开始时间" prop="planBeginTime">
                         <el-date-picker clearable v-model="form.planBeginTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择计划开始时间"></el-date-picker>
+                            placeholder="请选择计划开始时间" :picker-options="startDatePicker"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划结束时间" prop="planEndTime">
                         <el-date-picker clearable v-model="form.planEndTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择计划结束时间"></el-date-picker>
+                            placeholder="请选择计划结束时间" :picker-options="endDatePicker"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="本次执行日期" prop="thisExecuteTime">
                         <el-date-picker clearable v-model="form.thisExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择本次执行日期"></el-date-picker>
+                            placeholder="请选择本次执行日期" disabled></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="下次执行日期" prop="nextExecuteTime">
                         <el-date-picker clearable v-model="form.nextExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择下次执行日期"></el-date-picker>
+                            placeholder="请选择下次执行日期" :disabled="planId != '' && planId"></el-date-picker>
                     </el-form-item></el-col>
 
-                <el-col :span="12">
+                <el-col :span="24">
                     <el-form-item label="备注" prop="remark">
-                        <el-input v-model="form.remark" placeholder="请输入备注" />
+                        <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" />
                     </el-form-item></el-col>
             </el-row>
             <div class="title">人员配置</div>
@@ -85,25 +85,25 @@
         <jm-table :tableData.sync="plineList" ref="jmtable1" :columns="columns1" :showSearch="false"
             @switchchange="handleStatusChange" style="margin-top:20px">
             <template #end_handle="scope">
-                <el-button size="mini" type="text" icon="el-icon-view" @click="showLine(scope.row)"
+                <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:pline:remove']">查看</el-button>
-                <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope)"
+                <el-button size="mini" type="text" @click="handleDelete(scope)"
                     v-hasPermi="['maintain:pline:remove']">删除</el-button>
             </template>
         </jm-table>
-        <div class="title">关联文档
-            <el-button type="text" icon="el-icon-plus" @click="AddFile" v-hasPermi="['equipment:book:add']">上传</el-button>
+        <div class="title" style="margin-top: 20px;">关联文档
+            <el-button type="text" @click="AddFile" v-hasPermi="['equipment:book:add']">上传</el-button>
         </div>
 
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
             style="margin-top:20px">
             <template #end_handle="scope">
-                <el-button size="mini" type="text" icon="el-icon-view" @click="downloadFile(scope.row)"
+                <el-button size="mini" type="text" @click="downloadFile(scope.row)"
                     v-hasPermi="['equipment:book:edit']">下载</el-button>
-                <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete2(scope.row)"
+                <el-button size="mini" type="text" @click="handleDelete2(scope.row)"
                     v-hasPermi="['equipment:book:remove']">删除</el-button>
-                <!-- <el-button size="mini" type="text" icon="el-icon-document-add" v-if="fileType.includes(scope.row.fileType)"
-                    @click="handlePreview(scope.row)" v-hasPermi="['equipment:book:edit']">预览</el-button> -->
+                <el-button size="mini" type="text" v-if="fileType.includes(scope.row.fileType)"
+                    @click="handlePreview(scope.row)" v-hasPermi="['equipment:book:edit']">预览</el-button>
             </template>
         </jm-table>
 
@@ -165,8 +165,8 @@
         <div style="width: 100%; height: 68px;"></div>
         <div
             style="position: absolute;bottom: 0px;width: calc(100% - 40px);background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;z-index: 2;">
+            <el-button size="mini" @click="submitForm" type="primary" :loading="btnLoading">提交</el-button>
             <el-button size="mini" @click="goback">取消</el-button>
-            <el-button size="mini" @click="submitForm" type="primary" :loading="btnLoading">确定</el-button>
         </div>
     </div>
 </template>
@@ -188,13 +188,13 @@ export default {
                 { label: '巡点检路线名称', prop: 'lineName', class: true },
                 { label: '巡点检设备数量', prop: 'deviceNum', },
                 { label: '日常巡点检', prop: 'sCheckNum', },
-                { label: '是否拍照', prop: 'isPhoto', formType: 'switch', options: this.dict.type.mro_is_photo, span: 24, },
+                { label: '是否拍照', prop: 'isPhoto', formType: 'radioSelect', options: this.dict.type.mro_is_photo, span: 18, },
             ]
         },
         columns2() {
             return [
-                { label: '文件名', prop: 'originalFileName', class: true },
-                { label: '创建时间', prop: 'createTime', formType: 'date' },
+                { label: '文件名', prop: 'originalFileName' },
+                { label: '创建时间', prop: 'createTime', },
                 { label: '创建人', prop: 'createBy', },
                 { label: '文件大小', prop: 'fileSize', },
             ]
@@ -279,14 +279,14 @@ export default {
             //文档
             fileList: [],
             filedrawer: false,
-            fileType: ['.xlsx'],
+            fileType: ['png', 'jpg', 'bmp', 'jpeg', 'pdf', 'gif'],
             fileResourceList: [],
             // 表单校验
             rules: {
                 planName: [
                     { required: true, message: '巡点检计划名称不能为空', trigger: 'blur' },
                 ],
-                lineStatus: [
+                planStatus: [
                     { required: true, message: '计划状态不能为空', trigger: 'blur' },
                 ],
                 itemType: [
@@ -304,9 +304,9 @@ export default {
                 planEndTime: [
                     { required: true, message: '计划结束时间不能为空', trigger: 'blur' },
                 ],
-                thisExecuteTime: [
-                    { required: true, message: '本次执行日期不能为空', trigger: 'blur' },
-                ],
+                // thisExecuteTime: [
+                //     { required: true, message: '本次执行日期不能为空', trigger: 'blur' },
+                // ],
                 nextExecuteTime: [
                     { required: true, message: '下次执行日期不能为空', trigger: 'blur' },
                 ],
@@ -320,6 +320,8 @@ export default {
                     { required: true, message: '巡点检负责人不能为空', trigger: 'blur' },
                 ],
             },
+            startDatePicker: this.beginDate(),
+            endDatePicker: this.processDate(),
         };
     },
     created() {
@@ -333,6 +335,40 @@ export default {
         }
     },
     methods: {
+        beginDate() {
+            const self = this;
+            return {
+                disabledDate(time) {
+                    if (
+                        self.form.planEndTime != "" &&
+                        self.form.planEndTime != null &&
+                        self.form.planEndTime != undefined
+                    ) {
+                        //如果结束时间不为空，则小于结束时间
+                        return new Date(self.form.planEndTime).getTime() < time.getTime();
+                    } else {
+                        // return time.getTime() > Date.now()//开始时间不选时，结束时间最大值小于等于当天
+                    }
+                },
+            };
+        },
+        processDate() {
+            const self = this;
+            return {
+                disabledDate(time) {
+                    if (
+                        self.form.planBeginTime != "" &&
+                        self.form.planBeginTime != null &&
+                        self.form.planBeginTime != undefined
+                    ) {
+                        //如果开始时间不为空，则结束时间大于开始时间
+                        return new Date(self.form.planBeginTime).getTime() > time.getTime();
+                    } else {
+                        // return time.getTime() > Date.now()//开始时间不选时，结束时间最大值小于等于当天
+                    }
+                },
+            };
+        },
         submitRadio2(row) {
             let row1 = row.map(item => {
                 item.isPhoto = 'Y';
@@ -398,6 +434,7 @@ export default {
                         fileResourceList: that.fileResourceList
                     }
                     if (that.planId != '' && that.planId) {
+                        data.planId = that.planId;
                         updatePplan(data).then(response => {
                             that.$modal.msgSuccess("修改成功");
                             that.goback()
@@ -492,7 +529,7 @@ export default {
                 return delResource(id);
             }).then(() => {
                 that.fileResourceList.forEach((element, index) => {
-                    if (element.name == row.name) {
+                    if (element.originalFileName == row.originalFileName) {
                         that.fileResourceList.splice(index, 1);
                     }
                 });
@@ -501,7 +538,7 @@ export default {
         downloadFile(row) {
             this.download('common/download', {
                 fileName: row.fileName
-            }, row.originalFileName)
+            }, row.originalFileName,)
         },
         handlePreview(row) {
             window.open(process.env.VUE_APP_BASE_API + row.fileName)
@@ -528,6 +565,27 @@ export default {
 
     .el-tabs__nav-wrap::after {
         top: 0;
+    }
+
+    .el-radio__inner {
+        border-radius: 2px;
+    }
+
+    .el-radio__input.is-checked .el-radio__inner::after {
+        content: "";
+        width: 8px;
+        height: 3px;
+        border: 1px solid white;
+        border-top: transparent;
+        border-right: transparent;
+        text-align: center;
+        display: block;
+        position: absolute;
+        top: 3px;
+        left: 2px;
+        transform: rotate(-45deg);
+        border-radius: 0px;
+        background: none;
     }
 }
 

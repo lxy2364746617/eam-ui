@@ -56,99 +56,57 @@
                 ref="jmform" :disabled="disabled">
             </jm-form> -->
             <el-tabs v-model="activeName" @tab-click="handleClick" stretch>
-                <el-tab-pane label="日常点检" name="first"></el-tab-pane>
-                <el-tab-pane label="精密点检" name="second"></el-tab-pane>
-                <el-tab-pane label="专职点检" name="third"></el-tab-pane>
+                <el-tab-pane label="日常保养" name="first"></el-tab-pane>
+                <el-tab-pane label="一级保养" name="second"></el-tab-pane>
+                <el-tab-pane label="二级保养" name="third"></el-tab-pane>
+                <el-tab-pane label="常规润滑" name="fourth"></el-tab-pane>
             </el-tabs>
-            <div class="title">关联巡点检项
+            <div class="title">关联保养检修项
                 <el-button type="text" icon="el-icon-edit" @click="handleAdd">添加</el-button>
             </div>
             <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column label="序号" align="center" type="index" />
-                <el-table-column label="巡点检项目编码" align="center" prop="itemCode" min-width="150" />
-                <el-table-column label="部件" align="center" prop="partsName" min-width="200">
+                <el-table-column label="部件" align="center" prop="partsName">
                     <template slot-scope="scope">
                         <el-input v-model="scope.row.partsName" placeholder="请输入部件" v-if="scope.row.editType" />
                         <span v-else v-html="scope.row.partsName"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检内容" align="center" prop="itemContent" min-width="150" />
-                <el-table-column label="巡点检点数" align="center" prop="checkNum" min-width="150">
+                <el-table-column label="保养项编码" align="center" prop="itemCode" min-width="150" />
+                <el-table-column label="保养项名称" align="center" prop="itemName" min-width="150" />
+                <el-table-column label="保养部位" align="center" prop="itemArea" min-width="150" />
+                <el-table-column label="保养内容" align="center" prop="itemContent" min-width="150" />
+                <el-table-column label="周期" align="center" prop="checkCycle" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.checkNum" placeholder="请输入巡点检点数" v-if="scope.row.editType" />
-                        <span v-else v-html="scope.row.checkNum"></span>
+                        <el-input type="number" v-model="scope.row.checkCycle" placeholder="请输入周期"
+                            v-if="scope.row.editType" />
+                        <span v-else v-html="scope.row.checkCycle"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检状态" align="center" prop="checkStatus" min-width="150">
+                <el-table-column label="保养周期类别" align="center" prop="checkCycleType" min-width="150">
                     <template slot-scope="scope">
-                        <el-select v-if="scope.row.editType" v-model="scope.row.checkStatus" placeholder="请选择巡点检结果类型"
+                        <el-select v-if="scope.row.editType" v-model="scope.row.checkCycleType" placeholder="请选择保养周期类别"
                             clearable>
-                            <el-option v-for="dict in dict.type.mro_s_check_status" :key="dict.value" :label="dict.label"
+                            <el-option v-for="dict in dict.type.mro_m_cycle_type" :key="dict.value" :label="dict.label"
                                 :value="dict.value" />
                         </el-select>
-                        <span v-else v-html="findName(dict.type.mro_s_check_status, scope.row.checkStatus)"></span>
+                        <span v-else v-html="findName(dict.type.mro_m_cycle_type, scope.row.checkCycleType)"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检标准" align="center" prop="checkStandard" min-width="150">
+                <el-table-column label="保养标准" align="center" prop="checkStandard" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.checkStandard" placeholder="请输入巡点检标准" v-if="scope.row.editType" />
+                        <el-input v-model="scope.row.checkStandard" placeholder="请输入保养标准"
+                            v-if="scope.row.editType" />
                         <span v-else v-html="scope.row.checkStandard"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检方法" align="center" prop="itemMethod" min-width="150" />
-                <el-table-column label="巡点检结果类型" align="center" prop="checkResType" min-width="150">
+                <el-table-column label="保养工具" align="center" prop="itemTool" min-width="150" />
+                <el-table-column label="保养点数" align="center" prop="checkNum" min-width="150">
                     <template slot-scope="scope">
-                        <el-select v-if="scope.row.editType" v-model="scope.row.checkResType" placeholder="请选择巡点检结果类型"
-                            clearable>
-                            <el-option v-for="dict in dict.type.mro_s_check_res_type" :key="dict.value" :label="dict.label"
-                                :value="dict.value" />
-                        </el-select>
-                        <span v-else v-html="findName(dict.type.mro_s_check_res_type, scope.row.checkResType)"></span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="巡点检结果设置" align="center" prop="checkResult" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '模拟'">
-                            <el-input v-model="scope.row.checkResult" placeholder="请输入巡点检标准" v-if="scope.row.editType" />
-                            <span v-else v-html="scope.row.checkResult"></span>
-                        </template>
-                    </template>
-                </el-table-column>
-                <el-table-column label="定量值" align="center" prop="quotaValue" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '数字'">
-                            <el-input v-model="scope.row.quotaValue" type="number" placeholder="请输入定量值"
-                                v-if="scope.row.editType" />
-                            <span v-else v-html="scope.row.quotaValue"></span>
-                        </template>
-
-                    </template>
-                </el-table-column>
-                <el-table-column label="定量上限" align="center" prop="quotaUpper" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '数字'">
-                            <el-input v-model="scope.row.quotaUpper" type="number" placeholder="请输入定量上限"
-                                v-if="scope.row.editType" @blur="UpperFun($event, scope.row.quotaLower)" />
-                            <span v-else v-html="scope.row.quotaUpper"></span>
-                        </template>
-                    </template>
-                </el-table-column>
-                <el-table-column label="定量下限" align="center" prop="quotaLower" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '数字'">
-                            <el-input v-model="scope.row.quotaLower" type="number" placeholder="请输入定量下限"
-                                v-if="scope.row.editType" @blur="LowerFun($event, scope.row.quotaUpper)" />
-                            <span v-else v-html="scope.row.quotaLower"></span>
-                        </template>
-                    </template>
-                </el-table-column>
-                <el-table-column label="定量单位" align="center" prop="quotaUnit" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '数字'">
-                            <el-input v-model="scope.row.quotaUnit" placeholder="请输入定量下限" v-if="scope.row.editType" />
-                            <span v-else v-html="scope.row.quotaLower"></span>
-                        </template>
+                        <el-input type="number" v-model="scope.row.checkNum" placeholder="请输入保养点数"
+                            v-if="scope.row.editType" />
+                        <span v-else v-html="scope.row.checkNum"></span>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
@@ -184,17 +142,17 @@
 </template>
           
 <script>
-import { getStandard, addStandard, updateStandard } from "@/api/maintain/standard";
+import { getMstandard, addMstandard, updateMstandard } from "@/api/maintain/mstandard";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 import parentdevice from '@/views/device/book/device'
-import pointItem from '@/views/maintain/standard/pointItem'
+import pointItem from '@/views/maintain/mstandard/pointItem'
 import { number } from 'echarts';
 export default {
     name: "Template",
-    dicts: ['sys_normal_disable', 'em_is_special', 'mro_s_check_res_type', 'mro_s_check_status'],
+    dicts: ['sys_normal_disable', 'em_is_special', 'mro_m_cycle_type'],
     components: { JmTable, JmForm, parentdevice, pointItem },
     computed: {
         // 列信息
@@ -240,6 +198,9 @@ export default {
                     break;
                 case "third":
                     this.standardList3 = [...newData]
+                    break;
+                case "fourth":
+                    this.standardList4 = [...newData]
                     break;
                 default:
                     break;
@@ -287,6 +248,7 @@ export default {
             standardList1: [],
             standardList2: [],
             standardList3: [],
+            standardList4: [],
             //选择关键点
             pointItemForm: {
                 drawer: false,
@@ -385,15 +347,21 @@ export default {
         },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
-            getStandard(queryParams).then(response => {
-                let { dayMroPatrolStandardCheckList, preMroPatrolStandardCheckList, fullMroPatrolStandardCheckList, ...other } = response.data
+            getMstandard(queryParams).then(response => {
+                let { dayMroMaintainStandardCheckList, oMroMaintainStandardCheckList, tMroMaintainStandardCheckList,cMroMaintainStandardCheckList, ...other } = response.data
                 this.activeName = 'first';
-                this.standardList = dayMroPatrolStandardCheckList || [];
-                this.standardList1 = dayMroPatrolStandardCheckList || [];
-                this.standardList2 = preMroPatrolStandardCheckList || [];
-                this.standardList3 = fullMroPatrolStandardCheckList || [];
+                this.standardList = dayMroMaintainStandardCheckList || [];
+                this.standardList1 = dayMroMaintainStandardCheckList || [];
+                this.standardList2 = oMroMaintainStandardCheckList || [];
+                this.standardList3 = tMroMaintainStandardCheckList || [];
+                this.standardList4 = cMroMaintainStandardCheckList || [];
                 this.form = other;
             });
+        },
+        /** 重置按钮操作 */
+        resetQuery() {
+            this.resetForm("queryForm");
+            this.handleQuery();
         },
         /** 新增按钮操作 */
         handleAdd() {
@@ -447,20 +415,21 @@ export default {
                     that.btnLoading = true;
                     let data = {
                         ...that.form,
-                        dayMroPatrolStandardCheckList: [...that.standardList1] || [],
-                        preMroPatrolStandardCheckList: [...that.standardList2] || [],
-                        fullMroPatrolStandardCheckList: [...that.standardList3] || [],
+                        dayMroMaintainStandardCheckList: [...that.standardList1] || [],
+                        oMroMaintainStandardCheckList: [...that.standardList2] || [],
+                        tMroMaintainStandardCheckList: [...that.standardList3] || [],
+                        cMroMaintainStandardCheckList: [...that.standardList4] || [],
                     }
                     if (that.standardId != '' && that.standardId) {
-                        data.standardId=that.standardId;
-                        updateStandard(data).then(response => {
+                        data.standardId = that.standardId;
+                        updateMstandard(data).then(response => {
                             that.$modal.msgSuccess("修改成功");
                             that.goback()
                         }).catch((err) => {
                             that.btnLoading = false;
                         });
                     } else {
-                        addStandard(data).then(response => {
+                        addMstandard(data).then(response => {
                             data.standardStatus = 0;
                             that.$modal.msgSuccess("新增成功");
                             // this.getList();
@@ -494,7 +463,7 @@ export default {
                 event.target.value = quotaUpper;
                 this.standardList.splice(1, 0)
             }
-        }
+        },
     }
 };
 </script>

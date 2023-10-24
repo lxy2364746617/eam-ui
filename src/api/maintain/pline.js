@@ -70,3 +70,17 @@ export function larchivesList(query) {
     params: query
   })
 }
+
+
+// 用户状态修改
+export function changeItemStatus(lineId, lineStatus) {
+  const data = {
+    lineId,
+    lineStatus,
+  };
+  return request({
+    url: "/maintain/pline/changeStatus",
+    method: "put",
+    data: data,
+  });
+}

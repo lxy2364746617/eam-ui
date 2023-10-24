@@ -42,3 +42,45 @@ export function delMline(lineId) {
     method: 'delete'
   })
 }
+
+
+
+// 获取设备详情
+export function findByDeviceId(data) {
+  return request({
+    url: '/maintain/mline/findByDeviceId/',
+    method: 'post',
+    data: data
+  })
+}
+
+// 根据设备ID获取点检项
+export function findByDeviceIdAndItemType(query) {
+  return request({
+    url: '/maintain/marchives/findByDeviceIdAndItemType/',
+    method: 'get',
+    params: query
+  })
+}
+
+//查询巡点检路设备档案关联列表
+export function larchivesList(query) {
+  return request({
+    url: '/maintain/marchives/list/',
+    params: query
+  })
+}
+
+
+// 用户状态修改
+export function changeItemStatus(lineId, lineStatus) {
+  const data = {
+    lineId,
+    lineStatus,
+  };
+  return request({
+    url: "/maintain/mline/changeStatus",
+    method: "put",
+    data: data,
+  });
+}

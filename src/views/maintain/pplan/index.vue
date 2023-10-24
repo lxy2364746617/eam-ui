@@ -4,19 +4,19 @@
       ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+          <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:pplan:add']">新增</el-button>
         </el-col>
         <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-download" size="mini" @click="handleExport"
+          <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
             v-hasPermi="['maintain:pplan:export']">导出</el-button>
         </el-col>
       </template>
       <template #end_handle="scope">
         <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-            v-hasPermi="['maintain:pplan:edit']">修改</el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-            v-hasPermi="['maintain:pplan:remove']">删除</el-button></template>
+          v-hasPermi="['maintain:pplan:edit']">编辑</el-button>
+        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+          v-hasPermi="['maintain:pplan:remove']">删除</el-button></template>
     </jm-table>
   </div>
 </template>
@@ -28,33 +28,34 @@ import {
   delPplan,
   addPplan,
   updatePplan,
+  changeItemStatus
 } from '@/api/maintain/pplan'
 import JmTable from '@/components/JmTable';
 export default {
-  name: 'Pplan',
+  name: "Template",
   dicts: ['mro_plan_cycle_type', 'sys_normal_disable', 'mro_item_type'],
   computed: {
     // 列信息
     columns() {
       return [
-        { label: '巡点检计划编码', prop: 'planCode' },
-        { label: '巡点检计划名称', prop: 'planName', },
+        { label: '巡点检计划编码', prop: 'planCode', class: true },
+        { label: '巡点检计划名称', prop: 'planName', class: true },
+        { label: '计划开始时间', prop: 'planBeginTime', formType: 'date' },
+        { label: '计划结束时间', prop: 'planEndTime', formType: 'date' },
         { label: '计划状态', prop: 'planStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
+        { label: '下次执行日期', prop: 'nextExecuteTime', formType: 'date' },
         { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_item_type, },
         { label: '周期', prop: 'planCycle', },
         { label: '巡点检周期类别', prop: 'planCycleType', formType: 'select', options: this.dict.type.mro_plan_cycle_type, },
-        { label: '计划开始时间', prop: 'planBeginTime', formType: 'date' },
-        { label: '计划结束时间', prop: 'planEndTime', formType: 'date' },
-        { label: '本次执行日期', prop: 'thisExecuteTime', formType: 'date' },
-        { label: '下次执行日期', prop: 'nextExecuteTime', formType: 'date' },
+        // { label: '本次执行日期', prop: 'thisExecuteTime', formType: 'date' },
         { label: '巡点检班组', prop: 'groupId', },
         { label: '巡点检执行人', prop: 'executor', },
         { label: '巡点检负责人', prop: 'director', },
         { label: '备注', prop: 'remark', },
-        { label: '创建者', prop: 'createBy', },
-        { label: '创建时间', prop: 'createTime', formType: 'date' },
-        { label: '更新者', prop: 'updateBy' },
-        { label: '更新时间', prop: 'updateTime', formType: 'date' },
+        // { label: '创建者', prop: 'createBy', },
+        // { label: '创建时间', prop: 'createTime', formType: 'date' },
+        // { label: '更新者', prop: 'updateBy' },
+        // { label: '更新时间', prop: 'updateTime', formType: 'date' },
       ]
     },
   },
@@ -124,14 +125,27 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    handleStatusChange(){},
+    handleStatusChange(event, prop, row) {
+      let text = row.planStatus === '0' ? '启用' : '停用'
+      this.$modal
+        .confirm('确认要"' + text + '""' + row.planName + '"吗？')
+        .then(function () {
+          return changeItemStatus(row.planId, row.planStatus)
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + '成功')
+        })
+        .catch(function () {
+          row.planStatus = row.planStatus === '0' ? '1' : '0'
+        })
+    },
     /** 新增按钮操作 */
     handleAdd() {
       this.$router.push({ path: '/maintain/patrol/pplan/add', query: { l: '', d: false } })
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$router.push({ path: '/maintain/patrol/pplan/add', query: { l: row.lineId, d: false } })
+      this.$router.push({ path: '/maintain/patrol/pplan/add', query: { l: row.planId, d: false, i: true } })
     },
     /** 提交按钮 */
     submitForm() {
@@ -157,7 +171,7 @@ export default {
     handleDelete(row) {
       const planIds = row.planId || this.ids
       this.$modal
-        .confirm('是否确认删除巡点检计划编号为"' + planIds + '"的数据项？')
+        .confirm('是否确认删除巡点检计划名称为"' + row.planName + '"的数据项？')
         .then(function () {
           return delPplan(planIds)
         })

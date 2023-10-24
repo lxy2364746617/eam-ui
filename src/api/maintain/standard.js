@@ -42,3 +42,16 @@ export function delStandard(standardId) {
     method: 'delete'
   })
 }
+
+// 用户状态修改
+export function changeItemStatus(standardId, standardStatus) {
+  const data = {
+    standardId,
+    standardStatus,
+  };
+  return request({
+    url: "/maintain/standard/changeStatus",
+    method: "put",
+    data: data,
+  });
+}

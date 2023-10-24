@@ -4,29 +4,29 @@
       ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+          <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:item:add']">新增</el-button>
         </el-col>
         <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-upload2" size="mini" @click="handleImport"
+          <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
             v-hasPermi="['equipment:book:add']">导入</el-button>
         </el-col>
-        <el-col :span="1.5">
-          <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+        <!-- <el-col :span="1.5">
+          <el-button type="primary" icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
             v-hasPermi="['maintain:item:edit']">修改</el-button>
-        </el-col>
+        </el-col> -->
         <!-- <el-col :span="1.5">
           <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
             v-hasPermi="['maintain:item:remove']">删除</el-button>
         </el-col> -->
-        <el-col :span="1.5">
-          <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+        <!-- <el-col :span="1.5">
+          <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
             v-hasPermi="['maintain:item:export']">导出</el-button>
-        </el-col>
+        </el-col> -->
       </template>
       <template #end_handle="scope">
         <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-          v-hasPermi="['maintain:item:edit']">修改</el-button>
+          v-hasPermi="['maintain:item:edit']">编辑</el-button>
         <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
           v-hasPermi="['maintain:item:remove']">删除</el-button>
       </template>
@@ -68,8 +68,8 @@
         </el-form-item>
       </el-form>
       <div class="dialog-footer" style="text-align:center">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">提交</el-button>
+        <el-button @click="cancel">取消</el-button>
       </div>
     </el-drawer>
   </div>
@@ -273,7 +273,7 @@ export default {
       const itemIds = row.itemId || this.ids
       this.$modal
         .confirm(
-          '是否确认删除维护计划_巡点检项目编号为"' + itemIds + '"的数据项？'
+          '是否确认删除巡点检项目编码为"' + row.itemCode + '"的数据项？'
         )
         .then(function () {
           return delItem(itemIds)

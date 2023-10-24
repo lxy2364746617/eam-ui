@@ -4,15 +4,15 @@
       :total="total" ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+          <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:standard:add']">新增</el-button>
         </el-col>
-        <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+        <!-- <el-col :span="1.5">
+          <el-button type="primary" icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
             v-hasPermi="['maintain:standard:remove']">删除</el-button>
-        </el-col>
+        </el-col> -->
         <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-download" size="mini" @click="handleExport"
+          <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
             v-hasPermi="['maintain:standard:export']">导出</el-button>
         </el-col>
       </template>
@@ -32,13 +32,14 @@ import {
   delStandard,
   addStandard,
   updateStandard,
+  changeItemStatus
 } from '@/api/maintain/standard'
 import JmTable from '@/components/JmTable';
 import JmForm from "@/components/JmForm";
 import { equipmentTree } from '@/api/equipment/category';
 import { listDept } from '@/api/system/dept';
 export default {
-  name: 'Standard',
+  name: "Template",
   dicts: ['em_is_special', 'sys_normal_disable'],
   components: { JmTable, JmForm },
   computed: {
@@ -47,8 +48,9 @@ export default {
       return [
         // { label: '序号', prop: 'standardId' },
         // { label: '设备ID', prop: 'deviceId' },
-        { label: '设备名称', prop: 'deviceName' },
-        { label: '设备编码', prop: 'deviceCode', },
+        { label: '设备编码', prop: 'deviceCode', class: true },
+        { label: '设备名称', prop: 'deviceName', },
+        { label: '规格型号', prop: 'specs', },
         {
           label: '设备类别',
           prop: 'categoryId',
@@ -56,9 +58,8 @@ export default {
           options: this.categoryOptions,
           width: 280,
         },
-        { label: '是否特种设备', prop: 'isSpecial', formType: 'select', options: this.dict.type.em_is_special, },
         { label: '功能位置', prop: 'location' },
-        { label: '规格型号', prop: 'specs', },
+        { label: '是否特种设备', prop: 'isSpecial', formType: 'select', options: this.dict.type.em_is_special, },
         {
           label: '当前使用组织', prop: 'currDeptId', formType: 'selectTree',
           options: this.deptOptions,
@@ -70,11 +71,11 @@ export default {
           width: 180,
         },
         { label: '状态', prop: 'standardStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24 },
-        { label: '备注', prop: 'remark' },
-        { label: '创建者', prop: 'createBy' },
+        // { label: '备注', prop: 'remark' },
+        { label: '创建人', prop: 'createBy' },
         { label: '创建时间', prop: 'createTime', formType: 'date' },
-        { label: '更新者', prop: 'updateBy' },
-        { label: '更新时间', prop: 'updateTime', formType: 'date' },
+        // { label: '更新者', prop: 'updateBy' },
+        // { label: '更新时间', prop: 'updateTime', formType: 'date' },
       ]
     },
     form_columns() {
@@ -191,13 +192,13 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$router.push({ path: '/maintain/patrol/p_standard/add', query: { l: row.standardId, d: false } })
+      this.$router.push({ path: '/maintain/patrol/p_standard/add', query: { l: row.standardId, d: false, i: true } })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       const standardIds = row.standardId || this.ids
       this.$modal
-        .confirm('是否确认删除巡点检标准编号为"' + standardIds + '"的数据项？')
+        .confirm('是否确认删除设备名称为"' + row.deviceName + '"的数据项？')
         .then(function () {
           return delStandard(standardIds)
         })
@@ -210,16 +211,12 @@ export default {
     // 巡点检项目状态修改
     handleStatusChange(event, prop, row) {
       let text = row.standardStatus === '0' ? '启用' : '停用'
-      let { ...data } = row;
-      data.standardStatus = data.standardStatus === '0' ? '1' : '0';
-      let that = this;
       this.$modal
         .confirm('确认要"' + text + '""' + row.deviceName + '"吗？')
         .then(function () {
-          updateStandard(data)
+          return changeItemStatus(row.standardId, row.standardStatus)
         })
         .then(() => {
-          this.getList()
           this.$modal.msgSuccess(text + '成功')
         })
         .catch(function () {

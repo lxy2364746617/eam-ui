@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <div class="title">巡点检路线名称</div>
+        <div class="title">保养路线名称</div>
         <el-form ref="form" :model="form" :rules="rules" label-width="140px" size="small" style="margin: 10px auto;">
             <el-row :gutter="10" style="padding: 0 20px;">
                 <el-col :span="8">
@@ -39,27 +39,33 @@
             <el-table-column label="功能位置" align="center" prop="location" min-width="150"></el-table-column>
             <el-table-column label="所属子公司" align="center" prop="subCompanyName" min-width="150"></el-table-column>
             <el-table-column label="所属组织" align="center" prop="affDeptName" min-width="150" />
-            <el-table-column label="设备状态" align="center" prop="deviceStatus">
+            <!-- <el-table-column label="设备状态" align="center" prop="deviceStatus">
                 <template slot-scope="scope">
                     <span v-html="findName(dict.type.em_device_state, scope.row.deviceStatus)"></span>
                 </template>
-            </el-table-column>
-            <el-table-column label="日常点检" align="center" prop="dayNum" min-width="150">
+            </el-table-column> -->
+            <el-table-column label="日常保养" align="center" prop="dayNum" min-width="150">
                 <template slot-scope="scope">
                     <span class="viewSpan" @click="viewFun('RCDJ', scope.row.deviceId, scope.row.dayNum)">{{
                         scope.row.dayNum }} 浏览</span>
                 </template>
             </el-table-column>
-            <el-table-column label="精密点检" align="center" prop="preNum" min-width="150">
+            <el-table-column label="一级保养" align="center" prop="oNum" min-width="150">
                 <template slot-scope="scope">
-                    <span class="viewSpan" @click="viewFun('JMDJ', scope.row.deviceId, scope.row.preNum)">{{
-                        scope.row.preNum }} 浏览</span>
+                    <span class="viewSpan" @click="viewFun('YJBY', scope.row.deviceId, scope.row.oNum)">{{
+                        scope.row.oNum }} 浏览</span>
                 </template>
             </el-table-column>
-            <el-table-column label="专职点检" align="center" prop="fullNum" min-width="150">
+            <el-table-column label="二级保养" align="center" prop="tNum" min-width="150">
                 <template slot-scope="scope">
-                    <span class="viewSpan" @click="viewFun('ZZDJ', scope.row.deviceId, scope.row.fullNum)">{{
-                        scope.row.fullNum }} 浏览</span>
+                    <span class="viewSpan" @click="viewFun('EJBY', scope.row.deviceId, scope.row.tNum)">{{
+                        scope.row.tNum }} 浏览</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="常规润滑" align="center" prop="cNum" min-width="150">
+                <template slot-scope="scope">
+                    <span class="viewSpan" @click="viewFun('CGRH', scope.row.deviceId, scope.row.cNum)">{{
+                        scope.row.cNum }} 浏览</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="150">
@@ -92,32 +98,29 @@
 </template>
           
 <script>
-import { getPline, addPline, updatePline, findByDeviceId, findByDeviceIdAndItemType, larchivesList } from "@/api/maintain/pline";
+import { getMline, addMline, updateMline, findByDeviceId, findByDeviceIdAndItemType, larchivesList } from "@/api/maintain/pline";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import parentdevice from '@/views/device/book/device'
 import Sortable from 'sortablejs'
 export default {
     name: "Template",
-    dicts: ['sys_normal_disable', 'em_device_state', 'mro_s_check_status'],
+    dicts: ['sys_normal_disable', 'em_device_state', 'mro_s_check_status','mro_m_cycle_type'],
     components: { JmTable, JmForm, parentdevice },
     computed: {
         // 列信息
         columns() {
             return [
-                { label: '巡点检项目编码', prop: 'itemCode' },
                 { label: '部件', prop: 'partsName', },
-                { label: '巡点检内容', prop: 'itemContent', },
-                { label: '巡点检点数', prop: 'checkNum', },
-                { label: '巡点检状态', prop: 'checkStatus', formType: 'select', options: this.dict.type.mro_s_check_status, span: 24, },
-                { label: '巡点检标准', prop: 'checkStandard', },
-                { label: '巡点检方法', prop: 'itemMethod', },
-                { label: '巡点检结果类型', prop: 'checkResType', },
-                { label: '巡点检结果设置', prop: 'checkResult', },
-                { label: '定量值', prop: 'quotaValue', },
-                { label: '定量上限', prop: 'quotaUpper', },
-                { label: '定量下限', prop: 'quotaLower', },
-                { label: '定量单位', prop: 'quotaUnit' },
+                { label: '保养项编码', prop: 'itemCode' },
+                { label: '保养项名称', prop: 'itemName', },
+                { label: '保养部位', prop: 'itemArea', },
+                { label: '保养内容', prop: 'itemContent', },
+                { label: '保养标准', prop: 'checkStandard', },
+                { label: '点数', prop: 'checkNum', },
+                { label: '周期', prop: 'checkCycle', },
+                { label: '保养周期类别', prop: 'checkCycleType', formType: 'selectTag', options: this.dict.type.mro_m_cycle_type, span: 24, },
+                { label: '保养工具', prop: 'itemTool', },
             ]
         },
     },
@@ -203,7 +206,7 @@ export default {
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
-            getPline(queryParams).then(response => {
+            getMline(queryParams).then(response => {
                 this.form = response.data;
                 // if (mroPatrolLineArchivesList.length > 0) {
                 larchivesList({ lineId: this.form.lineId }).then(res => {
@@ -259,14 +262,14 @@ export default {
                     }
                     if (that.lineId != '' && that.lineId) {
                         data.lineId=that.lineId;
-                        updatePline(data).then(response => {
+                        updateMline(data).then(response => {
                             that.$modal.msgSuccess("修改成功");
                             that.goback()
                         }).catch((err) => {
                             that.btnLoading = false;
                         });
                     } else {
-                        addPline(data).then(response => {
+                        addMline(data).then(response => {
                             that.$modal.msgSuccess("新增成功");
                             // this.getList();
                             that.goback()
@@ -295,13 +298,16 @@ export default {
             } else {
                 switch (itemType) {
                     case "RCDJ":
-                        this.title = '日常点检项';
+                        this.title = '日常保养';
                         break;
-                    case "JMDJ":
-                        this.title = '精密点检项';
+                    case "YJBY":
+                        this.title = '一级保养';
                         break;
-                    case "ZZDJ":
-                        this.title = '专职点检项';
+                    case "EJBY":
+                        this.title = '二级保养';
+                        break;
+                    case "CGRH":
+                        this.title = '常规润滑';
                         break;
                     default:
                         break;

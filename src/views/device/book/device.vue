@@ -4,29 +4,20 @@
       <!--部门数据-->
       <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
-        <jm-user-tree 
-          :treeData="deptOptions" 
-          @handleNodeClick="handleNodeClick" 
-          style="height: calc(100vh - 201px);">
+        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" style="height: calc(100vh - 201px);">
         </jm-user-tree>
       </el-col>
       <!--用户数据-->
       <el-col :span="18" :xs="24">
-        <jm-table
-          :tableData="equipmentList"
-          @getList="getList"
-          @handleSelectionChange="handleSelectionChange"
-          :total="total"
-          ref="jmtable"
-          :isRadio="isChoose"
-          :handleWidth="230"
-          :columns="columns">
+        <jm-table :tableData="equipmentList" @getList="getList" @handleSelectionChange="handleSelectionChange"
+          :total="total" ref="jmtable" :isRadio="isChoose" :handleWidth="230" :columns="columns">
         </jm-table>
       </el-col>
-      
+
 
     </el-row>
-    <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
+    <div
+      style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
       <el-button size="mini" @click="close">取消</el-button>
       <el-button size="mini" @click="submitRadio" type="primary" :disabled="multiple">确定</el-button>
     </div>
@@ -45,31 +36,31 @@ export default {
   name: "devicebook1",
   dicts: ['em_device_att', 'em_device_level'],
   components: { Treeselect, JmUserTree, JmTable },
-  props:{
-    isChoose:{
-      default:true,
+  props: {
+    isChoose: {
+      default: true,
       type: Boolean,
     },
     formData: {
-      default: ()=>{},
+      default: () => { },
       type: Object,
     },
   },
-  computed:{
+  computed: {
     // 列信息
-    columns(){
+    columns() {
       return [
-        { label:"设备编码", prop:"deviceCode",  },
-        { label:"设备名称", prop:"deviceName",  },
-        { label:"规格型号", prop:"specs",  },
-        { label:"设备类别", prop:"categoryId",  },
-        { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
-        { label:"财务资产编码", prop:"propertyCode",  },
-        { label:"功能位置", prop:"location",  },
-        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-        { label:"上级设备", prop:"parentId", formType: 'select', options:[],  }, //(0 父级)
-        { label:"所属组织", prop:"affDeptId",  },
-        { label:"当前使用组织", prop:"currDeptId",  },
+        { label: "设备编码", prop: "deviceCode", class: true},
+        { label: "设备名称", prop: "deviceName", },
+        { label: "规格型号", prop: "specs", },
+        { label: "设备类别", prop: "categoryId", },
+        { label: "设备属性", prop: "deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
+        { label: "财务资产编码", prop: "propertyCode", },
+        { label: "功能位置", prop: "location", },
+        { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
+        { label: "上级设备", prop: "parentId", formType: 'select', options: [], }, //(0 父级)
+        { label: "所属组织", prop: "affDeptId", },
+        { label: "当前使用组织", prop: "currDeptId", },
       ]
     },
   },
@@ -106,44 +97,46 @@ export default {
     this.getTree();
   },
   methods: {
-    close(){
+    close() {
       this.$emit('close')
     },
-    submitRadio(){
-      if(this.isChoose){
+    submitRadio() {
+      if (this.isChoose) {
         // 单选
-        this.$emit('submitRadio',this.radioRow)
-      }else{
+        this.$emit('submitRadio', this.radioRow)
+      } else {
         // 多选
-        this.$emit('submitRadio',this.checkBoxRows)
+        this.$emit('submitRadio', this.checkBoxRows)
       }
     },
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;
       var data = {
-        categoryId:this.queryParams.categoryId,
+        categoryId: this.queryParams.categoryId,
         ...queryParams
       }
       listBASE(data).then(response => {
-          // 不展示自身
-          if(this.formData){
-            response.rows.forEach((b,i) => {
-              if(b.deviceId == this.formData.deviceId){
-                response.rows.splice(i,1)
-              }
-            });
-          }
-          this.equipmentList= response.rows.filter(item => {
+        // 不展示自身
+        if (this.formData) {
+          response.rows.forEach((b, i) => {
+            if (b.deviceId == this.formData.deviceId) {
+              response.rows.splice(i, 1)
+            }
+          });
+          this.equipmentList = response.rows.filter(item => {
             if (this.formData.disIds.includes(item.deviceId)) {
               return false
             } else {
               return true
             }
-          });
-          this.total = response.total;
-          this.loading = false;
+          })
+        }else{
+          this.equipmentList = response.rows
         }
+        this.total = response.total;
+        this.loading = false;
+      }
       );
     },
     /** 查询部门下拉树结构 */
@@ -170,11 +163,11 @@ export default {
       this.radioRow = selection[0]
       this.checkBoxRows = selection;
     },
-    setFormLabel(arr){
+    setFormLabel(arr) {
       arr.forEach(b => {
-        b.label=b.fieldName;
-        b.prop=b.fieldCode;
-        b.required = b.required=='0'?true:false;
+        b.label = b.fieldName;
+        b.prop = b.fieldCode;
+        b.required = b.required == '0' ? true : false;
 
       });
     },

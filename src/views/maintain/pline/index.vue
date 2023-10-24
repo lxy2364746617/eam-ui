@@ -4,17 +4,17 @@
       ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+          <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:pline:add']">新增</el-button>
         </el-col>
-        <el-col :span="1.5">
-          <el-button type="primary" plain icon="el-icon-download" size="mini" @click="handleExport"
+        <!-- <el-col :span="1.5">
+          <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
             v-hasPermi="['maintain:pline:export']">导出</el-button>
-        </el-col>
+        </el-col> -->
       </template>
       <template #end_handle="scope">
         <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-          v-hasPermi="['maintain:pline:edit']">修改</el-button>
+          v-hasPermi="['maintain:pline:edit']">编辑</el-button>
         <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
           v-hasPermi="['maintain:pline:remove']">删除</el-button></template>
     </jm-table>
@@ -28,17 +28,18 @@ import {
   delPline,
   addPline,
   updatePline,
+  changeItemStatus
 } from '@/api/maintain/pline'
 import JmTable from '@/components/JmTable';
 export default {
-  name: 'Pline',
+  name: "Template",
   dicts: ['sys_normal_disable'],
   components: { JmTable },
   computed: {
     // 列信息
     columns() {
       return [
-        { label: '巡点检路线编码', prop: 'lineCode' },
+        { label: '巡点检路线编码', prop: 'lineCode', class: true },
         { label: '巡点检路线名称', prop: 'lineName', },
         { label: '启用状态', prop: 'lineStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
         { label: '创建人', prop: 'createBy', },
@@ -75,12 +76,6 @@ export default {
         updateBy: null,
         updateTime: null,
       },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-        lineId: [{ required: true, message: '主键不能为空', trigger: 'blur' }],
-      },
     }
   },
   created() {
@@ -102,14 +97,27 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    handleStatusChange() { },
+    handleStatusChange(event, prop, row) {
+      let text = row.lineStatus === '0' ? '启用' : '停用'
+      this.$modal
+        .confirm('确认要"' + text + '""' + row.lineName + '"吗？')
+        .then(function () {
+          return changeItemStatus(row.lineId, row.lineStatus)
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + '成功')
+        })
+        .catch(function () {
+          row.lineStatus = row.lineStatus === '0' ? '1' : '0'
+        })
+    },
     /** 新增按钮操作 */
     handleAdd() {
       this.$router.push({ path: '/maintain/patrol/pline/add', query: { l: '', d: false } })
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$router.push({ path: '/maintain/patrol/pline/add', query: { l: row.lineId, d: false } })
+      this.$router.push({ path: '/maintain/patrol/pline/add', query: { l: row.lineId, d: false, i: true } })
     },
     /** 提交按钮 */
     submitForm() {
@@ -135,7 +143,7 @@ export default {
     handleDelete(row) {
       const lineIds = row.lineId || this.ids
       this.$modal
-        .confirm('是否确认删除巡点检路线编号为"' + lineIds + '"的数据项？')
+        .confirm('是否确认删除巡点检路线名称为"' + row.lineName + '"的数据项？')
         .then(function () {
           return delPline(lineIds)
         })

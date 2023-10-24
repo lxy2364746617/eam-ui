@@ -23,7 +23,8 @@
           </el-table-column>
           <el-table-column label="序号" align="center" prop="noticeId" width="50" v-if="isIndex">
             <template slot-scope="scope">
-              <div v-if="scope.$index != 0" v-html="scope.$index"></div>
+              <div v-if="scope.$index != 0 && showSearch" v-html="scope.$index"></div>
+              <div v-else-if="!showSearch">{{scope.$index +1}}</div>
             </template>
           </el-table-column>
           <template v-for='(col) in columns'>
@@ -118,6 +119,11 @@
                     :active-value="col.options[0].value"
                     :inactive-value="col.options[1].value">
                   </el-switch>
+                </span>
+                <span v-else-if="col.formType=='radioSelect'">
+                  <el-radio-group v-model="scope.row[col.prop]">
+                    <el-radio v-for="item in col.options" :key="item.value" :label="item.value"> {{ item.label }}</el-radio>
+                  </el-radio-group>
                 </span>
                 <span v-else-if="col.formType=='selectTree'" v-html="findTreeName(col.options,scope.row[col.prop])"></span>
                 <span v-else v-html="scope.row[col.prop]" :class="{ 'active' : col.class  }"></span>
