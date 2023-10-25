@@ -48,7 +48,7 @@ export function delMline(lineId) {
 // 获取设备详情
 export function findByDeviceId(data) {
   return request({
-    url: '/maintain/mline/findByDeviceId/',
+    url: '/maintain/mline/findByDeviceId',
     method: 'post',
     data: data
   })
@@ -57,7 +57,7 @@ export function findByDeviceId(data) {
 // 根据设备ID获取点检项
 export function findByDeviceIdAndItemType(query) {
   return request({
-    url: '/maintain/marchives/findByDeviceIdAndItemType/',
+    url: '/maintain/marchives/findByDeviceIdAndItemType',
     method: 'get',
     params: query
   })
@@ -66,7 +66,7 @@ export function findByDeviceIdAndItemType(query) {
 //查询巡点检路设备档案关联列表
 export function larchivesList(query) {
   return request({
-    url: '/maintain/marchives/list/',
+    url: '/maintain/marchives/list',
     params: query
   })
 }

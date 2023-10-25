@@ -4,12 +4,12 @@
             <div class="title">计划信息</div>
             <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                 <el-col :span="12">
-                    <el-form-item label="巡点检计划编码" prop="planCode">
-                        <el-input v-model="form.planCode" placeholder="请输入路线编码" disabled />
+                    <el-form-item label="保养计划编码" prop="planCode">
+                        <el-input v-model="form.planCode" placeholder="请输入保养计划编码" disabled />
                     </el-form-item></el-col>
                 <el-col :span="12">
-                    <el-form-item label="巡点检计划名称" prop="planName">
-                        <el-input v-model="form.planName" placeholder="请输入路线名称" />
+                    <el-form-item label="保养计划名称" prop="planName">
+                        <el-input v-model="form.planName" placeholder="请输入保养计划名称" />
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划状态" prop="planStatus">
@@ -19,20 +19,20 @@
                         </el-radio-group>
                     </el-form-item></el-col>
                 <el-col :span="12">
-                    <el-form-item label="巡点检类型" prop="itemType">
-                        <el-select v-model="form.itemType" placeholder="请选择巡点检类型">
-                            <el-option v-for="dict in dict.type.mro_item_type" :key="dict.value" :label="dict.label"
+                    <el-form-item label="保养类型" prop="itemType">
+                        <el-select v-model="form.itemType" placeholder="请选择保养类型">
+                            <el-option v-for="dict in dict.type.mro_m_item_type" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
                     </el-form-item></el-col>
                 <el-col :span="12">
-                    <el-form-item label="巡点检周期" prop="planCycle">
-                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入巡点检周期"></el-input-number>
+                    <el-form-item label="保养周期" prop="planCycle">
+                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入保养周期"></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
-                    <el-form-item label="巡点检周期类别" prop="planCycleType">
-                        <el-select v-model="form.planCycleType" placeholder="请选择巡点检周期类别">
-                            <el-option v-for="dict in dict.type.mro_plan_cycle_type" :key="dict.value" :label="dict.label"
+                    <el-form-item label="保养周期类别" prop="planCycleType">
+                        <el-select v-model="form.planCycleType" placeholder="请选择保养周期类别">
+                            <el-option v-for="dict in dict.type.mro_m_cycle_type" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
                     </el-form-item></el-col>
@@ -65,54 +65,58 @@
             <div class="title">人员配置</div>
             <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                 <el-col :span="8">
-                    <el-form-item label="巡点检班组" prop="groupId">
+                    <el-form-item label="保养班组" prop="groupId">
                         <el-input v-model="form.groupId" placeholder="请输入巡点检班组" />
                     </el-form-item></el-col>
                 <el-col :span="8">
-                    <el-form-item label="巡点检执行人" prop="executor">
+                    <el-form-item label="主要执行人" prop="executor">
                         <el-input v-model="form.executor" placeholder="请输入巡点检执行人" />
                     </el-form-item></el-col>
                 <el-col :span="8">
-                    <el-form-item label="巡点检负责人" prop="director">
+                    <el-form-item label="保养负责人" prop="director">
                         <el-input v-model="form.director" placeholder="请输入巡点检负责人" />
+                    </el-form-item></el-col>
+                <el-col :span="8">
+                    <el-form-item label="其他执行人" prop="otherExecutor">
+                        <el-input v-model="form.otherExecutor" placeholder="请输入其他执行人" />
                     </el-form-item></el-col>
             </el-row>
         </el-form>
-        <div class="title">巡点检路线
+        <div class="title">保养路线
             <el-button type="text" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
-        <jm-table :tableData.sync="plineList" ref="jmtable1" :columns="columns1" :showSearch="false"
+        <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false"
             @switchchange="handleStatusChange" style="margin-top:20px">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
-                    v-hasPermi="['maintain:pline:remove']">查看</el-button>
+                    v-hasPermi="['maintain:mplan:remove']">查看</el-button>
                 <el-button size="mini" type="text" @click="handleDelete(scope)"
-                    v-hasPermi="['maintain:pline:remove']">删除</el-button>
+                    v-hasPermi="['maintain:mplan:remove']">删除</el-button>
             </template>
         </jm-table>
         <div class="title" style="margin-top: 20px;">关联文档
-            <el-button type="text" @click="AddFile" v-hasPermi="['maintain:pplan:add']">上传</el-button>
+            <el-button type="text" @click="AddFile" v-hasPermi="['maintain:mplan:add']">上传</el-button>
         </div>
 
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
             style="margin-top:20px">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="downloadFile(scope.row)"
-                    v-hasPermi="['maintain:pplan:edit']">下载</el-button>
+                    v-hasPermi="['maintain:mplan:edit']">下载</el-button>
                 <el-button size="mini" type="text" @click="handleDelete2(scope.row)"
-                    v-hasPermi="['maintain:pplan:remove']">删除</el-button>
+                    v-hasPermi="['maintain:mplan:remove']">删除</el-button>
                 <el-button size="mini" type="text" v-if="fileType.includes(scope.row.fileType)"
-                    @click="handlePreview(scope.row)" v-hasPermi="['maintain:pplan:edit']">预览</el-button>
+                    @click="handlePreview(scope.row)" v-hasPermi="['maintain:mplan:edit']">预览</el-button>
             </template>
         </jm-table>
 
         <!-- 添加巡点检路线 -->
-        <el-drawer title="巡点检路线" :visible.sync="plineForm.choosedrawer" direction="rtl" size="40%" :wrapperClosable="false">
-            <pline :isChoose="false" @submitRadio="submitRadio2" @close="plineForm.choosedrawer = false"
-                :formData="plineForm" v-if="plineForm.choosedrawer"></pline>
+        <el-drawer title="保养路线" :visible.sync="lineForm.choosedrawer" direction="rtl" size="40%" :wrapperClosable="false">
+            <mline :isChoose="false" @submitRadio="submitRadio2" @close="lineForm.choosedrawer = false" :formData="lineForm"
+                v-if="lineForm.choosedrawer"></mline>
         </el-drawer>
-        <el-drawer title="关联巡点检项" :visible.sync="deviceForm.choosedrawer" direction="rtl" size="80%"
+        <el-drawer title="关联保养检修项目 " :visible.sync="deviceForm.choosedrawer" direction="rtl" size="80%"
             :wrapperClosable="false">
             <el-table v-loading="deviceForm.loading" :data="deviceList" ref="queryTable2">
                 <el-table-column type="selection" width="55" align="center" />
@@ -129,22 +133,28 @@
                         <span v-html="findName(dict.type.em_device_state, scope.row.deviceStatus)"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="日常点检" align="center" prop="dayNum" min-width="150">
+                <el-table-column label="日常保养" align="center" prop="dayNum" min-width="150">
                     <template slot-scope="scope">
-                        <span class="viewSpan" @click="viewFun('RCDJ', scope.row.deviceId, scope.row.dayNum)">{{
+                        <span class="viewSpan" @click="viewFun('RCBY', scope.row.deviceId, scope.row.dayNum)">{{
                             scope.row.dayNum }} 浏览</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="精密点检" align="center" prop="preNum" min-width="150">
+                <el-table-column label="一级保养" align="center" prop="oNum" min-width="150">
                     <template slot-scope="scope">
-                        <span class="viewSpan" @click="viewFun('JMDJ', scope.row.deviceId, scope.row.preNum)">{{
-                            scope.row.preNum }} 浏览</span>
+                        <span class="viewSpan" @click="viewFun('YJBY', scope.row.deviceId, scope.row.oNum)">{{
+                            scope.row.oNum }} 浏览</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="专职点检" align="center" prop="fullNum" min-width="150">
+                <el-table-column label="二级保养" align="center" prop="tNum" min-width="150">
                     <template slot-scope="scope">
-                        <span class="viewSpan" @click="viewFun('ZZDJ', scope.row.deviceId, scope.row.fullNum)">{{
-                            scope.row.fullNum }} 浏览</span>
+                        <span class="viewSpan" @click="viewFun('EJBY', scope.row.deviceId, scope.row.tNum)">{{
+                            scope.row.tNum }} 浏览</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="常规润滑" align="center" prop="cNum" min-width="150">
+                    <template slot-scope="scope">
+                        <span class="viewSpan" @click="viewFun('CGRH', scope.row.deviceId, scope.row.cNum)">{{
+                            scope.row.cNum }} 浏览</span>
                     </template>
                 </el-table-column>
             </el-table>
@@ -172,22 +182,22 @@
 </template>
           
 <script>
-import { getPplan, addPplan, updatePplan, } from "@/api/maintain/pplan";
-import { larchivesList, findByDeviceIdAndItemType } from "@/api/maintain/pline";
+import { getMplan, addMplan, updateMplan, } from "@/api/maintain/mplan";
+import { larchivesList, findByDeviceIdAndItemType } from "@/api/maintain/mline";
 import { listResource, addResource, delResource } from "@/api/system/resource";
 import JmTable from "@/components/JmTable";
-import pline from '@/views/maintain/pplan/pline'
+import mline from '@/views/maintain/mplan/line'
 export default {
     name: "Template",
-    dicts: ['sys_normal_disable', 'mro_item_type', 'mro_plan_cycle_type', 'mro_s_check_status', 'mro_is_photo', 'em_device_state'],
-    components: { JmTable, pline },
+    dicts: ['sys_normal_disable', 'mro_m_item_type', 'mro_m_cycle_type', 'mro_is_photo', 'em_device_state'],
+    components: { JmTable, mline },
     computed: {
         columns1() {
             return [
-                { label: '巡点检路线编码', prop: 'lineCode', class: true },
-                { label: '巡点检路线名称', prop: 'lineName', class: true },
-                { label: '巡点检设备数量', prop: 'deviceNum', },
-                { label: '日常巡点检', prop: 'sCheckNum', },
+                { label: '保养路线编码', prop: 'lineCode', class: true },
+                { label: '保养路线名称', prop: 'lineName', class: true },
+                { label: '保养设备数量', prop: 'deviceNum', },
+                { label: '日常保养', prop: 'sCheckNum', },
                 { label: '是否拍照', prop: 'isPhoto', formType: 'radioSelect', options: this.dict.type.mro_is_photo, span: 18, },
             ]
         },
@@ -202,19 +212,16 @@ export default {
         // 列信息
         columns() {
             return [
-                { label: '巡点检项目编码', prop: 'itemCode' },
                 { label: '部件', prop: 'partsName', },
-                { label: '巡点检内容', prop: 'itemContent', },
-                { label: '巡点检点数', prop: 'checkNum', },
-                { label: '巡点检状态', prop: 'checkStatus', formType: 'select', options: this.dict.type.mro_s_check_status, span: 24, },
-                { label: '巡点检标准', prop: 'checkStandard', },
-                { label: '巡点检方法', prop: 'itemMethod', },
-                { label: '巡点检结果类型', prop: 'checkResType', },
-                { label: '巡点检结果设置', prop: 'checkResult', },
-                { label: '定量值', prop: 'quotaValue', },
-                { label: '定量上限', prop: 'quotaUpper', },
-                { label: '定量下限', prop: 'quotaLower', },
-                { label: '定量单位', prop: 'quotaUnit' },
+                { label: '保养项编码', prop: 'itemCode' },
+                { label: '保养项名称', prop: 'itemName', },
+                { label: '保养部位', prop: 'itemArea', },
+                { label: '保养内容', prop: 'itemContent', },
+                { label: '保养标准', prop: 'checkStandard', },
+                { label: '点数', prop: 'checkNum', },
+                { label: '周期', prop: 'checkCycle', },
+                { label: '保养周期类别', prop: 'checkCycleType', formType: 'selectTag', options: this.dict.type.mro_m_cycle_type, span: 24, },
+                { label: '保养工具', prop: 'itemTool', },
             ]
         },
 
@@ -250,6 +257,7 @@ export default {
                 groupId: null,
                 executor: null,
                 director: null,
+                otherExecutor: null,
                 remark: null,
                 createBy: null,
                 createTime: null,
@@ -260,9 +268,9 @@ export default {
             title: "关键点检测",
             //线路数组
             choosedrawer: false,
-            plineList: [],
+            lineList: [],
             selectArr: [],
-            plineForm: {
+            lineForm: {
                 choosedrawer: false,
                 disIds: []
             },
@@ -284,19 +292,19 @@ export default {
             // 表单校验
             rules: {
                 planName: [
-                    { required: true, message: '巡点检计划名称不能为空', trigger: 'blur' },
+                    { required: true, message: '保养计划名称不能为空', trigger: 'blur' },
                 ],
                 planStatus: [
                     { required: true, message: '计划状态不能为空', trigger: 'blur' },
                 ],
                 itemType: [
-                    { required: true, message: '巡点检类型不能为空', trigger: 'blur' },
+                    { required: true, message: '保养类型不能为空', trigger: 'blur' },
                 ],
                 planCycle: [
-                    { required: true, message: '巡点检周期不能为空', trigger: 'blur' },
+                    { required: true, message: '保养周期不能为空', trigger: 'blur' },
                 ],
                 planCycleType: [
-                    { required: true, message: '巡点检周期类别不能为空', trigger: 'blur' },
+                    { required: true, message: '保养周期类别不能为空', trigger: 'blur' },
                 ],
                 planBeginTime: [
                     { required: true, message: '计划开始时间不能为空', trigger: 'blur' },
@@ -311,13 +319,13 @@ export default {
                     { required: true, message: '下次执行日期不能为空', trigger: 'blur' },
                 ],
                 groupId: [
-                    { required: true, message: '巡点检班组不能为空', trigger: 'blur' },
+                    { required: true, message: '保养班组不能为空', trigger: 'blur' },
                 ],
                 executor: [
-                    { required: true, message: '巡点检执行人日期不能为空', trigger: 'blur' },
+                    { required: true, message: '主要执行人日期不能为空', trigger: 'blur' },
                 ],
                 director: [
-                    { required: true, message: '巡点检负责人不能为空', trigger: 'blur' },
+                    { required: true, message: '保养负责人不能为空', trigger: 'blur' },
                 ],
             },
             startDatePicker: this.beginDate(),
@@ -374,16 +382,16 @@ export default {
                 item.isPhoto = 'Y';
                 return item
             })
-            this.plineList = this.plineList.concat(row1)
-            this.$set(this.plineForm, 'choosedrawer', false)
+            this.lineList = this.lineList.concat(row1)
+            this.$set(this.lineForm, 'choosedrawer', false)
         },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
-            getPplan(queryParams).then(response => {
-                let { mroPatrolPlanLineList, fileResourceList, ...other } = response.data;
+            getMplan(queryParams).then(response => {
+                let { maintainPlanLineList, fileResourceList, ...other } = response.data;
                 this.form = other;
-                this.plineList = mroPatrolPlanLineList || [];
+                this.lineList = maintainPlanLineList || [];
                 this.fileResourceList = fileResourceList || [];
                 this.loading = false;
             }).catch(() => {
@@ -392,15 +400,15 @@ export default {
         },
         /** 新增按钮操作 */
         handleAdd() {
-            let lineIds = this.plineList.map(item => item.lineId) || [];
-            this.$set(this.plineForm, 'disIds', lineIds)
-            this.$set(this.plineForm, 'choosedrawer', true)
+            let lineIds = this.lineList.map(item => item.lineId) || [];
+            this.$set(this.lineForm, 'disIds', lineIds)
+            this.$set(this.lineForm, 'choosedrawer', true)
         },
         /** 删除按钮操作 */
         handleDelete(scope) {
             var that = this;
             this.$modal.confirm('是否确认删除？').then(function () {
-                that.plineList.splice(scope.$index, 1);
+                that.lineList.splice(scope.$index, 1);
             }).catch(() => { });
         },
         allDelete() {
@@ -410,8 +418,8 @@ export default {
             } else {
                 this.$modal.confirm('是否确认删除？').then(function () {
                     that.selectArr.forEach(element => {
-                        let index = that.plineList.indexOf(element);
-                        that.plineList.splice(index, 1);
+                        let index = that.lineList.indexOf(element);
+                        that.lineList.splice(index, 1);
                     });
                 }).catch(() => { });
             }
@@ -428,21 +436,21 @@ export default {
                     that.btnLoading = true;
                     let data = {
                         ...that.form,
-                        mroPatrolPlanLineList: that.plineList.map(item => {
+                        maintainPlanLineList: that.lineList.map(item => {
                             return { lineId: item.lineId, isPhoto: item.isPhoto }
                         }),
                         fileResourceList: that.fileResourceList
                     }
                     if (that.planId != '' && that.planId) {
                         data.planId = that.planId;
-                        updatePplan(data).then(response => {
+                        updateMplan(data).then(response => {
                             that.$modal.msgSuccess("修改成功");
                             that.goback()
                         }).catch((err) => {
                             that.btnLoading = false;
                         });
                     } else {
-                        addPplan(data).then(response => {
+                        addMplan(data).then(response => {
                             that.$modal.msgSuccess("新增成功");
                             // this.getList();
                             that.goback()
@@ -461,14 +469,17 @@ export default {
                 this.$modal.msgSuccess("浏览量为0");
             } else {
                 switch (itemType) {
-                    case "RCDJ":
-                        this.title = '日常点检项';
+                    case "RCBY":
+                        this.title = '日常保养';
                         break;
-                    case "JMDJ":
-                        this.title = '精密点检项';
+                    case "YJBY":
+                        this.title = '一级保养';
                         break;
-                    case "ZZDJ":
-                        this.title = '专职点检项';
+                    case "EJBY":
+                        this.title = '二级保养';
+                        break;
+                    case "CGRH":
+                        this.title = '常规润滑';
                         break;
                     default:
                         break;
@@ -485,7 +496,7 @@ export default {
         },
         //巡点检路线列表修改拍照状态
         handleStatusChange(event, prop, row) {
-            this.plineList.forEach((item, index) => {
+            this.lineList.forEach((item, index) => {
                 if (item.lineId == row.lineId) {
                     item.isPhoto = row.isPhoto
                 }

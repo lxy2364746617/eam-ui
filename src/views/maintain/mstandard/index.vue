@@ -22,10 +22,10 @@
       </template>
       <template #end_handle="scope">
         <el-button size="mini" type="text" @click="handleUpdate(scope.row)"
-          v-hasPermi="['maintain:mitem:edit']">编辑</el-button>
+          v-hasPermi="['maintain:mstandard:edit']">编辑</el-button>
         <el-button size="mini" type="text" @click="handleDelete(scope.row)"
-          v-hasPermi="['maintain:mitem:remove']">删除</el-button>
-        <el-button size="mini" type="text" v-hasPermi="['maintain:mitem:remove']">复制到</el-button>
+          v-hasPermi="['maintain:mstandard:remove']">删除</el-button>
+        <el-button size="mini" type="text" v-hasPermi="['maintain:mstandard:remove']">复制到</el-button>
       </template>
     </jm-table>
   </div>

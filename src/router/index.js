@@ -356,11 +356,11 @@ export const constantRoutes = [
         component: () => import('@/views/maintain/standard/add.vue'),
         name: 'PStandardAdd',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '巡点检标准管理 /编辑' : '巡点检标准管理 /新增'
+          to.meta.title = to.query.i ? '巡点检标准管理/编辑' : '巡点检标准管理/新增'
           to.query.d == 'true' ? to.meta.title = '巡点检标准管理 /查看' : ''
           next()
         },
-        meta: { title: '巡点检标准管理 ', icon: '' }
+        meta: { title: '巡点检标准管理', icon: '' }
       },
       {
         path: 'pline/add',
@@ -396,22 +396,33 @@ export const constantRoutes = [
         component: () => import('@/views/maintain/mstandard/add.vue'),
         name: 'MstandardAdd',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '保养检修标准管理 /编辑' : '保养检修标准管理 /新增'
-          to.query.d == 'true' ? to.meta.title = '保养检修标准管理 /查看' : ''
+          to.meta.title = to.query.i ? '保养检修标准管理/编辑' : '保养检修标准管理/新增'
+          to.query.d == 'true' ? to.meta.title = '保养检修标准管理/查看' : ''
           next()
         },
-        meta: { title: '保养检修标准管理 ', icon: '' }
+        meta: { title: '保养检修标准管理', icon: '' }
       },
       {
         path: 'mline/add',
         component: () => import('@/views/maintain/mline/add.vue'),
         name: 'MlineAdd',
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '保养检修路线管理 /编辑' : '保养检修路线管理 /新增'
-          to.query.d == 'true' ? to.meta.title = '保养检修路线管理 /查看' : ''
+          to.meta.title = to.query.i ? '保养检修路线管理/编辑' : '保养检修路线管理/新增'
+          to.query.d == 'true' ? to.meta.title = '保养检修路线管理/查看' : ''
           next()
         },
-        meta: { title: '保养检修路线管理 ', icon: '' }
+        meta: { title: '保养检修路线管理', icon: '' }
+      },
+      {
+        path: 'mplan/add',
+        component: () => import('@/views/maintain/mplan/add.vue'),
+        name: 'MlineAdd',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.i ? '保养检修计划管理/编辑' : '保养检修计划管理/新增'
+          to.query.d == 'true' ? to.meta.title = '保养检修计划管理/查看' : ''
+          next()
+        },
+        meta: { title: '保养检修计划管理', icon: '' }
       },
     ]
   },

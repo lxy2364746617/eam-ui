@@ -46,7 +46,7 @@
             </el-table-column> -->
             <el-table-column label="日常保养" align="center" prop="dayNum" min-width="150">
                 <template slot-scope="scope">
-                    <span class="viewSpan" @click="viewFun('RCDJ', scope.row.deviceId, scope.row.dayNum)">{{
+                    <span class="viewSpan" @click="viewFun('RCBY', scope.row.deviceId, scope.row.dayNum)">{{
                         scope.row.dayNum }} 浏览</span>
                 </template>
             </el-table-column>
@@ -71,7 +71,7 @@
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="150">
                 <template slot-scope="scope">
                     <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope)"
-                        v-hasPermi="['maintain:pline:remove']">删除</el-button>
+                        v-hasPermi="['maintain:mline:remove']">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -98,7 +98,7 @@
 </template>
           
 <script>
-import { getMline, addMline, updateMline, findByDeviceId, findByDeviceIdAndItemType, larchivesList } from "@/api/maintain/pline";
+import { getMline, addMline, updateMline, findByDeviceId, findByDeviceIdAndItemType, larchivesList } from "@/api/maintain/mline";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import parentdevice from '@/views/device/book/device'
@@ -208,7 +208,7 @@ export default {
             this.loading = true;
             getMline(queryParams).then(response => {
                 this.form = response.data;
-                // if (mroPatrolLineArchivesList.length > 0) {
+                // if (mroMaintainLineArchivesList.length > 0) {
                 larchivesList({ lineId: this.form.lineId }).then(res => {
                     this.lineList = res.data || [];
                 })
@@ -256,7 +256,7 @@ export default {
                     that.btnLoading = true;
                     let data = {
                         ...that.form,
-                        mroPatrolLineArchivesList: that.lineList.map(item => {
+                        mroMaintainLineArchivesList: that.lineList.map(item => {
                             return { deviceId: item.deviceId }
                         }),
                     }
@@ -297,7 +297,7 @@ export default {
                 this.$modal.msgSuccess("浏览量为0");
             } else {
                 switch (itemType) {
-                    case "RCDJ":
+                    case "RCBY":
                         this.title = '日常保养';
                         break;
                     case "YJBY":

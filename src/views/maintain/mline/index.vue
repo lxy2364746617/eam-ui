@@ -5,18 +5,18 @@
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
-            v-hasPermi="['maintain:pline:add']">新增</el-button>
+            v-hasPermi="['maintain:mline:add']">新增</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
-            v-hasPermi="['maintain:pline:export']">导出</el-button>
+            v-hasPermi="['maintain:mline:export']">导出</el-button>
         </el-col> -->
       </template>
       <template #end_handle="scope">
         <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-          v-hasPermi="['maintain:pline:edit']">编辑</el-button>
+          v-hasPermi="['maintain:mline:edit']">编辑</el-button>
         <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-          v-hasPermi="['maintain:pline:remove']">删除</el-button></template>
+          v-hasPermi="['maintain:mline:remove']">删除</el-button></template>
     </jm-table>
   </div>
 </template>

@@ -42,3 +42,16 @@ export function delMplan(planId) {
     method: 'delete'
   })
 }
+
+// 用户状态修改
+export function changeItemStatus(planId, planStatus) {
+  const data = {
+    planId,
+    planStatus,
+  };
+  return request({
+    url: "/maintain/mplan/changeStatus",
+    method: "put",
+    data: data,
+  });
+}
