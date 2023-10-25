@@ -83,7 +83,7 @@
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="plineList" ref="jmtable1" :columns="columns1" :showSearch="false"
-            @switchchange="handleStatusChange" style="margin-top:20px">
+            @radiochange="radiochange" style="margin-top:20px">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:pline:remove']">查看</el-button>
@@ -484,7 +484,7 @@ export default {
             }
         },
         //巡点检路线列表修改拍照状态
-        handleStatusChange(event, prop, row) {
+        radiochange(event, prop, row) {
             this.plineList.forEach((item, index) => {
                 if (item.lineId == row.lineId) {
                     item.isPhoto = row.isPhoto

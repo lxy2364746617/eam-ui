@@ -154,9 +154,9 @@
                 <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
                     min-width="150">
                     <template slot-scope="scope">
-                        <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope)"
+                        <el-button size="mini" type="text" @click="handleUpdate(scope)"
                             v-hasPermi="['maintain:standard:edit']">{{ scope.row.editType ? '保存' : '编辑' }}</el-button>
-                        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope)"
+                        <el-button size="mini" type="text" @click="handleDelete(scope)"
                             v-hasPermi="['maintain:standard:remove']">删除</el-button>
                     </template>
                 </el-table-column>

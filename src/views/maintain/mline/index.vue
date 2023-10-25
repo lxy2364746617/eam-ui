@@ -13,9 +13,9 @@
         </el-col> -->
       </template>
       <template #end_handle="scope">
-        <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+        <el-button size="mini" type="text" @click="handleUpdate(scope.row)"
           v-hasPermi="['maintain:mline:edit']">编辑</el-button>
-        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+        <el-button size="mini" type="text" @click="handleDelete(scope.row)"
           v-hasPermi="['maintain:mline:remove']">删除</el-button></template>
     </jm-table>
   </div>
@@ -104,7 +104,7 @@ export default {
     handleStatusChange(event, prop, row) {
       let text = row.lineStatus === '0' ? '启用' : '停用'
       this.$modal
-        .confirm('确认要"' + text + '""' + row.lineName + '"吗？')
+        .confirm('确认要' + text + '"' + row.lineName + '"吗？')
         .then(function () {
           return changeItemStatus(row.lineId, row.lineStatus)
         })

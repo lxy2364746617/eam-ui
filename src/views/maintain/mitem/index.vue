@@ -21,9 +21,9 @@
         </el-col>
       </template>
       <template #end_handle="scope">
-        <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+        <el-button size="mini" type="text" @click="handleUpdate(scope.row)"
           v-hasPermi="['maintain:mitem:edit']">编辑</el-button>
-        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+        <el-button size="mini" type="text" @click="handleDelete(scope.row)"
           v-hasPermi="['maintain:mitem:remove']">删除</el-button>
       </template>
     </jm-table>
@@ -260,7 +260,7 @@ export default {
     handleStatusChange(event, prop, row) {
       let text = row.itemStatus === '0' ? '启用' : '停用'
       this.$modal
-        .confirm('确认要"' + text + '""' + row.itemContent + '"吗？')
+        .confirm('确认要' + text + '"' + row.itemContent + '"吗？')
         .then(function () {
           return changeItemStatus(row.itemId, row.itemStatus)
         })

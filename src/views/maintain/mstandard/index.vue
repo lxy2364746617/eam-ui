@@ -38,6 +38,7 @@ import {
   delMstandard,
   addMstandard,
   updateMstandard,
+  changeItemStatus
 } from '@/api/maintain/mstandard'
 import JmTable from '@/components/JmTable';
 export default {
@@ -181,7 +182,20 @@ export default {
         `mstandard_${new Date().getTime()}.xlsx`
       )
     },
-    handleStatusChange() { }
+    handleStatusChange(event, prop, row) {
+      let text = row.standardStatus === '0' ? '启用' : '停用'
+      this.$modal
+        .confirm('确认要' + text + '"' + row.deviceName + '"吗？')
+        .then(function () {
+          return changeItemStatus(row.standardId, row.standardStatus)
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + '成功')
+        })
+        .catch(function () {
+          row.standardStatus = row.standardStatus === '0' ? '1' : '0'
+        })
+    },
   },
 }
 </script>

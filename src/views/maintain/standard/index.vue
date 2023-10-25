@@ -17,10 +17,12 @@
         </el-col>
       </template>
       <template #end_handle="scope">
-        <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+        <el-button size="mini" type="text" @click="handleUpdate(scope.row)"
           v-hasPermi="['maintain:standard:edit']">编辑</el-button>
-        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+        <el-button size="mini" type="text" @click="handleDelete(scope.row)"
           v-hasPermi="['maintain:standard:remove']">删除</el-button>
+        <el-button size="mini" type="text" @click="handleUpdate(scope.row)"
+          v-hasPermi="['maintain:standard:edit']">复制到</el-button>
       </template>
     </jm-table>
   </div>
@@ -212,7 +214,7 @@ export default {
     handleStatusChange(event, prop, row) {
       let text = row.standardStatus === '0' ? '启用' : '停用'
       this.$modal
-        .confirm('确认要"' + text + '""' + row.deviceName + '"吗？')
+        .confirm('确认要' + text + '"' + row.deviceName + '"吗？')
         .then(function () {
           return changeItemStatus(row.standardId, row.standardStatus)
         })

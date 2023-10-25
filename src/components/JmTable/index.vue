@@ -121,7 +121,7 @@
                   </el-switch>
                 </span>
                 <span v-else-if="col.formType=='radioSelect'">
-                  <el-radio-group v-model="scope.row[col.prop]">
+                  <el-radio-group v-model="scope.row[col.prop]" @change="radiochange($event,col.prop,scope.row)">
                     <el-radio v-for="item in col.options" :key="item.value" :label="item.value"> {{ item.label }}</el-radio>
                   </el-radio-group>
                 </span>
@@ -251,6 +251,9 @@ export default {
     methods: {
       switchchange($event,prop,row){
         this.$emit('switchchange',$event,prop,row)
+      },
+      radiochange($event,prop,row){
+        this.$emit('radiochange',$event,prop,row)
       },
       handleCurrentChange(currentRow, oldCurrentRow) {
         if(currentRow){
