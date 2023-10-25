@@ -260,7 +260,7 @@ export default {
     handleStatusChange(event, prop, row) {
       let text = row.itemStatus === '0' ? '启用' : '停用'
       this.$modal
-        .confirm('确认要"' + text + '""' + row.itemContent + '"吗？')
+        .confirm('确认要' + text + '"' + row.itemContent + '"吗？')
         .then(function () {
           return changeItemStatus(row.itemId, row.itemStatus)
         })

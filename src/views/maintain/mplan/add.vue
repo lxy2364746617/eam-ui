@@ -87,7 +87,7 @@
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false"
-            @switchchange="handleStatusChange" style="margin-top:20px">
+            @radiochange="radiochange" style="margin-top:20px">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:mplan:remove']">查看</el-button>
@@ -173,8 +173,7 @@
         </el-drawer>
 
         <div style="width: 100%; height: 68px;"></div>
-        <div
-            style="position: absolute;bottom: 0px;width: calc(100% - 40px);background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;z-index: 2;">
+        <div style="position: absolute;bottom: 0px;width: calc(100% - 40px);background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;z-index: 2;">
             <el-button size="mini" @click="submitForm" type="primary" :loading="btnLoading">提交</el-button>
             <el-button size="mini" @click="goback">取消</el-button>
         </div>
@@ -494,8 +493,8 @@ export default {
                 })
             }
         },
-        //巡点检路线列表修改拍照状态
-        handleStatusChange(event, prop, row) {
+        //线列表修改拍照状态
+        radiochange(event, prop, row) {
             this.lineList.forEach((item, index) => {
                 if (item.lineId == row.lineId) {
                     item.isPhoto = row.isPhoto
