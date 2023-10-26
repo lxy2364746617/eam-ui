@@ -14,81 +14,34 @@
                 </template>
             </jm-table>
             <el-tabs v-model="activeName" @tab-click="handleClick" stretch>
-                <el-tab-pane label="日常点检" name="first"></el-tab-pane>
-                <el-tab-pane label="精密点检" name="second"></el-tab-pane>
-                <el-tab-pane label="专职点检" name="third"></el-tab-pane>
+                <el-tab-pane label="日常保养" name="first"></el-tab-pane>
+                <el-tab-pane label="一级保养" name="second"></el-tab-pane>
+                <el-tab-pane label="二级保养" name="third"></el-tab-pane>
+                <el-tab-pane label="常规润滑" name="fourth"></el-tab-pane>
             </el-tabs>
-            <div class="title">关联巡点检项</div>
-            <el-table v-loading="loading" :data="standardList" ref="queryTable">
+            <div class="title">关联保养检修项</div>
+            <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column label="序号" align="center" type="index" />
-                <el-table-column label="巡点检项目编码" align="center" prop="itemCode" min-width="150" />
-                <el-table-column label="部件" align="center" prop="partsName" min-width="200">
+                <el-table-column label="部件" align="center" prop="partsName"></el-table-column>
+                <el-table-column label="保养项编码" align="center" prop="itemCode" min-width="150" />
+                <el-table-column label="保养项名称" align="center" prop="itemName" min-width="150" />
+                <el-table-column label="保养部位" align="center" prop="itemArea" min-width="150" />
+                <el-table-column label="保养内容" align="center" prop="itemContent" min-width="150" />
+                <el-table-column label="周期" align="center" prop="checkCycle" min-width="150" />
+                <el-table-column label="保养周期类别" align="center" prop="checkCycleType" min-width="150">
                     <template slot-scope="scope">
-                        <span v-html="scope.row.partsName"></span>
+                        <span v-html="findName(dict.type.mro_m_cycle_type, scope.row.checkCycleType)"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="巡点检内容" align="center" prop="itemContent" min-width="150" />
-                <el-table-column label="巡点检点数" align="center" prop="checkNum" min-width="150">
-                    <template slot-scope="scope">
-                        <span v-html="scope.row.checkNum"></span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="巡点检状态" align="center" prop="checkStatus" min-width="150">
-                    <template slot-scope="scope">
-                        <span v-html="findName(dict.type.mro_s_check_status, scope.row.checkStatus)"></span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="巡点检标准" align="center" prop="checkStandard" min-width="150">
-                    <template slot-scope="scope">
-                        <span v-html="scope.row.checkStandard"></span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="巡点检方法" align="center" prop="itemMethod" min-width="150" />
-                <el-table-column label="巡点检结果类型" align="center" prop="checkResType" min-width="150">
-                    <template slot-scope="scope">
-                        <span v-html="findName(dict.type.mro_s_check_res_type, scope.row.checkResType)"></span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="巡点检结果设置" align="center" prop="checkResult" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '模拟'">
-                            <span v-html="scope.row.checkResult"></span>
-                        </template>
-                    </template>
-                </el-table-column>
-                <el-table-column label="定量值" align="center" prop="quotaValue" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '数字'">
-                            <span v-html="scope.row.quotaValue"></span>
-                        </template>
-                    </template>
-                </el-table-column>
-                <el-table-column label="定量上限" align="center" prop="quotaUpper" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '数字'">
-                            <span v-html="scope.row.quotaUpper"></span>
-                        </template>
-                    </template>
-                </el-table-column>
-                <el-table-column label="定量下限" align="center" prop="quotaLower" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '数字'">
-                            <span v-html="scope.row.quotaLower"></span>
-                        </template>
-                    </template>
-                </el-table-column>
-                <el-table-column label="定量单位" align="center" prop="quotaUnit" min-width="150">
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.checkResType == '数字'">
-                            <span v-html="scope.row.quotaLower"></span>
-                        </template>
-                    </template>
-                </el-table-column>
+                <el-table-column label="保养标准" align="center" prop="checkStandard" min-width="150" />
+                <el-table-column label="保养工具" align="center" prop="itemTool" min-width="150" />
+                <el-table-column label="保养点数" align="center" prop="checkNum" min-width="150" />
             </el-table>
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择设备" :visible.sync="drawer" direction="rtl" size="80%" :wrapperClosable="false">
-                <parentdevice :isChoose="false" @submitRadio="submitRadio2"  :formData="deviceForm" @close="drawer = false" v-if="drawer">
+                <parentdevice :isChoose="false" @submitRadio="submitRadio2" :formData="deviceForm" @close="drawer = false"
+                    v-if="drawer">
                 </parentdevice>
             </el-drawer>
         </div>
@@ -100,13 +53,13 @@
 </template>
           
 <script>
-import { getStandard, copyStandard } from "@/api/maintain/standard";
+import { getMstandard, copyStandard } from "@/api/maintain/mstandard";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import parentdevice from '@/views/device/book/device'
 export default {
     name: "Template",
-    dicts: ['sys_normal_disable', 'em_is_special', 'mro_s_check_res_type', 'mro_s_check_status'],
+    dicts: ['sys_normal_disable', 'em_is_special', 'mro_m_cycle_type'],
     components: { JmTable, JmForm, parentdevice, },
     computed: {
         // 列信息
@@ -136,6 +89,9 @@ export default {
                     break;
                 case "third":
                     this.standardList3 = [...newData]
+                    break;
+                case "fourth":
+                    this.standardList4 = [...newData]
                     break;
                 default:
                     break;
@@ -183,10 +139,11 @@ export default {
             standardList1: [],
             standardList2: [],
             standardList3: [],
+            standardList4: [],
             drawer: false,
             itemList: [],
-            deviceForm:{
-                disIds:[]
+            deviceForm: {
+                disIds: []
             }
         };
     },
@@ -197,7 +154,7 @@ export default {
     methods: {
         submitRadio2(row) {
             this.drawer = false;
-            this.itemList=this.itemList.concat(row)
+            this.itemList = this.itemList.concat(row)
         },
         handleAdd() {
             this.drawer = true;
@@ -209,29 +166,30 @@ export default {
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
-            getStandard(queryParams).then(response => {
-                let { dayMroPatrolStandardCheckList, preMroPatrolStandardCheckList, fullMroPatrolStandardCheckList, ...other } = response.data
+            getMstandard(queryParams).then(response => {
+                let { dayMroMaintainStandardCheckList, oMroMaintainStandardCheckList, tMroMaintainStandardCheckList,cMroMaintainStandardCheckList, ...other } = response.data
                 this.activeName = 'first';
-                this.standardList = dayMroPatrolStandardCheckList || [];
-                this.standardList1 = dayMroPatrolStandardCheckList || [];
-                this.standardList2 = preMroPatrolStandardCheckList || [];
-                this.standardList3 = fullMroPatrolStandardCheckList || [];
+                this.standardList = dayMroMaintainStandardCheckList || [];
+                this.standardList1 = dayMroMaintainStandardCheckList || [];
+                this.standardList2 = oMroMaintainStandardCheckList || [];
+                this.standardList3 = tMroMaintainStandardCheckList || [];
+                this.standardList4 = cMroMaintainStandardCheckList || [];
                 this.form = response.data;
                 this.loading = false;
             });
         },
         /** 删除按钮操作 */
         handleDelete(scope) {
-            if(this.ids.length == 0){
+            if (this.ids.length == 0) {
                 that.$modal.msgSuccess("暂无可删除项");
             }
             var that = this;
             this.$modal.confirm('是否确认删除？').then(function () {
-                let arr =  that.itemList.filter(item => {
+                let arr = that.itemList.filter(item => {
                     return !that.ids.includes(item.deviceId)
                 })
-                that.itemList=[].concat(arr)
-                that.ids=[]
+                that.itemList = [].concat(arr)
+                that.ids = []
             }).catch(() => { });
         },
         /** 切换选项卡 */
@@ -245,6 +203,9 @@ export default {
                     break;
                 case "third":
                     this.standardList = [...this.standardList3];
+                    break;
+                case "fourth":
+                    this.standardList = [...this.standardList4];
                     break;
                 default:
                     break;
@@ -260,8 +221,8 @@ export default {
             let that = this;
             that.btnLoading = true;
             let data = {
-                mroPatrolStandards:this.itemList||[],
-                standardId:this.standardId
+                mroMaintainStandards: this.itemList || [],
+                standardId: this.standardId
             }
             copyStandard(data).then(response => {
                 data.standardStatus = 0;

@@ -55,3 +55,13 @@ export function changeItemStatus(standardId, standardStatus) {
     data: data,
   });
 }
+
+
+// 复制到
+export function copyStandard(data) {
+  return request({
+    url: 'maintain/standard/copy',
+    method: 'post',
+    data: data
+  })
+}

@@ -25,7 +25,8 @@
           v-hasPermi="['maintain:mstandard:edit']">编辑</el-button>
         <el-button size="mini" type="text" @click="handleDelete(scope.row)"
           v-hasPermi="['maintain:mstandard:remove']">删除</el-button>
-        <el-button size="mini" type="text" v-hasPermi="['maintain:mstandard:remove']">复制到</el-button>
+          <el-button size="mini" type="text" @click="CopyTo(scope.row)"
+          v-hasPermi="['maintain:mstandard:edit']">复制到</el-button>
       </template>
     </jm-table>
   </div>
@@ -135,6 +136,10 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.$router.push({ path: '/maintain/mstandard/add', query: { l: row.standardId, d: false, i: true } })
+    },
+     /** 复制按钮操作 */
+     CopyTo(row) {
+      this.$router.push({ path: '/maintain/mstandard/copyTo', query: { l: row.standardId} })
     },
     /** 提交按钮 */
     submitForm() {

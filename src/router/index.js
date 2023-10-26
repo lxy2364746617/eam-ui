@@ -98,53 +98,25 @@ export const constantRoutes = [
         component: () => import('@/views/flowable/definition/model'),
         name: 'Model',
         meta: { title: '流程设计', icon: '' }
-      }
-    ]
-  },
-  {
-    path: '/flowable',
-    component: Layout,
-    hidden: true,
-    children: [
+      },
       {
         path: 'task/finished/detail/index',
         component: () => import('@/views/flowable/task/finished/detail/index'),
         name: 'FinishedRecord',
         meta: { title: '流程详情', icon: '' }
-      }
-    ]
-  },
-  {
-    path: '/flowable',
-    component: Layout,
-    hidden: true,
-    children: [
+      },
       {
         path: 'task/myProcess/detail/index',
         component: () => import('@/views/flowable/task/myProcess/detail/index'),
         name: 'MyProcessRecord',
         meta: { title: '流程详情', icon: '' }
-      }
-    ]
-  },
-  {
-    path: '/flowable',
-    component: Layout,
-    hidden: true,
-    children: [
+      },
       {
         path: 'task/myProcess/send/index',
         component: () => import('@/views/flowable/task/myProcess/send/index'),
         name: 'SendRecord',
         meta: { title: '流程发起', icon: '' }
-      }
-    ]
-  },
-  {
-    path: '/flowable',
-    component: Layout,
-    hidden: true,
-    children: [
+      },
       {
         path: 'task/todo/detail/index',
         component: () => import('@/views/flowable/task/todo/detail/index'),
@@ -363,6 +335,12 @@ export const constantRoutes = [
         meta: { title: '巡点检标准管理', icon: '' }
       },
       {
+        path: 'p_standard/copyTo',
+        component: () => import('@/views/maintain/standard/copyTo.vue'),
+        name: 'PStandardCopy',
+        meta: { title: '复制巡点检标准管理', icon: '' }
+      },
+      {
         path: 'pline/add',
         component: () => import('@/views/maintain/pline/add.vue'),
         name: 'PlineAdd',
@@ -401,6 +379,12 @@ export const constantRoutes = [
           next()
         },
         meta: { title: '保养检修标准管理', icon: '' }
+      },
+      {
+        path: 'mstandard/copyTo',
+        component: () => import('@/views/maintain/mstandard/copyTo.vue'),
+        name: 'PStandardCopy',
+        meta: { title: '复制保养检修标准管理', icon: '' }
       },
       {
         path: 'mline/add',
