@@ -398,6 +398,9 @@ export default {
                 case "third":
                     this.standardList = [...this.standardList3];
                     break;
+                case "fourth":
+                    this.standardList = [...this.standardList4];
+                    break;
                 default:
                     break;
             }

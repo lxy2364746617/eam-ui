@@ -2,7 +2,7 @@
     <div class="app-container2">
         <div class="container-box1">
             <div class="title" style="margin-bottom: 10px;">待复制到设备列表</div>
-            <jm-table :tableData="itemList" :showSearch="false" @handleSelectionChange="handleSelectionChange"
+            <jm-table :tableData="itemList" :showSearch="false" :showOperate="false" @handleSelectionChange="handleSelectionChange"
                 :total="total" ref="jmtable" :handleWidth="230" :columns="columns">
                 <template slot="headerLeft">
                     <el-col :span="1.5">
@@ -194,6 +194,7 @@ export default {
         },
         /** 切换选项卡 */
         handleClick(tab, event) {
+            this.activeName=tab.name;
             switch (tab.name) {
                 case "first":
                     this.standardList = [...this.standardList1];

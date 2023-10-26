@@ -130,7 +130,7 @@
               </template>
             </el-table-column>
           </template>
-          <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width" :min-width="handleWidth||120">
+          <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width" :min-width="handleWidth||120" v-if="showOperate">
             <template slot-scope="scope">
               <div v-if="scope.$index == 0 && showSearch">
                 <el-button
@@ -182,6 +182,11 @@ export default {
         },
         // 显示搜索条件
         showSearch:{
+          default: true,
+          type: Boolean
+        },
+         // 显示操作
+         showOperate:{
           default: true,
           type: Boolean
         },
