@@ -408,6 +408,17 @@ export const constantRoutes = [
         },
         meta: { title: '保养检修计划管理', icon: '' }
       },
+      {
+        path: 'rplan/add',
+        component: () => import('@/views/maintain/rplan/add.vue'),
+        name: 'MlineAdd',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.i ? '定期检验计划管理/编辑' : '定期检验计划管理/新增'
+          to.query.d == 'true' ? to.meta.title = '定期检验计划管理/查看' : ''
+          next()
+        },
+        meta: { title: '定期检验计划管理', icon: '' }
+      },
     ]
   },
 ]
