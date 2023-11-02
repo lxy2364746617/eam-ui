@@ -6,6 +6,8 @@
         <el-col :span="1.5">
           <el-button type="primary"  icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:mitem:add']">新增</el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
+            v-hasPermi="['maintain:mitem:remove']">删除</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
@@ -33,7 +35,7 @@
       <div class="drawer_form">
         <el-form ref="form" :model="form" :rules="rules" label-width="130px">
           <el-form-item class="p_input" label="保养项目编码" prop="itemCode">
-            <el-input v-model="form.itemCode" placeholder="请输入保养项目编码" />
+            <el-input v-model="form.itemCode" placeholder="请输入保养项目编码" disabled />
           </el-form-item>
           <el-form-item label="保养项目名称" prop="itemName">
             <el-input class="p_input" v-model="form.itemName" placeholder="请输入保养项目名称" />
@@ -41,14 +43,14 @@
           <el-form-item label="保养部位" prop="itemArea">
             <el-input class="p_input" v-model="form.itemArea" placeholder="请输入保养部位" />
           </el-form-item>
-          <el-form-item label="保养内容">
-            <el-input class="p_input" v-model="form.itemContent" placeholder="请输入保养部位" />
-          </el-form-item>
           <el-form-item label="保养类型" prop="itemType">
             <el-select v-model="form.itemType" placeholder="请选择保养类型">
-              <el-option class="p_input" v-for="dict in dict.type.mro_m_item_type" :key="dict.value" :label="dict.label"
+              <el-option class="p_input" v-for="dict in dict.type.BYJX" :key="dict.value" :label="dict.label"
                 :value="dict.value"></el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="保养内容">
+            <el-input class="p_input" type="textarea" v-model="form.itemContent" maxlength="100" show-word-limit placeholder="请输入保养部位" />
           </el-form-item>
           <el-form-item label="保养工具" prop="itemTool">
             <el-input class="p_input" v-model="form.itemTool" placeholder="请输入保养工具" />
@@ -84,7 +86,7 @@ import {
 import JmTable from '@/components/JmTable';
 export default {
   name: 'Mitem',
-  dicts: ['mro_m_item_type', 'sys_normal_disable'],
+  dicts: ['BYJX', 'sys_normal_disable'],
   components: { JmTable },
   data() {
     return {
@@ -127,7 +129,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        itemCode: [{ required: true, message: '保养项目编码不能为空', trigger: 'blur' }],
+       /*  itemCode: [{ required: true, message: '保养项目编码不能为空', trigger: 'blur' }], */
         itemName: [{ required: true, message: '保养项目名称不能为空', trigger: 'blur' }],
         itemArea: [{ required: true, message: '保养部位不能为空', trigger: 'blur' }],
         itemContent: [{ required: true, message: '保养内容不能为空', trigger: 'blur' }],
@@ -144,7 +146,7 @@ export default {
         { label: '保养项编码', prop: 'itemCode' },
         { label: '保养项名称', prop: 'itemName' },
         { label: '保养部位', prop: 'itemArea' },
-        { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_m_item_type, },
+        { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.BYJX, },
         { label: '保养内容', prop: 'itemContent', },
         { label: '保养工具', prop: 'itemTool', },
         { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
@@ -236,8 +238,9 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const itemIds = row.itemId || this.ids
+      if(row.itemId||this.ids.length>0){
       this.$modal
-        .confirm('是否确认删除保养检修项目编号为"' + row.itemCode + '"的数据项？')
+        .confirm(!row.itemId?'确认删除吗？' :'是否确认删除保养检修项目编号为"' + row.itemCode + '"的数据项？')
         .then(function () {
           return delMitem(itemIds)
         })
@@ -245,7 +248,10 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => { })
+        .catch(() => {this.ids=[]})
+      }else{
+          this.$modal.msgSuccess("请至少选择一项");
+      }
     },
     /** 导出按钮操作 */
     handleExport() {

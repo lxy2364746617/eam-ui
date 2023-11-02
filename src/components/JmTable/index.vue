@@ -2,7 +2,7 @@
     <div>
       <el-row :gutter="10" class="mb8" style="margin-bottom: 20px;">
         <slot name="headerLeft"></slot>
-        <right-toolbar :search="search" @queryTable="getList" :columns="columns" :tableVisible="tableVisible">
+        <right-toolbar v-if="rightToolbarShow" :search="search" @queryTable="getList" :columns="columns" :tableVisible="tableVisible" :rightToolbarShow='rightToolbarShow'>
           <template #right_end>
             <slot name="right_end"></slot>
           </template>
@@ -216,6 +216,11 @@ export default {
         handleWidth: {
           default: 0,
           type: Number | String
+        },
+        // 显示右边工具
+        rightToolbarShow:{
+          default: true,
+          type: Boolean
         },
     },
     watch: {

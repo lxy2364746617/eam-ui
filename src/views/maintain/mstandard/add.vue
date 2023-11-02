@@ -61,7 +61,7 @@
                 <el-tab-pane label="二级保养" name="third"></el-tab-pane>
                 <el-tab-pane label="常规润滑" name="fourth"></el-tab-pane>
             </el-tabs>
-            <div class="title">关联保养检修项
+            <div class="title">关联保养检修项11
                 <el-button type="text" icon="el-icon-edit" @click="handleAdd">添加</el-button>
             </div>
             <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
@@ -79,8 +79,8 @@
                 <el-table-column label="保养内容" align="center" prop="itemContent" min-width="150" />
                 <el-table-column label="周期" align="center" prop="checkCycle" min-width="150">
                     <template slot-scope="scope">
-                        <el-input type="number" v-model="scope.row.checkCycle" placeholder="请输入周期"
-                            v-if="scope.row.editType" />
+                        <el-input type="number" v-model="scope.row.checkCycle" min="0" placeholder="请输入周期"
+                            v-if="scope.row.editType"   onkeypress="return(/[\d]/.test(String.fromCharCode(event.keyCode)));"/>
                         <span v-else v-html="scope.row.checkCycle"></span>
                     </template>
                 </el-table-column>

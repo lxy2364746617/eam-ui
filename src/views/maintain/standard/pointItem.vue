@@ -20,7 +20,7 @@ import JmTable from "@/components/JmTable";
 
 export default {
   name: "pointItem",
-  dicts: ['mro_item_method', 'mro_item_type', 'sys_normal_disable'],
+  dicts: ['mro_item_method', 'XDJ', 'sys_normal_disable'],
   components: { JmTable },
   props: {
     isChoose: {
@@ -40,7 +40,7 @@ export default {
         { label: '巡点检项目编码', prop: 'itemCode' },
         { label: '巡点检内容', prop: 'itemContent' },
         { label: '巡点检方法', prop: 'itemMethod', formType: 'select', options: this.dict.type.mro_item_method, },
-        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_item_type, },
+        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.XDJ, },
         { label: '状态', prop: 'itemStatus', formType: 'selectTag', options: this.dict.type.sys_normal_disable, span: 24 },
       ]
     },

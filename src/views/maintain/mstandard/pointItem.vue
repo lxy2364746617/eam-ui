@@ -20,7 +20,7 @@ import JmTable from "@/components/JmTable";
 
 export default {
   name: "pointItem",
-  dicts: ['mro_m_item_type', 'sys_normal_disable'],
+  dicts: ['BYJX', 'sys_normal_disable'],
   components: { JmTable },
   props: {
     isChoose: {
@@ -40,7 +40,7 @@ export default {
         { label: '保养项编码', prop: 'itemCode' },
         { label: '保养项名称', prop: 'itemName' },
         { label: '保养部位', prop: 'itemArea' },
-        { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_m_item_type, },
+        { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.BYJX, },
         { label: '保养内容', prop: 'itemContent', },
         { label: '保养工具', prop: 'itemTool', },
         { label: '状态', prop: 'itemStatus', formType: 'selectTag', options: this.dict.type.sys_normal_disable, },

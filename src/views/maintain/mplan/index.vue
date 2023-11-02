@@ -6,6 +6,8 @@
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:mplan:add']">新增</el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
+            v-hasPermi="['maintain:mplan:remove']">删除</el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
@@ -31,9 +33,10 @@ import {
   changeItemStatus
 } from '@/api/maintain/mplan'
 import JmTable from '@/components/JmTable';
+import {findAll} from '@/api/system/group';
 export default {
   name: "Template",
-  dicts: ['mro_m_cycle_type', 'sys_normal_disable', 'mro_m_item_type'],
+  dicts: ['mro_m_cycle_type', 'sys_normal_disable', 'BYJX'],
   computed: {
     // 列信息
     columns() {
@@ -44,12 +47,12 @@ export default {
         { label: '计划结束时间', prop: 'planEndTime', formType: 'date' },
         { label: '下次执行日期', prop: 'nextExecuteTime', formType: 'date' },
         { label: '状态', prop: 'planStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
-        { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_m_item_type, },
+        { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.BYJX, },
         { label: '保养周期', prop: 'planCycle', },
         { label: '保养周期类别', prop: 'planCycleType', formType: 'select', options: this.dict.type.mro_m_cycle_type, },
         // { label: '本次执行日期', prop: 'thisExecuteTime', formType: 'date' },
          // { label: '下次执行日期', prop: 'nextExecuteTime', formType: 'date' },
-        { label: '保养班组', prop: 'groupId', },
+        { label: '保养班组', prop: 'groupName',},
         // { label: '保养执行人', prop: 'executor', },
         { label: '保养负责人', prop: 'director', },
         // { label: '其他执行人', prop: 'otherExecutor', },
@@ -107,6 +110,8 @@ export default {
       rules: {
         planId: [{ required: true, message: '主键不能为空', trigger: 'blur' }],
       },
+      groupOptions:[],
+
     }
   },
   created() {
@@ -118,6 +123,11 @@ export default {
       this.loading = true
       listMplan(queryParams).then((response) => {
         this.mplanList = response.rows
+        this.mplanList.forEach(item=>{
+          item.label=item.groudName,
+          item.value=item.groudName
+        })
+        console.log(this.mplanList)
         this.total = response.total
         this.loading = false
       })
@@ -173,8 +183,9 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const planIds = row.planId || this.ids
+      if(row.planId||this.ids.length>0){
       this.$modal
-        .confirm('是否确认删除巡点检计划名称为"' + row.planName + '"的数据项？')
+        .confirm(!row.planId?'确认删除吗？' :'是否确认删除巡点检计划名称为"' + row.planName + '"的数据项？')
         .then(function () {
           return delMplan(planIds)
         })
@@ -182,7 +193,10 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => { })
+        .catch(() => {this.ids=[]})
+        }else{
+          this.$modal.msgSuccess("请至少选择一项");
+      }
     },
     /** 导出按钮操作 */
     handleExport() {

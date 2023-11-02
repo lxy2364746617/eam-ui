@@ -118,10 +118,21 @@
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible" />
-          <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
+          <el-table-column label="用户名" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
+          <el-table-column label="姓名" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
+          <el-table-column label="岗位" align="center" key="postName" prop="postName"  :show-overflow-tooltip="true" />
+          <el-table-column label="班组" align="center" key="userGroup" prop="userGroup"  :show-overflow-tooltip="true" />
+          <el-table-column label="技能等级" align="center" key="level" prop="level" width="160"  :show-overflow-tooltip="true" >
+            <template slot-scope="scope">
+              <el-rate v-model="scope.row.level"   :max="5" disabled
+              :colors="['#02b606', '#02b606', '#02b606','#02b606', '#02b606']" 
+              void-icon-class="el-icon-star-off" :icon-classes="iconClasses" disabled-void-color='#C6D1DE'
+              ></el-rate>
+            </template>
+          </el-table-column>
           <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
+           <el-table-column label="菜单角色" align="center" key="deptrole" prop="dept.deptName"  :show-overflow-tooltip="true" />
+           <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
               <el-switch
@@ -140,8 +151,9 @@
           <el-table-column
             label="操作"
             align="center"
-            width="160"
+            width="230"
             class-name="small-padding fixed-width"
+            fixed="right"
           >
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
               <el-button
@@ -274,6 +286,29 @@
           </el-col>
         </el-row>
         <el-row>
+          <el-col :span="12">
+            <el-form-item label="班组">
+              <el-select v-model="form.groupId"  placeholder="请选择班组">
+                <el-option
+                  v-for="item in groupOptions"
+                  :key="item.id"
+                  :label="item.groupName"
+                  :value="item.id"
+                  :disabled="item.status == 1"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="技能等级">
+              <el-rate v-model="form.level"   :max="5" style="margin-top:4%"
+              :colors="['#02b606', '#02b606', '#02b606','#02b606', '#02b606']" 
+              void-icon-class="el-icon-star-off" :icon-classes="iconClasses" disabled-void-color='#C6D1DE'
+              ></el-rate>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="24">
             <el-form-item label="备注">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
@@ -321,6 +356,9 @@
 
 <script>
 import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect } from "@/api/system/user";
+import {
+  findAll,
+} from '@/api/system/group';
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmUserTree from "@/components/JmUserTree";
@@ -328,7 +366,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "User",
-  dicts: ['sys_normal_disable', 'sys_user_sex'],
+  dicts: ['sys_normal_disable', 'sys_user_sex','system_group_type'],
   components: { Treeselect, JmUserTree },
   data() {
     return {
@@ -360,6 +398,8 @@ export default {
       postOptions: [],
       // 角色选项
       roleOptions: [],
+      //班组选项
+      groupOptions:[],
       // 表单参数
       form: {},
       // 用户导入参数
@@ -396,6 +436,7 @@ export default {
         { key: 5, label: `状态`, visible: true },
         { key: 6, label: `创建时间`, visible: true }
       ],
+      iconClasses: ['el-icon-star-off', 'el-icon-star-off', 'el-icon-star-off'],//星级图标
       // 表单校验
       rules: {
         userName: [
@@ -422,7 +463,8 @@ export default {
             message: "请输入正确的手机号码",
             trigger: "blur"
           }
-        ]
+        ],
+        
       }
     };
   },
@@ -432,6 +474,9 @@ export default {
     this.getConfigKey("sys.user.initPassword").then(response => {
       this.initPassword = response.msg;
     });
+    findAll().then(res=>{
+        this.groupOptions=res.data
+      })
   },
   methods: {
     /** 查询用户列表 */
@@ -531,6 +576,7 @@ export default {
         this.title = "添加用户";
         this.form.password = this.initPassword;
       });
+      
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

@@ -6,6 +6,8 @@
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:pplan:add']">新增</el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
+            v-hasPermi="['maintain:pplan:remove']">删除</el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
@@ -33,7 +35,7 @@ import {
 import JmTable from '@/components/JmTable';
 export default {
   name: "Template",
-  dicts: ['mro_plan_cycle_type', 'sys_normal_disable', 'mro_item_type'],
+  dicts: ['mro_plan_cycle_type', 'sys_normal_disable', 'XDJ'],
   computed: {
     // 列信息
     columns() {
@@ -44,13 +46,13 @@ export default {
         { label: '计划结束时间', prop: 'planEndTime', formType: 'date' },
         { label: '计划状态', prop: 'planStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
         { label: '下次执行日期', prop: 'nextExecuteTime', formType: 'date' },
-        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_item_type, },
+        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.XDJ, },
         { label: '周期', prop: 'planCycle', },
         { label: '巡点检周期类别', prop: 'planCycleType', formType: 'select', options: this.dict.type.mro_plan_cycle_type, },
         // { label: '本次执行日期', prop: 'thisExecuteTime', formType: 'date' },
-        { label: '巡点检班组', prop: 'groupId', },
-        { label: '巡点检执行人', prop: 'executor', },
-        { label: '巡点检负责人', prop: 'director', },
+        { label: '巡点检班组', prop: 'groupName', },
+        { label: '巡点检执行人', prop: 'executorName', },
+        { label: '巡点检负责人', prop: 'directorName', },
         { label: '备注', prop: 'remark', },
         // { label: '创建者', prop: 'createBy', },
         // { label: '创建时间', prop: 'createTime', formType: 'date' },
@@ -91,7 +93,7 @@ export default {
         nextExecuteTime: null,
         groupId: null,
         executor: null,
-        director: null,
+        directorName: null,
         remark: null,
         createBy: null,
         createTime: null,
@@ -170,8 +172,9 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const planIds = row.planId || this.ids
+      if(row.planId||this.ids.length>0){
       this.$modal
-        .confirm('是否确认删除巡点检计划名称为"' + row.planName + '"的数据项？')
+        .confirm(!row.planId?'确认删除吗？' :'是否确认删除巡点检计划名称为"' + row.planName + '"的数据项？')
         .then(function () {
           return delPplan(planIds)
         })
@@ -179,7 +182,11 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => { })
+        .catch(() => {this.ids=[]})
+      }
+        else{
+          this.$modal.msgSuccess("请至少选择一项");
+      }
     },
     /** 导出按钮操作 */
     handleExport() {

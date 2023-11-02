@@ -21,7 +21,7 @@
                 <el-col :span="12">
                     <el-form-item label="保养类型" prop="itemType">
                         <el-select v-model="form.itemType" placeholder="请选择保养类型">
-                            <el-option v-for="dict in dict.type.mro_m_item_type" :key="dict.value" :label="dict.label"
+                            <el-option v-for="dict in dict.type.BYJX" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
                     </el-form-item></el-col>
@@ -54,7 +54,7 @@
                 <el-col :span="12">
                     <el-form-item label="下次执行日期" prop="nextExecuteTime">
                         <el-date-picker clearable v-model="form.nextExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择下次执行日期" :disabled="planId != '' && planId"></el-date-picker>
+                            placeholder="请选择下次执行日期" :disabled="(planId != '' && planId)?true:false"></el-date-picker>
                     </el-form-item></el-col>
 
                 <el-col :span="24">
@@ -66,15 +66,23 @@
             <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                 <el-col :span="8">
                     <el-form-item label="保养班组" prop="groupId">
-                        <el-input v-model="form.groupId" placeholder="请输入巡点检班组" />
+                        <el-select v-model="form.groupId" @change="changeGroupId">
+                            <el-option v-for=" item in groupOptions" :key="item.id" :label="item.groupName" 
+                            :value="item.id" >
+                            </el-option>
+                        </el-select>
                     </el-form-item></el-col>
                 <el-col :span="8">
                     <el-form-item label="主要执行人" prop="executor">
-                        <el-input v-model="form.executor" placeholder="请输入巡点检执行人" />
+                        <el-select v-model="form.executor">
+                            <el-option v-for=" item in groupMembers" :key="item.userId" :label="item.nickName" 
+                            :value="item.userId" >
+                            </el-option>
+                        </el-select>
                     </el-form-item></el-col>
                 <el-col :span="8">
                     <el-form-item label="保养负责人" prop="director">
-                        <el-input v-model="form.director" placeholder="请输入巡点检负责人" />
+                        <el-input v-model="form.director" placeholder="请输入巡点检负责人" :disabled="true"/>
                     </el-form-item></el-col>
                 <el-col :span="8">
                     <el-form-item label="其他执行人" prop="otherExecutor">
@@ -87,7 +95,7 @@
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false"
-            @radiochange="radiochange" style="margin-top:20px">
+            @radiochange="radiochange" style="margin-top:20px" :rightToolbarShow='false'>
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:mplan:remove']">查看</el-button>
@@ -100,7 +108,7 @@
         </div>
 
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
-            style="margin-top:20px">
+            style="margin-top:20px" :rightToolbarShow='false'>
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="downloadFile(scope.row)"
                     v-hasPermi="['maintain:mplan:edit']">下载</el-button>
@@ -112,7 +120,7 @@
         </jm-table>
 
         <!-- 添加巡点检路线 -->
-        <el-drawer title="保养路线" :visible.sync="lineForm.choosedrawer" direction="rtl" size="40%" :wrapperClosable="false">
+        <el-drawer title="保养路线" :visible.sync="lineForm.choosedrawer" direction="rtl" size="50%" :wrapperClosable="false">
             <mline :isChoose="false" @submitRadio="submitRadio2" @close="lineForm.choosedrawer = false" :formData="lineForm"
                 v-if="lineForm.choosedrawer"></mline>
         </el-drawer>
@@ -183,12 +191,13 @@
 <script>
 import { getMplan, addMplan, updateMplan, } from "@/api/maintain/mplan";
 import { larchivesList, findByDeviceIdAndItemType } from "@/api/maintain/mline";
+import {findAll,getGroup} from '@/api/system/group';
 import { listResource, addResource, delResource } from "@/api/system/resource";
 import JmTable from "@/components/JmTable";
 import mline from '@/views/maintain/mplan/line'
 export default {
     name: "Template",
-    dicts: ['sys_normal_disable', 'mro_m_item_type', 'mro_m_cycle_type', 'mro_is_photo', 'em_device_state'],
+    dicts: ['sys_normal_disable', 'BYJX', 'mro_m_cycle_type', 'mro_is_photo', 'em_device_state'],
     components: { JmTable, mline },
     computed: {
         columns1() {
@@ -240,6 +249,9 @@ export default {
                 pageSize: 10,
                 planId: undefined,
             },
+            //班组选项
+            groupOptions:[],
+            groupMembers:[],
             // 表单参数
             form: {
                 planId: null,
@@ -340,6 +352,9 @@ export default {
             this.planId = '';
             this.loading = false;
         }
+        findAll({groupType:'BYJX'}).then(res=>{
+        this.groupOptions=res.data
+      })
     },
     methods: {
         beginDate() {
@@ -384,15 +399,31 @@ export default {
             this.lineList = this.lineList.concat(row1)
             this.$set(this.lineForm, 'choosedrawer', false)
         },
+        //选择班组
+        changeGroupId(val){
+            let obj={}
+            obj=this.groupOptions.find(item=>{
+                return item.id==val
+            })
+            this.form.executor=''
+            getGroup(val).then(response=>{
+                this.form.director=response.data.leaderName
+               this.groupMembers= response.data.sysUserGroupList
+            })
+        },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
             getMplan(queryParams).then(response => {
+                getGroup(response.data.groupId).then(res=>{
+                this.groupMembers= res.data.sysUserGroupList
                 let { maintainPlanLineList, fileResourceList, ...other } = response.data;
                 this.form = other;
+                this.form.executor=Number(response.data.executor)
                 this.lineList = maintainPlanLineList || [];
                 this.fileResourceList = fileResourceList || [];
-                this.loading = false;
+                this.loading = false;     
+                })
             }).catch(() => {
                 this.loading = false;
             });

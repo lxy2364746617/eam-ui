@@ -6,6 +6,8 @@
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:item:add']">新增</el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
+            v-hasPermi="['maintain:item:remove']">删除</el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
@@ -53,7 +55,7 @@
         </el-form-item>
         <el-form-item label="巡点检类型:" prop="itemType">
           <el-select v-model="form.itemType" placeholder="请选择巡点检类型">
-            <el-option class="p_input" v-for="dict in dict.type.mro_item_type" :key="dict.value" :label="dict.label"
+            <el-option class="p_input" v-for="dict in dict.type.XDJ" :key="dict.value" :label="dict.label"
               :value="dict.value"></el-option>
           </el-select>
         </el-form-item>
@@ -88,7 +90,7 @@ import JmTable from '@/components/JmTable';
 import fileImport from '@/components/FileImport'
 export default {
   name: 'Item',
-  dicts: ['sys_normal_disable', 'mro_item_method', 'mro_item_type'],
+  dicts: ['sys_normal_disable', 'mro_item_method', 'XDJ'],
   components: { JmTable, fileImport },
   data() {
     return {
@@ -153,7 +155,7 @@ export default {
         { label: '巡点检项目编码', prop: 'itemCode' },
         { label: '巡点检内容', prop: 'itemContent' },
         { label: '巡点检方法', prop: 'itemMethod', formType: 'select', options: this.dict.type.mro_item_method, },
-        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_item_type, },
+        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.XDJ, },
         { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
         { label: '创建人', prop: 'createBy' },
         { label: '创建时间', prop: 'createTime', formType: 'date' },
@@ -271,9 +273,10 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const itemIds = row.itemId || this.ids
+      if(row.itemId||this.ids.length>0){
       this.$modal
         .confirm(
-          '是否确认删除巡点检项目编码为"' + row.itemCode + '"的数据项？'
+          !row.itemId?'确认删除吗？' :'是否确认删除巡点检项目编码为"' + row.itemCode + '"的数据项？'
         )
         .then(function () {
           return delItem(itemIds)
@@ -282,7 +285,10 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => { })
+        .catch(() => {this.ids=[]})
+      }else{
+          this.$modal.msgSuccess("请至少选择一项");
+      }
     },
     /** 导出按钮操作 */
     handleExport() {

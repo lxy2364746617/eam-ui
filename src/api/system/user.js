@@ -133,3 +133,11 @@ export function deptTreeSelect() {
     method: 'get'
   })
 }
+
+// 班组选择人员
+export function groupList() {
+  return request({
+    url: '/system/user/groupList',
+    method: 'get'
+  })
+}

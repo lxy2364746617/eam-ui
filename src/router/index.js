@@ -419,8 +419,27 @@ export const constantRoutes = [
         },
         meta: { title: '定期检验计划管理', icon: '' }
       },
+      
     ]
   },
+  {
+    path: '/system',
+    component: Layout,
+    hidden: true,
+    children:[
+      {
+        path: 'group/add',
+        component: () => import('@/views/system/group/add.vue'),
+        name: 'GroupAdd',
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.i ? '班组管理/编辑' : '班组管理/新增'
+          to.query.d == 'true' ? to.meta.title = '班组管理/查看' : ''
+          next()
+        },
+        meta: { title: '班组管理', icon: '' }
+      },
+    ]
+  }
 ]
 
 // 动态路由，基于用户权限动态去加载

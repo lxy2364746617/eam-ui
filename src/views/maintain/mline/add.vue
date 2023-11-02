@@ -144,7 +144,7 @@ export default {
                 choosedrawer: false,
                 lineCode: '',
                 lineName: '',
-                lineStatus: '',
+                lineStatus: '0',
                 lineId: 1,
             },
             // 关联点检测项目
@@ -236,6 +236,7 @@ export default {
             if (this.selectArr.length == 0) {
                 this.$modal.msgSuccess("请至少选择一项");
             } else {
+                console.log(that.selectArr[0],that.lineList[0],that.selectArr[0]==that.lineList[0])
                 this.$modal.confirm('是否确认删除？').then(function () {
                     that.selectArr.forEach(element => {
                         let index = that.lineList.indexOf(element);

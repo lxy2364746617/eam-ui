@@ -6,6 +6,8 @@
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:standard:add']">新增</el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
+            v-hasPermi="['maintain:standard:remove']">删除</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
@@ -146,6 +148,7 @@ export default {
   methods: {
     /** 查询设备档案下拉树结构 */
     getTree() {
+      console.log(123)
       this.showstate = false;
       equipmentTree().then((response) => {
         this.categoryOptions = response.data
@@ -203,8 +206,9 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const standardIds = row.standardId || this.ids
+      if(row.standardId||this.ids.length>0){
       this.$modal
-        .confirm('是否确认删除设备名称为"' + row.deviceName + '"的数据项？')
+        .confirm(!row.standardId?'确认删除吗？' :'是否确认删除设备名称为"' + row.deviceName + '"的数据项？')
         .then(function () {
           return delStandard(standardIds)
         })
@@ -213,6 +217,9 @@ export default {
           this.$modal.msgSuccess('删除成功')
         })
         .catch(() => { })
+      }else{
+        this.$modal.msgSuccess("请至少选择一项");
+      }
     },
     // 巡点检项目状态修改
     handleStatusChange(event, prop, row) {

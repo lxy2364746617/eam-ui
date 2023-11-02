@@ -6,6 +6,8 @@
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:rplan:add']">新增</el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
+            v-hasPermi="['maintain:rplan:remove']">删除</el-button>
         </el-col>
        <!--  <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
@@ -33,7 +35,7 @@ import {
 import JmTable from '@/components/JmTable';
 export default {
   name: "Template",
-  dicts: ['mro_m_cycle_type', 'sys_normal_disable', 'mro_m_item_type'],
+  dicts: ['mro_m_cycle_type', 'sys_normal_disable'],
   computed: {
     // 列信息
     columns() {
@@ -47,17 +49,6 @@ export default {
         { label: '检测单位', prop: 'supplierName', },
         { label: '内部负责人', prop: 'userName', },
         { label: '本次执行日期', prop: 'thisExecuteTime', formType: 'date' },
-
-/*         { label: '检验类型', prop: 'itemType', formType: 'select', options: this.dict.type.mro_r_item_type, },
-        { label: '检验周期', prop: 'planCycle', },
-        { label: '检验周期类别', prop: 'planCycleType', formType: 'select', options: this.dict.type.mro_r_cycle_type, },
-        { label: '下次执行日期', prop: 'nextExecuteTime', formType: 'date' },
-        { label: '检测单位负责人', prop: 'leader', },
-        { label: '备注', prop: 'remark', },
-        { label: '创建者', prop: 'createBy', },
-        { label: '创建时间', prop: 'createTime', formType: 'date' },
-        { label: '更新者', prop: 'updateBy', },
-        { label: '更新时间', prop: 'updateTime', formType: 'date' }, */
       ]
     },
   },
@@ -111,7 +102,6 @@ export default {
   },
   created() {
     this.getList(this.queryParams)
-    console.log(this.dict.type.sys_normal_disable)
   },
   methods: {
     /** 查询巡点检计划列表 */
@@ -174,8 +164,9 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const planIds = row.planId || this.ids
-      this.$modal
-        .confirm('是否确认删除检验计划名称为"' + row.planName + '"的数据项？')
+      if(row.planId||this.ids.length>0){
+        this.$modal
+        .confirm(!row.planId?'确认删除吗？' :'是否确认删除检验计划名称为"' + row.planName + '"的数据项？')
         .then(function () {
           return delRplan(planIds)
         })
@@ -183,17 +174,11 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => { })
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download(
-        'maintain/rplan/export',
-        {
-          ...this.queryParams,
-        },
-        `rplan_${new Date().getTime()}.xlsx`
-      )
+        .catch(() => {this.ids=[]})
+      }
+      else{
+        this.$modal.msgSuccess("请至少选择一项");
+      }
     },
   },
 }

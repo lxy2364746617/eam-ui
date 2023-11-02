@@ -5,7 +5,7 @@
             <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                     <el-col :span="12">
                     <el-form-item label="检验计划编码" prop="planCode">
-                        <el-input v-model="form.planCode" placeholder="请输入保养计划编码" disabled />
+                        <el-input v-model="form.planCode"  disabled />
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="检验计划名称" prop="planName">
@@ -21,7 +21,7 @@
                 <el-col :span="12">
                     <el-form-item label="检验类型" prop="itemType">
                         <el-select v-model="form.itemType" placeholder="请选择检验类型">
-                            <el-option v-for="dict in dict.type.mro_r_item_type" :key="dict.value" :label="dict.label"
+                            <el-option v-for="dict in dict.type.DQJY" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
                     </el-form-item></el-col>
@@ -54,7 +54,7 @@
                 <el-col :span="12">
                     <el-form-item label="下次执行日期" prop="nextExecuteTime">
                         <el-date-picker clearable v-model="form.nextExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择下次执行日期" :disabled="planId != '' && planId"></el-date-picker>
+                            placeholder="请选择下次执行日期" :disabled="(planId != '' && planId)?true:false"></el-date-picker>
                     </el-form-item></el-col>
 
                 <el-col :span="24">
@@ -78,7 +78,7 @@
                 <el-col :span="8">
                     <el-form-item label="内部负责人" prop="userId">
                         <el-select v-model="form.userId" placeholder="请选择内部负责人">
-                            <el-option v-for="dict in userArr" :key="dict.userId" :label="dict.userName"
+                            <el-option v-for="dict in userArr" :key="dict.userId" :label="dict.dickName"
                                 :value="dict.userId"></el-option>
                         </el-select>
                     </el-form-item></el-col>
@@ -88,8 +88,8 @@
             <el-button type="text" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
-        <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false"
-            @radiochange="radiochange" style="margin-top:20px">
+        <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false" 
+             style="margin-top:20px" :rightToolbarShow="false" @handleSelectionChange="handleSelectionChange">
             <template #end_handle="scope">
                 <!-- <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:rplan:remove']">查看</el-button> -->
@@ -100,9 +100,8 @@
         <div class="title" style="margin-top: 20px;">关联文档
             <el-button type="text" @click="AddFile" v-hasPermi="['maintain:rplan:add']">上传</el-button>
         </div>
-
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
-            style="margin-top:20px">
+            style="margin-top:20px" :rightToolbarShow="false">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="downloadFile(scope.row)"
                     v-hasPermi="['maintain:rplan:edit']">下载</el-button>
@@ -118,53 +117,6 @@
             <parentdevice :isChoose="false" @submitRadio="submitRadio2" @close="lineForm.choosedrawer = false" :formData="lineForm"
                 v-if="lineForm.choosedrawer">
             </parentdevice>
-        </el-drawer>
-        <el-drawer title="关联文档 " :visible.sync="deviceForm.choosedrawer" direction="rtl" size="80%"
-            :wrapperClosable="false">
-            <el-table v-loading="deviceForm.loading" :data="deviceList" ref="queryTable2">
-                <el-table-column type="selection" width="55" align="center" />
-                <el-table-column label="序号" align="center" type="index" />
-                <el-table-column label="设备编码" align="center" prop="deviceCode" min-width="150" />
-                <el-table-column label="设备名称" align="center" prop="deviceName" min-width="150"></el-table-column>
-                <el-table-column label="规格型号" align="center" prop="specs" min-width="150" />
-                <el-table-column label="设备类别" align="center" prop="categoryName" min-width="150"></el-table-column>
-                <el-table-column label="功能位置" align="center" prop="location" min-width="150"></el-table-column>
-                <el-table-column label="所属子公司" align="center" prop="subCompanyName" min-width="150"></el-table-column>
-                <el-table-column label="所属组织" align="center" prop="affDeptName" min-width="150" />
-                <el-table-column label="设备状态" align="center" prop="deviceStatus">
-                    <template slot-scope="scope">
-                        <span v-html="findName(dict.type.em_device_state, scope.row.deviceStatus)"></span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="日常保养" align="center" prop="dayNum" min-width="150">
-                    <template slot-scope="scope">
-                        <span class="viewSpan" @click="viewFun('RCBY', scope.row.deviceId, scope.row.dayNum)">{{
-                            scope.row.dayNum }} 浏览</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="一级保养" align="center" prop="oNum" min-width="150">
-                    <template slot-scope="scope">
-                        <span class="viewSpan" @click="viewFun('YJBY', scope.row.deviceId, scope.row.oNum)">{{
-                            scope.row.oNum }} 浏览</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="二级保养" align="center" prop="tNum" min-width="150">
-                    <template slot-scope="scope">
-                        <span class="viewSpan" @click="viewFun('EJBY', scope.row.deviceId, scope.row.tNum)">{{
-                            scope.row.tNum }} 浏览</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="常规润滑" align="center" prop="cNum" min-width="150">
-                    <template slot-scope="scope">
-                        <span class="viewSpan" @click="viewFun('CGRH', scope.row.deviceId, scope.row.cNum)">{{
-                            scope.row.cNum }} 浏览</span>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </el-drawer>
-        <el-drawer :title="title" :visible.sync="drawer" direction="rtl" size="60%" :wrapperClosable="false">
-            <jm-table :tableData="lineList" ref="jmtable" :columns="columns">
-            </jm-table>
         </el-drawer>
 
 
@@ -188,11 +140,11 @@ import { getRplan, addRplan, updateRplan,gysfindAll,userfindAll } from "@/api/ma
 import { larchivesList, findByDeviceIdAndItemType } from "@/api/maintain/mline";
 import { listResource, addResource, delResource } from "@/api/system/resource";
 import JmTable from "@/components/JmTable";
-import Cookies from "js-cookie";
+import { login, logout, getInfo } from '@/api/login'
 import parentdevice from '@/views/device/book/device'
 export default {
     name: "Template",
-    dicts: ['sys_normal_disable', 'mro_r_item_type', 'mro_m_cycle_type', 'mro_is_photo', 'em_device_state','em_is_special'],
+    dicts: ['sys_normal_disable', 'DQJY', 'mro_m_cycle_type', 'mro_is_photo', 'em_device_state','em_is_special'],
     components: { JmTable ,parentdevice},
     computed: {
         columns1() {
@@ -214,21 +166,6 @@ export default {
                 { label: '创建时间', prop: 'createTime', },
                 { label: '创建人', prop: 'createBy', },
                 { label: '文件大小', prop: 'fileSize', },
-            ]
-        },
-        // 列信息
-        columns() {
-            return [
-                { label: '部件', prop: 'partsName', },
-                { label: '保养项编码', prop: 'itemCode' },
-                { label: '保养项名称', prop: 'itemName', },
-                { label: '保养部位', prop: 'itemArea', },
-                { label: '保养内容', prop: 'itemContent', },
-                { label: '保养标准', prop: 'checkStandard', },
-                { label: '点数', prop: 'checkNum', },
-                { label: '周期', prop: 'checkCycle', },
-                { label: '保养周期类别', prop: 'checkCycleType', formType: 'selectTag', options: this.dict.type.mro_m_cycle_type, span: 24, },
-                { label: '保养工具', prop: 'itemTool', },
             ]
         },
 
@@ -277,7 +214,6 @@ export default {
             title: "关键点检测",
             //线路数组
             choosedrawer: false,
-            lineList: [],
             selectArr: [],
             lineForm: {
                 choosedrawer: false,
@@ -298,6 +234,7 @@ export default {
             filedrawer: false,
             fileType: ['png', 'jpg', 'bmp', 'jpeg', 'pdf', 'gif'],
             fileResourceList: [],
+            username:"",
             // 表单校验
             rules: {
                 planName: [
@@ -327,12 +264,12 @@ export default {
                 nextExecuteTime: [
                     { required: true, message: '下次执行日期不能为空', trigger: 'blur' },
                 ],
-                supplierId: [
+                /* supplierId: [
                     { required: true, message: '检测单位不能为空', trigger: 'blur' },
                 ],
                 leader: [
                     { required: true, message: '检测单位负责人不能为空', trigger: 'blur' },
-                ],
+                ], */
                 userId: [
                     { required: true, message: '内部负责人不能为空', trigger: 'blur' },
                 ],
@@ -342,7 +279,6 @@ export default {
         };
     },
     created() {
-        console.log(this.dict)
         this.disabled = this.$route.query.d == 'true';
         if (this.$route.query.l) {
             this.planId = this.$route.query.l;
@@ -351,8 +287,10 @@ export default {
             this.planId = '';
             this.loading = false;
         }
-        this.findAll()
-        
+        getInfo().then(res=>{
+            this.username=res.user.userName
+            this.findAll()
+        })
     },
     methods: {
         beginDate() {
@@ -397,12 +335,7 @@ export default {
             this.form.leader=obj.contacts
         },
         submitRadio2(row) {
-            console.log(row)
-            let row1 = row.map(item => {
-                item.isPhoto = 'Y';
-                return item
-            })
-            this.lineList = this.lineList.concat(row1)
+            this.lineList = this.lineList.concat(row)
             this.$set(this.lineForm, 'choosedrawer', false)
         },
         /** 查询设备平台_表单模板列表 */
@@ -413,8 +346,6 @@ export default {
                 this.form = other;
                 this.lineList = mroRegularPlanArchivesList || [];
                 this.fileResourceList = fileResourceList || [];
-                this.lineForm.disIds=mroRegularPlanArchivesList
-                console.log(this.lineForm.disIds)
                 this.loading = false;
             }).catch(() => {
                 this.loading = false;
@@ -429,15 +360,15 @@ export default {
                 if(!this.$route.query.l){
                    let obj={}
                    obj=this.userArr.find(item=>{
-                        return item.userName==Cookies.get("username")
+                        return item.userName==this.username
                     })
-                    this.form.userId=obj.userId
+                     this.form.userId=obj.userId 
                 }
             })
         },
         /** 新增按钮操作 */
         handleAdd() {
-            let lineIds = this.lineList.map(item => item.lineId) || [];
+            let lineIds = this.lineList.map(item => item.deviceId) || [];
             this.$set(this.lineForm, 'disIds', lineIds)
             this.$set(this.lineForm, 'choosedrawer', true)
         },
@@ -445,7 +376,7 @@ export default {
         handleDelete(scope) {
             var that = this;
             this.$modal.confirm('是否确认删除？').then(function () {
-                that.lineList.splice(scope.$index, 1);
+                that.lineList.splice(scope.index, 1);
             }).catch(() => { });
         },
         allDelete() {
@@ -454,10 +385,9 @@ export default {
                 this.$modal.msgSuccess("请至少选择一项");
             } else {
                 this.$modal.confirm('是否确认删除？').then(function () {
-                    that.selectArr.forEach(element => {
-                        let index = that.lineList.indexOf(element);
-                        that.lineList.splice(index, 1);
-                    });
+                    that.lineList=that.lineList.filter(element=>{
+                      return !that.selectArr.some(item=>item.deviceId===element.deviceId)
+                    })
                 }).catch(() => { });
             }
         },
@@ -468,7 +398,6 @@ export default {
         /** 提交按钮 */
         submitForm() {
             let that = this;
-            console.log(that.lineList)
             that.$refs['form'].validate((valid) => {
                 if (valid) {
                     that.btnLoading = true;
@@ -533,14 +462,6 @@ export default {
                 })
             }
         },
-        //线列表修改拍照状态
-        radiochange(event, prop, row) {
-            this.lineList.forEach((item, index) => {
-                if (item.lineId == row.lineId) {
-                    item.isPhoto = row.isPhoto
-                }
-            })
-        },
         findName(options, value) {
             var name = ''
             for (let i = 0; i < options.length; i++) {
@@ -549,17 +470,6 @@ export default {
                 }
             }
             return name || value
-        },
-        //查看线路下的设备 
-        showLine(row) {
-            this.$set(this.deviceForm, 'loading', true)
-            this.$set(this.deviceForm, 'choosedrawer', true)
-            larchivesList({ lineId: row.lineId }).then(res => {
-                this.deviceList = res.data || [];
-                this.$set(this.deviceForm, 'loading', false)
-            }).catch(() => {
-                this.$set(this.deviceForm, 'loading', false)
-            });
         },
         //上传文件
         AddFile() {
@@ -573,6 +483,7 @@ export default {
         },
         /** 删除按钮操作 */
         handleDelete2(row) {
+            
             var name = row.originalFileName;
             let that = this;
             this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function () {

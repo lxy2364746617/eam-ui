@@ -1,11 +1,13 @@
 <template>
   <div class="app-container">
-    <jm-table :tableData="mstandardList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
+    <jm-table v-if="showstate" :tableData="mstandardList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
       ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:mstandard:add']">新增</el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
+            v-hasPermi="['maintain:mstandard:remove']">删除</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
@@ -42,6 +44,8 @@ import {
   changeItemStatus
 } from '@/api/maintain/mstandard'
 import JmTable from '@/components/JmTable';
+import { equipmentTree } from '@/api/equipment/category';
+import { listDept } from '@/api/system/dept';
 export default {
   name: "Template",
   dicts: ['em_is_special', 'sys_normal_disable'],
@@ -81,6 +85,10 @@ export default {
         updateBy: null,
         updateTime: null,
       },
+      categoryOptions: [],
+      showstate: true,
+      valueMap: {},
+      deptOptions: [],
       // 表单校验
       rules: {
         standardId: [
@@ -96,11 +104,11 @@ export default {
         { label: '设备编码', prop: 'deviceCode', class: true },
         { label: '设备名称', prop: 'deviceName' },
         { label: '规格型号', prop: 'specs', },
-        { label: '设备类别', prop: 'categoryId' },
+        { label: '设备类别', prop: 'categoryId',formType: 'selectTree',  options: this.categoryOptions,width:280 },
         { label: '功能位置', prop: 'location', },
         // { label: '是否特种设备', prop: 'isSpecial', formType: 'select', options: this.dict.type.em_is_special, },
-        { label: '当前使用组织', prop: 'currDeptId', },
-        { label: '所属组织', prop: 'affDeptId', },
+        { label: '当前使用组织', prop: 'currDeptId', formType: 'selectTree', options: this.deptOptions,width:180},
+        { label: '所属组织', prop: 'affDeptId', formType: 'selectTree', options: this.deptOptions,width:180},
         { label: '状态', prop: 'standardStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
         // { label: '备注', prop: 'remark' },
         { label: '创建人', prop: 'createBy' },
@@ -112,8 +120,39 @@ export default {
   },
   created() {
     this.getList()
+    this.getTree()
+    this.getTreeSelect()
   },
   methods: {
+    /** 查询设备档案下拉树结构 */
+    getTree() {
+      this.showstate = false;
+      equipmentTree().then((response) => {
+        this.categoryOptions = response.data
+        // 方便获取父级tree;
+        this.loops(this.categoryOptions)
+      }).then(() => {
+        this.showstate = true;
+      })
+    },
+    /** 查询部门下拉树结构 */
+    getTreeSelect() {
+      listDept().then((response) => {
+        this.deptOptions = response.data
+      })
+    },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        })
+        node.children = this.loops(children, node)
+        return node
+      })
+    },
     /** 查询保养检修标准列表 */
     getList() {
       this.loading = true
@@ -164,9 +203,10 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const standardIds = row.standardId || this.ids
+      if(row.standardId||this.ids.length>0){
       this.$modal
         .confirm(
-          '是否确认删除保养检修标准编号为"' + standardIds + '"的数据项？'
+          !row.standardId?'确认删除吗？' :'是否确认删除保养检修标准编号为"' + standardIds + '"的数据项？'
         )
         .then(function () {
           return delMstandard(standardIds)
@@ -175,7 +215,10 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => { })
+        .catch(() => {this.ids=[]})
+        }else{
+          this.$modal.msgSuccess("请至少选择一项");
+      }
     },
     /** 导出按钮操作 */
     handleExport() {

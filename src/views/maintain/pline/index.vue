@@ -6,6 +6,8 @@
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
             v-hasPermi="['maintain:pline:add']">新增</el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
+            v-hasPermi="['maintain:pline:remove']">删除</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
@@ -142,8 +144,9 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const lineIds = row.lineId || this.ids
+      if(row.lineId||this.ids.length>0){
       this.$modal
-        .confirm('是否确认删除巡点检路线名称为"' + row.lineName + '"的数据项？')
+        .confirm(!row.lineId?'确认删除吗？' :'是否确认删除巡点检路线名称为"' + row.lineName + '"的数据项？')
         .then(function () {
           return delPline(lineIds)
         })
@@ -151,7 +154,11 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => { })
+        .catch(() => {this.ids=[]})
+      }else
+      {
+        this.$modal.msgSuccess("请至少选择一项");
+      }
     },
     /** 导出按钮操作 */
     handleExport() {

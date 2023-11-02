@@ -5,7 +5,7 @@
             <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                 <el-col :span="12">
                     <el-form-item label="巡点检计划编码" prop="planCode">
-                        <el-input v-model="form.planCode" placeholder="请输入路线编码" disabled />
+                        <el-input v-model="form.planCode" placeholder="请输入路线编码" :disabled="true" />
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="巡点检计划名称" prop="planName">
@@ -21,7 +21,7 @@
                 <el-col :span="12">
                     <el-form-item label="巡点检类型" prop="itemType">
                         <el-select v-model="form.itemType" placeholder="请选择巡点检类型">
-                            <el-option v-for="dict in dict.type.mro_item_type" :key="dict.value" :label="dict.label"
+                            <el-option v-for="dict in dict.type.XDJ" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
                     </el-form-item></el-col>
@@ -49,12 +49,12 @@
                 <el-col :span="12">
                     <el-form-item label="本次执行日期" prop="thisExecuteTime">
                         <el-date-picker clearable v-model="form.thisExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择本次执行日期" disabled></el-date-picker>
+                            placeholder="请选择本次执行日期" :disabled="true"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="下次执行日期" prop="nextExecuteTime">
                         <el-date-picker clearable v-model="form.nextExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择下次执行日期" :disabled="planId != '' && planId"></el-date-picker>
+                            placeholder="请选择下次执行日期" :disabled="(planId != '' && planId)?true:false"></el-date-picker>
                     </el-form-item></el-col>
 
                 <el-col :span="24">
@@ -64,17 +64,27 @@
             </el-row>
             <div class="title">人员配置</div>
             <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
-                <el-col :span="8">
+                <el-col :span="7" >
                     <el-form-item label="巡点检班组" prop="groupId">
-                        <el-input v-model="form.groupId" placeholder="请输入巡点检班组" />
+                        <el-select v-model="form.groupId" @change="changeGroupId">
+                            <el-option v-for=" item in groupOptions" :key="item.id" :label="item.groupName" 
+                            :value="item.id" >
+                            </el-option>
+                        </el-select>
+                        
+                    </el-form-item>
+                </el-col>
+                <el-col :span="10">
+                    <el-form-item label="巡点检执行人" prop="executors">
+                        <el-select v-model="form.executors" multiple>
+                            <el-option v-for="item in groupMembers" :key="item.userId" :label="item.nickName" 
+                            :value="item.userId" >
+                            </el-option>
+                        </el-select>
                     </el-form-item></el-col>
-                <el-col :span="8">
-                    <el-form-item label="巡点检执行人" prop="executor">
-                        <el-input v-model="form.executor" placeholder="请输入巡点检执行人" />
-                    </el-form-item></el-col>
-                <el-col :span="8">
-                    <el-form-item label="巡点检负责人" prop="director">
-                        <el-input v-model="form.director" placeholder="请输入巡点检负责人" />
+                <el-col :span="7">
+                    <el-form-item label="巡点检负责人" prop="directorName">
+                        <el-input v-model="form.directorName" placeholder="请输入巡点检负责人" :disabled="true" />
                     </el-form-item></el-col>
             </el-row>
         </el-form>
@@ -83,7 +93,7 @@
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="plineList" ref="jmtable1" :columns="columns1" :showSearch="false"
-            @radiochange="radiochange" style="margin-top:20px">
+            @radiochange="radiochange" style="margin-top:20px" :rightToolbarShow="false">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:pline:remove']">查看</el-button>
@@ -96,7 +106,7 @@
         </div>
 
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
-            style="margin-top:20px">
+            style="margin-top:20px" :rightToolbarShow="false">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="downloadFile(scope.row)"
                     v-hasPermi="['maintain:pplan:edit']">下载</el-button>
@@ -175,11 +185,13 @@
 import { getPplan, addPplan, updatePplan, } from "@/api/maintain/pplan";
 import { larchivesList, findByDeviceIdAndItemType } from "@/api/maintain/pline";
 import { listResource, addResource, delResource } from "@/api/system/resource";
+import {findAll,getGroup} from '@/api/system/group';
 import JmTable from "@/components/JmTable";
 import pline from '@/views/maintain/pplan/pline'
+import { number } from 'echarts';
 export default {
     name: "Template",
-    dicts: ['sys_normal_disable', 'mro_item_type', 'mro_plan_cycle_type', 'mro_s_check_status', 'mro_is_photo', 'em_device_state'],
+    dicts: ['sys_normal_disable','XDJ', 'mro_plan_cycle_type', 'mro_s_check_status', 'mro_is_photo', 'em_device_state'],
     components: { JmTable, pline },
     computed: {
         columns1() {
@@ -234,6 +246,9 @@ export default {
                 pageSize: 10,
                 planId: undefined,
             },
+            //班组选项
+            groupOptions:[],
+            groupMembers:[],
             // 表单参数
             form: {
                 planId: null,
@@ -249,7 +264,9 @@ export default {
                 nextExecuteTime: null,
                 groupId: null,
                 executor: null,
-                director: null,
+                executors:[],
+                directorName: null,
+                directorName:null,
                 remark: null,
                 createBy: null,
                 createTime: null,
@@ -313,12 +330,12 @@ export default {
                 groupId: [
                     { required: true, message: '巡点检班组不能为空', trigger: 'blur' },
                 ],
-                executor: [
-                    { required: true, message: '巡点检执行人日期不能为空', trigger: 'blur' },
+                executors: [
+                    { required: true, message: '巡点检执行人不能为空', trigger: 'blur' },
                 ],
-                director: [
+                /* directorName: [
                     { required: true, message: '巡点检负责人不能为空', trigger: 'blur' },
-                ],
+                ], */
             },
             startDatePicker: this.beginDate(),
             endDatePicker: this.processDate(),
@@ -333,6 +350,9 @@ export default {
             this.planId = '';
             this.loading = false;
         }
+        findAll({groupType:'XDJ'}).then(res=>{
+        this.groupOptions=res.data
+      })
     },
     methods: {
         beginDate() {
@@ -377,17 +397,34 @@ export default {
             this.plineList = this.plineList.concat(row1)
             this.$set(this.plineForm, 'choosedrawer', false)
         },
+        //选择班组
+        changeGroupId(val){
+            let obj={}
+            obj=this.groupOptions.find(item=>{
+                return item.id==val
+            })
+            this.form.director=obj.leaderId
+            this.form.directorName=obj.leaderName
+            this.form.executors=[]
+            getGroup(val).then(response=>{
+               this.groupMembers= response.data.sysUserGroupList
+            })
+        },       
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;
             getPplan(queryParams).then(response => {
+                getGroup(response.data.groupId).then(res=>{
+                this.groupMembers= res.data.sysUserGroupList
                 let { mroPatrolPlanLineList, fileResourceList, ...other } = response.data;
                 this.form = other;
                 this.plineList = mroPatrolPlanLineList || [];
                 this.fileResourceList = fileResourceList || [];
                 this.loading = false;
+                this.form.executors=response.data.executor.split(',').map(item=>Number(item))
+                })
             }).catch(() => {
-                this.loading = false;
+                this.loading = false
             });
         },
         /** 新增按钮操作 */
@@ -428,12 +465,13 @@ export default {
                     that.btnLoading = true;
                     let data = {
                         ...that.form,
+                        executor:that.form.executors.join(','),
                         mroPatrolPlanLineList: that.plineList.map(item => {
                             return { lineId: item.lineId, isPhoto: item.isPhoto }
                         }),
                         fileResourceList: that.fileResourceList
                     }
-                    if (that.planId != '' && that.planId) {
+                     if (that.planId != '' && that.planId) {
                         data.planId = that.planId;
                         updatePplan(data).then(response => {
                             that.$modal.msgSuccess("修改成功");
@@ -449,7 +487,7 @@ export default {
                         }).catch((err) => {
                             that.btnLoading = false;
                         });
-                    }
+                    } 
                 }
             })
         },
