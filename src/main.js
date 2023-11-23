@@ -42,7 +42,8 @@ import VueMeta from 'vue-meta'
 import DictData from '@/components/DictData'
 
 import Tinymce from '@/components/tinymce/index.vue'
-
+import TitleForm from "@/components/TitleForm/index.vue";
+import CarryForm from "@/components/CarryForm/index.vue";
 
 
 
@@ -67,6 +68,8 @@ Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
 Vue.component('tinymce', Tinymce)
+Vue.component("TitleForm", TitleForm);
+Vue.component("CarryForm", CarryForm);
 
 Vue.use(directive)
 Vue.use(plugins)
