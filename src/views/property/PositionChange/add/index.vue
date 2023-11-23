@@ -50,7 +50,7 @@ export default {
       title: "",
       isEdit: true,
       // 头部表单
-      formData: { applyDeptPerson: this.$store.state.user.standing.nickName },
+      formData: { applyPersonName: this.$store.state.user.standing.nickName },
     };
   },
   created() {},

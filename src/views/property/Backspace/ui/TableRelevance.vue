@@ -20,7 +20,7 @@
             :before-upload="handleBeforeUpload"
             :on-success="handleUploadSuccess"
             :on-error="handleUploadError"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:backspace:add']"
             name="file"
             :show-file-list="false"
             :headers="headers"
@@ -38,7 +38,7 @@
             size="mini"
             :loading="btnLoading"
             @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:backspace:add']"
             >下载</el-button
           >
         </el-col>
@@ -50,7 +50,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:backspace:edit']"
           >下载</el-button
         >
 
@@ -60,15 +60,15 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:backspace:remove']"
           >删除</el-button
         >
         <el-button
           size="mini"
           type="text"
           icon="el-icon-document-add"
-          @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          @click="handlePreview(scope.row)"
+          v-hasPermi="['property:backspace:edit']"
           >预览</el-button
         >
       </template>
@@ -166,6 +166,9 @@ export default {
   },
   mounted() {},
   methods: {
+    handlePreview(row) {
+      window.open(process.env.VUE_APP_BASE_API + row.fileName);
+    },
     importHandler() {},
     // 上传前校检格式和大小
     handleBeforeUpload(file) {

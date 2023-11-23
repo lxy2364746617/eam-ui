@@ -19,7 +19,7 @@
           size="mini"
           :loading="btnLoading"
           @click="handleAdd"
-          v-hasPermi="['equipment:book:add']"
+          v-hasPermi="['property:position:add']"
           >新增</el-button
         >
         <el-button
@@ -28,7 +28,7 @@
           icon="el-icon-download"
           size="mini"
           @click="exportWarnLog"
-          v-hasPermi="['equipment:book:add']"
+          v-hasPermi="['property:position:add']"
           >下载</el-button
         >
       </template>
@@ -39,7 +39,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:position:edit']"
           >详情</el-button
         >
         <el-button
@@ -49,7 +49,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:position:edit']"
           >编辑</el-button
         >
         <el-button
@@ -58,7 +58,7 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:position:remove']"
           >删除</el-button
         >
 
@@ -68,7 +68,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:position:edit']"
           >提交</el-button
         >
         <el-button
@@ -76,8 +76,8 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
-          >审批流程</el-button
+          v-hasPermi="['property:position:edit']"
+          >审批流</el-button
         >
       </template>
     </jm-table>
@@ -99,6 +99,7 @@ import addEdit from "@/views/device/book/add";
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
 import { listDept } from "@/api/system/dept";
+import { saveAs } from "file-saver";
 export default {
   components: {
     JmTable,
@@ -190,7 +191,6 @@ export default {
   mounted() {},
   methods: {
     exportWarnLog(data) {
-      
       download({ ids: this.ids }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
@@ -324,7 +324,6 @@ export default {
       //       componentContent: response.data,
       //       fieldValue: {},
       //     };
-      //     console.log("========================", 123213123123);
       //     this.addEdit = true;
       //     this.title = "新增设备";
       //     this.btnLoading = false;

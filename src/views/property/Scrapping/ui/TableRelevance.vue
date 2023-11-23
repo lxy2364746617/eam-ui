@@ -21,9 +21,6 @@
           @click="showAddDrawer"
           >新增</el-button
         >
-        <el-button type="primary" plain size="mini" icon="el-icon-download"
-          >下载</el-button
-        >
       </template>
       <template #end_handle="scope" v-if="!isChoose">
         <el-button
@@ -32,7 +29,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:scrapping:edit']"
           >详情</el-button
         >
         <el-button
@@ -41,7 +38,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:scrapping:edit']"
           >修改</el-button
         >
         <el-button
@@ -49,7 +46,7 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:scrapping:remove']"
           >删除</el-button
         >
         <el-button
@@ -57,7 +54,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:scrapping:edit']"
           >提交</el-button
         >
       </template>

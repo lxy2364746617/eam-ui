@@ -21,7 +21,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:position:add']"
             >选取设备</el-button
           >
         </el-col>
@@ -33,7 +33,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleUpdate"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:position:add']"
             >批量设置</el-button
           >
         </el-col>
@@ -45,7 +45,7 @@
             size="mini"
             :loading="btnLoading"
             @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:position:add']"
             >下载</el-button
           >
         </el-col>
@@ -57,7 +57,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit', 1)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:position:edit']"
           >编辑</el-button
         >
         <el-button
@@ -65,7 +65,7 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:position:remove']"
           >删除</el-button
         >
       </template>
@@ -424,8 +424,8 @@ export default {
         }
         let matches = getStore("equipmentList").filter((item) => {
           for (let key in search) {
-            if (item[key] !== search[key]) {
-              if (search[key] == "") return true;
+            if (item[key] != search[key]) {
+              if (search[key] == "") continue;
               return false;
             }
           }
@@ -469,13 +469,13 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      if (this.title === "批量设置") {
+      if (this.title !== "单个设置") {
         this.ids = selection.map((item) => item.id);
-        this.single = selection.length != 1;
-        this.multiple = !selection.length;
-        this.radioRow = selection[0];
-        this.rowArr = selection;
       }
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
+      this.radioRow = selection[0];
+      this.rowArr = selection;
     },
     // 多选框选中数据
     handleSelectionChange2(selection) {
@@ -601,7 +601,7 @@ export default {
         if (this.ids.length) {
           this.formData = {};
           this.editor = true;
-          this.itemValue = this.rowArr;
+          this.itemValue = JSON.parse(JSON.stringify(this.rowArr));
         } else {
           this.$message.error("请选择一行数据进行修改!");
           return;
@@ -609,8 +609,8 @@ export default {
       } else {
         this.title = "单个设置";
         this.editor = true;
-        this.formData = row;
-        this.itemValue = [row];
+        this.formData = JSON.parse(JSON.stringify(row));
+        this.itemValue = [JSON.parse(JSON.stringify(row))];
       }
     },
     submitFormAdd() {
@@ -619,7 +619,6 @@ export default {
         this.itemValue.forEach((i) => {
           i["targetDeviceStatus"] = this.formData["targetDeviceStatus"][0];
           i["targetLocation"] = this.formData["targetLocation"];
-          console.log("========================", this.formData.orgId);
           if (i.id) {
             if (getStore("updateList") && getStore("updateList").length > 0) {
               setStore(
@@ -627,7 +626,6 @@ export default {
                 getStore("updateList").filter((item) => item.id != i.id)
               );
               setStore("updateList", getStore("updateList").concat(i));
-              console.log("========================", i);
             } else {
               setStore("updateList", [i]);
             }

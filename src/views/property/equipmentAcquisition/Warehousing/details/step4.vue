@@ -53,7 +53,7 @@
       :wrapperClosable="false">
       <file-upload 
         :drag="true"
-        style="padding: 0 20px;"
+        style="margin-left: 20px;"
         :extraData="{'category':2}"
         @uploadChange="uploadChange2"
         :listType="'picture-card'">

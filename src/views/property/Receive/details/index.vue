@@ -67,7 +67,6 @@ export default {
   },
   created() {
     const routeValue = this.$route.query.item;
-    console.log("========================", routeValue);
     this.formData = routeValue;
     this.formData["isBtn"] = 1;
     this.isEdit = routeValue.isEdit;

@@ -5,7 +5,7 @@
       :formData="formData"
       @formData2="receiveDataFromChild"
     ></HeadEdit>
-    <TableProject :isShow="true" :rowId="formData.id"
+    <TableProject :isShow="true" :rowId="formData.purchasePlanNo"
       ><template
         ><p class="icon">
           <svg
@@ -23,7 +23,10 @@
         </p></template
       ></TableProject
     >
-    <TableRelevance :isShow="true" :title="'关联附件'"
+    <TableRelevance
+      :isShow="true"
+      :title="'关联附件'"
+      :busNo="formData.purchasePlanNo"
       ><template>
         <p class="icon">
           <svg
@@ -71,16 +74,17 @@ export default {
       },
     };
   },
-  created() {},
-  mounted() {
-    this.title = this.$route.meta.title;
+  created() {
     const routeValue = this.$route.query.item;
     if (routeValue) {
       this.formData = routeValue;
+
       this.formData.time = [routeValue.startTime, routeValue.endTime];
-      this.formData["isBtn"] = 1;
       this.isEdit = routeValue.isEdit;
     }
+  },
+  mounted() {
+    this.title = this.$route.meta.title;
   },
   computed: {},
   methods: {

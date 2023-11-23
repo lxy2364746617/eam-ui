@@ -71,7 +71,7 @@
                 icon="el-icon-download"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['equipment:book:add']"
+                v-hasPermi="['property:prescription:add']"
                 >下载</el-button
               >
             </el-col>

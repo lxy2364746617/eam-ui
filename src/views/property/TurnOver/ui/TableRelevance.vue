@@ -20,7 +20,7 @@
             :before-upload="handleBeforeUpload"
             :on-success="handleUploadSuccess"
             :on-error="handleUploadError"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:turnOver:add']"
             name="file"
             :show-file-list="false"
             :headers="headers"
@@ -28,18 +28,6 @@
             ><el-button type="primary" size="mini" plain icon="el-icon-upload"
               >导入</el-button
             ></el-upload
-          >
-        </el-col>
-        <el-col :span="1.5" v-else>
-          <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            :loading="btnLoading"
-            @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
-            >下载</el-button
           >
         </el-col>
       </template>
@@ -50,7 +38,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:turnOver:edit']"
           >下载</el-button
         >
 
@@ -60,15 +48,15 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:turnOver:remove']"
           >删除</el-button
         >
         <el-button
           size="mini"
           type="text"
           icon="el-icon-document-add"
-          @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          @click="handlePreview(scope.row)"
+          v-hasPermi="['property:turnOver:edit']"
           >预览</el-button
         >
       </template>
@@ -166,7 +154,9 @@ export default {
   },
   mounted() {},
   methods: {
-    importHandler() {},
+    handlePreview(row) {
+      window.open(process.env.VUE_APP_BASE_API + row.fileName);
+    },
     // 上传前校检格式和大小
     handleBeforeUpload(file) {
       // 校检文件大小

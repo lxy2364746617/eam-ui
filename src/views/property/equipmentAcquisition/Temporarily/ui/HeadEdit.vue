@@ -145,16 +145,16 @@ export default {
   watch: {
     formData: {
       handler(newFormData, oldFormData) {
-        this.$emit("formData2", newFormData);
+        if (!this.isEdit) {
+          this.$emit("formData2", newFormData);
+        }
       },
       deep: true, // 深层监听
     },
   },
 
   created() {},
-  mounted() {
-    console.log("========================", this.formData2);
-  },
+  mounted() {},
   methods: {},
 };
 </script>

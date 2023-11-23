@@ -3,7 +3,8 @@
     <HeadEdit
       :isEdit="isEdit"
       :formData="formData"
-      @formData2="receiveDataFromChild"
+      @submitForm="submitForm2"
+      ref="headEdit"
     ></HeadEdit>
     <TableProject :isShow="false"
       ><template
@@ -89,23 +90,17 @@ export default {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
+    submitForm2(row) {
+      this.formData = { ...this.formData, ...row };
+    },
     submit() {
       if (getStore("addList") && getStore("addList").length > 0) {
         this.formData["addDetails"] = getStore("addList");
       } else {
         this.formData["addDetails"] = [];
       }
-      // if (getStore("updateList") && getStore("updateList").length > 0) {
-      //   this.formData["updateList"] = getStore("updateList");
-      // }
-      // if (getStore("delList") && getStore("delList").length > 0) {
-      //   this.formData["delList"] = getStore("delList");
-      // }
-      // if (getStore("addFileList") && getStore("addFileList").length > 0) {
-      //   this.formData["addFileList"] = getStore("addFileList");
-      // } else {
-      //   this.formData["addFileList"] = [];
-      // }
+      this.$refs.headEdit.saveHandle();
+
       setProject(this.formData).then((res) => {
         if (res.code === 200) {
           this.$message({

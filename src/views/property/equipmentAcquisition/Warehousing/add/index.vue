@@ -181,9 +181,6 @@ export default {
     getFormDataParams() {
       var formData = JSON.parse(JSON.stringify(this.formData));
       if (window.sessionStorage.getItem("purchasePlanDetailId")) {
-        formData["id"] = Number(
-          window.sessionStorage.getItem("purchasePlanDetailId")
-        );
         formData["purchasePlanDetailId"] = Number(
           window.sessionStorage.getItem("purchasePlanDetailId")
         );

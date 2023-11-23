@@ -173,6 +173,13 @@
                   {{ findName(col.options, scope.row[col.prop]) }}
                 </el-tag>
               </span>
+              <span v-else-if="col.formType == 'rate'">
+                <el-rate
+                  v-model="scope.row[col.prop]"
+                  disabled
+                  :colors="['#99A9BF', '#00FF1A', '#06B217']"
+                ></el-rate>
+              </span>
               <span v-else-if="col.formType == 'switch'">
                 <el-switch
                   v-model="scope.row[col.prop]"
@@ -240,7 +247,7 @@
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
-  name: "JmTable",
+  name: "",
   components: { Treeselect },
   props: {
     tableData: {
@@ -256,7 +263,10 @@ export default {
       default: true,
       type: Boolean,
     },
-
+    showOperate: {
+      default: true,
+      type: Boolean,
+    },
     // 表格列
     columns: {
       default: () => [],
@@ -364,16 +374,23 @@ export default {
     },
     findTreeName(options, value) {
       var name = "";
-      name = this.forfn(options, value);
-      return name;
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
     },
-    forfn(options, value) {
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
       for (let i = 0; i < options.length; i++) {
         if (options[i].id == value) {
-          return options[i].label;
+          changeName(name1, options[i].label);
         }
         if (options[i].children) {
-          return this.forfn(options[i].children, value);
+          this.forfn(options[i].children, value, name1);
         }
       }
     },
@@ -449,5 +466,15 @@ export default {
 }
 ::v-deep .vue-treeselect__portal-target {
   width: auto !important;
+}
+::v-deep .el-rate__icon {
+  font-size: 24px; /* 调整文字大小 */
+}
+::v-deep .vue-treeselect__portal-target {
+  width: auto !important;
+}
+
+::v-deep .leftRadio .el-radio__label {
+  display: none;
 }
 </style>

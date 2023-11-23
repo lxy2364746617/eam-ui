@@ -21,7 +21,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:backspace:add']"
             >选取设备</el-button
           >
         </el-col>
@@ -33,7 +33,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleUpdate"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:backspace:add']"
             >批量设置</el-button
           >
         </el-col>
@@ -45,7 +45,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit', 1)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:backspace:edit']"
           >编辑</el-button
         >
         <el-button
@@ -53,7 +53,7 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:backspace:remove']"
           >删除</el-button
         >
       </template>
@@ -165,8 +165,7 @@ export default {
       },
       // ! 当前选中行数据
       itemValue: null,
-      total: 0,
-      total2: 0,
+
       // 选中数组
       ids: [],
       ids2: [],
@@ -310,7 +309,16 @@ export default {
       ];
     },
   },
-  watch: {},
+  watch: {
+    editor: {
+      handler(newVal) {
+        if (!newVal) {
+          this.title = "";
+        }
+      },
+      deep: true,
+    },
+  },
   async created() {
     await this.getTreeSelect();
 
@@ -413,8 +421,8 @@ export default {
         }
         let matches = getStore("equipmentList").filter((item) => {
           for (let key in search) {
-            if (item[key] !== search[key]) {
-              if (search[key] == "") return true;
+            if (item[key] != search[key]) {
+              if (search[key] == "") continue;
               return false;
             }
           }
@@ -451,20 +459,38 @@ export default {
               : {}
           );
         });
-        this.equipData = response.rows;
-        this.total = response.total;
-        this.loading = false;
+        let row = JSON.parse(JSON.stringify(response.rows));
+        if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
+          getStore("equipmentList").forEach((t) => {
+            row = row.filter((item) => {
+              return (
+                item.specs +
+                  item.deviceCode +
+                  item.deviceName +
+                  item.batchNo !==
+                t.specs + t.deviceCode + t.deviceName + t.batchNo
+              );
+            });
+          });
+          this.equipData = row;
+          this.total2 = row.length;
+          this.loading = false;
+        } else {
+          this.equipData = response.rows;
+          this.total2 = response.total;
+          this.loading = false;
+        }
       });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      if (this.title === "批量设置") {
+      if (this.title !== "单个设置") {
         this.ids = selection.map((item) => item.id);
-        this.single = selection.length != 1;
-        this.multiple = !selection.length;
-        this.radioRow = selection[0];
-        this.rowArr = selection;
       }
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
+      this.radioRow = selection[0];
+      this.rowArr = selection;
     },
     // 多选框选中数据
     handleSelectionChange2(selection) {
@@ -478,7 +504,6 @@ export default {
       const deviceIdSet = new Set();
       return inputArray.reduce((result, item) => {
         let uniqueKey = `${item.sModel}${item.deviceCode}${item.deviceName}${item.batchNo}`;
-        console.log("========================", uniqueKey);
         if (!deviceIdSet.has(uniqueKey)) {
           deviceIdSet.add(uniqueKey);
           result.push(item);
@@ -501,7 +526,6 @@ export default {
           });
         });
       }
-      console.log("========================", this.rowArr);
       if (getStore("addList") && getStore("addList").length > 0) {
         setStore(
           "addList",
@@ -609,7 +633,6 @@ export default {
                 getStore("updateList").filter((item) => item.id != i.id)
               );
               setStore("updateList", getStore("updateList").concat(i));
-              console.log("========================", i);
             } else {
               setStore("updateList", [i]);
             }

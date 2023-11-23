@@ -8,7 +8,7 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isShow="isShow"
+      :showOperate="!isShow"
       :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
@@ -22,7 +22,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:purchase:add']"
             >新增</el-button
           >
         </el-col>
@@ -34,7 +34,7 @@
             size="mini"
             :loading="btnLoading"
             @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:purchase:add']"
             >下载</el-button
           >
         </el-col>
@@ -46,7 +46,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:purchase:edit']"
           >编辑</el-button
         >
         <el-button
@@ -54,20 +54,19 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:purchase:remove']"
           >删除</el-button
         >
       </template>
     </JmTableNoPaging>
 
-    <el-drawer title="我是标题" :visible.sync="drawer" :with-header="false">
-      <div class="title">&nbsp;&nbsp;{{ title }}</div>
+    <el-drawer :title="title" :visible.sync="drawer" :wrapperClosable="false">
       <el-form
         ref="elForm"
         :model="formData"
         :rules="rules"
         size="medium"
-        label-width="100px"
+        label-width="120px"
         class="from"
       >
         <el-form-item label="设备名称" prop="deviceName">
@@ -142,12 +141,21 @@
           ></el-input-number>
         </el-form-item>
         <el-form-item label="需求组织" prop="demandOrganization">
-          <el-cascader
+          <treeselect
+            size="small"
             v-model="formData.demandOrganization"
             :options="deptOptions"
-            :props="{ expandTrigger: 'hover', checkStrictly: true }"
-            @change="handleChange"
-          ></el-cascader>
+            clear-value-text="清除"
+            no-options-text="暂无数据"
+            clearValueText="清除"
+            noOptionsText="暂无数据"
+            placeholder="请选择"
+            :default-expand-level="4"
+            :appendToBody="true"
+            :normalizer="normalizer"
+            :zIndex="9999"
+            style="height: 32px; line-height: 32px"
+          />
         </el-form-item>
         <el-form-item label="项目分类" prop="projectCategory">
           <el-input
@@ -238,6 +246,9 @@ export default {
         examinationAccording: undefined,
         remark: undefined,
         purchasePlanNo: "年度",
+      },
+      formParams: {
+        prtOrg: "Y",
       },
       rules: {
         deviceName: [
@@ -441,8 +452,8 @@ export default {
         }
         let matches = getStore("equipmentList").filter((item) => {
           for (let key in search) {
-            if (item[key] !== search[key]) {
-              if (search[key] == "") return true;
+            if (item[key] != search[key]) {
+              if (search[key] == "") continue;
               return false;
             }
           }
@@ -481,21 +492,21 @@ export default {
             "equipmentList",
             this.equipmentList.filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
           setStore(
             "addList",
             getStore("addList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
         } else {
@@ -569,7 +580,6 @@ export default {
               setStore("updateList", [this.formData]);
             }
           } else {
-            console.log("========================", getStore("updateList"));
             setStore(
               "updateList",
               getStore("updateList").filter(
@@ -613,7 +623,7 @@ export default {
   height: auto;
   padding: 14px 15px;
   .from {
-    padding: 30px;
+    padding-right: 30px;
     padding-left: 10px;
     label {
       width: 120px;

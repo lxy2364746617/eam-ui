@@ -76,7 +76,14 @@ export default {
       },
     };
   },
-  created() {},
+  created() {
+    const routeValue = this.$route.query.item;
+    if (routeValue) {
+      this.formData = routeValue;
+      this.formData.time = [routeValue.startTime, routeValue.endTime];
+      this.isEdit = routeValue.isEdit;
+    }
+  },
   mounted() {
     this.title = this.$route.meta.title;
   },

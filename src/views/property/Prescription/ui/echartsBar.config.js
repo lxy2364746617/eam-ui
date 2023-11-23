@@ -1,8 +1,17 @@
 import * as echarts from "echarts";
 
 export function chartOption() {
-  console.log("========================", this.datas);
   let chartData = JSON.parse(JSON.stringify(this.datas)).map((item) => {
+    if (
+      item.groupName == "A" ||
+      item.groupName == "B" ||
+      item.groupName == "C"
+    ) {
+      return {
+        value: item.countNum,
+        name: item.groupName + "级",
+      };
+    }
     return {
       value: item.countNum,
       name: item.groupName,
@@ -23,7 +32,7 @@ export function chartOption() {
   function getPosition(str) {
     switch (String(str).length) {
       case 1:
-        return "25%";
+        return "24.5%";
       case 2:
         return "24%";
       case 3:

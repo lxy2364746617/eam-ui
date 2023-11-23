@@ -20,7 +20,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:receive:add']"
             >新增</el-button
           >
         </el-col>
@@ -32,7 +32,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:receive:edit']"
           >详情</el-button
         >
         <el-button
@@ -42,7 +42,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:receive:edit']"
           >编辑</el-button
         >
         <el-button
@@ -51,7 +51,7 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:receive:remove']"
           >删除</el-button
         >
         <el-button
@@ -60,7 +60,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:receive:edit']"
           >提交</el-button
         >
         <el-button
@@ -68,7 +68,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:receive:edit']"
           >审批流</el-button
         >
       </template>

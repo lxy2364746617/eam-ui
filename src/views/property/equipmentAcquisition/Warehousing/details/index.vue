@@ -204,7 +204,6 @@ export default {
     };
   },
   created() {
-    console.log("========================", this.$props);
   },
   methods: {
     tabsHandleClick() {},
@@ -245,7 +244,6 @@ export default {
           window.sessionStorage.getItem("purchasePlanDetailId")
         );
       }
-      console.log("========================", this.formData1);
       var aa = formData1.emArchivesExtendAtt;
       aa["fieldValue"] = JSON.stringify(aa["fieldValue"]);
       aa["componentContent"] = JSON.stringify(aa["componentContent"]);

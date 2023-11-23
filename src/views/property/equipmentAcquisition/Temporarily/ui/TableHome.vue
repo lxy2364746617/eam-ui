@@ -20,7 +20,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:purchase:add']"
             >新增</el-button
           >
         </el-col>
@@ -29,7 +29,7 @@
             :before-upload="field101BeforeUpload"
             @click="handelImport"
             action=""
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:purchase:add']"
             ><el-button type="danger" size="mini" plain icon="el-icon-upload"
               >导入</el-button
             ></el-upload
@@ -42,7 +42,7 @@
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:purchase:add']"
             >下载</el-button
           >
         </el-col>
@@ -54,7 +54,7 @@
                 size="mini"
                 :disabled="multiple"
                 @click="handleDelete"
-                v-hasPermi="['equipment:book:remove']"
+                v-hasPermi="['property:purchase:remove']"
               >删除</el-button>
             </el-col> -->
       </template>
@@ -65,7 +65,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:purchase:edit']"
           >详情</el-button
         >
         <el-button
@@ -75,7 +75,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:purchase:edit']"
           >编辑</el-button
         >
         <el-button
@@ -84,7 +84,7 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:purchase:remove']"
           >删除</el-button
         >
         <el-button
@@ -93,7 +93,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:purchase:edit']"
           >提交</el-button
         >
         <el-button
@@ -101,7 +101,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:purchase:edit']"
           >审批流</el-button
         >
       </template>
@@ -180,6 +180,9 @@ export default {
 
       radioRow: {},
       deptOptions: null,
+      formParams: {
+        prtOrg: "Y",
+      },
     };
   },
   computed: {
@@ -265,7 +268,6 @@ export default {
     },
     handelImport() {},
     exportWarnLog(data) {
-      
       download({ ids: this.ids, purchasePlanType: 2 }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",

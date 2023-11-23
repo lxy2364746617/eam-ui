@@ -20,7 +20,7 @@
             size="mini"
             :loading="btnLoading"
             @click="drawer = true"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:warehousing:add']"
             >入库</el-button
           >
         </el-col>
@@ -28,7 +28,7 @@
           <el-upload
             :before-upload="beforeUpload"
             action=""
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:warehousing:add']"
             ><el-button type="danger" size="mini" plain icon="el-icon-upload"
               >导入</el-button
             ></el-upload
@@ -41,29 +41,29 @@
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:warehousing:add']"
             >下载</el-button
           >
         </el-col>
       </template>
       <template #end_handle="scope" v-if="!isChoose">
-        <el-button
+        <!-- <el-button
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:warehousing:edit']"
           >编辑</el-button
-        >
+        > -->
         <el-button
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:warehousing:remove']"
           >删除</el-button
         >
         <el-button
@@ -72,14 +72,14 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:warehousing:edit']"
           >提交</el-button
         >
         <el-button
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:warehousing:edit']"
           >审批流</el-button
         >
       </template>
@@ -399,7 +399,6 @@ export default {
     },
 
     exportWarnLog(data) {
-     
       download(this.ids).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
@@ -469,7 +468,6 @@ export default {
     /** 修改按钮操作 */
     goDetails(row, f) {
       this.btnLoading = true;
-      console.log("========================", row);
       this.title = "编辑设备";
       this.formData = row;
       window.sessionStorage.setItem(

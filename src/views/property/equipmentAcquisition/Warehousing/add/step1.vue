@@ -28,11 +28,7 @@
         size="80%"
         :wrapperClosable="false"
       >
-        <devicebook
-          isChoose
-          @submitRadio="submitRadio"
-          @close="close"
-        ></devicebook>
+        <parentdevice @submitRadio="submitRadio" @close="close"></parentdevice>
       </el-drawer>
     </el-card>
     <el-card shadow="never" style="margin-top: 10px; text-align: right">
@@ -60,13 +56,17 @@
 import { listBASE } from "@/api/equipment/BASE";
 import { addBASE, updateBASE } from "@/api/property/warehousing";
 import { listDept } from "@/api/system/dept";
-import { equipmentTree } from "@/api/equipment/category";
+import {
+  equipmentTree,
+  equipmentTrees_noParent,
+} from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import parentdevice from "@/views/device/book/device";
 
 export default {
   name: "bookadd",
@@ -79,13 +79,15 @@ export default {
     "em_device_level",
     "em_device_financing",
     "em_is_lease",
+    "em_rent_out",
+    "em_is_relieve",
   ],
   components: {
     Treeselect,
     JmUserTree,
     JmTable,
     JmForm,
-    devicebook: () => import("@/views/device/book/index"),
+    parentdevice,
   },
   props: {
     stepActive: {
@@ -102,7 +104,7 @@ export default {
     },
   },
   watch: {
-    "formData.categoryId": {
+    "formData.deviceType": {
       handler(val) {
         this.getTreeItem(val, this.categoryOptions);
         var b = this.treeItem;
@@ -129,6 +131,7 @@ export default {
             this.formData.emArchivesSpecial = {};
           }
           if (b.specialAttributes != null) {
+            this.setFormLabel(b.specialAttributes);
             this.$set(
               this.formData.emArchivesSpecial,
               "componentContent",
@@ -156,7 +159,7 @@ export default {
         {
           label: "设备状态",
           prop: "deviceStatus",
-          formType: "select",
+          formType: "selectTag",
           options: this.dict.type.em_device_state,
           span: 8,
           required: true,
@@ -170,7 +173,7 @@ export default {
         },
         {
           label: "设备类别",
-          prop: "categoryId",
+          prop: "deviceType",
           formType: "selectTree",
           options: this.categoryOptions,
           span: 8,
@@ -187,7 +190,7 @@ export default {
           required: true,
         }, //(Y 是、N 否)
         { label: "功能位置", prop: "location", span: 8, required: true },
-        { label: "规格型号", prop: "sModel", span: 8 },
+        { label: "规格型号", prop: "specs", span: 8 },
         {
           label: "设备属性",
           prop: "deviceAtt",
@@ -298,6 +301,22 @@ export default {
           formType: "date",
           tableVisible: false,
           span: 8,
+        },
+        {
+          label: "出租意向",
+          prop: "rentOut",
+          tableVisible: false,
+          span: 8,
+          formType: "select",
+          options: this.dict.type.em_rent_out,
+        },
+        {
+          label: "是否跨公司调剂",
+          prop: "isRelieve",
+          tableVisible: false,
+          span: 8,
+          formType: "select",
+          options: this.dict.type.em_is_relieve,
         },
         {
           label: "备注",
@@ -459,7 +478,8 @@ export default {
       } else {
         addBASE(formData).then((response) => {
           this.$modal.msgSuccess("保存成功");
-          this.formData.deviceId = response.msg;
+          this.formData.deviceId = response.data;
+          this.formData.id = response.data;
           if (typeof fn == "function") fn();
         });
       }
@@ -473,7 +493,7 @@ export default {
       this.close();
     },
     getTreeSelect() {
-      equipmentTree().then((response) => {
+      equipmentTrees_noParent().then((response) => {
         this.categoryOptions = response.data;
       });
       listDept().then((response) => {

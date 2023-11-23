@@ -68,7 +68,7 @@ export default {
       title: "",
       isEdit: true,
       // 头部表单
-      formData: {},
+      formData: { outDeptPerson: this.$store.state.user.standing.nickName },
     };
   },
   created() {},

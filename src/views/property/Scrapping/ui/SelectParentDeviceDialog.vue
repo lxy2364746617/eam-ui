@@ -56,6 +56,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import { getStore } from "@/utils/property.js";
 
 export default {
   name: "devicebook1",
@@ -165,9 +166,24 @@ export default {
             }
           });
         }
-        this.equipmentList = response.rows;
-        this.total = response.total;
-        this.loading = false;
+        let row = JSON.parse(JSON.stringify(response.rows));
+        if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
+          getStore("equipmentList").forEach((t) => {
+            row = row.filter((item) => {
+              return (
+                item.specs + item.deviceCode + item.deviceName !==
+                t.sModel + t.deviceCode + t.deviceName
+              );
+            });
+          });
+          this.equipmentList = row;
+          this.total2 = row.length;
+          this.loading = false;
+        } else {
+          this.equipmentList = response.rows;
+          this.total2 = response.total;
+          this.loading = false;
+        }
       });
     },
     /** 查询部门下拉树结构 */

@@ -8,7 +8,7 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
-      :isShow="isShow"
+      :showOperate="!isShow"
       :isRadio="isChoose"
       :handleWidth="230"
       :columns="columns"
@@ -22,11 +22,11 @@
             size="mini"
             :loading="btnLoading"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:receive:add']"
             >新增</el-button
           >
         </el-col>
-        <el-col :span="1.5" v-else>
+        <!-- <el-col :span="1.5" v-else>
           <el-button
             type="primary"
             plain
@@ -34,10 +34,10 @@
             size="mini"
             :loading="btnLoading"
             @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:receive:add']"
             >下载</el-button
           >
-        </el-col>
+        </el-col> -->
       </template>
       <template #end_handle="scope" v-if="!isChoose">
         <el-button
@@ -46,7 +46,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:receive:edit']"
           >编辑</el-button
         >
         <el-button
@@ -54,14 +54,13 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:receive:remove']"
           >删除</el-button
         >
       </template>
     </JmTableNoPaging>
 
-    <el-drawer title="我是标题" :visible.sync="drawer" :with-header="false">
-      <div class="title">&nbsp;&nbsp;{{ title }}</div>
+    <el-drawer :title="title" :visible.sync="drawer" :wrapperClosable="false">
       <el-form
         ref="elForm"
         :model="formData"
@@ -73,6 +72,7 @@
         <el-form-item label="设备名称" prop="deviceName">
           <el-input
             v-model="formData.deviceName"
+            @click.native="addItem.choosedrawer = true"
             placeholder="请输入设备名称"
             clearable
             :style="{ width: '100%' }"
@@ -88,9 +88,9 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="技术参数" prop="deviceType">
+        <el-form-item label="技术参数" prop="technologyParam">
           <el-input
-            v-model="formData.deviceType"
+            v-model="formData.technologyParam"
             type="textarea"
             placeholder="请输入技术参数"
             :maxlength="200"
@@ -125,12 +125,27 @@
         </el-form-item>
       </el-form>
     </el-drawer>
+
+    <el-drawer
+      title="选择设备"
+      :visible.sync="addItem.choosedrawer"
+      direction="rtl"
+      size="80%"
+      :wrapperClosable="false"
+    >
+      <parentdevice
+        :isChoose="true"
+        @submitRadio="submitRadio2"
+        @close="addItem.choosedrawer = false"
+      ></parentdevice>
+    </el-drawer>
   </div>
 </template>
 <script>
 import { getProjectList, downDetailLoad } from "@/api/property/receive";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTableNoPaging from "@/components/JmTableNoPaging";
+import parentdevice from "@/views/device/book/device";
 import {
   setStore,
   getStore,
@@ -145,11 +160,20 @@ export default {
   components: {
     JmTableNoPaging,
     Treeselect,
+    parentdevice,
   },
   dicts: ["apv_status"],
   props: ["rowId", "isShow"],
   data() {
     return {
+      // 选择设备
+      addItem: {
+        choosedrawer: false,
+        copyInputName: "",
+        copyInputId: "",
+        addDrawer: false,
+        addRadio: 1,
+      },
       // 需求组织
       deptOptions: null,
       deptOptions2: null,
@@ -170,6 +194,9 @@ export default {
       itemValue: null,
       total: 0,
       formData: {},
+      formParams: {
+        prtOrg: "Y",
+      },
       rules: {
         deviceName: [
           {
@@ -226,9 +253,17 @@ export default {
       ];
     },
   },
-  watch: {},
+  watch: {
+    drawer: {
+      handler(val) {
+        if (!val) {
+          this.resetForm();
+        }
+      },
+      deep: true,
+    },
+  },
   async created() {
-    console.log("========================", this.isShow);
     await this.getDeptTree();
     await this.getList();
 
@@ -239,6 +274,13 @@ export default {
   mounted() {},
 
   methods: {
+    submitRadio2(row) {
+      this.addItem.copyInputName = row.deviceName;
+      this.addItem.copyInputId = row.deviceId;
+      this.addItem.choosedrawer = false;
+      this.formData = row;
+      this.formData["sModel"] = row.specs;
+    },
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
@@ -295,8 +337,8 @@ export default {
         }
         let matches = getStore("equipmentList").filter((item) => {
           for (let key in search) {
-            if (item[key] !== search[key]) {
-              if (search[key] == "") return true;
+            if (item[key] != search[key]) {
+              if (search[key] == "") continue;
               return false;
             }
           }
@@ -317,8 +359,7 @@ export default {
       this.title = "新增";
     },
     importHandler() {
-      
-      download(this.ids).then((res) => {
+      this.download(this.ids).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });
@@ -336,21 +377,21 @@ export default {
             "equipmentList",
             this.equipmentList.filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
           setStore(
             "addList",
             getStore("addList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
         } else {
@@ -381,9 +422,9 @@ export default {
     },
     handleUpdate(row, index) {
       this.title = "编辑";
-      this.formData = row;
+      this.formData = JSON.parse(JSON.stringify(row));
       this.drawer = true;
-      this.itemValue = row;
+      this.itemValue = JSON.parse(JSON.stringify(row));
     },
     submitFormAdd() {
       this.$refs["elForm"].validate(async (valid) => {
@@ -458,8 +499,8 @@ export default {
   height: auto;
   padding: 14px 15px;
   .from {
-    padding: 30px;
     padding-left: 10px;
+    padding-right: 30px;
     label {
       width: 120px;
     }

@@ -36,7 +36,12 @@
     "url": "https://gitee.com/y_project/RuoYi-Vue.git"
   },
   "dependencies": {
+    "@fullcalendar/core": "^5.10.1",
+    "@fullcalendar/daygrid": "^5.10.1",
+    "@fullcalendar/interaction": "^5.10.1",
+    "@fullcalendar/vue": "^5.10.1",
     "@riophae/vue-treeselect": "0.4.0",
+    "uuid": "^9.0.1",
     "axios": "0.24.0",
     "bpmn-js": "^11.1.0",
     "bpmn-js-bpmnlint": "^0.15.0",

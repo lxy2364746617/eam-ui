@@ -19,6 +19,7 @@
       class="mr20"
       :columns="columns"
       :formData="formData"
+      @submitForm="submitForm2"
       :showButton="false"
       ref="jmform"
     ></jm-form>
@@ -117,10 +118,15 @@ export default {
     },
   },
   created() {
-    console.log("========================", this.dict.type.em_scrap_way);
     this.getTreeSelect();
   },
   methods: {
+    submitForm2(form) {
+      // this.$emit("submitForm", form);
+    },
+    saveHandle() {
+      this.$refs.jmform.submitForm();
+    },
     getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data;

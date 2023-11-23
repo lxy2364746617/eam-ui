@@ -9,12 +9,12 @@
       :total="total"
       ref="jmtable"
       :isRadio="isChoose"
-      :isShow="isShow"
+      :showOperate="!isShow"
       :handleWidth="230"
       :columns="columns"
     >
       <template slot="headerLeft" v-if="!isChoose">
-        <el-col :span="1.5" v-if="!this.$route.query.item ? true : false">
+        <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
             plain
@@ -22,7 +22,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:purchase:add']"
             >新增</el-button
           >
         </el-col>
@@ -34,7 +34,7 @@
             size="mini"
             :loading="btnLoading"
             @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
+            v-hasPermi="['property:purchase:add']"
             >下载</el-button
           >
         </el-col>
@@ -46,7 +46,7 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit')"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:purchase:edit']"
           >编辑</el-button
         >
         <el-button
@@ -54,14 +54,13 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:purchase:remove']"
           >删除</el-button
         >
       </template>
     </JmTableNoPaging>
 
-    <el-drawer title="我是标题" :visible.sync="drawer" :with-header="false">
-      <div class="title">&nbsp;&nbsp;{{ title }}</div>
+    <el-drawer :title="title" :visible.sync="drawer" :wrapperClosable="false">
       <el-form
         ref="elForm"
         :model="formData"
@@ -142,12 +141,21 @@
           ></el-input-number>
         </el-form-item>
         <el-form-item label="需求组织" prop="demandOrganization">
-          <el-cascader
+          <treeselect
+            size="small"
             v-model="formData.demandOrganization"
-            :options="deptOptions2"
-            :props="{ expandTrigger: 'hover', checkStrictly: true }"
-            @change="handleChange"
-          ></el-cascader>
+            :options="deptOptions"
+            clear-value-text="清除"
+            no-options-text="暂无数据"
+            clearValueText="清除"
+            noOptionsText="暂无数据"
+            placeholder="请选择"
+            :default-expand-level="4"
+            :appendToBody="true"
+            :normalizer="normalizer"
+            :zIndex="9999"
+            style="height: 32px; line-height: 32px"
+          />
         </el-form-item>
         <el-form-item label="项目分类" prop="projectCategory">
           <el-input
@@ -201,6 +209,7 @@ import {
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
 import { saveAs } from "file-saver";
+import { downDetailLoad } from "@/api/property/purchase";
 export default {
   components: {
     JmTableNoPaging,
@@ -241,6 +250,9 @@ export default {
         examinationAccording: undefined,
         remark: undefined,
         purchasePlanNo: "年度",
+      },
+      formParams: {
+        prtOrg: "Y",
       },
       rules: {
         deviceName: [
@@ -356,7 +368,7 @@ export default {
           prop: "demandOrganization",
           tableVisible: true,
           formType: "selectTree",
-          options: [],
+          options: this.deptOptions,
           width: 150,
         },
         { label: "备注", prop: "remark", tableVisible: true },
@@ -415,7 +427,7 @@ export default {
     },
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
-      if (this.rowId) queryParams["id"] = this.rowId;
+      if (this.rowId) queryParams["purchasePlanNo"] = this.rowId;
       if (!this.rowId) queryParams["purchasePlanNo"] = 1;
       queryParams["purchasePlanType"] = 2;
       let search = JSON.parse(JSON.stringify(queryParams));
@@ -424,7 +436,6 @@ export default {
       delete search.purchasePlanType;
       delete search.purchasePlanNo;
       delete search.id;
-      console.log("========================", search);
       getProjectList(queryParams).then((response) => {
         if (getStore("equipmentList")) setStore("equipmentList", []);
         if (getStore("addList") && getStore("addList").length > 0) {
@@ -448,13 +459,14 @@ export default {
         }
         let matches = getStore("equipmentList").filter((item) => {
           for (let key in search) {
-            if (item[key] !== search[key]) {
-              if (search[key] == "") return true;
+            if (item[key] != search[key]) {
+              if (search[key] == "") continue;
               return false;
             }
           }
           return true;
         });
+        console.log("========================", search);
         this.equipmentList = matches;
       });
     },
@@ -470,7 +482,7 @@ export default {
       this.title = "新增";
     },
     importHandler() {
-      download(this.ids).then((res) => {
+      downDetailLoad(this.ids).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });
@@ -488,21 +500,21 @@ export default {
             "equipmentList",
             this.equipmentList.filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
           setStore(
             "addList",
             getStore("addList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
           setStore(
             "updateList",
             getStore("updateList").filter(
               (item) =>
-                item.deviceName + item.sModel != row.deviceName + item.sModel
+                item.deviceName + item.sModel != row.deviceName + row.sModel
             )
           );
         } else {
@@ -537,12 +549,12 @@ export default {
     },
     handleUpdate(row, index) {
       this.title = "编辑";
-      this.formData = row;
+      this.formData = JSON.parse(JSON.stringify(row));
       this.formData.demandOrganization = Number(
         this.formData.demandOrganization
       );
       this.drawer = true;
-      this.itemValue = row;
+      this.itemValue = JSON.parse(JSON.stringify(row));
     },
     submitFormAdd() {
       this.$refs["elForm"].validate(async (valid) => {

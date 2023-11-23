@@ -23,7 +23,7 @@
         size="medium"
         label-width="100px"
       >
-        <el-form-item label="领用单号" prop="neckNo">
+        <el-form-item label="领用单号:" prop="neckNo">
           <el-input
             v-if="isEdit"
             v-model="formData.neckNo"
@@ -35,7 +35,7 @@
           </el-input>
           <span v-else-if="!isEdit">{{ formData2.neckNo }}</span>
         </el-form-item>
-        <el-form-item label="业务日期" prop="neckDate">
+        <el-form-item label="业务日期:" prop="neckDate">
           <el-date-picker
             v-if="isEdit"
             v-model="formData.neckDate"
@@ -47,7 +47,7 @@
           ></el-date-picker>
           <span v-else-if="!isEdit">{{ formData2.neckDate }}</span>
         </el-form-item>
-        <el-form-item label="所属组织" prop="affDeptId">
+        <el-form-item label="所属组织:" prop="affDeptId">
           <el-cascader
             v-if="isEdit"
             clearable
@@ -57,7 +57,7 @@
           ></el-cascader>
           <span v-else-if="!isEdit">{{ formData2.affDeptName }}</span>
         </el-form-item>
-        <el-form-item label="调出部门" prop="outDeptId">
+        <el-form-item label="调出部门:" prop="outDeptId">
           <el-cascader
             v-if="isEdit"
             clearable
@@ -81,7 +81,7 @@
 
           <span v-else-if="!isEdit">{{ formData2.outDeptPerson }}</span>
         </el-form-item>
-        <el-form-item label="申请部门" prop="applyDeptId">
+        <el-form-item label="申请部门:" prop="applyDeptId">
           <el-cascader
             v-if="isEdit"
             clearable
@@ -101,7 +101,7 @@
 
           <span v-else-if="!isEdit">{{ formData2.applyDeptPerson }}</span>
         </el-form-item>
-        <el-form-item label="参考信息" prop="referenceInformation">
+        <el-form-item label="参考信息:" prop="referenceInformation">
           <el-input
             v-if="isEdit"
             v-model="formData.referenceInformation"
