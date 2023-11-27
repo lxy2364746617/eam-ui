@@ -16,7 +16,7 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            plain
+            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -28,7 +28,7 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            plain
+            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"

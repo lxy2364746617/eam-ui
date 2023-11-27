@@ -317,21 +317,8 @@ export default {
       this.disabled = row.disabled;
       getWomLine({ orderCode: this.formData.orderCode }).then((res) => {
         if (res.code == 200) {
-          // this.lineList = res.data;
-          this.lineList = [
-            {
-              lineCode: "RX2023100003",
-              lineName: "保养路线测试001",
-              executeNum: 2,
-              total: 8,
-            },
-            {
-              lineCode: "RX-2023110004",
-              lineName: "阿三打撒打撒",
-              executeNum: 2,
-              total: 8,
-            },
-          ];
+          this.lineList = res.data;
+
           this.activeName = this.lineList[0].lineCode;
           this.getList(this.activeName);
         }

@@ -16,7 +16,6 @@
           <el-col :span="1.5">
             <el-button
               type="primary"
-              plain
               icon="el-icon-plus"
               size="mini"
               :loading="btnLoading"
@@ -145,7 +144,7 @@ export default {
     JmForm,
     Wrapper,
   },
-  dicts: ["order_source"],
+  dicts: ["order_source", "is_overdue"],
   props: {},
   data() {
     return {
@@ -285,6 +284,8 @@ export default {
           label: "是否逾期",
           prop: "expected",
           tableVisible: true,
+          formType: "select",
+          options: this.dict.type.is_overdue,
         },
         {
           label: "工单状态",
@@ -456,8 +457,7 @@ export default {
       this.itemValue = row;
       this.isDrawer = true;
     },
-    handlerGetId() {
-    },
+    handlerGetId() {},
 
     back() {
       this.addEdit = false;

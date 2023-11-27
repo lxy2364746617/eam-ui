@@ -28,7 +28,6 @@ export function getProjectAdd(data) {
 }
 // 新增计划明细
 export function deleteProjectId(id) {
-  console.log("========================", id);
   return request({
     url: "/property/purchase/plan/delDetail",
     method: "post",

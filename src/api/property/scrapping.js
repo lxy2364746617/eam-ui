@@ -20,7 +20,6 @@ export function getProjectList(data) {
 
 // 删除报废明细
 export function deleteProjectId(id) {
-  console.log("========================", id);
   return request({
     url: "/property/purchase/plan/delDetail",
     method: "post",

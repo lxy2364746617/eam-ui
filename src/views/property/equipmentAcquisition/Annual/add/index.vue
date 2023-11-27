@@ -4,6 +4,8 @@
       :isEdit="isEdit"
       :formData="formData"
       @formData2="receiveDataFromChild"
+      @submitForm="submitValue"
+      ref="headEdit"
     ></HeadEdit>
     <TableProject :isShow="false"
       ><template
@@ -95,27 +97,25 @@ export default {
       this.$router.go(-1); //跳回上页
     },
     submit() {
-      this.formData["startTime"] = this.formData.time[0];
-      this.formData["endTime"] = this.formData.time[1];
-      this.formData["purchasePlanType"] = 1;
-      delete this.formData.time;
+      this.$refs.headEdit.submitForm();
+    },
+    submitValue(val) {
+      val["startTime"] = val.time[0];
+      val["endTime"] = val.time[1];
+      val["purchasePlanType"] = 1;
+      delete val.time;
       if (getStore("addList") && getStore("addList").length > 0) {
-        this.formData["addList"] = getStore("addList");
+        val["addList"] = getStore("addList");
       } else {
-        this.formData["addList"] = [];
+        val["addList"] = [];
       }
-      if (getStore("updateList") && getStore("updateList").length > 0) {
-        this.formData["updateList"] = getStore("updateList");
-      }
-      if (getStore("delList") && getStore("delList").length > 0) {
-        this.formData["delList"] = getStore("delList");
-      }
+
       if (getStore("addFileList") && getStore("addFileList").length > 0) {
-        this.formData["addFileList"] = getStore("addFileList");
+        val["addFileList"] = getStore("addFileList");
       } else {
-        this.formData["addFileList"] = [];
+        val["addFileList"] = [];
       }
-      setProject(this.formData).then((res) => {
+      setProject(val).then((res) => {
         if (res.code === 200) {
           this.$message({
             type: "success",

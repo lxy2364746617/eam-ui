@@ -15,7 +15,6 @@
         <el-col :span="1.5">
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -30,7 +29,7 @@
             @click="handelImport"
             action=""
             v-hasPermi="['property:backspace:add']"
-            ><el-button type="danger" size="mini" plain icon="el-icon-upload"
+            ><el-button type="danger" size="mini"   icon="el-icon-upload"
               >导入</el-button
             ></el-upload
           >
@@ -38,7 +37,7 @@
         <el-col :span="1.5">
           <el-button
             type="warning"
-            plain
+             
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"
@@ -49,7 +48,7 @@
         <!-- <el-col :span="1.5">
               <el-button
                 type="danger"
-                plain
+                 
                 icon="el-icon-delete"
                 size="mini"
                 :disabled="multiple"

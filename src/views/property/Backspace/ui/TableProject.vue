@@ -16,7 +16,6 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -28,7 +27,6 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -514,6 +512,7 @@ export default {
     async handleSelectionSubmit() {
       this.rowArr.forEach((item) => {
         item["deviceType"] = item.categoryId;
+        item["sModel"] = item.specs;
       });
 
       if (getStore("equipmentList") && getStore("equipmentList").length > 0) {

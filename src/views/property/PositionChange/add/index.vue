@@ -3,7 +3,8 @@
     <HeadEdit
       :isEdit="isEdit"
       :formData="formData"
-      @formData2="receiveDataFromChild"
+      @submitForm="submitValue"
+      ref="headEdit"
     ></HeadEdit>
     <TableProject :isShow="false"
       ><template
@@ -50,7 +51,11 @@ export default {
       title: "",
       isEdit: true,
       // 头部表单
-      formData: { applyPersonName: this.$store.state.user.standing.nickName },
+      formData: {
+        applyPersonName: this.$store.state.user.standing.nickName,
+        applyDeptId: this.$store.state.user.standing.deptId,
+        affOrgId: this.$store.state.user.standing.deptId,
+      },
     };
   },
   created() {},
@@ -72,32 +77,16 @@ export default {
       this.$router.go(-1); //跳回上页
     },
     submit() {
+      this.$refs.headEdit.submitForm();
+    },
+    submitValue(val) {
       if (getStore("addList") && getStore("addList").length > 0) {
-        this.formData["addDetails"] = getStore("addList");
+        val["addDetails"] = getStore("addList");
       } else {
-        this.formData["addDetails"] = [];
+        val["addDetails"] = [];
       }
-      // if (getStore("updateList") && getStore("updateList").length > 0) {
-      //   this.formData["updateList"] = getStore("updateList");
-      // }
-      // if (getStore("delList") && getStore("delList").length > 0) {
-      //   this.formData["delList"] = getStore("delList");
-      // }
-      // if (getStore("addFileList") && getStore("addFileList").length > 0) {
-      //   this.formData["addFileList"] = getStore("addFileList");
-      // } else {
-      //   this.formData["addFileList"] = [];
-      // }
 
-      this.formData.affOrgId = this.formData.affOrgId
-        ? this.formData.affOrgId[this.formData.affOrgId.length - 1]
-        : null;
-      this.formData.applyDeptId = this.formData.applyDeptId
-        ? this.formData.applyDeptId[this.formData.applyDeptId.length - 1]
-        : null;
-      this.formData["applyPersonId"] = this.$store.state.user.standing.userId;
-
-      setProject(this.formData).then((res) => {
+      setProject(val).then((res) => {
         if (res.code === 200) {
           this.$message({
             type: "success",
@@ -107,9 +96,6 @@ export default {
         this.clear();
         this.cancel();
       });
-    },
-    receiveDataFromChild(data) {
-      this.formData = data;
     },
   },
   watch: {},

@@ -15,7 +15,7 @@
       <template slot="headerLeft">
         <el-button
           type="primary"
-          plain
+          
           size="mini"
           icon="el-icon-plus"
           @click="showAddDrawer"

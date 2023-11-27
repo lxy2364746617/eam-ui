@@ -13,8 +13,8 @@
       :columns="columns"
     >
       <template slot="headerLeft">
-        <el-button type="primary" plain size="mini">选取设备</el-button>
-        <el-button type="primary" plain size="mini">批量配置</el-button>
+        <el-button type="primary"  size="mini">选取设备</el-button>
+        <el-button type="primary"  size="mini">批量配置</el-button>
       </template>
     </jm-table>
   </div>

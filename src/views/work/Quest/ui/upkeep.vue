@@ -48,7 +48,10 @@
       <span>巡点捡项目</span>
       <span style="font-size: 20px">
         <i class="el-icon-camera-solid controls" @click="AddFile"></i
-        >&nbsp;&nbsp;<i class="el-icon-download controls"></i
+        >&nbsp;&nbsp;<i
+          class="el-icon-download controls"
+          @click="handlerDownload"
+        ></i
       ></span>
     </div>
     <div v-if="carryValue.y == true ? true : false" style="padding: 10px 0">
@@ -470,6 +473,7 @@ import {
   getPatrolItemDealRecord,
   getRelevanceInfo,
   photoWomDevice,
+  exportPatrolItem,
 } from "@/api/work/schedule";
 import { removeStore } from "@/utils/property.js";
 import {
@@ -483,8 +487,6 @@ export default {
   dicts: [
     "em_device_state",
     "device_run_state",
-    "sys_normal_disable",
-    "em_is_special",
     "mro_s_check_res_type",
     "mro_s_check_status",
   ],
@@ -593,7 +595,7 @@ export default {
         },
         {
           label: "执行数量",
-          prop: "runNum",
+          prop: "executeNum",
           span: 8,
         },
         { label: "设备编码", prop: "deviceCode", span: 8 },
@@ -606,7 +608,7 @@ export default {
         },
         {
           label: "异常数量",
-          prop: "runNum2",
+          prop: "errorNum",
           span: 8,
         },
       ];
@@ -676,6 +678,16 @@ export default {
     AddFile() {
       this.filedrawer = true;
     },
+    handlerDownload() {
+      exportPatrolItem({
+        deviceCode: this.form.deviceCode,
+        orderCode: this.routerForm.orderCode,
+      }).then((res) => {
+        if (res.code === 200) {
+          this.$message("下载成功!");
+        }
+      });
+    },
     // ! 异常处理
     // 自行处理
     handlerOneself(row) {
@@ -710,7 +722,6 @@ export default {
       //   this.$router.go(-1); //跳回上页
     },
     handelerGenerate() {
-      
       this.$router.push({
         path: "/work/requestAdd",
         query: {

@@ -14,173 +14,121 @@
         /></svg
       ><span>设备移交信息</span>
     </p>
-    <el-row :gutter="24">
-      <el-form
-        ref="elForm"
-        :model="formData"
-        class="form"
-        :rules="rules"
-        size="medium"
-        label-width="100px"
-      >
-        <el-form-item label="移交单编号" prop="backNo">
-          <el-input
-            v-if="isEdit"
-            v-model="formData.backNo"
-            placeholder="自动生成"
-            disabled
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
-          <span v-else-if="!isEdit">{{ formData2.backNo }}</span>
-        </el-form-item>
-        <el-form-item label="业务日期" prop="transferDate">
-          <el-date-picker
-            v-if="isEdit"
-            v-model="formData.transferDate"
-            format="yyyy-MM-dd"
-            value-format="yyyy-MM-dd"
-            :style="{ width: '100%' }"
-            placeholder="请选择日期"
-            clearable
-          ></el-date-picker>
-          <span v-else-if="!isEdit">{{ formData2.transferDate }}</span>
-        </el-form-item>
-        <el-form-item label="所属组织" prop="affDeptId">
-          <el-cascader
-            v-if="isEdit"
-            clearable
-            v-model="formData.affDeptId"
-            :options="deptOptions"
-            :props="{ expandTrigger: 'hover', checkStrictly: true }"
-          ></el-cascader>
-          <span v-else-if="!isEdit">{{ formData2.affDept }}</span>
-        </el-form-item>
-        <el-form-item label="调出部门" prop="outDeptId">
-          <el-cascader
-            v-if="isEdit"
-            clearable
-            v-model="formData.outDeptId"
-            :options="deptOptions"
-            :props="{ expandTrigger: 'hover', checkStrictly: true }"
-          ></el-cascader>
 
-          <span v-else-if="!isEdit">{{ formData2.outDept }}</span>
-        </el-form-item>
-        <el-form-item
-          label="调出部门负责人"
-          prop="outDeptPerson"
-          label-width="140px"
-        >
-          <el-input
-            disabled
-            v-if="isEdit"
-            v-model="formData.outDeptPerson"
-          ></el-input>
-
-          <span v-else-if="!isEdit">{{ formData2.outDeptPerson }}</span>
-        </el-form-item>
-        <el-form-item label="调入部门" prop="inDeptId">
-          <el-cascader
-            v-if="isEdit"
-            clearable
-            v-model="formData.inDeptId"
-            :options="deptOptions"
-            :props="{ expandTrigger: 'hover', checkStrictly: true }"
-          ></el-cascader>
-
-          <span v-else-if="!isEdit">{{ formData2.inDept }}</span>
-        </el-form-item>
-        <el-form-item
-          label="调入部门负责人"
-          prop="inDeptPerson"
-          label-width="130px"
-        >
-          <el-input v-if="isEdit" v-model="formData.inDeptPerson"></el-input>
-
-          <span v-else-if="!isEdit">{{ formData2.inDeptPerson }}</span>
-        </el-form-item>
-        <el-form-item label="参考信息" prop="referenceInformation">
-          <el-input
-            v-if="isEdit"
-            v-model="formData.referenceInformation"
-            placeholder="请输入参考信息"
-            clearable
-            :style="{ width: '600px' }"
-          >
-          </el-input>
-
-          <span v-else-if="!isEdit">{{ formData2.referenceInformation }}</span>
-        </el-form-item>
-      </el-form>
+    <TitleForm
+      v-if="isEdit"
+      class="mr20"
+      :columns="columns"
+      :formData="formData"
+      @submitForm="submitForm2"
+      :showButton="false"
+      ref="jmform"
+      :labelWidth="'130px'"
+    ></TitleForm>
+    <el-row class="details" v-else>
+      <el-col v-for="item in columns" :key="item.prop" :span="item.span">
+        {{ item.label }}:
+        {{
+          typeof formData[item.prop] == "number"
+            ? findTreeName(deptOptions, formData[item.prop])
+            : formData[item.prop]
+        }}
+      </el-col>
     </el-row>
   </div>
 </template>
 <script>
 import { listDept } from "@/api/system/dept";
-import { convertToTargetFormat } from "@/utils/property.js";
+import { listUser } from "@/api/system/user";
 export default {
   components: {},
   props: ["formData", "isEdit"],
   data() {
     return {
       deptOptions: null,
-      formData2: { ...this.formData },
-      rules: {
-        transferDate: [
-          {
-            required: true,
-            message: "请选择日期",
-            trigger: "blur",
-          },
-        ],
-        affDeptId: [
-          {
-            required: true,
-            message: "请选择所属组织",
-            trigger: "change",
-          },
-        ],
-        inDeptId: [
-          {
-            required: true,
-            message: "请选择调入部门",
-            trigger: "change",
-          },
-        ],
-        inDeptPerson: [
-          {
-            required: true,
-            message: "请输入调入部门负责人",
-            trigger: "change",
-          },
-        ],
-        outDeptId: [
-          {
-            required: true,
-            message: "请选择调出部门",
-            trigger: "change",
-          },
-        ],
-
-        outDeptPerson: [
-          {
-            required: true,
-            message: "请输入调出部门负责人",
-            trigger: "change",
-          },
-        ],
-      },
+      userList: [],
+      userList2: [],
     };
   },
-  computed: {},
+  computed: {
+    columns() {
+      return [
+        {
+          label: "移交单编号",
+          prop: "transferNo",
+          span: 8,
+          formDisabled: true,
+        },
+        {
+          label: "业务日期",
+          prop: "transferDate",
+          span: 8,
+          required: true,
+          formType: "date",
+        },
+        {
+          label: "所属组织",
+          prop: "affDeptId",
+          span: 8,
+          required: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          formDisabled: true,
+        },
+        {
+          label: "调出部门",
+          prop: "outDeptId",
+          span: 6,
+          formType: "selectTree",
+          options: this.deptOptions,
+          required: true,
+        },
+        {
+          label: "调出部门负责人",
+          prop: "outDeptPerson",
+          span: 6,
+          required: true,
+          formType: "select",
+          options: this.userList,
+        },
+        {
+          label: "调入部门",
+          prop: "inDeptId",
+          span: 6,
+          required: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+        },
+        {
+          label: "调入部门负责人",
+          prop: "inDeptPerson",
+          span: 6,
+          required: true,
+          formType: "select",
+          options: this.userList2,
+        },
+        {
+          label: "参考信息",
+          prop: "referenceInformation",
+          span: 24,
+        },
+      ];
+    },
+  },
   watch: {
-    formData: {
+    "formData.outDeptId": {
       handler(newFormData, oldFormData) {
-        this.$emit("formData2", newFormData);
+        if (newFormData) {
+          this.getList(newFormData);
+        }
       },
-      deep: true, // 深层监听
+    },
+    "formData.inDeptId": {
+      handler(newFormData, oldFormData) {
+        if (newFormData) {
+          this.getList2(newFormData);
+        }
+      },
     },
   },
 
@@ -189,21 +137,48 @@ export default {
   },
   mounted() {},
   methods: {
-    handleChange1(e) {
-      this.formData.affDeptId = e[0];
+    /** 查询用户列表 */
+    getList(id) {
+      if (!id) id = 100;
+      this.loading = true;
+      listUser({ deptId: id }).then((response) => {
+        this.userList = response.rows.map((item) => ({
+          label: item.nickName,
+          value: item.nickName,
+        }));
+      });
     },
-    handleChange2(e) {
-      this.formData.outDeptId = e[0];
+    /** 查询用户列表 */
+    getList2(id) {
+      if (!id) id = 100;
+      this.loading = true;
+      listUser({ deptId: id }).then((response) => {
+        this.userList2 = response.rows.map((item) => ({
+          label: item.nickName,
+          value: item.nickName,
+        }));
+      });
     },
-    handleChange3(e) {
-      this.formData.applyDeptId = e[0];
+    submitForm() {
+      this.$refs.jmform.submitForm();
+    },
+    submitForm2(obj) {
+      this.$emit("submitForm", obj);
+    },
+
+    findTreeName(options, value) {
+      for (let item of options) {
+        if (item.id === value) return item.label;
+        if (item.children && item.children.length > 0) {
+          let result = this.findTreeName(item.children, value);
+          if (result !== null) return result;
+        }
+      }
+      return null;
     },
     async getTreeSelect() {
-      // equipmentTree().then((response) => {
-
-      // });
-      listDept().then(async (response) => {
-        this.deptOptions = await convertToTargetFormat(response.data);
+      listDept().then((response) => {
+        this.deptOptions = response.data;
       });
     },
   },
@@ -233,15 +208,14 @@ export default {
     align-items: center;
   }
 
-  .form {
+  .form,
+  .details {
     width: 100%;
-    height: 140px;
-    display: flex;
-    justify-content: start;
-    align-items: flex-start;
-    flex-wrap: wrap;
     padding: 0 60px;
   }
+}
+::v-deep .el-col {
+  height: 60px;
 }
 .bgc {
   background: url("../../../../assets/images/backdrop.png") no-repeat;

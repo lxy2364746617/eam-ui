@@ -153,7 +153,17 @@ export default {
 
   created() {},
   mounted() {},
-  methods: {},
+  methods: {
+    submitForm() {
+      this.$refs.elForm.validate((valid) => {
+        if (valid) {
+          this.$emit("submitForm", this.formData);
+        } else {
+          return false;
+        }
+      });
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

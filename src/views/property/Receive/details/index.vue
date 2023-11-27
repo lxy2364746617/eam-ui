@@ -1,10 +1,6 @@
 <template>
   <Wrapper :title="title">
-    <HeadEdit
-      :isEdit="isEdit"
-      :formData="formData"
-      @formData2="receiveDataFromChild"
-    ></HeadEdit>
+    <HeadEdit :isEdit="isEdit" :formData="formData"></HeadEdit>
     <TableProject :isShow="true" :rowId="formData.neckNo">
       <template
         ><p class="icon">
@@ -68,7 +64,6 @@ export default {
   created() {
     const routeValue = this.$route.query.item;
     this.formData = routeValue;
-    this.formData["isBtn"] = 1;
     this.isEdit = routeValue.isEdit;
   },
   mounted() {

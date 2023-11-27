@@ -25,7 +25,7 @@
             :show-file-list="false"
             :headers="headers"
             ref="upload"
-            ><el-button type="primary" size="mini" plain icon="el-icon-upload"
+            ><el-button type="primary" size="mini"  icon="el-icon-upload"
               >导入</el-button
             ></el-upload
           >
