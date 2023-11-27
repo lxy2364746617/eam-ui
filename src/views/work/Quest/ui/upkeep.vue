@@ -476,12 +476,14 @@ import {
   exportPatrolItem,
 } from "@/api/work/schedule";
 import { removeStore } from "@/utils/property.js";
+import { saveAs } from "file-saver";
 import {
   getSelectPage,
   commitPatrolItem,
   stagingPatrolItem,
   dealPatrolItem,
 } from "@/api/work/schedule";
+import { format } from "echarts";
 export default {
   components: { Wrapper, JmTable, CarryForm, JmForm },
   dicts: [
@@ -679,14 +681,28 @@ export default {
       this.filedrawer = true;
     },
     handlerDownload() {
-      exportPatrolItem({
-        deviceCode: this.form.deviceCode,
-        orderCode: this.routerForm.orderCode,
-      }).then((res) => {
-        if (res.code === 200) {
-          this.$message("下载成功!");
-        }
-      });
+      // const format = new FormData();
+
+      // format.append("deviceCode", this.form.deviceCode);
+      // format.append("orderCode", this.routerForm.orderCode);
+      // exportPatrolItem({
+      //   deviceCode: this.form.deviceCode,
+      //   orderCode: this.routerForm.orderCode,
+      // }).then((res) => {
+      //   const blob = new Blob([res], {
+      //     type: "application/vnd.ms-excel;charset=utf-8",
+      //   });
+      //   saveAs(blob, `下载数据_${new Date().getTime()}`);
+      // });
+
+      this.download(
+        "/wom/patrol/item/exportPatrolItem",
+        {
+          deviceCode: this.form.deviceCode,
+          orderCode: this.routerForm.orderCode,
+        },
+        `下载数据_${new Date().getTime()}.xlsx`
+      );
     },
     // ! 异常处理
     // 自行处理

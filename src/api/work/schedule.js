@@ -326,6 +326,7 @@ export const exportWomInfo = (data) => {
     url: "/workorder/exportWomInfo",
     method: "post",
     data: data,
+    responseType: "blob",
   });
 };
 // ! 工单日历

@@ -439,7 +439,290 @@ export const constantRoutes = [
         meta: { title: '班组管理', icon: '' }
       },
     ]
-  }
+  },
+  // ! 年度
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/purchase/annualAdd",
+        component: () =>
+          import("@/views/property/equipmentAcquisition/Annual/add/index"),
+        name: "AnnualAdd",
+        meta: { title: "购置年度计划/新增", icon: "" },
+      },
+      {
+        path: "/property/purchase/annualEdit",
+        component: () =>
+          import("@/views/property/equipmentAcquisition/Annual/edit/index"),
+        name: "AnnualEdit",
+        meta: { title: "购置年度计划/编辑", icon: "" },
+      },
+      {
+        path: "/property/purchase/annualDetails",
+        component: () =>
+          import("@/views/property/equipmentAcquisition/Annual/details/index"),
+        name: "AnnualDetails",
+        meta: { title: "购置年度计划/详情", icon: "" },
+      },
+    ],
+  },
+  // ! 临时
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/purchase/temporarilyAdd",
+        component: () =>
+          import("@/views/property/equipmentAcquisition/Temporarily/add/index"),
+        name: "TemporarilyAdd",
+        meta: { title: "购置临时计划/新增", icon: "" },
+      },
+      {
+        path: "/property/purchase/temporarilyEdit",
+        component: () =>
+          import(
+            "@/views/property/equipmentAcquisition/Temporarily/edit/index"
+          ),
+        name: "TemporarilyEdit",
+        meta: { title: "购置临时计划/编辑", icon: "" },
+      },
+      {
+        path: "/property/purchase/temporarilyDetails",
+        component: () =>
+          import(
+            "@/views/property/equipmentAcquisition/Temporarily/details/index"
+          ),
+        name: "TemporarilyDetails",
+        meta: { title: "购置临时计划/详情", icon: "" },
+      },
+    ],
+  },
+  // ! 领用
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/receiveAdd",
+        component: () => import("@/views/property/Receive/add/index"),
+        name: "receiveAdd",
+        meta: { title: "设备领用/新增", icon: "" },
+      },
+      {
+        path: "/property/receiveEdit",
+        component: () => import("@/views/property/Receive/edit/index"),
+        name: "receiveEdit",
+        meta: { title: "设备领用/编辑", icon: "" },
+      },
+      {
+        path: "/property/receiveDetails",
+        component: () => import("@/views/property/Receive/details/index"),
+        name: "receiveDetails",
+        meta: { title: "设备领用/详情", icon: "" },
+      },
+    ],
+  },
+  // ! 回退
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/backspaceAdd",
+        component: () => import("@/views/property/Backspace/add/index"),
+        name: "backspaceAdd",
+        meta: { title: "设备回退/新增", icon: "" },
+      },
+      {
+        path: "/property/backspaceEdit",
+        component: () => import("@/views/property/Backspace/edit/index"),
+        name: "backspaceEdit",
+        meta: { title: "设备回退/编辑", icon: "" },
+      },
+      {
+        path: "/property/backspaceDetails",
+        component: () => import("@/views/property/Backspace/details/index"),
+        name: "backspaceDetails",
+        meta: { title: "设备回退/详情", icon: "" },
+      },
+    ],
+  },
+  // ! 移交
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/turnOverAdd",
+        component: () => import("@/views/property/TurnOver/add/index"),
+        name: "turnOverAdd",
+        meta: { title: "设备移交/新增", icon: "" },
+      },
+      {
+        path: "/property/turnOverEdit",
+        component: () => import("@/views/property/TurnOver/edit/index"),
+        name: "turnOverEdit",
+        meta: { title: "设备移交/编辑", icon: "" },
+      },
+      {
+        path: "/property/turnOverDetails",
+        component: () => import("@/views/property/TurnOver/details/index"),
+        name: "turnOverDetails",
+        meta: { title: "设备移交/详情", icon: "" },
+      },
+    ],
+  },
+  // ! 报废
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/scrappingAdd",
+        component: () => import("@/views/property/Scrapping/add/index"),
+        name: "scrappingAdd",
+        meta: { title: "设备报废/新增", icon: "" },
+      },
+      {
+        path: "/property/scrappingEdit",
+        component: () => import("@/views/property/Scrapping/edit/index"),
+        name: "scrappingEdit",
+        meta: { title: "设备报废/编辑", icon: "" },
+      },
+      {
+        path: "/property/scrappingDetails",
+        component: () => import("@/views/property/Scrapping/details/index"),
+        name: "scrappingDetails",
+        meta: { title: "设备报废/详情", icon: "" },
+      },
+    ],
+  },
+  // ! 位置状态变动
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/positionChangeAdd",
+        component: () => import("@/views/property/PositionChange/add/index"),
+        name: "positionChangeAdd",
+        meta: { title: "位置状态变动/新增", icon: "" },
+      },
+      {
+        path: "/property/positionChangeEdit",
+        component: () => import("@/views/property/PositionChange/edit/index"),
+        name: "positionChangeEdit",
+        meta: { title: "位置状态变动/编辑", icon: "" },
+      },
+      {
+        path: "/property/positionChangeDetails",
+        component: () =>
+          import("@/views/property/PositionChange/details/index"),
+        name: "positionChangeDetails",
+        meta: { title: "位置状态变动/详情", icon: "" },
+      },
+    ],
+  },
+
+  {
+    path: "/work",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/work/requestAdd",
+        component: () => import("@/views/work/Request/add/index"),
+        name: "RequestAdd",
+        meta: { title: "工单请求/操作", icon: "" },
+      },
+    ],
+  },
+  {
+    path: "/work",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/work/questAdd2",
+        component: () => import("@/views/work/Quest/add/index2"),
+        name: "questAdd2",
+        meta: { title: "待办任务/设备修理", icon: "" },
+      },
+      {
+        path: "/work/questAdd3",
+        component: () => import("@/views/work/Quest/add/index3"),
+        name: "questAdd3",
+        meta: { title: "待办任务/委外维修", icon: "" },
+      },
+      {
+        path: "/work/questAdd4",
+        component: () => import("@/views/work/Quest/add/index4"),
+        name: "questAdd4",
+        meta: { title: "待办任务/保养检修", icon: "" },
+      },
+      {
+        path: "/work/questUpkeep",
+        component: () => import("@/views/work/Quest/ui/upkeep"),
+        name: "questUpkeep",
+        beforeEnter: (to, from, next) => {
+          next();
+        },
+        meta: { title: "待办任务/巡检点/操作", icon: "" },
+      },
+      {
+        path: "/work/questAdd5",
+        component: () => import("@/views/work/Quest/add/index5"),
+        name: "questAdd5",
+        meta: { title: "待办任务/巡检点", icon: "" },
+      },
+      {
+        path: "/work/questUpkeep2",
+        component: () => import("@/views/work/Quest/ui/upkeep2"),
+        name: "questUpkeep2",
+        beforeEnter: (to, from, next) => {
+          next();
+        },
+        meta: { title: "待办任务/保养检修/操作", icon: "" },
+      },
+      {
+        path: "/work/questUpkeep3",
+        component: () => import("@/views/work/Quest/ui/upkeep3"),
+        name: "questUpkeep3",
+        beforeEnter: (to, from, next) => {
+          next();
+        },
+        meta: { title: "待办任务/定期检验/操作", icon: "" },
+      },
+      {
+        path: "/work/questAdd6",
+        component: () => import("@/views/work/Quest/add/index6"),
+        name: "questAdd6",
+        meta: { title: "待办任务/保养检修", icon: "" },
+      },
+      {
+        path: "/work/questAdd7",
+        component: () => import("@/views/work/Quest/add/index7"),
+        name: "questAdd7",
+        meta: { title: "待办任务/巡检点执行", icon: "" },
+      },
+      {
+        path: "/work/questAdd8",
+        component: () => import("@/views/work/Quest/add/index8"),
+        name: "questAdd8",
+        meta: { title: "待办任务/定期检验执行", icon: "" },
+      },
+    ],
+  },
 ]
 
 // 动态路由，基于用户权限动态去加载
