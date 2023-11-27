@@ -3,7 +3,8 @@
     <HeadEdit
       :isEdit="isEdit"
       :formData="formData"
-      @formData2="receiveDataFromChild"
+      @submitForm="submitValue"
+      ref="headEdit"
     ></HeadEdit>
     <TableProject :isShow="false" :rowId="formData.scrapNo"
       ><template
@@ -58,6 +59,7 @@ export default {
     const routeValue = this.$route.query.item;
     if (routeValue) {
       this.formData = routeValue;
+      this.formData.scrapType = String(routeValue.scrapType);
       this.isEdit = routeValue.isEdit;
     }
   },
@@ -77,30 +79,24 @@ export default {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
-    submit() {
-      if (!this.formData.id) return;
-
-      delete this.formData.time;
+    submitValue(val) {
       if (getStore("addList") && getStore("addList").length > 0) {
-        this.formData["addDetails"] = getStore("addList");
+        val["addDetails"] = getStore("addList");
       } else {
-        // this.formData["addDetails"] = [];
+        // val["addDetails"] = [];
       }
       if (getStore("updateList") && getStore("updateList").length > 0) {
-        this.formData["updateDetails"] = getStore("updateList");
+        val["updateDetails"] = getStore("updateList");
       } else {
-        // this.formData["updateDetails"] = [];
+        // val["updateDetails"] = [];
       }
       if (getStore("delList") && getStore("delList").length > 0) {
-        this.formData["delDetails"] = getStore("delList").map(
-          (item) => item.id
-        );
+        val["delDetails"] = getStore("delList").map((item) => item.id);
       } else {
-        // this.formData["delDetails"] = [];
+        // val["delDetails"] = [];
       }
 
-      delete this.formData["createTime"];
-      updateProject(this.formData).then((res) => {
+      updateProject(val).then((res) => {
         if (res.code === 200) {
           this.$message({
             type: "success",
@@ -110,6 +106,9 @@ export default {
         this.clear();
         this.cancel();
       });
+    },
+    submit() {
+      this.$refs.headEdit.submitForm();
     },
     receiveDataFromChild(data) {
       this.formData = data;

@@ -311,6 +311,15 @@ export const photoWomDevice = (data) => {
     data: data,
   });
 };
+// 工单待办-导出巡点检项目
+export const exportPatrolItem = (data) => {
+  return request({
+    url: "/wom/patrol/item/exportPatrolItem",
+    method: "post",
+    data: data,
+  });
+};
+
 // 工单待办-工单导出
 export const exportWomInfo = (data) => {
   return request({

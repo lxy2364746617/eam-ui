@@ -16,7 +16,6 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -28,7 +27,6 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -40,7 +38,6 @@
         <el-col :span="1.5" v-else>
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -462,9 +459,27 @@ export default {
               : {}
           );
         });
-        this.equipData = response.rows;
-        this.total = response.total;
-        this.loading = false;
+        let row = JSON.parse(JSON.stringify(response.rows));
+        if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
+          getStore("equipmentList").forEach((t) => {
+            row = row.filter((item) => {
+              return (
+                item.specs +
+                  item.deviceCode +
+                  item.deviceName +
+                  item.batchNo !==
+                t.specs + t.deviceCode + t.deviceName + t.batchNo
+              );
+            });
+          });
+          this.equipData = row;
+          this.total2 = row.length;
+          this.loading = false;
+        } else {
+          this.equipData = response.rows;
+          this.total2 = response.total;
+          this.loading = false;
+        }
       });
     },
     // 多选框选中数据
@@ -500,6 +515,7 @@ export default {
         item["deviceType"] = item.categoryName;
         item["orgId"] = item.otherId;
         item["deptId"] = item.affDeptId;
+        item["sModel"] = item.specs;
       });
 
       if (getStore("equipmentList") && getStore("equipmentList").length > 0) {

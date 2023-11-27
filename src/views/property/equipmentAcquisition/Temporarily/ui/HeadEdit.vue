@@ -135,8 +135,8 @@ export default {
       },
       purchasePlanTypeOptions: [
         {
-          label: "临时计划",
-          value: 2,
+          label: "年度计划",
+          value: 1,
         },
       ],
     };
@@ -145,9 +145,7 @@ export default {
   watch: {
     formData: {
       handler(newFormData, oldFormData) {
-        if (!this.isEdit) {
-          this.$emit("formData2", newFormData);
-        }
+        this.$emit("formData2", newFormData);
       },
       deep: true, // 深层监听
     },
@@ -155,7 +153,17 @@ export default {
 
   created() {},
   mounted() {},
-  methods: {},
+  methods: {
+    submitForm() {
+      this.$refs.elForm.validate((valid) => {
+        if (valid) {
+          this.$emit("submitForm", this.formData);
+        } else {
+          return false;
+        }
+      });
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

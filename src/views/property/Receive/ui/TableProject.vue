@@ -17,7 +17,6 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -29,7 +28,7 @@
         <!-- <el-col :span="1.5" v-else>
           <el-button
             type="primary"
-            plain
+            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -72,7 +71,7 @@
         <el-form-item label="设备名称" prop="deviceName">
           <el-input
             v-model="formData.deviceName"
-            @click.native="addItem.choosedrawer = true"
+            @click.native="handlerAdd"
             placeholder="请输入设备名称"
             clearable
             :style="{ width: '100%' }"
@@ -134,7 +133,9 @@
       :wrapperClosable="false"
     >
       <parentdevice
+        v-if="addItem.choosedrawer"
         :isChoose="true"
+        :formData="form"
         @submitRadio="submitRadio2"
         @close="addItem.choosedrawer = false"
       ></parentdevice>
@@ -174,6 +175,10 @@ export default {
         addDrawer: false,
         addRadio: 1,
       },
+      // 过滤设备
+      form: {
+        disIds: [],
+      },
       // 需求组织
       deptOptions: null,
       deptOptions2: null,
@@ -197,6 +202,7 @@ export default {
       formParams: {
         prtOrg: "Y",
       },
+
       rules: {
         deviceName: [
           {
@@ -274,10 +280,15 @@ export default {
   mounted() {},
 
   methods: {
+    handlerAdd() {
+      this.$set(this.addItem, "choosedrawer", true);
+      let lineIds = this.equipmentList.map((item) => item.deviceId) || [];
+      this.$set(this.form, "disIds", lineIds);
+    },
     submitRadio2(row) {
       this.addItem.copyInputName = row.deviceName;
       this.addItem.copyInputId = row.deviceId;
-      this.addItem.choosedrawer = false;
+      this.$set(this.addItem, "choosedrawer", false);
       this.formData = row;
       this.formData["sModel"] = row.specs;
     },

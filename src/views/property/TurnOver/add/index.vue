@@ -3,7 +3,8 @@
     <HeadEdit
       :isEdit="isEdit"
       :formData="formData"
-      @formData2="receiveDataFromChild"
+      @submitForm="submitValue"
+      ref="headEdit"
     ></HeadEdit>
     <TableProject :isShow="false"
       ><template
@@ -68,7 +69,7 @@ export default {
       title: "",
       isEdit: true,
       // 头部表单
-      formData: { outDeptPerson: this.$store.state.user.standing.nickName },
+      formData: { affDeptId: this.$store.state.user.standing.deptId },
     };
   },
   created() {},
@@ -90,26 +91,20 @@ export default {
       this.$router.go(-1); //跳回上页
     },
     submit() {
+      this.$refs.headEdit.submitForm();
+    },
+    submitValue(val) {
       if (getStore("addList") && getStore("addList").length > 0) {
-        this.formData["addList"] = getStore("addList");
+        val["addList"] = getStore("addList");
       } else {
       }
 
       if (getStore("addFileList") && getStore("addFileList").length > 0) {
-        this.formData["addFileList"] = getStore("addFileList");
+        val["addFileList"] = getStore("addFileList");
       } else {
       }
 
-      this.formData.affDeptId = this.formData.affDeptId
-        ? this.formData.affDeptId[this.formData.affDeptId.length - 1]
-        : null;
-      this.formData.inDeptId = this.formData.inDeptId
-        ? this.formData.inDeptId[this.formData.inDeptId.length - 1]
-        : null;
-      this.formData.outDeptId = this.formData.outDeptId
-        ? this.formData.outDeptId[this.formData.outDeptId.length - 1]
-        : null;
-      setProject(this.formData).then((res) => {
+      setProject(val).then((res) => {
         if (res.code === 200) {
           this.$message({
             type: "success",
@@ -119,9 +114,6 @@ export default {
         this.clear();
         this.cancel();
       });
-    },
-    receiveDataFromChild(data) {
-      this.formData = data;
     },
   },
   watch: {},

@@ -47,7 +47,10 @@
       <span>保养检修项目</span>
       <span style="font-size: 20px">
         <i class="el-icon-camera-solid controls" @click="AddFile"></i
-        >&nbsp;&nbsp;<i class="el-icon-download controls"></i
+        >&nbsp;&nbsp;<i
+          class="el-icon-download controls"
+          @click="handlerDownload"
+        ></i
       ></span>
     </div>
 
@@ -268,11 +271,7 @@ import CarryForm from "@/components/CarryForm";
 import Wrapper from "@/components/wrapper";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
-import {
-  getPatrolItemDealRecord,
-  getRelevanceInfo,
-  upkeepCarryPhoto,
-} from "@/api/work/schedule";
+import { getRelevanceInfo, upkeepCarryPhoto } from "@/api/work/schedule";
 import { removeStore } from "@/utils/property.js";
 import {
   upkeepSubmitItem,
@@ -282,14 +281,7 @@ import {
 } from "@/api/work/schedule";
 export default {
   components: { Wrapper, JmTable, CarryForm, JmForm },
-  dicts: [
-    "em_device_state",
-    "device_run_state",
-    "sys_normal_disable",
-    "em_is_special",
-    "mro_s_check_res_type",
-    "mro_s_check_status",
-  ],
+  dicts: ["em_device_state", "device_run_state"],
   data() {
     return {
       wrapperTitle: "",
@@ -381,7 +373,7 @@ export default {
         },
         {
           label: "执行数量",
-          prop: "runNum",
+          prop: "executeNum",
           span: 8,
         },
         { label: "设备编码", prop: "deviceCode", span: 8 },
@@ -394,7 +386,7 @@ export default {
         },
         {
           label: "异常数量",
-          prop: "runNum2",
+          prop: "errorNum",
           span: 8,
         },
       ];
@@ -440,6 +432,9 @@ export default {
     },
   },
   methods: {
+    handlerDownload() {
+      console.log("========================", "维保下载");
+    },
     handlerImgSubmit() {
       upkeepCarryPhoto({
         deviceCode: this.form.deviceCode,
@@ -493,9 +488,7 @@ export default {
       //   this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       //   this.$router.go(-1); //跳回上页
     },
-    handelerGenerate() {
-      
-    },
+    handelerGenerate() {},
     handlerSelf() {
       if (!this.itemIds.length > 0) {
         this.$message.warning("请选择异常项!");

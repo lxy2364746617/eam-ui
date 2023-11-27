@@ -3,7 +3,8 @@
     <HeadEdit
       :isEdit="isEdit"
       :formData="formData"
-      @formData2="receiveDataFromChild"
+      @submitForm="submitValue"
+      ref="headEdit"
     ></HeadEdit>
     <TableProject :isShow="false" :rowId="formData.neckNo"
       ><template
@@ -54,7 +55,7 @@ import HeadEdit from "../ui/HeadEdit.vue";
 import TableProject from "../ui/TableProject.vue";
 import TableRelevance from "../ui/TableRelevance.vue";
 import { getStore, removeStore } from "@/utils/property.js";
-import { updateProject } from "@/api/property/purchase";
+import { updateNeck } from "@/api/property/receive";
 export default {
   components: {
     Wrapper,
@@ -95,45 +96,31 @@ export default {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
-    submit() {
-      if (!this.formData.id) return;
-
-      this.formData["startTime"] = this.formData.time[0];
-      this.formData["endTime"] = this.formData.time[1];
-      this.formData["purchasePlanType"] = 1;
-      this.formData["purchasePlanNo"] = 1;
-      delete this.formData.time;
+    submitValue(val) {
+      console.log("========================", val);
       if (getStore("addList") && getStore("addList").length > 0) {
-        this.formData["addList"] = getStore("addList");
+        val["addList"] = getStore("addList");
       } else {
-        this.formData["addList"] = [];
+        val["addList"] = [];
       }
       if (getStore("updateList") && getStore("updateList").length > 0) {
-        this.formData["updateList"] = getStore("updateList");
+        val["updateList"] = getStore("updateList");
       }
       if (getStore("delList") && getStore("delList").length > 0) {
-        this.formData["delList"] = getStore("delList");
+        val["delList"] = getStore("delList");
       }
       if (getStore("addFileList") && getStore("addFileList").length > 0) {
-        this.formData["addFileList"] = getStore("addFileList");
+        val["addFileList"] = getStore("addFileList");
       } else {
-        this.formData["addFileList"] = [];
+        val["addFileList"] = [];
       }
       if (getStore("delFileList") && getStore("delFileList").length > 0) {
-        this.formData["delFileList"] = getStore("delFileList");
+        val["delFileList"] = getStore("delFileList");
       } else {
-        this.formData["delFileList"] = [];
+        val["delFileList"] = [];
       }
-      this.formData.affDeptId = this.formData.affDeptId
-        ? this.formData.affDeptId[this.formData.affDeptId.length - 1]
-        : null;
-      this.formData.applyDeptId = this.formData.applyDeptId
-        ? this.formData.applyDeptId[this.formData.applyDeptId.length - 1]
-        : null;
-      this.formData.outDeptId = this.formData.outDeptId
-        ? this.formData.outDeptId[this.formData.outDeptId.length - 1]
-        : null;
-      updateProject(this.formData).then((res) => {
+
+      updateNeck(val).then((res) => {
         if (res.code === 200) {
           this.$message({
             type: "success",
@@ -143,6 +130,9 @@ export default {
         this.clear();
         this.cancel();
       });
+    },
+    submit() {
+      this.$refs.headEdit.submitForm();
     },
     receiveDataFromChild(data) {
       this.formData = data;

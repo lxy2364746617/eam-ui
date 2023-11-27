@@ -3,7 +3,7 @@
     <HeadEdit
       :isEdit="isEdit"
       :formData="formData"
-      @formData2="receiveDataFromChild"
+      @submitForm="submitValue"
     ></HeadEdit>
     <TableProject :isShow="false" :rowId="formData.backNo"
       ><template
@@ -96,41 +96,32 @@ export default {
       this.$router.go(-1); //跳回上页
     },
     submit() {
-      if (!this.formData.id) return;
-
-      delete this.formData.time;
+      this.$refs.headEdit.submitForm();
+    },
+    submitValue(val) {
       if (getStore("addList") && getStore("addList").length > 0) {
-        this.formData["addList"] = getStore("addList");
+        val["addList"] = getStore("addList");
       } else {
-        this.formData["addList"] = [];
+        val["addList"] = [];
       }
       if (getStore("updateList") && getStore("updateList").length > 0) {
-        this.formData["updateList"] = getStore("updateList");
+        val["updateList"] = getStore("updateList");
       }
       if (getStore("delList") && getStore("delList").length > 0) {
-        this.formData["delList"] = getStore("delList");
+        val["delList"] = getStore("delList");
       }
       if (getStore("addFileList") && getStore("addFileList").length > 0) {
-        this.formData["addFileList"] = getStore("addFileList");
+        val["addFileList"] = getStore("addFileList");
       } else {
-        this.formData["addFileList"] = [];
+        val["addFileList"] = [];
       }
       if (getStore("delFileList") && getStore("delFileList").length > 0) {
-        this.formData["delFileList"] = getStore("delFileList");
+        val["delFileList"] = getStore("delFileList");
       } else {
-        this.formData["delFileList"] = [];
+        val["delFileList"] = [];
       }
-      this.formData.affDeptId = this.formData.affDeptId
-        ? this.formData.affDeptId[this.formData.affDeptId.length - 1]
-        : null;
-      this.formData.applyDeptId = this.formData.applyDeptId
-        ? this.formData.applyDeptId[this.formData.applyDeptId.length - 1]
-        : null;
-      this.formData.inDeptId = this.formData.inDeptId
-        ? this.formData.inDeptId[this.formData.inDeptId.length - 1]
-        : null;
-      delete this.formData["createTime"];
-      updateProject(this.formData).then((res) => {
+
+      updateProject(val).then((res) => {
         if (res.code === 200) {
           this.$message({
             type: "success",

@@ -24,7 +24,7 @@ export function setProject(data) {
     data: data,
   });
 }
-// 新增领用
+// 删除领用
 export function delProject(id) {
   return request({
     url: "/property/neck/delNeck?id=" + id,
@@ -36,6 +36,14 @@ export function delProject(id) {
 export function getAssociatedPlan(data) {
   return request({
     url: "/property/purchase/plan/getRelateFileList",
+    method: "post",
+    data: data,
+  });
+}
+// 领用更新
+export function updateNeck(data) {
+  return request({
+    url: "/property/neck/updateNeck",
     method: "post",
     data: data,
   });

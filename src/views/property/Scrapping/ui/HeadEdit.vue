@@ -23,11 +23,16 @@
       :showButton="false"
       ref="jmform"
     ></jm-form>
-    <ul class="details" v-else>
-      <li v-for="item in columns" :key="item.prop">
-        {{ item.label }}: {{ formData[item.prop] }}
-      </li>
-    </ul>
+    <el-row class="details" v-else>
+      <el-col v-for="item in columns" :key="item.prop" :span="item.span">
+        {{ item.label }}:
+        {{
+          typeof formData[item.prop] == "number"
+            ? findName(dict.type.em_scrap_way, formData[item.prop])
+            : formData[item.prop]
+        }}
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script>
@@ -51,31 +56,7 @@ export default {
   },
   data() {
     return {
-      scrapTypeOptions: [
-        {
-          label: "损坏",
-          value: 1,
-        },
-        {
-          label: "过期",
-          value: 2,
-        },
-        {
-          label: "丢失",
-          value: 3,
-        },
-      ],
       deptOptions: [],
-      formData2: { ...this.formData },
-      rules: {
-        purchasePlanName: [
-          {
-            required: true,
-            message: "请输入",
-            trigger: "blur",
-          },
-        ],
-      },
     };
   },
   computed: {
@@ -88,7 +69,7 @@ export default {
           span: 6,
           required: true,
           formType: "select",
-          options: this.scrapTypeOptions,
+          options: this.dict.type.em_scrap_way,
         },
         {
           label: "报废单位",
@@ -109,24 +90,27 @@ export default {
       ];
     },
   },
-  watch: {
-    formData: {
-      handler(newFormData, oldFormData) {
-        this.$emit("formData2", newFormData);
-      },
-      deep: true, // 深层监听
-    },
-  },
+  watch: {},
   created() {
     this.getTreeSelect();
   },
   methods: {
-    submitForm2(form) {
-      // this.$emit("submitForm", form);
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
     },
-    saveHandle() {
+    submitForm() {
       this.$refs.jmform.submitForm();
     },
+    submitForm2(obj) {
+      this.$emit("submitForm", obj);
+    },
+
     getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data;
@@ -158,17 +142,14 @@ export default {
     align-items: center;
   }
 
-  .form {
+  .form,
+  .details {
     width: 100%;
     padding: 0 60px;
   }
 }
-.details {
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-
-  flex-wrap: wrap;
+::v-deep .el-col {
+  height: 60px;
 }
 .bgc {
   background: url("../../../../assets/images/backdrop.png") no-repeat;

@@ -36,15 +36,14 @@
             ref="upload"
             :action="uploadFileUrl"
             class="upload-file-uploader"
-            ><el-button type="danger" size="mini" icon="el-icon-upload"
+            ><el-button type="primary" size="mini" icon="el-icon-upload"
               >导入</el-button
             ></el-upload
           >
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="warning"
-            plain
+            type="primary"
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"
@@ -54,8 +53,8 @@
         </el-col>
         <!-- <el-col :span="1.5">
               <el-button
-                type="danger"
-                plain
+                type="primary"
+                
                 icon="el-icon-delete"
                 size="mini"
                 :disabled="multiple"

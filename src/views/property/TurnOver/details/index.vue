@@ -71,7 +71,6 @@ export default {
   created() {
     const routeValue = this.$route.query.item;
     this.formData = routeValue;
-    this.formData["isBtn"] = 1;
     this.isEdit = routeValue.isEdit;
   },
   mounted() {

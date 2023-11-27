@@ -28,7 +28,7 @@ import Wrapper from '@/components/wrapper';
 
           <el-col :span="1.5">
             <el-button
-              type="warning"
+              type="primary"
               icon="el-icon-download"
               size="mini"
               @click="handlerDerive"

@@ -14,140 +14,94 @@
         /></svg
       ><span>位置状态变动信息</span>
     </p>
-    <el-row :gutter="24">
-      <el-form
-        ref="elForm"
-        :model="formData"
-        class="form"
-        :rules="rules"
-        size="medium"
-        label-width="100px"
-      >
-        <el-form-item label="变动单号" prop="changeNo">
-          <el-input
-            v-if="isEdit"
-            v-model="formData.changeNo"
-            placeholder="自动生成"
-            disabled
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
-          <span v-else-if="!isEdit">{{ formData2.changeNo }}</span>
-        </el-form-item>
-        <el-form-item label="业务日期" prop="busDate">
-          <el-date-picker
-            v-if="isEdit"
-            v-model="formData.busDate"
-            format="yyyy-MM-dd"
-            value-format="yyyy-MM-dd"
-            :style="{ width: '100%' }"
-            placeholder="请选择日期"
-            clearable
-          ></el-date-picker>
-          <span v-else-if="!isEdit">{{ formData2.busDate }}</span>
-        </el-form-item>
-        <el-form-item label="所属组织" prop="affOrgId">
-          <el-cascader
-            v-if="isEdit"
-            clearable
-            v-model="formData.affOrgId"
-            :options="deptOptions"
-            :props="{ expandTrigger: 'hover', checkStrictly: true }"
-          ></el-cascader>
-          <span v-else-if="!isEdit">{{ formData2.affOrgName }}</span>
-        </el-form-item>
-
-        <el-form-item label="申请部门" prop="applyDeptId">
-          <el-cascader
-            v-if="isEdit"
-            clearable
-            v-model="formData.applyDeptId"
-            :options="deptOptions"
-            :props="{ expandTrigger: 'hover', checkStrictly: true }"
-          ></el-cascader>
-
-          <span v-else-if="!isEdit">{{ formData2.applyDeptName }}</span>
-        </el-form-item>
-        <el-form-item
-          label="申请部门负责人"
-          prop="applyPersonName"
-          label-width="130px"
-        >
-          <el-input
-            disabled
-            v-if="isEdit"
-            v-model="formData.applyPersonName"
-          ></el-input>
-
-          <span v-else-if="!isEdit">{{ formData2.applyPersonName }}</span>
-        </el-form-item>
-        <el-form-item label="参考信息" prop="referenceInformation">
-          <el-input
-            v-if="isEdit"
-            v-model="formData.referenceInformation"
-            placeholder="请输入参考信息"
-            clearable
-            :style="{ width: '600px' }"
-          >
-          </el-input>
-
-          <span v-else-if="!isEdit">{{ formData2.referenceInformation }}</span>
-        </el-form-item>
-      </el-form>
+    <TitleForm
+      v-if="isEdit"
+      class="mr20"
+      :columns="columns"
+      :formData="formData"
+      @submitForm="submitForm2"
+      :showButton="false"
+      ref="jmform"
+      :labelWidth="'130px'"
+    ></TitleForm>
+    <el-row class="details" v-else>
+      <el-col v-for="item in columns" :key="item.prop" :span="item.span">
+        {{ item.label }}:
+        {{
+          typeof formData[item.prop] == "number"
+            ? findName(dict.type.em_scrap_way, formData[item.prop])
+            : formData[item.prop]
+        }}
+      </el-col>
     </el-row>
   </div>
 </template>
 <script>
+import { listUser } from "@/api/system/user";
 import { listDept } from "@/api/system/dept";
-import { convertToTargetFormat } from "@/utils/property.js";
+
 export default {
   components: {},
   props: ["formData", "isEdit"],
   data() {
     return {
       deptOptions: null,
-      formData2: { ...this.formData },
-      rules: {
-        neckDate: [
-          {
-            required: true,
-            message: "请选择日期",
-            trigger: "blur",
-          },
-        ],
-        affDeptId: [
-          {
-            required: true,
-            message: "请选择所属组织",
-            trigger: "change",
-          },
-        ],
-        applyDeptId: [
-          {
-            required: true,
-            message: "请选择申请部门",
-            trigger: "change",
-          },
-        ],
-
-        applyPersonName: [
-          {
-            required: true,
-            message: "请输入申请部门负责人",
-            trigger: "change",
-          },
-        ],
-      },
+      userList: [],
     };
   },
-  computed: {},
+  computed: {
+    columns() {
+      return [
+        {
+          label: "变动单号",
+          prop: "changeNo",
+          span: 8,
+          formDisabled: true,
+        },
+        {
+          label: "业务日期",
+          prop: "busDate",
+          span: 8,
+          required: true,
+          formType: "date",
+        },
+        {
+          label: "所属组织",
+          prop: "affOrgId",
+          span: 8,
+          required: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          formDisabled: true,
+        },
+        {
+          label: "申请部门",
+          prop: "applyDeptId",
+          span: 8,
+          formType: "selectTree",
+          options: this.deptOptions,
+          required: true,
+        },
+        {
+          label: "申请部门负责人",
+          prop: "applyPersonName",
+          span: 8,
+          required: true,
+          formType: "select",
+          options: this.userList,
+        },
+
+        { label: "参考信息", prop: "referenceInformation", span: 24 },
+      ];
+    },
+  },
   watch: {
-    formData: {
+    "formData.applyDeptId": {
       handler(newFormData, oldFormData) {
-        this.$emit("formData2", newFormData);
+        if (newFormData) {
+          this.getList(newFormData);
+        }
       },
-      deep: true, // 深层监听
     },
   },
 
@@ -156,21 +110,36 @@ export default {
   },
   mounted() {},
   methods: {
-    handleChange1(e) {
-      this.formData.affDeptId = e[0];
+    /** 查询用户列表 */
+    getList(id) {
+      if (!id) id = 100;
+      this.loading = true;
+      listUser({ deptId: id }).then((response) => {
+        this.userList = response.rows.map((item) => ({
+          label: item.nickName,
+          value: item.userId,
+        }));
+      });
     },
-    handleChange2(e) {
-      this.formData.outDeptId = e[0];
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
     },
-    handleChange3(e) {
-      this.formData.applyDeptId = e[0];
+    submitForm() {
+      this.$refs.jmform.submitForm();
     },
-    async getTreeSelect() {
-      // equipmentTree().then((response) => {
+    submitForm2(obj) {
+      this.$emit("submitForm", obj);
+    },
 
-      // });
-      listDept().then(async (response) => {
-        this.deptOptions = await convertToTargetFormat(response.data);
+    getTreeSelect() {
+      listDept().then((response) => {
+        this.deptOptions = response.data;
       });
     },
   },

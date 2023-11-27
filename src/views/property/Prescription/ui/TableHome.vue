@@ -15,7 +15,7 @@
         <el-col :span="1.5">
           <el-button
             type="warning"
-            plain
+            
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"

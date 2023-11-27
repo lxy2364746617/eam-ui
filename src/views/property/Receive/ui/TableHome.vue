@@ -15,7 +15,6 @@
         <el-col :span="1.5">
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -85,7 +84,6 @@
 import { getPurchaseList, delProject } from "@/api/property/receive";
 import addEdit from "@/views/device/book/add";
 import JmTable from "@/components/JmTable";
-import { findByTemplateType } from "@/api/equipment/attribute";
 export default {
   components: {
     JmTable,
@@ -153,7 +151,6 @@ export default {
   watch: {},
   async created() {
     // data赋值
-    this.columns.forEach((b) => {});
     await this.getList();
   },
   mounted() {},

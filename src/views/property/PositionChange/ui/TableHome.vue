@@ -14,7 +14,7 @@
       <template slot="headerLeft" v-if="!isChoose">
         <el-button
           type="primary"
-          plain
+          
           icon="el-icon-plus"
           size="mini"
           :loading="btnLoading"
@@ -23,8 +23,8 @@
           >新增</el-button
         >
         <el-button
-          type="warning"
-          plain
+          type="primary"
+          
           icon="el-icon-download"
           size="mini"
           @click="exportWarnLog"
