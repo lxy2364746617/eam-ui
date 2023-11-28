@@ -87,7 +87,7 @@
                 size="mini"
                 :loading="btnLoading"
                 @click="handleOpen"
-                v-hasPermi="['equipment:book:add']"
+                v-hasPermi="['equipment:base:add']"
               >新增</el-button>
             </el-col>
             <el-col :span="1.5">
@@ -96,7 +96,7 @@
                 icon="el-icon-upload2"
                 size="mini"
                 @click="handleImport"
-                v-hasPermi="['equipment:book:add']"
+                v-hasPermi="['equipment:base:import']"
               >导入</el-button>
             </el-col>
             <el-col :span="1.5">
@@ -105,7 +105,6 @@
                 icon="el-icon-document"
                 size="mini"
                 @click="handleDevice"
-                v-hasPermi="['equipment:book:add']"
               >设备指标</el-button>
             </el-col>
             <el-col :span="1.5">
@@ -114,7 +113,7 @@
                 icon="el-icon-download"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['equipment:book:add']"
+                v-hasPermi="['equipment:base:export']"
               >下载</el-button>
             </el-col>
             <!-- <el-col :span="1.5">
@@ -136,7 +135,7 @@
               icon="el-icon-view"
               :loading="btnLoading"
               @click="handleUpdate(scope.row,'view')"
-              v-hasPermi="['equipment:book:edit']"
+              v-hasPermi="['equipment:base:query']"
             >详情</el-button>
             <el-button
               size="mini"
@@ -144,14 +143,14 @@
               icon="el-icon-edit"
               :loading="btnLoading"
               @click="handleUpdate(scope.row,'edit')"
-              v-hasPermi="['equipment:book:edit']"
+              v-hasPermi="['equipment:base:edit']"
             >修改</el-button>
             <el-button
               size="mini"
               type="text"
               icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['equipment:book:remove']"
+              v-hasPermi="['equipment:base:remove']"
             >删除</el-button>
             <el-button
               size="mini"
