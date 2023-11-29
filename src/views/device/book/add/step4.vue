@@ -38,7 +38,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row,'edit')"
+            @click="handleUpdate(scope.index,scope.row,'edit')"
           >修改</el-button>
           <el-button
             size="mini"
@@ -270,6 +270,8 @@ export default {
       if(this.title == "新增设备"){
         this.formData.archivesPartsList.push(JSON.parse(JSON.stringify(this.formDataNow)))
         this.total = this.formData.archivesPartsList.length
+      }else{
+         this.formData.archivesPartsList[this.formDataNow.index]=this.formDataNow
       }
       this.close()
     },
@@ -280,9 +282,10 @@ export default {
       this.formDataNow = {}
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    handleUpdate(index,row) {
       this.drawer = true;
       this.title = "编辑设备";
+      row.index=index
       this.formDataNow = row
     },
     /** 删除按钮操作 */
