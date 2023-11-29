@@ -139,10 +139,14 @@ export default {
         // this.formData = this.$options.data().formData;
         this.setFormLabel(response.data)
         // 扩展数据
-        this.formData.emArchivesExtendAtt = {
+        /* this.formData.emArchivesExtendAtt = {
           componentContent: response.data,
           fieldValue: {},
-        }
+        } */
+        this.$set(this.formData,'emArchivesExtendAtt',{
+          componentContent: response.data,
+          fieldValue: {},
+        })
       })
       .catch(err => {
       });
