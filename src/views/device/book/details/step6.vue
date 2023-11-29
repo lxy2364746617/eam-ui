@@ -9,7 +9,6 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['equipment:book:add']"
         >选择父级设备</el-button>
         <el-button
           type="danger"
@@ -17,7 +16,6 @@
           icon="el-icon-upload2"
           size="mini"
           @click="handleRemove"
-          v-hasPermi="['equipment:book:add']"
         >解除父级设备</el-button>
       </span>
     </div>
