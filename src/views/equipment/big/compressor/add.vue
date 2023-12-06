@@ -12,45 +12,12 @@
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
-                            v-hasPermi="['equipment:template:add']">关联设备</el-button>
+                        >关联设备</el-button>
                     </el-col>
-                    <!-- <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
-                            v-hasPermi="['equipment:book:add']">导入</el-button>
-                    </el-col>
-                    <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
-                            v-hasPermi="['equipment:book:add']">下载</el-button>
-                    </el-col> -->
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-delete" size="mini" :disabled="multiple"
-                            @click="handleDelete" v-hasPermi="['equipment:template:remove']">解除关联</el-button>
+                            @click="handleDelete">解除关联</el-button>
                     </el-col>
-                </template>
-                <template #end_handle="scope" v-if="!disabled">
-                    <!-- <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-view"
-                      @click="handleUpdate(scope.row,'view')"
-                      v-hasPermi="['equipment:template:edit']"
-                    >查看</el-button> -->
-                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row, 'edit')"
-                        v-hasPermi="['equipment:template:edit']">编辑</el-button>
-                    <!-- <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-delete"
-                      @click="handleDelete(scope.row)"
-                      v-hasPermi="['equipment:template:remove']"
-                    >删除</el-button> -->
-                    <!-- <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-document-add"
-                      @click="handleSet(scope.row)"
-                      v-hasPermi="['equipment:template:edit']"
-                    >设置字段</el-button> -->
                 </template>
             </jm-table>
 
@@ -93,9 +60,9 @@ export default {
             return [
                 { label: "矿井名称",prop: "mineName", required: true, span: 8, },
                 { label: "设备型号",prop: "deviceModel", span: 8,  },
-                { label: "压缩机形式",prop: "compresspecs", span: 8,  },
+                { label: "压缩机形式",prop: "compressModel", span: 8,  },
                 { label: "功率",prop: "power", span: 8,  },
-                { label: "台数",prop: "sum", span: 8,  },
+                { label: "台数",prop: "sum", span: 8, number: true},
                 { label: "设备厂家",prop: "equipmentManufacturer", span: 8,  },
                 { label: "投运时间",prop: "putTime", span: 8, formType: "date", },
                 { label: "电压等级",prop: "vcc", span: 8,  },
