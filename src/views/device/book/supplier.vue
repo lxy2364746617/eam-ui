@@ -287,7 +287,7 @@ export default {
     getList(queryParams) {
       this.loading = true;
       listSupplier(queryParams).then(response => {
-        this.templateList = response.data;
+        this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
       });

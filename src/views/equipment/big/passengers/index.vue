@@ -8,15 +8,15 @@
         <template slot="headerLeft">
           <el-col :span="1.5">
             <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
-              v-hasPermi="['equipment:template:add']">新增</el-button>
+              v-hasPermi="['equipment:passengers:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
-              v-hasPermi="['equipment:book:add']">导入</el-button>
+              v-hasPermi="['equipment:passengers:import']">导入</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
-              v-hasPermi="['equipment:book:add']">下载</el-button>
+              v-hasPermi="['equipment:passengers:export']">下载</el-button>
           </el-col>
           <!-- <el-col :span="1.5">
                     <el-button
@@ -30,33 +30,26 @@
                   </el-col> -->
         </template>
         <template #end_handle="scope">
-          <!-- <el-button
-                    size="mini"
-                    type="text"
-                    icon="el-icon-view"
-                    @click="handleUpdate(scope.row,'view')"
-                    v-hasPermi="['equipment:template:edit']"
-                  >查看</el-button> -->
           <el-button 
                     size="mini" 
                     type="text" 
                     icon="el-icon-edit" 
                     @click="handleUpdate(scope.row, 'edit')"
-                    v-hasPermi="['equipment:template:edit']"
+                    v-hasPermi="['equipment:passengers:edit']"
                     >编辑</el-button>
           <el-button
                     size="mini"
                     type="text"
                     icon="el-icon-delete"
                     @click="handleDelete(scope.row)"
-                    v-hasPermi="['equipment:template:remove']"
+                    v-hasPermi="['equipment:passengers:remove']"
                   >删除</el-button>
           <el-button
                     size="mini"
                     type="text"
                     icon="el-icon-document-add"
                     @click="handleUpdate(scope.row,'view')"
-                    v-hasPermi="['equipment:template:edit']"
+                    v-hasPermi="['equipment:passengers:query']"
                   >查看详情</el-button>
         </template>
       </jm-table>

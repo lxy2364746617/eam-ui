@@ -11,8 +11,9 @@
                 :handleWidth="120" :columns="tablecolumns" ref="jmTable">
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
-                            v-hasPermi="['equipment:template:add']">关联设备</el-button>
+                        <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">
+                            关联设备
+                        </el-button>
                     </el-col>
                     <!-- <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
@@ -24,33 +25,8 @@
                     </el-col> -->
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-delete" size="mini" :disabled="multiple"
-                            @click="handleDelete" v-hasPermi="['equipment:template:remove']">解除关联</el-button>
+                            @click="handleDelete">解除关联</el-button>
                     </el-col>
-                </template>
-                <template #end_handle="scope" v-if="!disabled">
-                    <!-- <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-view"
-                      @click="handleUpdate(scope.row,'view')"
-                      v-hasPermi="['equipment:template:edit']"
-                    >查看</el-button> -->
-                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row, 'edit')"
-                        v-hasPermi="['equipment:template:edit']">编辑</el-button>
-                    <!-- <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-delete"
-                      @click="handleDelete(scope.row)"
-                      v-hasPermi="['equipment:template:remove']"
-                    >删除</el-button> -->
-                    <!-- <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-document-add"
-                      @click="handleSet(scope.row)"
-                      v-hasPermi="['equipment:template:edit']"
-                    >设置字段</el-button> -->
                 </template>
             </jm-table>
 
@@ -96,11 +72,11 @@ export default {
                 { label: "上级变电站", prop: "parentSsName", span: 8, },
                 { label: "供电电压等级", prop: "vcc", span: 8, },
                 { label: "供电距离(m)", prop: "vcm", span: 8, },
-                { label: "本回电源共几基塔杆", prop: "tb", span: 8, },
+                { label: "本回电源共几基塔杆", prop: "tb", span: 8, number: true},
                 { label: "是否过采区塌陷区", prop: "isTx", span: 8, formType: 'select', options: this.dict.type.equipment_large_base },//(Y 是、N 否)
-                { label: "采空、塌陷区塔杆共几层", prop: "cTb", span: 8, },
+                { label: "采空、塌陷区塔杆共几层", prop: "cTb", span: 8, number: true},
                 { label: "有无地面备用发电机", prop: "isBg", span: 8, formType: 'select', options: this.dict.type.equipment_large_have },//(0 有、1 无)
-                { label: "发电机数量", prop: "cenNo", span: 8, },
+                { label: "发电机数量", prop: "cenNo", span: 8, number: true },
                 { label: "发电机功率", prop: "cenPower", span: 8, },
                 { label: "站内母线形式", prop: "mxXs", span: 8, },
                 { label: "发电厂名称", prop: "powerName", span: 8, },
@@ -113,14 +89,14 @@ export default {
                 { label: "主变投运日期", prop: "motTyTime", formType: 'date', span: 8, },
                 { label: "高压开关电压(KV)", prop: "psV", span: 8, },
                 { label: "高压开关设备型号", prop: "psXh", span: 8, },
-                { label: "高压开关台数", prop: "psTs", span: 8, },
+                { label: "高压开关台数", prop: "psTs", span: 8, number: true},
                 { label: "高压开关断路器", prop: "psDlq", span: 8, },
                 { label: "高压开关手车电动", prop: "psScdd", span: 8, },
                 { label: "高压开关设备厂家", prop: "psCj", span: 8, },
                 { label: "高压开关投运时间", prop: "psTyTime", formType: 'date', span: 8, },
                 { label: "低压开关电压 (KV)", prop: "lvsV", span: 8, },
                 { label: "低压开关设备型号", prop: "lvsXh", span: 8, },
-                { label: "低压开关台数", prop: "lvsTs", span: 8, },
+                { label: "低压开关台数", prop: "lvsTs", span: 8, number: true},
                 { label: "低压开关断路器", prop: "lvsDlq", span: 8, },
                 { label: "低压开关手车电动", prop: "lvsScdd", span: 8, formType: 'select', options: this.dict.type.equipment_large_switch  },//(是/否)
                 { label: "低压开关设备厂家", prop: "lvsCj", span: 8, },

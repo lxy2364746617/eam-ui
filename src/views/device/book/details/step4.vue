@@ -15,7 +15,6 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
           >上传</el-button>
         </el-col>
       </template>
@@ -25,14 +24,12 @@
           type="text"
           icon="el-icon-view"
           @click="downloadFile(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
         >下载</el-button>
         <el-button
           size="mini"
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
         >删除</el-button>
         <el-button
           size="mini"
@@ -40,7 +37,6 @@
           icon="el-icon-document-add"
           v-if="fileType.includes(scope.row.fileType)"
           @click="handlePreview(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
         >预览</el-button>
       </template>
     </jm-table>

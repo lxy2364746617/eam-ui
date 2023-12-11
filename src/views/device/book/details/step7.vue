@@ -24,7 +24,6 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
-            v-hasPermi="['equipment:book:add']"
           >添加子级设备</el-button>
         </el-col>
         <el-col :span="1.5">
@@ -35,7 +34,6 @@
             size="mini"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermi="['equipment:book:remove']"
           >解除子级设备</el-button>
         </el-col>
       </template>

@@ -122,6 +122,7 @@
               :readonly="col.readonly"
               :disabled="col.formDisabled || disabled"
               @click.native="col.clickFn?col.clickFn():(()=>{})()"
+              :type= "col.number?'number':'text'"
             />
           </el-form-item>
         </el-col>
@@ -168,6 +169,10 @@ export default {
     labelPosition: {
       default: 'right',
       type: String,
+    },
+    number: {
+      default: false,
+      type: Boolean,
     },
   },
   // watch:{

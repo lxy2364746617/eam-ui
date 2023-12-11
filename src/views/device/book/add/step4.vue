@@ -18,7 +18,7 @@
               icon="el-icon-plus"
               size="mini"
               @click="handleAdd"
-              v-hasPermi="['equipment:book:add']"
+              v-hasPermi="['equipment:base:addParentEm']"
             >添加</el-button>
           </el-col>
           <el-col :span="1.5">
@@ -29,7 +29,7 @@
               size="mini"
               :disabled="multiple"
               @click="handleDelete"
-              v-hasPermi="['equipment:book:remove']"
+              v-hasPermi="['equipment:base:removeParentEm']"
             >解除</el-button>
           </el-col>
         </template>
@@ -38,15 +38,13 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row,'edit')"
-            v-hasPermi="['equipment:book:edit']"
+            @click="handleUpdate(scope.index,scope.row,'edit')"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['equipment:book:remove']"
           >删除</el-button>
         </template>
       </jm-table>
@@ -272,6 +270,8 @@ export default {
       if(this.title == "新增设备"){
         this.formData.archivesPartsList.push(JSON.parse(JSON.stringify(this.formDataNow)))
         this.total = this.formData.archivesPartsList.length
+      }else{
+         this.formData.archivesPartsList[this.formDataNow.index]=this.formDataNow
       }
       this.close()
     },
@@ -282,9 +282,10 @@ export default {
       this.formDataNow = {}
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    handleUpdate(index,row) {
       this.drawer = true;
       this.title = "编辑设备";
+      row.index=index
       this.formDataNow = row
     },
     /** 删除按钮操作 */
