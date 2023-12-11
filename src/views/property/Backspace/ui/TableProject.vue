@@ -214,10 +214,25 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "创建时间", prop: "createTime", tableVisible: true },
-        { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "sModel", tableVisible: true },
-        { label: "设备编码", prop: "deviceCode", tableVisible: true },
+        {
+          label: "创建时间",
+          prop: "createTime",
+          tableVisible: true,
+          width: 200,
+        },
+        {
+          label: "设备名称",
+          prop: "deviceName",
+          tableVisible: true,
+          width: 200,
+        },
+        { label: "规格型号", prop: "sModel", tableVisible: true, width: 200 },
+        {
+          label: "设备编码",
+          prop: "deviceCode",
+          tableVisible: true,
+          width: 200,
+        },
         {
           label: "设备类别",
           prop: "deviceType",
@@ -230,6 +245,7 @@ export default {
           label: "设备批次号",
           prop: "batchNo",
           tableVisible: true,
+          width: 200,
         },
         {
           label: "设备状态",
@@ -253,9 +269,9 @@ export default {
     },
     equipSelectColumns() {
       return [
-        { label: "设备编码", prop: "deviceCode" },
-        { label: "设备名称", prop: "deviceName" },
-        { label: "规格型号", prop: "specs" },
+        { label: "设备编码", prop: "deviceCode", width: 200 },
+        { label: "设备名称", prop: "deviceName", width: 200 },
+        { label: "规格型号", prop: "specs", width: 200 },
         {
           label: "设备类别",
           prop: "categoryId",
@@ -269,7 +285,7 @@ export default {
           formType: "selectTag",
           options: this.dict.type.em_device_state,
         },
-        { label: "财务资产编码", prop: "propertyCode" },
+        { label: "财务资产编码", prop: "propertyCode", width: 200 },
         { label: "功能位置", prop: "location" },
         {
           label: "重要等级",

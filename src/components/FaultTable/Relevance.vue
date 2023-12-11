@@ -70,6 +70,7 @@
 <script>
 import JmTableNoPaging from "@/components/JmTableNoPaging";
 import { getRelevanceInfo } from "@/api/work/schedule";
+
 export default {
   components: {
     JmTableNoPaging,
@@ -92,6 +93,15 @@ export default {
       deep: true,
       immediate: true,
     },
+    delFileList: {
+      handler(val) {
+        if (val.length > 0) {
+          this.$emit("delFileList", val);
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   created() {
     if (this.formData.orderCode) {
@@ -110,6 +120,7 @@ export default {
       filedrawer: false,
       fileType: [".xlsx"],
       fileResourceList: [],
+      delFileList: [],
     };
   },
   mounted() {},
@@ -133,15 +144,25 @@ export default {
       let that = this;
       this.$modal
         .confirm('是否确认删除名称为"' + name + '"的数据项？')
-        .then(function () {
-          return delResource(id);
-        })
+
         .then(() => {
-          that.fileResourceList.forEach((element, index) => {
-            if (element.name == row.name) {
-              that.fileResourceList.splice(index, 1);
+          if (row.id) {
+            that.fileResourceList.forEach((item, index) => {
+              if (item.id == row.id) {
+                that.delFileList.push(row);
+                console.log("========================", this.delFileList);
+                that.fileResourceList.splice(index, 1);
+              }
+            });
+          } else {
+            if (res.code === 200) {
+              that.fileResourceList.forEach((item, index) => {
+                if (item.url == row.url) {
+                  that.fileResourceList.splice(index, 1);
+                }
+              });
             }
-          });
+          }
         })
         .catch(() => {});
     },

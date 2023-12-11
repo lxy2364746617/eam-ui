@@ -15,7 +15,6 @@
         <el-col :span="1.5">
           <el-button
             type="primary"
-            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -62,7 +61,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:turnOver:edit']"
@@ -76,7 +74,6 @@
           "
           size="mini"
           type="text"
-          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:turnOver:edit']"
@@ -90,7 +87,6 @@
           "
           size="mini"
           type="text"
-          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:turnOver:remove']"
           >删除</el-button
@@ -103,7 +99,6 @@
           "
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:turnOver:edit']"
           >提交</el-button
@@ -111,7 +106,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:turnOver:edit']"
           >审批流</el-button
@@ -174,8 +168,18 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "创建时间", prop: "createTime", tableVisible: true },
-        { label: "移交单编号", prop: "transferNo", tableVisible: true },
+        {
+          label: "创建时间",
+          prop: "createTime",
+          tableVisible: true,
+          width: 150,
+        },
+        {
+          label: "移交单编号",
+          prop: "transferNo",
+          tableVisible: true,
+          width: 150,
+        },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         {
           label: "业务日期",
@@ -201,6 +205,7 @@ export default {
           label: "调出部门负责人",
           prop: "outDeptPerson",
           tableVisible: true,
+          width: 120,
         },
         {
           label: "调入部门",
@@ -213,6 +218,7 @@ export default {
           label: "调入部门负责人",
           prop: "inDeptPerson",
           tableVisible: true,
+          width: 120,
         },
 
         {
@@ -229,13 +235,12 @@ export default {
   async created() {
     await this.getTreeSelect();
     // data赋值
-    this.columns.forEach((b) => {});
     await this.getList();
   },
   mounted() {},
   methods: {
     /** 查询部门下拉树结构 */
-    getTreeSelect() {
+    async getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data;
       });

@@ -38,12 +38,15 @@
           <Relevance
             v-else-if="col.formType == 'document'"
             @fileResourceList="fileResourceList"
+            @delFileList="delFileList"
             :disabled="col.formDisabled || disabled"
             :formData="formData"
           ></Relevance>
           <SpareRecord
             v-else-if="col.formType == 'spareRecord'"
             @spareRecord="spareRecord"
+            @delAttachmentList="delAttachmentList"
+            @updateAttachmentiist="updateAttachmentiist"
             :disabled="col.formDisabled || disabled"
             :formData="formData"
           ></SpareRecord>
@@ -460,12 +463,20 @@ export default {
     },
 
     fileResourceList(val) {
-      this.formData["addFileList"] = val;
+      this.formData["addFileList"] = val.filter((item) => !item.id);
+    },
+    delFileList(val) {
+      this.formData["delFileList"] = val;
     },
     spareRecord(val) {
-      this.formData["addAttachmentDTOList"] = val;
+      this.formData["addAttachmentDTOList"] = val.filter((item) => !item.id);
     },
-
+    delAttachmentList(val) {
+      this.formData["delAttachmentList"] = val;
+    },
+    updateAttachmentiist(val) {
+      this.formData["updateAttachmentiist"] = val;
+    },
     /** 转换部门数据结构 */
     normalizer(node) {
       if (JSON.stringify(node.children) == "[]") {

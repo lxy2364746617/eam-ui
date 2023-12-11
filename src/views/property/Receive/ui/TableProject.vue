@@ -243,9 +243,19 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "创建时间", prop: "createTime", tableVisible: true },
-        { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "sModel", tableVisible: true },
+        {
+          label: "创建时间",
+          prop: "createTime",
+          tableVisible: true,
+          width: 200,
+        },
+        {
+          label: "设备名称",
+          prop: "deviceName",
+          tableVisible: true,
+          width: 200,
+        },
+        { label: "规格型号", prop: "sModel", tableVisible: true, width: 200 },
         {
           label: "数量",
           prop: "deviceNum",
@@ -255,6 +265,7 @@ export default {
           label: "备注",
           prop: "remark",
           tableVisible: true,
+          width: 200,
         },
       ];
     },

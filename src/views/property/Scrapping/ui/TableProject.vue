@@ -17,7 +17,6 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -29,7 +28,6 @@
         <el-col :span="1.5" v-else>
           <el-button
             type="primary"
-            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -381,10 +379,25 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "设备编码", prop: "deviceCode", tableVisible: true },
-        { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "sModel", tableVisible: true },
-        { label: "设备类别", prop: "deviceType", tableVisible: true },
+        {
+          label: "设备编码",
+          prop: "deviceCode",
+          tableVisible: true,
+          width: 200,
+        },
+        {
+          label: "设备名称",
+          prop: "deviceName",
+          tableVisible: true,
+          width: 200,
+        },
+        { label: "规格型号", prop: "sModel", tableVisible: true, width: 200 },
+        {
+          label: "设备类别",
+          prop: "deviceType",
+          tableVisible: true,
+          width: 200,
+        },
         {
           label: "功能位置",
           prop: "location",
@@ -420,9 +433,24 @@ export default {
         },
         { label: "折旧年限", prop: "depreciationLife", tableVisible: true },
         { label: "已使用年限", prop: "usedLife", tableVisible: true },
-        { label: "损失原因", prop: "lossReason", tableVisible: true },
-        { label: "损失说明情况", prop: "lossSituation", tableVisible: true },
-        { label: "损失鉴定情况", prop: "lossIdentity", tableVisible: true },
+        {
+          label: "损失原因",
+          prop: "lossReason",
+          tableVisible: true,
+          width: 200,
+        },
+        {
+          label: "损失说明情况",
+          prop: "lossSituation",
+          tableVisible: true,
+          width: 200,
+        },
+        {
+          label: "损失鉴定情况",
+          prop: "lossIdentity",
+          tableVisible: true,
+          width: 200,
+        },
       ];
     },
   },

@@ -117,7 +117,7 @@ export default {
     },
   },
   watch: {},
-  beforeDestroy() {
+  destroyed() {
     this.clear();
   },
 };

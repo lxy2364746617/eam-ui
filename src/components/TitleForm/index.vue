@@ -35,6 +35,7 @@
           <Relevance
             v-else-if="col.formType == 'document'"
             @fileResourceList="fileResourceList"
+            @delFileList="delFileList"
             :formData="formData"
             :disabled="disabled"
           ></Relevance>
@@ -229,7 +230,7 @@
             <el-date-picker
               v-else-if="col.formType == 'date'"
               v-model="formData[col.prop]"
-              value-format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd"
               size="small"
               type="date"
               clearable
@@ -265,7 +266,7 @@
               :normalizer="normalizer"
               :disabled="col.formDisabled || disabled"
               :zIndex="9999"
-              style="height: 32px; line-height: 32px"
+              style="height: 33px; line-height: 32px"
             />
             <el-input
               v-else-if="col.formType == 'textarea'"
@@ -541,7 +542,10 @@ export default {
     },
     // 关联附件
     fileResourceList(val) {
-      this.formData["addFileList"] = val;
+      this.formData["addFileList"] = val.filter((item) => !item.id);
+    },
+    delFileList(val) {
+      this.formData["delFileList"] = val;
     },
     /** 转换部门数据结构 */
     normalizer(node) {

@@ -1,6 +1,6 @@
 <template>
   <Wrapper :title="title">
-    <el-row :gutter="20" v-show="!addEdit && !deviceIndexVisible">
+    <el-row class="print" :gutter="20" v-show="!addEdit && !deviceIndexVisible">
       <!--部门数据-->
       <!-- <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
@@ -61,7 +61,7 @@
           :total="total"
           ref="jmtable"
           :isRadio="isChoose"
-          :handleWidth="230"
+          :handleWidth="120"
           :columns="columns"
         >
           <template slot="headerLeft" v-if="!isChoose">
@@ -79,6 +79,7 @@
         </jm-table>
       </el-col>
     </el-row>
+    <el-button @click="handlerPrint">打印</el-button>
   </Wrapper>
 </template>
 
@@ -129,14 +130,15 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: "设备编码", prop: "deviceCode" },
-        { label: "设备名称", prop: "deviceName" },
-        { label: "规格型号", prop: "sModel" },
+        { label: "设备编码", prop: "deviceCode", width: 200 },
+        { label: "设备名称", prop: "deviceName", width: 200 },
+        { label: "规格型号", prop: "specs", width: 200 },
         {
           label: "设备类别",
           prop: "categoryId",
           formType: "selectTree",
           options: this.categoryOptions,
+          width: 280,
         },
         {
           label: "设备状态",
@@ -144,7 +146,7 @@ export default {
           formType: "selectTag",
           options: this.dict.type.em_device_state,
         },
-        { label: "财务资产编码", prop: "propertyCode" },
+        { label: "财务资产编码", prop: "propertyCode", width: 200 },
         { label: "功能位置", prop: "location" },
         {
           label: "重要等级",
@@ -158,12 +160,14 @@ export default {
           prop: "affDeptId",
           formType: "selectTree",
           options: this.deptOptions,
+          width: 180,
         },
         {
           label: "当前使用组织",
           prop: "currDeptId",
           formType: "selectTree",
           options: this.deptOptions,
+          width: 180,
         },
         { label: "入账日期", prop: "makerAoTime", formType: "date" },
         {
@@ -243,6 +247,9 @@ export default {
     this.title = this.$route.meta.title;
   },
   methods: {
+    handlerPrint() {
+      window.print();
+    },
     /** 导入按钮操作 */
     handleImport() {
       this.$refs.fileImport.upload.open = true;
@@ -428,6 +435,8 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+
+
 .header {
   width: 100%;
   height: 337px;

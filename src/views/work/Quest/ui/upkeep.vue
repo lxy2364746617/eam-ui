@@ -274,15 +274,26 @@
         </template>
       </el-table-column>
       <el-table-column
-        v-if="carryValue.y == true ? true : false"
+        v-if="!carryValue.i"
+        label="操作结果"
+        align="center"
+        prop="dealMethod"
+        min-width="100"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.dealResult == 1 ? "OK" : "NG" }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="!carryValue.i"
         label="备注"
         align="center"
         prop="remark"
-        min-width="150"
+        min-width="180"
       >
       </el-table-column>
       <el-table-column
-        v-if="carryValue.y == true ? true : false"
+        v-if="!carryValue.i"
         label="处理状态"
         align="center"
         prop="dealStatus"
@@ -293,22 +304,24 @@
         </template>
       </el-table-column>
       <el-table-column
-        v-if="carryValue.y == true ? true : false"
+        v-if="!carryValue.i"
         label="处理状态"
         align="center"
         prop="dealMethod"
         min-width="200"
       >
         <template slot-scope="scope">
-          <span>自行处理</span>
+          <span>{{ scope.row.dealMethod }}</span>
           <i
+            v-if="scope.row.dealMethod == '自行处理'"
             class="el-icon-view controls"
             @click="handlerOneself(scope.row)"
           ></i>
         </template>
       </el-table-column>
+
       <el-table-column
-        v-if="carryValue.y == true ? false : true"
+        v-if="carryValue.i"
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
@@ -347,11 +360,18 @@
       :limit.sync="queryParams.pageSize"
       @pagination="pagination"
     />
-    <el-row v-if="carryValue.i == false ? false : true">
-      <el-col :span="24" class="submit">
-        <el-button @click="close">取消</el-button>
+    <el-row>
+      <el-col
+        :span="24"
+        class="submit"
+        v-if="carryValue.i == false ? false : true"
+      >
+        <el-button @click="handlerBack">取消</el-button>
         <el-button type="primary" @click="handlerStore">暂存</el-button>
         <el-button type="primary" @click="handlerSubmit">提交</el-button>
+      </el-col>
+      <el-col :span="24" class="submit" v-else>
+        <el-button @click="handlerBack">返回</el-button>
       </el-col>
     </el-row>
     <!-- 添加备注 -->
@@ -420,7 +440,7 @@
 
     <!-- 上传文件 -->
     <el-drawer
-      title="选择文件"
+      :title="carryValue.i ? '选择文件' : '查看'"
       :visible.sync="filedrawer"
       direction="rtl"
       :destroy-on-close="true"
@@ -515,7 +535,7 @@ export default {
       routerForm: [],
       queryParams: { pageNum: 1, pageSize: 10 },
       // 添加备注
-      remarkForm: {},
+      remarkForm: { remark: "" },
       selectId: null,
       // 异常处理
       disabled: false,
@@ -656,7 +676,7 @@ export default {
     },
   },
   methods: {
-    close() {
+    handlerBack() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
@@ -852,7 +872,7 @@ export default {
 
     handlerAddRemarks(scope) {
       this.selectId = scope.$index;
-      this.remarkForm.remark = scope.row.remark;
+      this.remarkForm.remark = JSON.parse(JSON.stringify(scope.row.remark));
       this.drawer2 = true;
     },
     getList() {},
@@ -863,9 +883,13 @@ export default {
       this.checkBoxRows = selection;
     },
   },
-  // beforeDestroy() {
-  //   removeStore("carryValue");
-  // },
+  beforeRouteLeave(to, from, next) {
+    // 保存上一个路由信息
+    this.$store.dispatch("tagsView/delView", from); // 关闭当前页
+    // this.$router.go(-1);
+    removeStore("carryValue");
+    next();
+  },
 };
 </script>
 <style lang='scss' scoped>

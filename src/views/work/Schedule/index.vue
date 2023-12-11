@@ -26,31 +26,32 @@
           </el-col>
         </template>
         <template #end_handle="scope" v-if="!isChoose">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            :loading="btnLoading"
-            @click="goDetails(scope.row, 'edit')"
-            v-hasPermi="['equipment:book:edit']"
-            >编辑</el-button
-          >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleAllot(scope.row)"
-            v-hasPermi="['equipment:book:remove']"
-            >分派</el-button
-          >
-          <el-button
-            v-if="scope.row.orderStatus != '已关闭'"
-            size="mini"
-            type="text"
-            icon="el-icon-document-add"
-            @click="handleSet(scope.row)"
-            v-hasPermi="['equipment:book:edit']"
-            >关闭</el-button
+          <span v-if="scope.row.orderStatus != '已关闭'"
+            ><el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              :loading="btnLoading"
+              @click="goDetails(scope.row, 'edit')"
+              v-hasPermi="['equipment:book:edit']"
+              >编辑</el-button
+            >
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleAllot(scope.row)"
+              v-hasPermi="['equipment:book:remove']"
+              >分派</el-button
+            >
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-document-add"
+              @click="handleSet(scope.row)"
+              v-hasPermi="['equipment:book:edit']"
+              >关闭</el-button
+            ></span
           >
         </template>
       </jm-table>
@@ -436,7 +437,7 @@ export default {
 
         updateAllocation({ ...this.radioRow, ...this.formData }).then((res) => {
           if (res.code === 200) {
-            this.getList();
+            this.getList(this.queryParams);
             this.formData = {};
             this.radioRow = {};
             this.drawer = false;
@@ -451,7 +452,7 @@ export default {
         getAllocationClose(Object.assign(this.radioRow, this.formData2)).then(
           (res) => {
             if (res.code === 200) {
-              this.getList();
+              this.getList(this.queryParams);
               this.formData2 = {};
               this.radioRow = {};
               this.drawer2 = false;
@@ -556,6 +557,7 @@ export default {
         pageSize: 10,
       }
     ) {
+      this.queryParams = form;
       this.loading = true;
       getScheduleList(form).then((response) => {
         this.equipmentList = response.data.records;

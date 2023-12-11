@@ -15,10 +15,8 @@
         <el-col :span="1.5">
           <el-button
             type="primary"
-            
             icon="el-icon-plus"
             size="mini"
-            :loading="btnLoading"
             @click="drawer = true"
             v-hasPermi="['property:warehousing:add']"
             >入库</el-button
@@ -29,7 +27,7 @@
             :before-upload="beforeUpload"
             action=""
             v-hasPermi="['property:warehousing:add']"
-            ><el-button type="primary" size="mini"  icon="el-icon-upload"
+            ><el-button type="primary" size="mini" icon="el-icon-upload"
               >导入</el-button
             ></el-upload
           >
@@ -37,7 +35,6 @@
         <el-col :span="1.5">
           <el-button
             type="primary"
-            
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"
@@ -47,21 +44,18 @@
         </el-col>
       </template>
       <template #end_handle="scope" v-if="!isChoose">
-        <!-- <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
-          size="mini"
-          type="text"
-          icon="el-icon-edit"
-          :loading="btnLoading"
-          @click="goDetails(scope.row, 'edit')"
-          v-hasPermi="['property:warehousing:edit']"
-          >编辑</el-button
-        > -->
         <el-button
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-delete"
+          @click="goDetails(scope.row, 'edit')"
+          v-hasPermi="['property:warehousing:edit']"
+          >编辑</el-button
+        >
+        <el-button
+          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          size="mini"
+          type="text"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:warehousing:remove']"
           >删除</el-button
@@ -70,7 +64,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:warehousing:edit']"
           >提交</el-button
@@ -109,19 +102,6 @@
         <el-button @click="close">取消</el-button>
       </div>
     </el-drawer>
-    <el-col :span="18" :xs="24" v-if="addDetails">
-      <add-details
-        :formData="formData"
-        :formTitle="title"
-        @back="back()"
-      ></add-details>
-    </el-col>
-    <add-edit
-      v-if="addEdit"
-      :formTitle="title"
-      :formData="formData"
-      @back="back"
-    ></add-edit>
   </div>
 </template>
 <script>
@@ -135,15 +115,12 @@ import {
 } from "@/api/property/warehousing";
 import JmTable from "@/components/JmTable";
 import JmTableNoPaging from "@/components/JmTableNoPaging/index2";
-import addEdit from "@/views/property/equipmentAcquisition/Warehousing/add";
-import addDetails from "@/views/property/equipmentAcquisition/Warehousing/details";
-import { listDept } from "@/api/system/dept";
+
 export default {
   components: {
     JmTable,
-    addEdit,
+
     JmTableNoPaging,
-    addDetails,
   },
   dicts: ["em_device_att", "em_device_level", "apv_status"],
   props: {},
@@ -162,7 +139,6 @@ export default {
       addDetails: false,
 
       drawer: false,
-      btnLoading: false,
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -272,9 +248,19 @@ export default {
     },
     columns2() {
       return [
-        { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "sModel", tableVisible: true },
-        { label: "技术参数", prop: "technologyParam", tableVisible: true },
+        {
+          label: "设备名称",
+          prop: "deviceName",
+          tableVisible: true,
+          width: 150,
+        },
+        { label: "规格型号", prop: "smodel", tableVisible: true, width: 150 },
+        {
+          label: "技术参数",
+          prop: "technologyParam",
+          tableVisible: true,
+          width: 150,
+        },
 
         {
           label: "需求日期",
@@ -341,7 +327,6 @@ export default {
   },
   async created() {
     // data赋值
-    this.columns.forEach((b) => {});
     await this.getList();
     await this.getList2();
   },
@@ -374,28 +359,12 @@ export default {
       this.drawer = false;
     },
     save() {
-      this.btnLoading = true;
-      // 获取扩展数据
-      findByTemplateType({ templateType: "K" })
-        .then((response) => {
-          this.formData = this.$options.data().formData;
-
-          this.setFormLabel(response.data);
-          // 扩展数据
-          this.formData.emArchivesExtendAtt = {
-            componentContent: response.data,
-            fieldValue: {},
-          };
-          this.addEdit = true;
-          this.drawer = false;
-
-          this.title = "新增设备";
-          this.btnLoading = false;
-        })
-        .catch((err) => {
-          this.btnLoading = false;
-          this.drawer = true;
-        });
+      if (this.ids2.length == 0) {
+        this.$message.warning("请选择需求计划！");
+        return;
+      }
+      // this.btnLoading = true;
+      this.$router.push({ path: "/property/purchase/warehousingAdd" });
     },
 
     exportWarnLog(data) {
@@ -459,64 +428,24 @@ export default {
       this.single2 = selection.length != 1;
       this.multiple2 = !selection.length;
       this.radioRow2 = selection[0];
-
+      console.log("========================", selection);
       window.sessionStorage.setItem(
-        "purchasePlanDetailId",
-        JSON.stringify(this.ids2[this.ids2.length - 1])
+        "purchaseValue",
+        JSON.stringify({
+          purchasePlanDetailId: selection[0].id,
+          purchasePlanType: selection[0].purchasePlanType,
+          relatePurchasePlanNo: selection[0].purchasePlanNo,
+        })
       );
     },
     /** 修改按钮操作 */
     goDetails(row, f) {
-      this.btnLoading = true;
-      this.title = "编辑设备";
-      this.formData = row;
-      window.sessionStorage.setItem(
-        "purchasePlanDetailId",
-        JSON.stringify(row.id)
-      );
-      // 第一步  特种设备
-      if (this.formData.emArchivesSpecial) {
-        this.formData.emArchivesSpecial.componentContent = JSON.parse(
-          this.formData.emArchivesSpecial.componentContent
-        );
-        this.formData.emArchivesSpecial.fieldValue = JSON.parse(
-          this.formData.emArchivesSpecial.fieldValue
-        );
-        this.setFormLabel(this.formData.emArchivesSpecial.componentContent);
-      }
-      // 第二步
-      if (this.formData.archivesOther == null) {
-        this.formData.archivesOther = {};
-      }
-      // 第二步  扩展数据
-      if (this.formData.emArchivesExtendAtt) {
-        this.formData.emArchivesExtendAtt.componentContent = JSON.parse(
-          this.formData.emArchivesExtendAtt.componentContent
-        );
-        this.formData.emArchivesExtendAtt.fieldValue = JSON.parse(
-          this.formData.emArchivesExtendAtt.fieldValue
-        );
-        this.setFormLabel(this.formData.emArchivesExtendAtt.componentContent);
-      }
-      // 第三步 主要指标
-      if (this.formData.emArchivesIndex) {
-        this.formData.emArchivesIndex.componentContent = JSON.parse(
-          this.formData.emArchivesIndex.componentContent
-        );
-        this.formData.emArchivesIndex.fieldValue = JSON.parse(
-          this.formData.emArchivesIndex.fieldValue
-        );
-        this.setFormLabel(this.formData.emArchivesIndex.componentContent);
-      }
-      this.btnLoading = false;
+      const deviceId = "c52611e54d494a06aed1048099623383";
       if (f == "edit") {
-        this.addEdit = true;
-      } else if (f == "view") {
-        this.title =
-          this.getTreeParent(row.categoryId).join(" > ") +
-          " > " +
-          row.deviceName;
-        this.addDetails = true;
+        // this.addEdit = true;
+        this.$router.push({
+          path: "/property/purchase/warehousingAdd?i=" + deviceId,
+        });
       }
     },
     getTreeParent(id) {

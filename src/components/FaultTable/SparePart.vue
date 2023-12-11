@@ -24,6 +24,7 @@
           <el-input
             v-model="formData.executor2"
             placeholder="请输入仓库名称"
+            disabled
           /> </el-form-item
       ></el-col>
       <el-col :span="12">
@@ -31,6 +32,7 @@
           <el-input
             v-model="formData.applyDeptPerson"
             placeholder="请输入领用人"
+            disabled
           /> </el-form-item
       ></el-col>
       <el-col :span="12">
@@ -41,6 +43,7 @@
             type="date"
             style="width: 100%"
             placeholder="请选择领用时间"
+            disabled
           >
           </el-date-picker> </el-form-item
       ></el-col>
@@ -142,7 +145,29 @@
         </el-table-column>
       </el-table>
     </div>
-
+    <el-drawer
+      :visible.sync="drawer"
+      direction="rtl"
+      size="30%"
+      :wrapperClosable="false"
+      :before-close="close"
+    >
+      <TitleForm
+        :columns="columns"
+        :formData="form"
+        @submitForm="submitForm"
+        ref="titleform"
+        :labelWidth="'140px'"
+        :disabled="disabled"
+      >
+        <template #footer>
+          <div class="container-box2">
+            <el-button @click="saveHandle" type="primary">提交</el-button>
+            <el-button @click="handleCancel">取消</el-button>
+          </div>
+        </template>
+      </TitleForm>
+    </el-drawer>
     <!-- 添加领用数据 -->
     <el-drawer
       title="选择领用单号"
@@ -170,6 +195,8 @@ export default {
       loading: false,
       btnLoading: false, // 表单参数
       choosedrawer: false,
+      drawer: false,
+      form: {},
     };
   },
   props: {
@@ -191,32 +218,88 @@ export default {
       immediate: true,
     },
   },
-  created() {
-    if (this.formData.deviceDTOList && this.formData.deviceDTOList.length) {
-      this.standardList = this.formData.deviceDTOList;
-    }
-  },
+  created() {},
   mounted() {},
-  computed: {},
+  computed: {
+    columns() {
+      return [
+        {
+          label: "备件名称",
+          prop: "attachmentName",
+          required: true,
+          span: 22,
+        },
+        { label: "备件编码", prop: "attachmentCode", required: true, span: 22 },
+        {
+          label: "规格型号",
+          prop: "specs",
+          span: 22,
+        },
+        {
+          label: "备件类别",
+          prop: "attachmentType",
+          span: 22,
+        },
+        {
+          label: "单位",
+          prop: "unit",
+          span: 22,
+        },
+        {
+          label: "领用数量",
+          prop: "replaceNum",
+          formType: "number",
+          span: 22,
+        },
+        {
+          label: "备注",
+          prop: "remark",
+          formType: "textarea",
+          rows: 4,
+          span: 22,
+        },
+      ];
+    },
+  },
   methods: {
+    saveHandle() {
+      this.$refs.titleform.submitForm();
+    },
+    submitForm(formVal) {
+      let newValue = JSON.parse(JSON.stringify(formVal));
+      this.standardList = this.standardList.concat([newValue]);
+      this.close();
+    },
+    handleCancel() {
+      this.close();
+    },
+    close() {
+      this.$refs.titleform.resetFields();
+
+      this.drawer = false;
+    },
     openSb() {
       this.choosedrawer = true;
     },
     handleSelectionChange() {},
     handleAdd() {
-      this.standardList = this.standardList.concat([
-        {
-          attachmentName: "萨达萨达",
-          attachmentCode: "萨达萨达",
-          specs: "萨达萨达",
-          attachmentType: "萨达萨达",
-          unit: "萨达萨达",
-          replaceNum: "1",
-          remark: "萨达萨达",
-        },
-      ]);
+      // this.standardList = this.standardList.concat([
+      //   {
+      //     attachmentName: "萨达萨达",
+      //     attachmentCode: "萨达萨达",
+      //     specs: "萨达萨达",
+      //     attachmentType: "萨达萨达",
+      //     unit: "萨达萨达",
+      //     replaceNum: "1",
+      //     remark: "萨达萨达",
+      //   },
+      // ]);
+      if (!this.formData.neckNo) {
+        this.$message.warning("请选择领用单位！");
+        return;
+      }
+      this.drawer = true;
     },
-    submitForm() {},
     submitRadio2(row) {
       this.formData.neckNo = row.neckNo;
       this.formData.applyDeptPerson = row.applyDeptPerson;

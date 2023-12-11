@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import { listBASE } from "@/api/equipment/BASE";
 import { addBASE, updateBASE } from "@/api/property/warehousing";
 import { listDept } from "@/api/system/dept";
 import {
@@ -69,7 +68,6 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import parentdevice from "@/views/device/book/device";
 
 export default {
-  name: "bookadd",
   dicts: [
     "em_device_state",
     "device_run_state",
@@ -104,7 +102,7 @@ export default {
     },
   },
   watch: {
-    "formData.deviceType": {
+    "formData.categoryId": {
       handler(val) {
         this.getTreeItem(val, this.categoryOptions);
         var b = this.treeItem;
@@ -173,7 +171,7 @@ export default {
         },
         {
           label: "设备类别",
-          prop: "deviceType",
+          prop: "categoryId",
           formType: "selectTree",
           options: this.categoryOptions,
           span: 8,
@@ -477,9 +475,9 @@ export default {
         });
       } else {
         addBASE(formData).then((response) => {
+          console.log("========================", 213213123);
           this.$modal.msgSuccess("保存成功");
-          this.formData.deviceId = response.data;
-          this.formData.id = response.data;
+          this.formData.deviceId = response.msg;
           if (typeof fn == "function") fn();
         });
       }
@@ -498,15 +496,6 @@ export default {
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
-      });
-    },
-    /** 查询用户列表 */
-    getList(queryParams) {
-      this.loading = true;
-      listBASE(queryParams).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
-        this.loading = false;
       });
     },
   },

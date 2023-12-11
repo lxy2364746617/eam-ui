@@ -486,7 +486,7 @@ export default {
     justify-content: space-around;
     align-items: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid #E9EAEF;
+    border-bottom: 1px solid #e9eaef;
     li {
       list-style: none;
       display: flex;

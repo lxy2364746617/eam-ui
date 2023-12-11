@@ -351,7 +351,7 @@ export default {
         getAllocationClose(Object.assign(this.radioRow, this.formData2)).then(
           (res) => {
             if (res.code === 200) {
-              this.getList();
+              this.getList(this.queryParams);
               this.formData2 = {};
               this.radioRow = {};
               this.drawer2 = false;
@@ -374,6 +374,7 @@ export default {
         pageSize: 10,
       }
     ) {
+      this.queryParams = form;
       this.loading = true;
       getScheduleList(form).then((response) => {
         this.equipmentList = response.data.records;

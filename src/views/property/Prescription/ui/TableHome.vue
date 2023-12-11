@@ -7,7 +7,7 @@
       :total="total"
       ref="jmtable"
       :isRadio="isChoose"
-      :handleWidth="230"
+      :handleWidth="150"
       :columns="columns"
       v-if="!addEdit"
     >
@@ -15,7 +15,6 @@
         <el-col :span="1.5">
           <el-button
             type="warning"
-            
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"

@@ -1008,14 +1008,6 @@ export default {
       this.loading = false;
     },
   },
-
-  // beforeRouteLeave(to, from, next) {
-  //   // 保存上一个路由信息
-  //   this.$store.dispatch("tagsView/delView", from); // 关闭当前页
-  //   this.$router.go(-1);
-  //   removeStore("item");
-  //   next();
-  // },
 };
 </script>
 <style lang='scss' scoped>

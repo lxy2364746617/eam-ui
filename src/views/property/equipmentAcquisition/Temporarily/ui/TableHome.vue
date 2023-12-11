@@ -60,7 +60,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:purchase:edit']"
@@ -70,7 +69,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:purchase:edit']"
@@ -80,7 +78,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:purchase:remove']"
           >删除</el-button
@@ -89,7 +86,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:purchase:edit']"
           >提交</el-button
@@ -97,7 +93,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:purchase:edit']"
           >审批流</el-button
@@ -186,7 +181,12 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "购置计划编号", prop: "purchasePlanNo", tableVisible: true },
+        {
+          label: "购置计划编号",
+          prop: "purchasePlanNo",
+          tableVisible: true,
+          width: 150,
+        },
         { label: "购置计划名称", prop: "purchasePlanName", tableVisible: true },
         {
           label: "购置计划类型",
@@ -210,6 +210,7 @@ export default {
           label: "计划金额(万元)",
           prop: "planDemandMount",
           tableVisible: true,
+          width: 120,
         },
         {
           label: "开工时间",
@@ -231,7 +232,12 @@ export default {
           options: this.deptOptions,
           width: 150,
         },
-        { label: "申报人", prop: "declarationPerson", tableVisible: true },
+        {
+          label: "申报人",
+          prop: "declarationPerson",
+          tableVisible: true,
+          width: 120,
+        },
         {
           label: "申报日期",
           prop: "declarationDate",

@@ -28,7 +28,6 @@
         <el-col :span="1.5" v-if="!disabled2">
           <el-button
             type="primary"
-            plain
             size="mini"
             :loading="btnLoading"
             @click="handleUpdate"
@@ -39,7 +38,6 @@
         <el-col :span="1.5" v-else>
           <el-button
             type="primary"
-            plain
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"

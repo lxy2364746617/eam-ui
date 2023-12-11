@@ -17,7 +17,6 @@
         <el-col :span="1.5" v-if="!isShow">
           <el-button
             type="primary"
-            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -29,7 +28,6 @@
         <el-col :span="1.5" v-else>
           <el-button
             type="primary"
-            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -335,7 +333,12 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "设备名称", prop: "deviceName", tableVisible: true },
+        {
+          label: "设备名称",
+          prop: "deviceName",
+          tableVisible: true,
+          width: 150,
+        },
         { label: "规格型号", prop: "sModel", tableVisible: true },
         { label: "技术参数", prop: "technologyParam", tableVisible: true },
         {
@@ -348,6 +351,7 @@ export default {
           label: "子公司审查依据",
           prop: "examinationAccording",
           tableVisible: true,
+          width: 150,
         },
         {
           label: "需求日期",
@@ -362,7 +366,12 @@ export default {
 
           tableVisible: true,
         }, //(0 父级)
-        { label: "计划单价(万元)", prop: "planPrice", tableVisible: true },
+        {
+          label: "计划单价(万元)",
+          prop: "planPrice",
+          tableVisible: true,
+          width: 120,
+        },
         {
           label: "需求组织",
           prop: "demandOrganization",

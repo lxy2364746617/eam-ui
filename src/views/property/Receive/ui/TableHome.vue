@@ -28,7 +28,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:receive:edit']"
@@ -38,7 +37,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:receive:edit']"
@@ -48,7 +46,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:receive:remove']"
           >删除</el-button
@@ -57,7 +54,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:receive:edit']"
           >提交</el-button
@@ -65,7 +61,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:receive:edit']"
           >审批流</el-button
@@ -123,8 +118,13 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "创建时间", prop: "createTime", tableVisible: true },
-        { label: "领用单号", prop: "neckNo", tableVisible: true },
+        {
+          label: "创建时间",
+          prop: "createTime",
+          tableVisible: true,
+          width: 200,
+        },
+        { label: "领用单号", prop: "neckNo", tableVisible: true, width: 200 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         { label: "业务日期", prop: "neckDate", tableVisible: true },
         { label: "所属组织", prop: "affDeptName", tableVisible: true },
@@ -137,6 +137,7 @@ export default {
           label: "申请部门负责人",
           prop: "applyDeptPerson",
           tableVisible: true,
+          width: 120,
         },
         {
           label: "审批状态",

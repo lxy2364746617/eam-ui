@@ -67,7 +67,6 @@
 </template>
 
 <script>
-import { listBASE } from "@/api/equipment/BASE";
 import { addBASE, updateBASE } from "@/api/property/warehousing";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
@@ -79,7 +78,6 @@ import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
-  name: "bookadd",
   dicts: ["em_property_type"],
   components: {
     Treeselect,
@@ -268,6 +266,10 @@ export default {
     };
   },
   created() {
+    if (!this.formData.archivesOther) {
+      this.$set(this.formData, "archivesOther", {});
+    }
+    console.log(this.formData, 222);
     this.getTreeSelect();
   },
   methods: {

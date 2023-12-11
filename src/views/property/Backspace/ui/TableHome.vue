@@ -61,7 +61,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:backspace:edit']"
@@ -75,7 +74,6 @@
           "
           size="mini"
           type="text"
-          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:backspace:edit']"
@@ -89,7 +87,6 @@
           "
           size="mini"
           type="text"
-          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:backspace:remove']"
           >删除</el-button
@@ -102,7 +99,6 @@
           "
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:backspace:edit']"
           >提交</el-button
@@ -110,7 +106,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:backspace:edit']"
           >审批流</el-button
@@ -173,8 +168,13 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "创建时间", prop: "createTime", tableVisible: true },
-        { label: "回退单编号", prop: "backNo", tableVisible: true },
+        {
+          label: "创建时间",
+          prop: "createTime",
+          tableVisible: true,
+          width: 150,
+        },
+        { label: "回退单编号", prop: "backNo", tableVisible: true, width: 150 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         {
           label: "业务日期",
@@ -200,6 +200,7 @@ export default {
           label: "申请部门负责人",
           prop: "applyDeptPerson",
           tableVisible: true,
+          width: 120,
         },
         {
           label: "调入部门",
@@ -212,6 +213,7 @@ export default {
           label: "调入部门负责人",
           prop: "inDeptPerson",
           tableVisible: true,
+          width: 120,
         },
 
         {

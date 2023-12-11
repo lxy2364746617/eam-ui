@@ -27,7 +27,10 @@
         </template>
         <template #end_handle="scope" v-if="!isChoose">
           <el-button
-            v-if="scope.row.orderStatus !== '待验收'"
+            v-if="
+              scope.row.orderStatus !== '待验收' &&
+              scope.row.orderStatus !== '已关闭'
+            "
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -37,7 +40,10 @@
             >执行</el-button
           >
           <el-button
-            v-if="scope.row.orderStatus !== '待验收'"
+            v-if="
+              scope.row.orderStatus !== '待验收' &&
+              scope.row.orderStatus !== '已关闭'
+            "
             size="mini"
             type="text"
             icon="el-icon-delete"
@@ -403,7 +409,7 @@ export default {
 
         updateAllocation({ ...this.radioRow, ...this.formData }).then((res) => {
           if (res.code === 200) {
-            this.getList();
+            this.getList(this.queryParams);
             this.formData = {};
             this.radioRow = {};
             this.drawer = false;
@@ -418,7 +424,7 @@ export default {
         getAllocationClose(Object.assign(this.radioRow, this.formData2)).then(
           (res) => {
             if (res.code === 200) {
-              this.getList();
+              this.getList(this.queryParams);
               this.formData2 = {};
               this.radioRow = {};
               this.drawer2 = false;
@@ -524,6 +530,7 @@ export default {
         pageSize: 10,
       }
     ) {
+      this.queryParams = form;
       this.loading = true;
       getScheduleList(form).then((response) => {
         this.equipmentList = response.data.records;

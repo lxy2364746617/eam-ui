@@ -62,7 +62,7 @@ export default {
   methods: {
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      this.$router.go(-1); //跳回上页
+      // this.$router.go(-1); //跳回上页
     },
 
     receiveDataFromChild(data) {
@@ -70,7 +70,7 @@ export default {
     },
   },
   watch: {},
-  beforeDestroy() {
+  destroyed() {
     removeStore("addList");
     removeStore("delList");
     removeStore("updateList");

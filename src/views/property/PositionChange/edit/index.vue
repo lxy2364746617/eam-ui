@@ -5,9 +5,7 @@
       :formData="formData"
       @formData2="receiveDataFromChild"
     ></HeadEdit>
-    <TableProject :isShow="false" :rowId="formData.changeNo"
-      ></TableProject
-    >
+    <TableProject :isShow="false" :rowId="formData.changeNo"></TableProject>
 
     <div class="submit">
       <el-button type="primary" @click="submit">保存</el-button>
@@ -103,8 +101,14 @@ export default {
     },
   },
   watch: {},
-  beforeDestroy() {
+  destroyed() {
     this.clear();
+  },
+  beforeRouteLeave(to, from, next) {
+    // 保存上一个路由信息
+    this.$store.dispatch("tagsView/delView", from); // 关闭当前页
+    // this.$router.go(-1);
+    next();
   },
 };
 </script>

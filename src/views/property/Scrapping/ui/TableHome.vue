@@ -37,7 +37,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:scrapping:edit']"
@@ -47,7 +46,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:scrapping:edit']"
@@ -57,7 +55,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:scrapping:remove']"
           >删除</el-button
@@ -67,7 +64,6 @@
           v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:scrapping:edit']"
           >提交</el-button
@@ -75,7 +71,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-document-add"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:scrapping:edit']"
           >审批流程</el-button
@@ -136,7 +131,7 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "报废编号", prop: "scrapNo", tableVisible: true },
+        { label: "报废编号", prop: "scrapNo", tableVisible: true, width: 150 },
         { label: "业务名称", prop: "busName", tableVisible: true },
         {
           label: "报废方式",
@@ -158,11 +153,13 @@ export default {
           label: "报废人",
           prop: "scrapPerson",
           tableVisible: true,
+          width: 120,
         },
         {
           label: "报废日期",
           prop: "scrapDate",
           tableVisible: true,
+          formType: "date",
         },
         {
           label: "审批状态",

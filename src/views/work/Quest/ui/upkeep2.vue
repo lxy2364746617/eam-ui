@@ -112,11 +112,23 @@
       >
       </el-table-column>
       <el-table-column
+        v-if="!carryValue.i"
+        label="处理状态"
+        align="center"
+        prop="dealStatus"
+        min-width="100"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.result == 0 ? "待处理" : "已处理" }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
         fixed="right"
         min-width="200"
+        v-if="carryValue.i"
       >
         <template slot-scope="scope">
           <el-radio-group
@@ -150,11 +162,14 @@
       :limit.sync="queryParams.pageSize"
       @pagination="pagination"
     />
-    <el-row v-if="carryValue.i == false ? false : true">
-      <el-col :span="24" class="submit">
-        <el-button>取消</el-button>
+    <el-row>
+      <el-col :span="24" class="submit" v-if="carryValue.i">
+        <el-button @click="handlerBack">取消</el-button>
         <el-button type="primary" @click="handlerStore">暂存</el-button>
         <el-button type="primary" @click="handlerSubmit">提交</el-button>
+      </el-col>
+      <el-col :span="24" class="submit" v-else>
+        <el-button @click="handlerBack">返回</el-button>
       </el-col>
     </el-row>
     <!-- 添加备注 -->
@@ -223,7 +238,7 @@
 
     <!-- 上传文件 -->
     <el-drawer
-      title="选择文件"
+      :title="carryValue.i ? '选择文件' : '查看'"
       :visible.sync="filedrawer"
       direction="rtl"
       :destroy-on-close="true"
@@ -305,7 +320,7 @@ export default {
       routerForm: [],
       queryParams: { pageNum: 1, pageSize: 10 },
       // 添加备注
-      remarkForm: {},
+      remarkForm: { remark: "" },
       selectId: null,
       // 异常处理
       disabled: false,
@@ -432,6 +447,10 @@ export default {
     },
   },
   methods: {
+    handlerBack() {
+      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+      this.$router.go(-1); //跳回上页
+    },
     handlerDownload() {
       console.log("========================", "维保下载");
     },
@@ -596,7 +615,7 @@ export default {
 
     handlerAddRemarks(scope) {
       this.selectId = scope.$index;
-      this.remarkForm.remark = scope.row.remark;
+      this.remarkForm.remark = JSON.parse(JSON.stringify(scope.row.remark));
       this.drawer2 = true;
     },
     getList() {},
@@ -606,9 +625,13 @@ export default {
       this.itemIds = selection.map((item) => item.id);
       this.checkBoxRows = selection;
     },
-    beforeDestroy() {
-      removeStore("carryValue");
-    },
+  },
+  beforeRouteLeave(to, from, next) {
+    // 保存上一个路由信息
+    this.$store.dispatch("tagsView/delView", from); // 关闭当前页
+    // this.$router.go(-1);
+    removeStore("carryValue");
+    next();
   },
 };
 </script>

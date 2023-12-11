@@ -76,7 +76,7 @@
 import JmTableNoPaging from "@/components/JmTableNoPaging";
 import { listDept } from "@/api/system/dept";
 import request from "@/utils/request";
-
+import { v4 as uuidv4 } from "uuid";
 export default {
   components: { JmTableNoPaging },
   props: {
@@ -106,6 +106,8 @@ export default {
         isSub: "提交",
         index: null,
       },
+      delAttachmentList: [],
+      updateAttachmentiist: [],
     };
   },
   watch: {
@@ -119,7 +121,7 @@ export default {
     "formData.itemId": {
       handler(val) {
         if (val) {
-          if (this.deptOptions) {
+          if (this.deptOptions && this.formData.attachmentDTOList) {
             this.standardList = this.formData.attachmentDTOList;
           }
         } else {
@@ -128,10 +130,28 @@ export default {
       },
       deep: true,
     },
+    delAttachmentList: {
+      handler(val) {
+        if (val.length > 0) {
+          this.$emit("delAttachmentList", val);
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+    updateAttachmentiist: {
+      handler(val) {
+        if (val.length > 0) {
+          this.$emit("updateAttachmentiist", val);
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   async created() {
     await this.getDeptTree();
-    if (this.deptOptions) {
+    if (this.deptOptions && this.formData.attachmentDTOList) {
       this.standardList = this.formData.attachmentDTOList;
     }
     if (this.formData.orderCode && this.disabled) {
@@ -141,7 +161,10 @@ export default {
         params: { orderCode: this.formData.orderCode },
       }).then((res) => {
         if (res.code === 200) {
-          this.form = res.data;
+          this.standardList = res.data.map((item) => ({
+            ...item,
+            id: uuidv4(),
+          }));
         }
       });
     }
@@ -177,7 +200,7 @@ export default {
           prop: "createTime",
           required: true,
           span: 22,
-          formType: "date",
+          formType: "datetime",
         },
       ];
     },
@@ -242,6 +265,17 @@ export default {
       } else if (this.flag.isSub === "编辑") {
         let newValue = JSON.parse(JSON.stringify(formVal));
         this.$set(this.standardList, this.flag.index, newValue);
+        if (newValue.id) {
+          const updateIndex = this.updateAttachmentiist.findIndex(
+            (item) => item.id == newValue.id
+          );
+          if (updateIndex !== -1) {
+            this.$set(this.updateAttachmentiist, updateIndex, newValue);
+          } else {
+            this.updateAttachmentiist.push(newValue);
+          }
+        }
+
         this.close();
       }
     },
@@ -261,12 +295,22 @@ export default {
     /** 删除按钮操作 */
     handleDelete(scope) {
       var that = this;
-      this.$modal
-        .confirm("是否确认删除？")
-        .then(function () {
-          that.standardList.splice(scope.$index, 1);
-        })
-        .catch(() => {});
+      if (scope.row.id) {
+        this.$modal
+          .confirm("是否确认删除？")
+          .then(function () {
+            that.delAttachmentList.push(scope.row);
+            that.standardList.splice(scope.$index, 1);
+          })
+          .catch(() => {});
+      } else {
+        this.$modal
+          .confirm("是否确认删除？")
+          .then(function () {
+            that.standardList.splice(scope.$index, 1);
+          })
+          .catch(() => {});
+      }
     },
   },
 };

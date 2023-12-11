@@ -551,9 +551,7 @@ export default {
       let that = this;
       this.$modal
         .confirm('是否确认删除名称为"' + name + '"的数据项？')
-        .then(function () {
-          return delResource(id);
-        })
+
         .then(() => {
           that.fileResourceList.forEach((element, index) => {
             if (element.name == row.name) {

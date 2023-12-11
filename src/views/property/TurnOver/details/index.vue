@@ -88,7 +88,7 @@ export default {
     },
   },
   watch: {},
-  beforeDestroy() {
+  destroyed() {
     removeStore("addList");
     removeStore("delList");
     removeStore("updateList");
@@ -99,9 +99,10 @@ export default {
     //跳回上页
   },
   beforeRouteLeave(to, from, next) {
+    console.log("========================", to, from, next);
     // 保存上一个路由信息
     this.$store.dispatch("tagsView/delView", from); // 关闭当前页
-    this.$router.go(-1);
+    // this.$router.go(to);
     next();
   },
 };
