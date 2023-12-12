@@ -1,6 +1,6 @@
 <template>
   <Wrapper :title="title">
-    <el-row class="print" :gutter="20" v-show="!addEdit && !deviceIndexVisible">
+    <el-row :gutter="20" v-show="!addEdit && !deviceIndexVisible">
       <!--部门数据-->
       <!-- <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
@@ -79,7 +79,6 @@
         </jm-table>
       </el-col>
     </el-row>
-    <el-button @click="handlerPrint">打印</el-button>
   </Wrapper>
 </template>
 
@@ -247,9 +246,6 @@ export default {
     this.title = this.$route.meta.title;
   },
   methods: {
-    handlerPrint() {
-      window.print();
-    },
     /** 导入按钮操作 */
     handleImport() {
       this.$refs.fileImport.upload.open = true;
@@ -435,8 +431,6 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-
-
 .header {
   width: 100%;
   height: 337px;
