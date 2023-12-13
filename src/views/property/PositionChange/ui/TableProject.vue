@@ -311,12 +311,14 @@ export default {
           prop: "affDeptId",
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "当前使用组织",
           prop: "currDeptId",
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         { label: "入账日期", prop: "makerAoTime", formType: "date" },
         {

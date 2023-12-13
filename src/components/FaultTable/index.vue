@@ -223,17 +223,37 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "设备编码", prop: "deviceCode", tableVisible: true },
-        { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
-        { label: "设备类别", prop: "deviceType", tableVisible: true },
+        {
+          label: "设备编码",
+          prop: "deviceCode",
+          tableVisible: true,
+          width: 200,
+        },
+        {
+          label: "设备名称",
+          prop: "deviceName",
+          tableVisible: true,
+          width: 200,
+        },
+        { label: "规格型号", prop: "specs", tableVisible: true, width: 200 },
+        {
+          label: "设备类别",
+          prop: "deviceType",
+          tableVisible: true,
+          width: 200,
+        },
         {
           label: "功能位置",
           prop: "location",
           tableVisible: true,
         },
         { label: "当前使用组织", prop: "currDeptName", tableVisible: true },
-        { label: "所属组织", prop: "affDeptName", tableVisible: true },
+        {
+          label: "所属组织",
+          prop: "affDeptName",
+          tableVisible: true,
+          width: 150,
+        },
 
         {
           label: "设备状态",

@@ -108,10 +108,16 @@ export default {
           label: "所属组织",
           prop: "declarationDate",
           tableVisible: true,
+          width: 150,
         },
         { label: "所属子公司", prop: "declarationUnit", tableVisible: true },
 
-        { label: "当前使用组织", prop: "createBy", tableVisible: true },
+        {
+          label: "当前使用组织",
+          prop: "createBy",
+          tableVisible: true,
+          width: 150,
+        },
         {
           label: "购置日期",
           prop: "createTime",

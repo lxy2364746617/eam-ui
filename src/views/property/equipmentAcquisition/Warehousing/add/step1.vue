@@ -475,7 +475,6 @@ export default {
         });
       } else {
         addBASE(formData).then((response) => {
-          console.log("========================", 213213123);
           this.$modal.msgSuccess("保存成功");
           this.formData.deviceId = response.msg;
           if (typeof fn == "function") fn();

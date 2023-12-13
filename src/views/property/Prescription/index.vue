@@ -159,29 +159,29 @@ export default {
           prop: "affDeptId",
           formType: "selectTree",
           options: this.deptOptions,
-          width: 180,
+          width: 150,
         },
-        {
-          label: "当前使用组织",
-          prop: "currDeptId",
-          formType: "selectTree",
-          options: this.deptOptions,
-          width: 180,
-        },
-        { label: "入账日期", prop: "makerAoTime", formType: "date" },
-        {
-          label: "设备属性",
-          prop: "deviceAtt",
-          formType: "select",
-          options: this.dict.type.em_device_att,
-        }, //(1 设备、2 部件)
-        { label: "上级设备", prop: "parentDeviceName" }, //(0 父级)
-        {
-          label: "审批状态",
-          prop: "apvStatus",
-          formType: "selectTag",
-          options: this.dict.type.apv_status,
-        }, //apv_status
+        // {
+        //   label: "当前使用组织",
+        //   prop: "currDeptId",
+        //   formType: "selectTree",
+        //   options: this.deptOptions,
+        //   width: 150,
+        // },
+        // { label: "入账日期", prop: "makerAoTime", formType: "date" },
+        // {
+        //   label: "设备属性",
+        //   prop: "deviceAtt",
+        //   formType: "select",
+        //   options: this.dict.type.em_device_att,
+        // }, //(1 设备、2 部件)
+        // { label: "上级设备", prop: "parentDeviceName" }, //(0 父级)
+        // {
+        //   label: "审批状态",
+        //   prop: "apvStatus",
+        //   formType: "selectTag",
+        //   options: this.dict.type.apv_status,
+        // }, //apv_status
       ];
     },
   },

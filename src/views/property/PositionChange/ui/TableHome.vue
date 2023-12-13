@@ -40,7 +40,7 @@
           >详情</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -49,7 +49,7 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -58,7 +58,7 @@
         >
 
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -66,6 +66,7 @@
           >提交</el-button
         >
         <el-button
+          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -154,7 +155,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.deptOptions,
-          width: 200,
+          width: 150,
         },
         {
           label: "申请部门",
@@ -162,6 +163,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "申请部门负责人",
@@ -186,6 +188,8 @@ export default {
   },
   mounted() {},
   methods: {
+    handleSet() {},
+
     exportWarnLog(data) {
       download({ ids: this.ids }).then((res) => {
         const blob = new Blob([res], {

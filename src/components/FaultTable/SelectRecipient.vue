@@ -47,7 +47,7 @@ import JmTable from "@/components/JmTable";
 export default {
   name: "devicebook1",
   dicts: ["apv_status"],
-  components: {  JmTable },
+  components: { JmTable },
   props: {
     isChoose: {
       default: true,
@@ -62,15 +62,26 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: "创建时间", prop: "createTime", tableVisible: true },
-        { label: "领用单号", prop: "neckNo", tableVisible: true },
+        {
+          label: "创建时间",
+          prop: "createTime",
+          tableVisible: true,
+          width: 150,
+        },
+        { label: "领用单号", prop: "neckNo", tableVisible: true, width: 150 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         { label: "业务日期", prop: "neckDate", tableVisible: true },
-        { label: "所属组织", prop: "affDeptName", tableVisible: true },
+        {
+          label: "所属组织",
+          prop: "affDeptName",
+          tableVisible: true,
+          width: 150,
+        },
         {
           label: "申请部门",
           prop: "applyDeptName",
           tableVisible: true,
+          width: 150,
         },
         {
           label: "申请部门负责人",

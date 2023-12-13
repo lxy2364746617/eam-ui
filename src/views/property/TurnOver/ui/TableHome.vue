@@ -67,11 +67,7 @@
           >详情</el-button
         >
         <el-button
-          v-if="
-            scope.row.apvStatus === 4 ||
-            scope.row.apvStatus === 1 ||
-            scope.row.apvStatus === null
-          "
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -80,11 +76,7 @@
           >编辑</el-button
         >
         <el-button
-          v-if="
-            scope.row.apvStatus === 4 ||
-            scope.row.apvStatus === 1 ||
-            scope.row.apvStatus === null
-          "
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -92,11 +84,7 @@
           >删除</el-button
         >
         <el-button
-          v-if="
-            scope.row.apvStatus === 4 ||
-            scope.row.apvStatus === 1 ||
-            scope.row.apvStatus === null
-          "
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -104,6 +92,7 @@
           >提交</el-button
         >
         <el-button
+          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -193,6 +182,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "调出部门",
@@ -200,6 +190,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "调出部门负责人",
@@ -213,6 +204,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "调入部门负责人",
@@ -239,6 +231,8 @@ export default {
   },
   mounted() {},
   methods: {
+    handleSet() {},
+
     /** 查询部门下拉树结构 */
     async getTreeSelect() {
       listDept().then((response) => {

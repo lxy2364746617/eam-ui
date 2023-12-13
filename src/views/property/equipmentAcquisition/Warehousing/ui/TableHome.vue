@@ -45,7 +45,7 @@
       </template>
       <template #end_handle="scope" v-if="!isChoose">
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="goDetails(scope.row, 'edit')"
@@ -53,7 +53,7 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -61,7 +61,7 @@
           >删除</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -69,6 +69,7 @@
           >提交</el-button
         >
         <el-button
+          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -196,7 +197,7 @@ export default {
           options: this.dict.type.em_device_level,
         },
         { label: "所属子公司", prop: "affCompany", tableVisible: true },
-        { label: "所属组织", prop: "affDept", tableVisible: true },
+        { label: "所属组织", prop: "affDept", tableVisible: true, width: 150 },
         {
           label: "设备属性",
           prop: "deviceAtt",
@@ -332,6 +333,7 @@ export default {
   },
   mounted() {},
   methods: {
+    handleSet() {},
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
