@@ -183,8 +183,7 @@ export default {
     },
   },
   methods: {
-    HandlerInput(val) {
-    },
+    HandlerInput(val) {},
     handleSelectionChange() {},
     handleAdd() {
       this.drawer = true;
@@ -273,14 +272,23 @@ export default {
 }
 
 .title {
-  padding: 0 20px;
-  width: 100%;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
+  background-color: #ebf4fc;
+  color: #555;
   font-weight: 700;
-  background: rgba(0, 116, 217, 0.08);
+  text-align: left;
+  font-size: 14px;
+  height: 30px;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
   justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0 18px;
+}
+::v-deep .el-table th.el-table__cell {
+  background-color: #f9f9f9;
 }
 </style>

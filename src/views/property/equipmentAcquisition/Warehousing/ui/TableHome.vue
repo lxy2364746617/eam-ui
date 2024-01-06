@@ -434,6 +434,7 @@ export default {
       window.sessionStorage.setItem(
         "purchaseValue",
         JSON.stringify({
+          id: selection[0].id,
           purchasePlanDetailId: selection[0].id,
           purchasePlanType: selection[0].purchasePlanType,
           relatePurchasePlanNo: selection[0].purchasePlanNo,

@@ -42,6 +42,7 @@ import { listDept } from "@/api/system/dept";
 
 export default {
   components: {},
+  dicts: ["em_scrap_way"],
   props: ["formData", "isEdit"],
   data() {
     return {
@@ -155,6 +156,7 @@ export default {
   border: 1px solid #e9eaef;
   background: #f7fbff;
   padding: 14px 15px;
+
   .icon {
     span {
       padding-left: 10px;
@@ -168,15 +170,14 @@ export default {
     align-items: center;
   }
 
-  .form {
+  .form,
+  .details {
     width: 100%;
-    height: 140px;
-    display: flex;
-    justify-content: start;
-    align-items: flex-start;
-    flex-wrap: wrap;
     padding: 0 60px;
   }
+}
+::v-deep .el-col {
+  height: 60px;
 }
 .bgc {
   background: url("../../../../assets/images/backdrop.png") no-repeat;

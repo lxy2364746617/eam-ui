@@ -632,12 +632,21 @@ export default {
   //   border-bottom: 1px solid #ddd;
   background-color: #ebf4fc;
   ::v-deep .el-form-item__label {
-    color: #55566d;
-    font-weight: bold;
-    width: 300px !important;
+    color: #555;
+    font-weight: 700;
     text-align: left;
-    font-size: 16px;
-    padding-left: 20px;
+    font-size: 14px;
+    padding-left: 18px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    height: 30px;
   }
 }
 .selectTag {

@@ -3,11 +3,11 @@
     <el-row :gutter="10" class="mb8" style="margin-bottom: 20px">
       <slot name="headerLeft"></slot>
       <right-toolbar
+        v-if="rightToolbarShow"
         :search="search"
         @queryTable="getList"
         :columns="columns"
         :tableVisible="tableVisible"
-        v-if="rightToolbarShow"
         :rightToolbarShow="rightToolbarShow"
       >
         <template #right_end>
@@ -22,247 +22,242 @@
       :inline="true"
       label-width="68px"
     >
-      <div class="container-box1">
-        <el-table
-          v-loading="loading"
-          highlight-current-row
-          @current-change="handleCurrentChange"
-          :data="tableData2"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column
-            v-if="!isRadio"
-            type="selection"
-            width="55"
-            align="center"
-            :selectable="(row, index) => index != 0 || !showSearch"
-          />
-          <el-table-column v-if="isRadio" width="50">
-            <template slot-scope="scope">
-              <el-radio
-                v-model="radio"
-                :label="scope.$index"
-                v-if="
-                  showSearch == true
-                    ? scope.$index != 0 && showSearch
-                    : !showSearch
-                "
-                class="leftRadio"
-                >&nbsp;</el-radio
-              >
-            </template>
-          </el-table-column>
-
-          <el-table-column
-            label="序号"
-            align="center"
-            prop="noticeId"
-            width="50"
-            v-if="showSearch"
-          >
-            <template slot-scope="scope">
-              <div v-if="scope.$index != 0" v-html="scope.$index"></div>
-            </template>
-          </el-table-column>
-
-          <template v-for="col in columns">
-            <el-table-column
-              :label="col.label"
-              :align="col.align || 'center'"
-              :key="col.prop"
-              :sortable="false"
-              :prop="col.prop"
-              :min-width="col.width || 100"
-              :show-overflow-tooltip="col.showOverflowTooltip"
-              v-if="tableVisible[col.prop]"
+      <el-table
+        v-loading="loading"
+        highlight-current-row
+        @current-change="handleCurrentChange"
+        :data="tableData2"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          v-if="!isRadio"
+          type="selection"
+          width="55"
+          align="center"
+          :selectable="(row, index) => index != 0 || !showSearch"
+        />
+        <el-table-column v-if="isRadio" width="50">
+          <template slot-scope="scope">
+            <el-radio
+              v-model="radio"
+              :label="scope.$index"
+              v-if="scope.$index != 0 && showSearch"
+              class="leftRadio"
+              >&nbsp;</el-radio
             >
-              <template slot-scope="scope">
-                <div v-if="scope.$index == 0 && showSearch">
-                  <el-form-item
-                    label=""
-                    :prop="col.prop"
-                    style="margin-bottom: 0"
-                  >
-                    <el-date-picker
-                      v-if="col.formType == 'date'"
-                      v-model="queryParams[col.prop]"
-                      value-format="yyyy-MM-dd"
-                      size="small"
-                      type="date"
-                      clearable
-                      @keyup.enter.native="handleQuery"
-                      style="width: auto"
-                      placeholder="选择日期"
-                    >
-                    </el-date-picker>
-                    <el-select
-                      v-else-if="
-                        col.formType == 'select' ||
-                        col.formType == 'radio' ||
-                        col.formType == 'switch'
-                      "
-                      clearable
-                      v-model="queryParams[col.prop]"
-                      @keyup.enter.native="handleQuery"
-                      @change="selectchange($event, col.prop)"
-                      placeholder="请选择"
-                    >
-                      <el-option
-                        :label="item.label"
-                        :value="item.value"
-                        v-for="item in col.options"
-                        :key="item.value"
-                      >
-                        <span v-if="col.optionShowValue" style="float: left">{{
-                          item.label
-                        }}</span>
-                        <span
-                          v-if="col.optionShowValue"
-                          style="float: right; color: #8492a6; font-size: 13px"
-                          >{{ item.value }}</span
-                        >
-                      </el-option>
-                    </el-select>
-                    <el-select
-                      v-else-if="col.formType == 'selectTag'"
-                      clearable
-                      v-model="queryParams[col.prop]"
-                      @keyup.enter.native="handleQuery"
-                      @change="selectchange($event, col.prop)"
-                      placeholder="请选择"
-                    >
-                      <el-option
-                        :label="item.label"
-                        :value="item.value"
-                        v-for="item in col.options"
-                        :key="item.value"
-                      >
-                        <el-tag
-                          class="selectTag"
-                          effect="light"
-                          :type="item.raw.listClass"
-                        >
-                          {{ item.label }}
-                        </el-tag>
-                      </el-option>
-                    </el-select>
-                    <treeselect
-                      size="small"
-                      v-else-if="col.formType == 'selectTree'"
-                      v-model="queryParams[col.prop]"
-                      :options="col.options"
-                      clearable
-                      clear-value-text="清除"
-                      no-options-text="暂无数据"
-                      :default-expand-level="4"
-                      @keyup.enter.native="handleQuery"
-                      placeholder="请选择"
-                      :normalizer="normalizer"
-                      :append-to-body="true"
-                      :zIndex="9999"
-                    />
-                    <el-input
-                      v-else
-                      v-model="queryParams[col.prop]"
-                      clearable
-                      @keyup.enter.native="handleQuery"
-                      size="small"
-                      :placeholder="'请输入' + col.label"
-                    />
-                    <!-- 是否为六大类设备  关联表单模板：名称 标识 添加字段
-                    是否为特种设备 -->
-                  </el-form-item>
-                </div>
-                <span v-else-if="col.formType == 'date'">{{
-                  parseTime(scope.row[col.prop], "{y}-{m}-{d}")
-                }}</span>
-                <span
-                  v-else-if="
-                    col.formType == 'select' || col.formType == 'radio'
-                  "
-                  v-html="findName(col.options, scope.row[col.prop])"
-                ></span>
-                <span v-else-if="col.formType == 'selectTag'">
-                  <el-tag
-                    class="selectTag"
-                    effect="light"
-                    :type="findClass(col.options, scope.row[col.prop])"
-                  >
-                    {{ findName(col.options, scope.row[col.prop]) }}
-                  </el-tag>
-                </span>
-                <span v-else-if="col.formType == 'switch'">
-                  <el-switch
-                    v-model="scope.row[col.prop]"
-                    @change="switchchange($event, col.prop, scope.row)"
-                    :active-value="col.options[0].value"
-                    :inactive-value="col.options[1].value"
-                  >
-                  </el-switch>
-                </span>
-                <span v-else-if="col.formType == 'rate'">
-                  <el-rate
-                    v-model="scope.row[col.prop]"
-                    disabled
-                    :max="5"
-                    void-icon-class="el-icon-star-off"
-                    :icon-classes="[
-                      'el-icon-star-off',
-                      'el-icon-star-off',
-                      'el-icon-star-off',
-                    ]"
-                    disabled-void-color="#C6D1DE"
-                    :colors="['#99A9BF', '#00FF1A', '#06B217']"
-                  ></el-rate>
-                </span>
-                <span
-                  v-else-if="col.formType == 'selectTree'"
-                  v-html="findTreeName(col.options, scope.row[col.prop])"
-                ></span>
-                <span
-                  v-else
-                  v-html="scope.row[col.prop]"
-                  :class="{ active: col.class }"
-                ></span>
-              </template>
-            </el-table-column>
           </template>
+        </el-table-column>
+        <el-table-column
+          label="序号"
+          align="center"
+          prop="noticeId"
+          width="50"
+          v-if="isIndex"
+        >
+          <template slot-scope="scope">
+            <div
+              v-if="scope.$index != 0 && showSearch"
+              v-html="scope.$index"
+            ></div>
+            <div v-else-if="!showSearch">{{ scope.$index + 1 }}</div>
+          </template>
+        </el-table-column>
+        <template v-for="col in columns">
           <el-table-column
-            v-if="showOperate"
-            label="操作"
-            align="center"
-            fixed="right"
-            class-name="small-padding fixed-width"
-            :min-width="handleWidth || 120"
+            :label="col.label"
+            :align="col.align || 'center'"
+            :key="col.prop"
+            :sortable="false"
+            :prop="col.prop"
+            :min-width="col.width || 100"
+            :show-overflow-tooltip="col.showOverflowTooltip"
+            v-if="tableVisible[col.prop]"
           >
             <template slot-scope="scope">
               <div v-if="scope.$index == 0 && showSearch">
-                <el-button
-                  size="mini"
-                  type="text"
-                  icon="el-icon-search"
-                  @click="handleQuery"
-                  >搜索</el-button
+                <el-form-item
+                  label=""
+                  :prop="col.prop"
+                  style="margin-bottom: 0"
                 >
-                <el-button
-                  size="mini"
-                  type="text"
-                  icon="el-icon-refresh"
-                  @click="resetQuery"
-                  >重置</el-button
+                  <el-date-picker
+                    v-if="col.formType == 'date'"
+                    v-model="queryParams[col.prop]"
+                    value-format="yyyy-MM-dd"
+                    size="small"
+                    type="date"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                    style="width: auto"
+                    placeholder="选择日期"
+                  >
+                  </el-date-picker>
+                  <el-select
+                    v-else-if="
+                      col.formType == 'select' ||
+                      col.formType == 'radio' ||
+                      col.formType == 'switch'
+                    "
+                    clearable
+                    v-model="queryParams[col.prop]"
+                    @keyup.enter.native="handleQuery"
+                    @change="selectchange($event, col.prop)"
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      :label="item.label"
+                      :value="item.value"
+                      v-for="item in col.options"
+                      :key="item.value"
+                    >
+                      <span v-if="col.optionShowValue" style="float: left">{{
+                        item.label
+                      }}</span>
+                      <span
+                        v-if="col.optionShowValue"
+                        style="float: right; color: #8492a6; font-size: 13px"
+                        >{{ item.value }}</span
+                      >
+                    </el-option>
+                  </el-select>
+                  <el-select
+                    v-else-if="col.formType == 'selectTag'"
+                    clearable
+                    v-model="queryParams[col.prop]"
+                    @keyup.enter.native="handleQuery"
+                    @change="selectchange($event, col.prop)"
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      :label="item.label"
+                      :value="item.value"
+                      v-for="item in col.options"
+                      :key="item.value"
+                    >
+                      <el-tag
+                        class="selectTag"
+                        effect="light"
+                        :type="item.raw.listClass"
+                      >
+                        {{ item.label }}
+                      </el-tag>
+                    </el-option>
+                  </el-select>
+                  <treeselect
+                    size="small"
+                    v-else-if="col.formType == 'selectTree'"
+                    v-model="queryParams[col.prop]"
+                    :options="col.options"
+                    clearable
+                    clear-value-text="清除"
+                    no-options-text="暂无数据"
+                    clearValueText="清除"
+                    noOptionsText="暂无数据"
+                    :default-expand-level="4"
+                    @keyup.enter.native="handleQuery"
+                    placeholder="请选择"
+                    :normalizer="normalizer"
+                    :append-to-body="true"
+                    :zIndex="9999"
+                  />
+                  <el-input
+                    v-else
+                    v-model="queryParams[col.prop]"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                    size="small"
+                    :placeholder="'请输入' + col.label"
+                  />
+                  <!-- 是否为六大类设备  关联表单模板：名称 标识 添加字段
+                    是否为特种设备 -->
+                </el-form-item>
+              </div>
+              <span v-else-if="col.formType == 'date'">{{
+                parseTime(scope.row[col.prop], "{y}-{m}-{d}")
+              }}</span>
+              <span
+                v-else-if="col.formType == 'select' || col.formType == 'radio'"
+                v-html="findName(col.options, scope.row[col.prop])"
+              ></span>
+              <span v-else-if="col.formType == 'selectTag'">
+                <el-tag
+                  class="selectTag"
+                  effect="light"
+                  :type="findClass(col.options, scope.row[col.prop])"
                 >
-              </div>
-              <div v-else>
-                <slot
-                  name="end_handle"
-                  :row="scope.row"
-                  :index="scope.$index"
-                ></slot>
-              </div>
+                  {{ findName(col.options, scope.row[col.prop]) }}
+                </el-tag>
+              </span>
+              <span v-else-if="col.formType == 'switch'">
+                <el-switch
+                  v-model="scope.row[col.prop]"
+                  @change="switchchange($event, col.prop, scope.row)"
+                  :active-value="col.options[0].value"
+                  :inactive-value="col.options[1].value"
+                >
+                </el-switch>
+              </span>
+              <span v-else-if="col.formType == 'radioSelect'">
+                <el-radio-group
+                  v-model="scope.row[col.prop]"
+                  @change="radiochange($event, col.prop, scope.row)"
+                >
+                  <el-radio
+                    v-for="item in col.options"
+                    :key="item.value"
+                    :label="item.value"
+                  >
+                    {{ item.label }}</el-radio
+                  >
+                </el-radio-group>
+              </span>
+              <span
+                v-else-if="col.formType == 'selectTree'"
+                v-html="findTreeName(col.options, scope.row[col.prop])"
+              ></span>
+              <span
+                v-else
+                v-html="scope.row[col.prop]"
+                :class="{ active: col.class }"
+              ></span>
             </template>
           </el-table-column>
-        </el-table>
-      </div>
+        </template>
+        <el-table-column
+          label="操作"
+          align="center"
+          fixed="right"
+          class-name="small-padding fixed-width"
+          :min-width="handleWidth || 120"
+          v-if="showOperate"
+        >
+          <template slot-scope="scope">
+            <div v-if="scope.$index == 0 && showSearch">
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-search"
+                @click="handleQuery"
+                >搜索</el-button
+              >
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-refresh"
+                @click="resetQuery"
+                >重置</el-button
+              >
+            </div>
+            <div v-else>
+              <slot
+                name="end_handle"
+                :row="scope.row"
+                :index="scope.$index"
+              ></slot>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-form>
 
     <pagination
@@ -278,7 +273,7 @@
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
-  name: "",
+  name: "JmTable",
   components: { Treeselect },
   props: {
     tableData: {
@@ -289,10 +284,6 @@ export default {
       default: false,
       type: Boolean,
     },
-    isShow: {
-      default: false,
-      type: Boolean,
-    },
     // 显示搜索条件
     showSearch: {
       default: true,
@@ -300,6 +291,11 @@ export default {
     },
     // 显示操作
     showOperate: {
+      default: true,
+      type: Boolean,
+    },
+    // 显示序号
+    isIndex: {
       default: true,
       type: Boolean,
     },
@@ -373,6 +369,9 @@ export default {
   methods: {
     switchchange($event, prop, row) {
       this.$emit("switchchange", $event, prop, row);
+    },
+    radiochange($event, prop, row) {
+      this.$emit("radiochange", $event, prop, row);
     },
     handleCurrentChange(currentRow, oldCurrentRow) {
       if (currentRow) {
@@ -508,28 +507,17 @@ export default {
 ::v-deep .vue-treeselect__portal-target {
   width: auto !important;
 }
-::v-deep .el-table__row .el-table__expand-icon {
-  &:not(:first-of-type) {
-    background-color: yellow;
-    /* 添加任何其他你想要的样式属性 */
-  }
-}
-::v-deep .vue-treeselect__portal-target {
-  width: auto !important;
-}
 
 ::v-deep .leftRadio .el-radio__label {
   display: none;
 }
 
-.container-box1 {
-  max-height: 550px;
-  overflow-y: scroll;
-  margin-bottom: 20px;
-}
 .active {
   color: #007bfe;
   cursor: pointer;
   text-decoration: underline;
+}
+::v-deep .el-table__row:nth-child(odd) {
+  background-color: #f7fbff;
 }
 </style>

@@ -20,14 +20,25 @@
             :before-upload="handleBeforeUpload"
             :on-success="handleUploadSuccess"
             :on-error="handleUploadError"
-            v-hasPermi="['property:turnOver:add']"
+            v-hasPermi="['property:backspace:add']"
             name="file"
             :show-file-list="false"
             :headers="headers"
             ref="upload"
-            ><el-button type="primary" size="mini"  icon="el-icon-upload"
+            ><el-button type="primary" size="mini" icon="el-icon-upload"
               >导入</el-button
             ></el-upload
+          >
+        </el-col>
+        <el-col :span="1.5" v-else>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            size="mini"
+            :loading="btnLoading"
+            @click="importHandler"
+            v-hasPermi="['property:backspace:add']"
+            >下载</el-button
           >
         </el-col>
       </template>
@@ -38,7 +49,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, 'view')"
-          v-hasPermi="['property:turnOver:edit']"
+          v-hasPermi="['property:backspace:edit']"
           >下载</el-button
         >
 
@@ -48,7 +59,7 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['property:turnOver:remove']"
+          v-hasPermi="['property:backspace:remove']"
           >删除</el-button
         >
         <el-button
@@ -56,7 +67,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handlePreview(scope.row)"
-          v-hasPermi="['property:turnOver:edit']"
+          v-hasPermi="['property:backspace:edit']"
           >预览</el-button
         >
       </template>
@@ -157,6 +168,7 @@ export default {
     handlePreview(row) {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
+    importHandler() {},
     // 上传前校检格式和大小
     handleBeforeUpload(file) {
       // 校检文件大小
@@ -179,7 +191,7 @@ export default {
           fileSize: res.fileSize,
           fileType: file.raw.type,
           createImport: res.createImport,
-          createBy: this.$store.state.user.name,
+          createBy: this.$store.state.user.standing.nickName,
           createTime: await formatDateFromTimestamp(res.createImport),
         };
         if (getStore("addFileList") && getStore("addFileList").length > 0) {
@@ -212,13 +224,11 @@ export default {
       }
     ) {
       this.loading = true;
-      if (this.busNo) queryParams["transferNo"] = this.busNo;
-      if (!this.busNo) queryParams["transferNo"] = 1;
+      if (this.busNo) queryParams["busNo"] = this.busNo;
       let search = JSON.parse(JSON.stringify(queryParams));
       delete search.pageNum;
       delete search.pageSize;
       delete search.busNo;
-
       getAssociatedPlan(queryParams).then((response) => {
         let res = response;
         if (!res.data) res.data = [];

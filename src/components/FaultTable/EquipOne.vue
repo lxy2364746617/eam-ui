@@ -149,13 +149,7 @@ export default {
         if (res.code == 200) {
           this.data = JSON.parse(JSON.stringify(res.data))[0];
 
-          if (
-            this.data.faultInfoDTO &&
-            this.data.faultInfoDTO.fileList &&
-            this.data.faultInfoDTO.fileList.length > 0
-          ) {
-            this.faultInfoDTO = this.data.faultInfoDTO;
-          }
+          this.faultInfoDTO = this.data.faultInfoDTO;
         }
       });
 
@@ -259,16 +253,21 @@ export default {
   }
 }
 .subtitle {
-  //   border-bottom: 1px solid #ddd;
   background-color: #ebf4fc;
-  color: #55566d;
-  font-weight: bold;
+  color: #555;
+  font-weight: 700;
   text-align: left;
-  font-size: 16px;
-  padding: 5px 0;
-  padding-left: 20px;
+  font-size: 14px;
+  height: 30px;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
   justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0 18px;
   span {
     font-weight: 400;
     padding-right: 5px;

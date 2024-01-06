@@ -262,7 +262,7 @@ export default {
           label: "工单名称",
           prop: "orderName",
           tableVisible: true,
-          width: 150,
+          width: 200,
         },
 
         {
@@ -298,10 +298,11 @@ export default {
           formType: "selectTree",
           options: this.typeAll,
           tableVisible: true,
+          width: 150,
         },
         {
           label: "执行人员",
-          prop: "executor",
+          prop: "director",
           formType: "selectTree",
           options: this.userList,
           tableVisible: true,

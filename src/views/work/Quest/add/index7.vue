@@ -9,7 +9,7 @@
       </div>
       <br />
       <el-row>
-        <el-col :span="22">
+        <el-col :span="24">
           <el-col :span="6" class="mb20"
             ><span class="show">工单编码:</span>{{ formData.orderCode }}</el-col
           >
@@ -53,7 +53,7 @@
             ><span class="show">用时:</span>{{ formData.duration }}</el-col
           >
         </el-col>
-        <el-col :span="2">
+        <!-- <el-col :span="2">
           <img
             v-if="mainImage.indexOf('null') == -1"
             :src="mainImage"
@@ -61,7 +61,7 @@
             srcset=""
             style="width: 100%; vertical-align: top; height: 120px"
           />
-        </el-col>
+        </el-col> -->
       </el-row>
       <!-- 下方 -->
     </div>

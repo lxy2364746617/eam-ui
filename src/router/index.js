@@ -519,6 +519,20 @@ export const constantRoutes = [
       },
     ],
   },
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/purchase/warehousingAdd",
+        component: () =>
+          import("@/views/property/equipmentAcquisition/Warehousing/add/index"),
+        name: "WarehousingAdd",
+        meta: { title: "设备入库/操作", icon: "" },
+      },
+    ],
+  },
   // ! 领用
   {
     path: "/property",

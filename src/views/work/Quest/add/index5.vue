@@ -9,7 +9,7 @@
       </div>
       <br />
       <el-row>
-        <el-col :span="22">
+        <el-col :span="24">
           <el-col :span="6" class="mb20"
             ><span class="show">工单编码:</span>{{ formData.orderCode }}</el-col
           >
@@ -53,7 +53,7 @@
             ><span class="show">用时:</span>{{ formData.duration }}</el-col
           >
         </el-col>
-        <el-col :span="2">
+        <!-- <el-col :span="2">
           <img
             v-if="mainImage.indexOf('null') == -1"
             :src="mainImage"
@@ -61,7 +61,7 @@
             srcset=""
             style="width: 100%; vertical-align: top; height: 120px"
           />
-        </el-col>
+        </el-col> -->
       </el-row>
       <!-- 下方 -->
     </div>
@@ -358,11 +358,11 @@ export default {
         this.formData.directorName = response.data.leaderName;
 
         this.formData.director = response.data.leaderId;
-        this.groupMembers = response.data.sysUserGroupList;
-        let arr = response.data.sysUserGroupList.filter(
+        this.groupMembers = response.data?.sysUserGroupList;
+        let arr = response.data?.sysUserGroupList?.filter(
           (item) => item.userId == this.formData.executor
         )[0];
-
+        console.log("========================", arr, response.data);
         this.$set(this.formData, "executorName", arr.nickName);
         this.$set(this.formData, "deptName", arr.dept.deptName);
       });
@@ -541,7 +541,6 @@ export default {
       this.loading = false;
     },
   },
- 
 };
 </script>
 <style lang='scss' scoped>

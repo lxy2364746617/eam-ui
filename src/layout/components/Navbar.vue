@@ -139,13 +139,13 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 60px;
   overflow: hidden;
   position: fixed;
   left: 0;
   right: 0;
   background: #0f182b;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  // box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .sidebar-logo {
     // float: left;
@@ -158,7 +158,7 @@ export default {
 
   .hamburger-container {
     color: #9da3ab;
-    line-height: 46px;
+    line-height: 56px;
     height: 100%;
     display: inline-block;
     vertical-align: top;
@@ -192,7 +192,7 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
-
+    padding-top: 5px;
     &:focus {
       outline: none;
     }
@@ -219,13 +219,13 @@ export default {
       margin-right: 30px;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        margin-top: 10px;
         position: relative;
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
+          width: 32px;
+          height: 32px;
           border-radius: 10px;
         }
 

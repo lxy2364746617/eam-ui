@@ -13,7 +13,7 @@
       </div>
       <br />
       <el-row>
-        <el-col :span="22">
+        <el-col :span="24">
           <el-col :span="6" class="mb20"
             ><span class="show">工单编码:</span>{{ formData.orderCode }}</el-col
           >
@@ -57,17 +57,18 @@
             ><span class="show">用时:</span>{{ formData.duration }}</el-col
           >
           <el-col :span="6"
-            ><span class="show">保养人数:</span>{{ 123123213 }}</el-col
+            ><span class="show">保养人数:</span
+            >{{ equipmentList3.length }}</el-col
           >
         </el-col>
-        <el-col :span="2">
+        <!-- <el-col :span="2">
           <img
             :src="'/dev-api/profile/upload/2023/10/26/abc_20231026163120A074.jpg'"
             alt=""
             srcset=""
             style="width: 100%; vertical-align: top; height: 120px"
           />
-        </el-col>
+        </el-col> -->
       </el-row>
       <!-- 下方 -->
     </div>
@@ -843,11 +844,11 @@ export default {
           response.data = response.data.filter((user) =>
             this.equipmentList3.some((u) => u.userId !== user.userId)
           );
+          this.equipmentList2 = response.data;
+          this.total2 = response.total;
+          this.loading2 = false;
         }
         // getOrderExecutor({ workOrderCode: this.formData.orderCode }).then((response) => {
-        this.equipmentList2 = response.data;
-        this.total2 = response.total;
-        this.loading2 = false;
       });
     },
     // 抽屉

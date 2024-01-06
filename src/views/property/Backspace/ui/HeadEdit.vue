@@ -58,13 +58,13 @@ export default {
         {
           label: "回退单号",
           prop: "backNo",
-          span: 8,
+          span: 6,
           formDisabled: true,
         },
         {
           label: "业务日期",
           prop: "createDate",
-          span: 8,
+          span: 6,
           required: true,
           formType: "date",
         },

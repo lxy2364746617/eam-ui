@@ -8,7 +8,12 @@
     active-text-color="#fff"
   >
     <template v-for="(item, index) in topMenus">
-      <el-menu-item :style="{'--theme': theme}" :index="item.path" :key="index" v-if="index < visibleNumber"
+      <el-menu-item
+        :style="{ '--theme': theme }"
+        :index="item.path"
+        :key="index"
+        v-if="index < visibleNumber"
+        @click="handlerGoTo(item)"
         ><svg-icon
           v-if="item.meta && item.meta.icon && item.meta.icon !== '#'"
           :icon-class="item.meta.icon"
@@ -18,7 +23,11 @@
     </template>
 
     <!-- 顶部菜单超出数量折叠 -->
-    <el-submenu :style="{'--theme': theme}" index="more" v-if="topMenus.length > visibleNumber">
+    <el-submenu
+      :style="{ '--theme': theme }"
+      index="more"
+      v-if="topMenus.length > visibleNumber"
+    >
       <template slot="title">更多菜单</template>
       <template v-for="(item, index) in topMenus">
         <el-menu-item
@@ -37,7 +46,7 @@
 import { constantRoutes } from "@/router";
 
 // 隐藏侧边栏路由
-const hideList = [];//'/index', '/user/profile'
+const hideList = []; //'/index', '/user/profile'
 
 export default {
   data() {
@@ -45,7 +54,7 @@ export default {
       // 顶部栏初始数
       visibleNumber: 5,
       // 当前激活菜单的 index
-      currentIndex: undefined
+      currentIndex: undefined,
     };
   },
   computed: {
@@ -59,9 +68,9 @@ export default {
         if (menu.hidden !== true) {
           // 兼容顶部栏一级菜单内部跳转
           if (menu.path === "/") {
-              topMenus.push(menu.children[0]);
+            topMenus.push(menu.children[0]);
           } else {
-              topMenus.push(menu);
+            topMenus.push(menu);
           }
         }
       });
@@ -77,11 +86,12 @@ export default {
       this.routers.map((router) => {
         for (var item in router.children) {
           if (router.children[item].parentPath === undefined) {
-            if(router.path === "/") {
+            if (router.path === "/") {
               router.children[item].path = "/" + router.children[item].path;
             } else {
-              if(!this.ishttp(router.children[item].path)) {
-                router.children[item].path = router.path + "/" + router.children[item].path;
+              if (!this.ishttp(router.children[item].path)) {
+                router.children[item].path =
+                  router.path + "/" + router.children[item].path;
               }
             }
             router.children[item].parentPath = router.path;
@@ -111,43 +121,48 @@ export default {
     },
   },
   beforeMount() {
-    window.addEventListener('resize', this.setVisibleNumber)
+    window.addEventListener("resize", this.setVisibleNumber);
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.setVisibleNumber)
+    window.removeEventListener("resize", this.setVisibleNumber);
   },
   mounted() {
     this.setVisibleNumber();
     // 打开第一个菜单
-    this.handleSelect(this.topMenus[0].path,[this.topMenus[0].path])
+    this.handleSelect(this.topMenus[0].path, [this.topMenus[0].path]);
   },
   methods: {
+    handlerGoTo(item) {
+      if (item.meta.title !== "运行监测") return;
+
+      window.location.href = "http://192.168.1.59:3330/home/manageCockpit";
+    },
     // 根据宽度计算设置显示栏数
     setVisibleNumber() {
       const width = document.body.getBoundingClientRect().width / 3;
-      this.visibleNumber = parseInt(width / 85);
+      this.visibleNumber = parseInt(width / 75);
     },
     // 菜单选择事件
     handleSelect(key, keyPath) {
       this.currentIndex = key;
-      const route = this.routers.find(item => item.path === key);
+      const route = this.routers.find((item) => item.path === key);
       if (this.ishttp(key)) {
         // http(s):// 路径新窗口打开
         window.open(key, "_blank");
       } else if (!route || !route.children) {
         // 没有子路由路径内部打开
-        const routeMenu = this.childrenMenus.find(item => item.path === key);
+        const routeMenu = this.childrenMenus.find((item) => item.path === key);
         if (routeMenu && routeMenu.query) {
           let query = JSON.parse(routeMenu.query);
           this.$router.push({ path: key, query: query });
         } else {
           this.$router.push({ path: key });
         }
-        this.$store.dispatch('app/toggleSideBarHide', true);
+        this.$store.dispatch("app/toggleSideBarHide", true);
       } else {
         // 显示左侧联动菜单
         this.activeRoutes(key);
-        this.$store.dispatch('app/toggleSideBarHide', false);
+        this.$store.dispatch("app/toggleSideBarHide", false);
       }
     },
     // 当前激活的路由
@@ -160,17 +175,17 @@ export default {
           }
         });
       }
-      if(routes.length > 0) {
+      if (routes.length > 0) {
         this.$store.commit("SET_SIDEBAR_ROUTERS", routes);
       } else {
         // 隐藏首页侧边面板
-        this.$store.dispatch('app/toggleSideBarHide', false);
+        this.$store.dispatch("app/toggleSideBarHide", false);
         // this.$store.dispatch('app/toggleSideBarHide', true);
       }
     },
     ishttp(url) {
-      return url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1
-    }
+      return url.indexOf("http://") !== -1 || url.indexOf("https://") !== -1;
+    },
   },
 };
 </script>
@@ -178,19 +193,20 @@ export default {
 <style lang="scss">
 .topmenu-container.el-menu--horizontal > .el-menu-item {
   float: left;
-  height: 50px !important;
-  line-height: 50px !important;
-  color: #999093 ;
+  height: 60px !important;
+  line-height: 60px !important;
+  color: #999093;
   padding: 0 5px !important;
   margin: 0 10px !important;
 }
 
-.topmenu-container.el-menu--horizontal > .el-menu-item.is-active, .el-menu--horizontal > .el-submenu.is-active .el-submenu__title {
+.topmenu-container.el-menu--horizontal > .el-menu-item.is-active,
+.el-menu--horizontal > .el-submenu.is-active .el-submenu__title {
   // border-bottom: 2px solid #{'var(--theme)'} !important;
-  border-bottom: 0 solid #{'var(--theme)'} !important;
+  border-bottom: 0 solid #{"var(--theme)"} !important;
   color: #303133;
-  &::after{
-    content: '';
+  &::after {
+    content: "";
     display: block;
     width: 100%;
     height: 10px;
@@ -204,8 +220,8 @@ export default {
 /* submenu item */
 .topmenu-container.el-menu--horizontal > .el-submenu .el-submenu__title {
   float: left;
-  height: 50px !important;
-  line-height: 50px !important;
+  height: 60px !important;
+  line-height: 60px !important;
   // color: #999093 !important;
   padding: 0 5px !important;
   margin: 0 10px !important;

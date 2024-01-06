@@ -23,6 +23,12 @@
             :src="qrCode"
             alt=""
             srcset=""
+            style="
+              width: 100px;
+              vertical-align: top;
+              height: 100px;
+              margin-left: 50px;
+            "
           />
         </el-col>
         <el-col
@@ -47,6 +53,12 @@
     <div class="title" v-else>
       <span>巡点捡项目</span>
       <span style="font-size: 20px">
+        <el-button
+          type="primary"
+          size="small"
+          style="transform: translateY(-3px)"
+          >获取实时值</el-button
+        >
         <i class="el-icon-camera-solid controls" @click="AddFile"></i
         >&nbsp;&nbsp;<i
           class="el-icon-download controls"

@@ -477,4 +477,7 @@ export default {
 ::v-deep .leftRadio .el-radio__label {
   display: none;
 }
+::v-deep .el-table__row:nth-child(odd) {
+  background-color: #f7fbff;
+}
 </style>

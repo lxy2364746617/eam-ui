@@ -18,7 +18,7 @@ import { listDept } from "@/api/system/dept";
 import { findAll, getGroup } from "@/api/system/group";
 import request from "@/utils/request";
 export default {
-  components: { },
+  components: {},
   dicts: ["fault_type"],
   props: {
     disabled: {
@@ -86,20 +86,20 @@ export default {
       return [
         // ! 维修内容记录
         {
-          label: "维修内容记录",
+          label: "检修内容记录",
           span: 24,
           subTitle: true,
         },
+        // {
+        //   label: "故障类型",
+        //   span: 7,
+        //   prop: "faultType",
+        //   formType: "select",
+        //   options: this.dict.type.fault_type,
+        //   required: true,
+        // },
         {
-          label: "故障类型",
-          span: 7,
-          prop: "faultType",
-          formType: "select",
-          options: this.dict.type.fault_type,
-          required: true,
-        },
-        {
-          label: "维修单位",
+          label: "检修单位",
           span: 6,
           prop: "unit",
           formType: "select",
@@ -122,48 +122,48 @@ export default {
           formType: "blank",
         },
         {
-          label: "维修开始",
+          label: "检修开始",
           span: 7,
           prop: "startTime",
           formType: "date",
           required: true,
         },
         {
-          label: "维修结束",
+          label: "检修结束",
           span: 6,
           prop: "endTime",
           formType: "date",
           required: true,
         },
         {
-          label: "维修工时",
+          label: "检修工时",
           span: 6,
           prop: "workHours",
           formType: "number",
         },
         {
-          label: "故障详情",
+          label: "检修结果",
           span: 24,
           prop: "faultInfo",
           formType: "textarea",
-          rows: 2,
+          rows: 4,
         },
+        // {
+        //   label: "故障原因",
+        //   span: 12,
+        //   prop: "faultReason",
+        //   formType: "textarea",
+        //   required: true,
+        // },
+        // {
+        //   label: "维修措施",
+        //   span: 12,
+        //   prop: "repairInfo",
+        //   formType: "textarea",
+        //   required: true,
+        // },
         {
-          label: "故障原因",
-          span: 12,
-          prop: "faultReason",
-          formType: "textarea",
-          required: true,
-        },
-        {
-          label: "维修措施",
-          span: 12,
-          prop: "repairInfo",
-          formType: "textarea",
-          required: true,
-        },
-        {
-          label: "是否维修完成",
+          label: "是否检修完成",
           span: 12,
           prop: "finishFlag",
           formType: "radio",

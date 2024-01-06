@@ -1,25 +1,55 @@
 <template>
   <div class="top-right-btn" :style="style">
     <el-row>
-      <el-tooltip class="item" effect="dark" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top" v-if="search">
-        <el-button size="mini" circle icon="el-icon-search" @click="toggleSearch()" />
+      <el-tooltip
+        class="item"
+        effect="dark"
+        :content="showSearch ? '隐藏搜索' : '显示搜索'"
+        placement="top"
+        v-if="search"
+      >
+        <el-button
+          size="mini"
+          type="primary"
+          icon="el-icon-search"
+          @click="toggleSearch()"
+        />
       </el-tooltip>
+      &nbsp;
       <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
+        <el-button
+          size="mini"
+          type="primary"
+          icon="el-icon-refresh"
+          @click="refresh()"
+        />
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="columns">
-        <el-popover
-          placement="bottom"
-          title=""
-          width="200"
-          trigger="click">
-          <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+      &nbsp;
+      <el-tooltip
+        class="item"
+        effect="dark"
+        content="显隐列"
+        placement="top"
+        v-if="columns"
+      >
+        <el-popover placement="bottom" title="" width="200" trigger="click">
+          <el-checkbox
+            :indeterminate="isIndeterminate"
+            v-model="checkAll"
+            @change="handleCheckAllChange"
+            >全选</el-checkbox
+          >
           <el-checkbox-group v-model="value" @change="showColumn">
             <div v-for="item in columns" :key="item.prop">
               <el-checkbox :label="item.prop">{{ item.label }}</el-checkbox>
             </div>
           </el-checkbox-group>
-          <el-button slot="reference" size="mini" circle icon="el-icon-menu"/>
+          <el-button
+            slot="reference"
+            size="mini"
+            type="primary"
+            icon="el-icon-menu"
+          />
         </el-popover>
       </el-tooltip>
       <slot name="right_end"></slot>
@@ -67,7 +97,7 @@ export default {
     },
     tableVisible: {
       type: Object,
-    }
+    },
   },
   computed: {
     style() {
@@ -76,14 +106,14 @@ export default {
         ret.marginRight = `${this.gutter / 2}px`;
       }
       return ret;
-    }
+    },
   },
   created() {
     // 显隐列初始默认隐藏列
-    this.setVisible()
+    this.setVisible();
   },
   methods: {
-    setVisible(){
+    setVisible() {
       for (let item in this.tableVisible) {
         if (this.tableVisible[item]) {
           this.value.push(item);
@@ -91,13 +121,14 @@ export default {
       }
       let checkedCount = this.value.length;
       this.checkAll = checkedCount === this.columns.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.columns.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.columns.length;
     },
     handleCheckAllChange(val) {
       this.value = val ? Object.keys(this.tableVisible) : [];
       this.isIndeterminate = false;
       for (let key in this.tableVisible) {
-        this.$set(this.tableVisible,key,this.value.includes(key))
+        this.$set(this.tableVisible, key, this.value.includes(key));
       }
     },
     // 搜索
@@ -119,10 +150,11 @@ export default {
     showColumn(val) {
       let checkedCount = val.length;
       this.checkAll = checkedCount === this.columns.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.columns.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.columns.length;
 
       for (let key in this.tableVisible) {
-        this.$set(this.tableVisible,key,val.includes(key))
+        this.$set(this.tableVisible, key, val.includes(key));
       }
     },
   },
