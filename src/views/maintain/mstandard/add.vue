@@ -126,7 +126,7 @@
                 </parentdevice>
             </el-drawer>
 
-            <el-drawer :title="title" :visible.sync="pointItemForm.drawer" direction="rtl" size="40%"
+            <el-drawer :title="title" :visible.sync="pointItemForm.drawer" direction="rtl" size="60%"
                 :wrapperClosable="false">
                 <pointItem :isChoose="false" :formData="pointItemForm" @submitRadio="submitRadio1"
                     @close="pointItemForm.drawer = false" ref="itemForm" v-if="pointItemForm.drawer">

@@ -118,6 +118,7 @@ export default {
       }
       listBASE(data).then(response => {
         // 不展示自身
+        console.log(this.formData)
         if (this.formData) {
           response.rows.forEach((b, i) => {
             if (b.deviceId == this.formData.deviceId) {
@@ -125,7 +126,7 @@ export default {
             }
           });
           this.equipmentList = response.rows.filter(item => {
-            if (this.formData.disIds.includes(item.deviceId)) {
+            if (this.formData.disIds&&this.formData.disIds.includes(item.deviceId)) {
               return false
             } else {
               return true

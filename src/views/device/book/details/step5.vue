@@ -149,7 +149,7 @@ export default {
       return [
         { label:"备件名称", prop:"partsName", span: 24, },
         { label:"备件编码", prop:"partsCode", span: 24, },
-        { label:"规格型号", prop:"partspecs", span: 24, },
+        { label:"规格型号", prop:"partsModel", span: 24, },
         { label:"备件类别", prop:"partsType", span: 24, },
         { label:"单位", prop:"unit", span: 24, },
         { label:"当前库存", prop:"stock", span: 24, },
@@ -175,7 +175,7 @@ export default {
       //   { label:"当前库存", prop:"stock", span: 24, },
       //   { label:"供应商名称", prop:"supName", readonly: true, clickFn:()=>{this.drawersupplier=true}, span: 24, },
       //   { label:"存储位置", prop:"location", span: 24, },
-      //   { label:"所属组织", prop:"orgId", span: 24, formType: 'selectTree', options: this.deptOptions },
+      //   { label:"所属组织", prop:"orgId", span: 24, formType: 'selectTree', options: this.deptOptions },hs
       // ],
       // 遮罩层
       loading: true,
@@ -269,8 +269,10 @@ export default {
   },
   methods: {
     getTreeSelect(){
+      this.deptOptions=[{label:'label1',value:'value1'},{label:'label2',value:'value2'}]
       listDept().then(response => {
-        this.deptOptions = response.data;
+        this.$set(this,'deptOptions',response.data)
+        this.$forceUpdate()
       });
     },
     closesupplier(){
@@ -286,7 +288,7 @@ export default {
       queryParams.deviceId = this.queryParams.deviceId
       this.loading = true;
       listParts(queryParams).then(response => {
-          this.equipmentList = response.rows;
+          this.$set(this,'equipmentList',response.rows)
           this.total = response.total;
           this.loading = false;
         }

@@ -94,7 +94,8 @@
       direction="rtl"
       size="80%"
       destroy-on-close
-      :wrapperClosable="false">
+      :wrapperClosable="false"
+      :before-close="close">
       <childdevice :isChoose="false" @submitRadio="submitRadio" @close="close" :formData="formData"></childdevice>
     </el-drawer>
   </div>

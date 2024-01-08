@@ -41,7 +41,7 @@
       </el-row>
       <el-tabs v-model="activeName" @tab-click="tabsHandleClick">
         <el-tab-pane :label="item.label" :name="item.name" v-for="item in tabs" :key="item.label" v-if="item.visible">
-          <component :is="item.name" v-if="formData1" :formData="formData1" @submitForm="submitForm" @close="close"></component>
+          <component :is="item.name" v-if="formData1" :formData="formData1"  @submitForm="submitForm" @close="close"></component>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -298,6 +298,7 @@ export default {
     /** 提交按钮 */
     submitForm(callback) {
       var formData1 = this.getFormDataParams()
+      console.log('formData1',formData1)
       modifyBASE(formData1).then(response => {
         this.$modal.msgSuccess("修改成功");
         this.setSuccessData()
@@ -313,15 +314,14 @@ export default {
     },
     getFormDataParams(){
       var formData1 = JSON.parse(JSON.stringify(this.formData1))
-
       var aa = formData1.emArchivesExtendAtt
       aa['fieldValue'] = JSON.stringify(aa['fieldValue'])
       aa['componentContent'] = JSON.stringify(aa['componentContent'])
-
       var bb = formData1.emArchivesIndex
-      bb['fieldValue'] = JSON.stringify(bb['fieldValue'])
-      bb['componentContent'] = JSON.stringify(bb['componentContent'])
-
+      if (bb) {
+        bb['fieldValue'] = JSON.stringify(bb['fieldValue'])
+        bb['componentContent'] = JSON.stringify(bb['componentContent'])
+        }
       var cc = formData1.emArchivesSpecial
       if(cc){
         cc['fieldValue'] = JSON.stringify(cc['fieldValue'])

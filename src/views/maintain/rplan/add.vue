@@ -78,7 +78,7 @@
                 <el-col :span="8">
                     <el-form-item label="内部负责人" prop="userId">
                         <el-select v-model="form.userId" placeholder="请选择内部负责人">
-                            <el-option v-for="dict in userArr" :key="dict.userId" :label="dict.dickName"
+                            <el-option v-for="dict in userArr" :key="dict.userId" :label="dict.nickName"
                                 :value="dict.userId"></el-option>
                         </el-select>
                     </el-form-item></el-col>
@@ -234,7 +234,7 @@ export default {
             filedrawer: false,
             fileType: ['png', 'jpg', 'bmp', 'jpeg', 'pdf', 'gif'],
             fileResourceList: [],
-            username:"",
+            nickName:"",
             // 表单校验
             rules: {
                 planName: [
@@ -288,7 +288,7 @@ export default {
             this.loading = false;
         }
         getInfo().then(res=>{
-            this.username=res.user.userName
+            this.nickName=res.user.nickName
             this.findAll()
         })
     },
@@ -360,7 +360,7 @@ export default {
                 if(!this.$route.query.l){
                    let obj={}
                    obj=this.userArr.find(item=>{
-                        return item.userName==this.username
+                        return item.nickName==this.nickName
                     })
                      this.form.userId=obj.userId 
                 }

@@ -81,12 +81,17 @@
                         </el-select>
                     </el-form-item></el-col>
                 <el-col :span="8">
-                    <el-form-item label="保养负责人" prop="director">
-                        <el-input v-model="form.director" placeholder="请输入巡点检负责人" :disabled="true"/>
+                    <el-form-item label="保养负责人" prop="directorName">
+                        <el-input v-model="form.directorName" placeholder="请输入巡点检负责人" :disabled="true"/>
                     </el-form-item></el-col>
                 <el-col :span="8">
-                    <el-form-item label="其他执行人" prop="otherExecutor">
-                        <el-input v-model="form.otherExecutor" placeholder="请输入其他执行人" />
+                    <el-form-item label="其他执行人" prop="otherExecutors">
+                        <!-- <el-input v-model="form.otherExecutor" placeholder="请输入其他执行人" /> -->
+                        <el-select v-model="form.otherExecutors" multiple="">
+                            <el-option v-for=" item in groupMembers" :key="item.userId" :label="item.nickName" 
+                            :value="item.userId" >
+                            </el-option>
+                        </el-select>
                     </el-form-item></el-col>
             </el-row>
         </el-form>
@@ -120,7 +125,7 @@
         </jm-table>
 
         <!-- 添加巡点检路线 -->
-        <el-drawer title="保养路线" :visible.sync="lineForm.choosedrawer" direction="rtl" size="50%" :wrapperClosable="false">
+        <el-drawer title="保养路线" :visible.sync="lineForm.choosedrawer" direction="rtl" size="55%" :wrapperClosable="false">
             <mline :isChoose="false" @submitRadio="submitRadio2" @close="lineForm.choosedrawer = false" :formData="lineForm"
                 v-if="lineForm.choosedrawer"></mline>
         </el-drawer>
@@ -268,7 +273,9 @@ export default {
                 groupId: null,
                 executor: null,
                 director: null,
+                directorName:null,
                 otherExecutor: null,
+                otherExecutors: [],
                 remark: null,
                 createBy: null,
                 createTime: null,
@@ -335,7 +342,7 @@ export default {
                 executor: [
                     { required: true, message: '主要执行人日期不能为空', trigger: 'blur' },
                 ],
-                director: [
+                directorName: [
                     { required: true, message: '保养负责人不能为空', trigger: 'blur' },
                 ],
             },
@@ -406,8 +413,10 @@ export default {
                 return item.id==val
             })
             this.form.executor=''
+            this.form.otherExecutors=[]
             getGroup(val).then(response=>{
-                this.form.director=response.data.leaderName
+                this.form.director=response.data.leaderId
+                this.form.directorName=response.data.leaderName
                this.groupMembers= response.data.sysUserGroupList
             })
         },
@@ -422,6 +431,7 @@ export default {
                 this.form.executor=Number(response.data.executor)
                 this.lineList = maintainPlanLineList || [];
                 this.fileResourceList = fileResourceList || [];
+                this.form.otherExecutors=response.data.otherExecutor.split(',').map(item=>Number(item))
                 this.loading = false;     
                 })
             }).catch(() => {
@@ -466,6 +476,7 @@ export default {
                     that.btnLoading = true;
                     let data = {
                         ...that.form,
+                        otherExecutor:that.form.otherExecutors.join(','),
                         maintainPlanLineList: that.lineList.map(item => {
                             return { lineId: item.lineId, isPhoto: item.isPhoto }
                         }),
