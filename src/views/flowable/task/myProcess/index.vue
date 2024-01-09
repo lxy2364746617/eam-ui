@@ -51,7 +51,10 @@
 
     <el-table v-loading="loading" :data="myProcessList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
+      <el-table-column label="申请时间" align="center" prop="createTime" width="180"/>
+      <el-table-column label="申请编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
+      <el-table-column label="申请部门" align="center" prop="assigneeDeptName"/>
+      <el-table-column label="申请人" align="center" prop="assigneeName"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
       <el-table-column label="流程类别" align="center" prop="category" width="100px" />
       <el-table-column label="流程版本" align="center" width="80px">
@@ -59,8 +62,7 @@
           <el-tag size="medium" >v{{ scope.row.procDefVersion }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="提交时间" align="center" prop="createTime" width="180"/>
-      <el-table-column label="流程状态" align="center" width="100">
+      <el-table-column label="审批状态" align="center" width="100">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.finishTime == null" size="mini">进行中</el-tag>
           <el-tag type="success" v-if="scope.row.finishTime != null" size="mini">已完成</el-tag>
@@ -68,12 +70,7 @@
       </el-table-column>
       <el-table-column label="耗时" align="center" prop="duration" width="180"/>
       <el-table-column label="当前节点" align="center" prop="taskName"/>
-      <el-table-column label="办理人" align="center">
-        <template slot-scope="scope">
-          <label v-if="scope.row.assigneeName">{{scope.row.assigneeName}} <el-tag type="info" size="mini">{{scope.row.assigneeDeptName}}</el-tag></label>
-<!--          <label v-if="scope.row.candidate">{{scope.row.candidate}}</label>-->
-        </template>
-      </el-table-column>
+     
       <el-table-column label="操作" width="150" fixed="right" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button @click="handleFlowRecord(scope.row)" type="text" size="small">详情</el-button>
