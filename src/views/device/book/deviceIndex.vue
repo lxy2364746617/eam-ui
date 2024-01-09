@@ -17,7 +17,7 @@
                 <template slot="headerLeft">
                     <el-col :span="1.5">
                         <el-button v-if="deptList.length > 0" type="primary" icon="el-icon-download" size="mini"
-                            @click="handleExport">下载</el-button>
+                            @click="handleExport" v-hasPermi="['equipment:index:export']">下载</el-button>
                     </el-col>
                 </template>
             </jm-table>

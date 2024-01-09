@@ -8,15 +8,15 @@
         <template slot="headerLeft">
           <el-col :span="1.5">
             <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
-              v-hasPermi="['equipment:template:add']">新增</el-button>
+              v-hasPermi="['equipment:strong:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
-              v-hasPermi="['equipment:book:add']">导入</el-button>
+              v-hasPermi="['equipment:strong:import']">导入</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
-              v-hasPermi="['equipment:book:add']">下载</el-button>
+              v-hasPermi="['equipment:strong:export']">下载</el-button>
           </el-col>
           <!-- <el-col :span="1.5">
                     <el-button
@@ -42,38 +42,24 @@
                     type="text" 
                     icon="el-icon-edit" 
                     @click="handleUpdate(scope.row, 'edit')"
-                    v-hasPermi="['equipment:template:edit']"
+                    v-hasPermi="['equipment:strong:edit']"
                     >编辑</el-button>
           <el-button
                     size="mini"
                     type="text"
                     icon="el-icon-delete"
                     @click="handleDelete(scope.row)"
-                    v-hasPermi="['equipment:template:remove']"
+                    v-hasPermi="['equipment:strong:remove']"
                   >删除</el-button>
           <el-button
                     size="mini"
                     type="text"
                     icon="el-icon-document-add"
                     @click="handleUpdate(scope.row,'view')"
-                    v-hasPermi="['equipment:template:edit']"
+                    v-hasPermi="['equipment:strong:query']"
                   >查看详情</el-button>
         </template>
       </jm-table>
-
-      <!-- 添加或修改设备平台_表单模板对话框 -->
-      <!-- <el-drawer :title="title" :visible.sync="drawer" :direction="direction" size="40%" :wrapperClosable="false"
-        :before-close="handleClose">
-        <jm-form class="mr20" :columns="columns" :formData="formData" @submitForm="submitForm" ref="jmform"
-          :disabled="disabled">
-          <template #footer>
-            <div style="text-align: center;">
-              <el-button size="mini" @click="drawer = false">取消</el-button>
-              <el-button size="mini" @click="saveHandle" type="primary" v-if="!disabled">保存</el-button>
-            </div>
-          </template>
-        </jm-form>
-      </el-drawer> -->
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/strong/importTemplate'" ref="fileImport"

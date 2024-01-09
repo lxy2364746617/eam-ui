@@ -12,12 +12,12 @@
               <el-radio v-for="(item,index) in radioColumn" :label="index" :key="item.categoryId">{{ item.categoryName }}</el-radio>
           </el-radio-group>
       </div>
-      <div v-if="radioColumn.length>0">
+      <div v-if="radioColumn.length > 0">
           <jm-table :tableData="deptList" @getList="getList" :total="total" :columns="radioColumn[radio].tableHead">
               <template slot="headerLeft">
                   <el-col :span="1.5">
                       <el-button v-if="deptList.length > 0" type="primary" icon="el-icon-download" size="mini"
-                          @click="handleExport">下载</el-button>
+                          @click="handleExport" v-hasPermi="['equipment:special:export']">下载</el-button>
                   </el-col>
               </template>
           </jm-table>
@@ -144,10 +144,6 @@ export default {
       },
       /** 导出按钮操作 */
       handleExport(queryParams) { 
-          // var obj = {
-          //     ...queryParams,
-          //     parentId: this.nowClickTreeItem.id
-          // }
           var obj = {
                 categoryId: this.queryParams.categoryId,
             }
