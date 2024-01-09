@@ -12,19 +12,11 @@
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
-                            v-hasPermi="['equipment:template:add']">关联设备</el-button>
+                        >关联设备</el-button>
                     </el-col>
-                    <!-- <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
-                            v-hasPermi="['equipment:book:add']">导入</el-button>
-                    </el-col>
-                    <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
-                            v-hasPermi="['equipment:book:add']">下载</el-button>
-                    </el-col> -->
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-delete" size="mini" :disabled="multiple"
-                            @click="handleDelete" v-hasPermi="['equipment:template:remove']">解除关联</el-button>
+                            @click="handleDelete">解除关联</el-button>
                     </el-col>
                 </template>
                 <template #end_handle="scope" v-if="!disabled">
@@ -37,20 +29,6 @@
                     >查看</el-button> -->
                     <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row, 'edit')"
                         v-hasPermi="['equipment:template:edit']">编辑</el-button>
-                    <!-- <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-delete"
-                      @click="handleDelete(scope.row)"
-                      v-hasPermi="['equipment:template:remove']"
-                    >删除</el-button> -->
-                    <!-- <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-document-add"
-                      @click="handleSet(scope.row)"
-                      v-hasPermi="['equipment:template:edit']"
-                    >设置字段</el-button> -->
                 </template>
             </jm-table>
 
@@ -64,11 +42,6 @@
                 :wrapperClosable="false">
                 <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false"></parentdevice>
             </el-drawer>
-
-            <!-- 导入 -->
-            <!-- <file-import @handleFileSuccess="handleFileSuccess" downloadTemplateUrl='' ref="fileImport"
-                :importUrl="'/system/supplier/importData'">
-            </file-import> -->
         </div>
     </div>
 </template>

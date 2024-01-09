@@ -12,19 +12,11 @@
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
-                            v-hasPermi="['equipment:template:add']">关联设备</el-button>
+                        >关联设备</el-button>
                     </el-col>
-                    <!-- <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
-                            v-hasPermi="['equipment:book:add']">导入</el-button>
-                    </el-col>
-                    <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-download" size="mini" @click="handleExport"
-                            v-hasPermi="['equipment:book:add']">下载</el-button>
-                    </el-col> -->
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-delete" size="mini" :disabled="multiple"
-                            @click="handleDelete" v-hasPermi="['equipment:template:remove']">解除关联</el-button>
+                            @click="handleDelete">解除关联</el-button>
                     </el-col>
                 </template>
                 <template #end_handle="scope" v-if="!disabled">
@@ -103,7 +95,7 @@ export default {
                 { label:"提升设备功率", prop:"upPower", span: 8, },
                 { label:"提升设备速度", prop:"upSpeed", span: 8, },
                 { label:"逆止器型号", prop:"backstopModel", span: 8, },
-                { label:"制动器型号", prop:"brakespecs", span: 8, },
+                { label:"制动器型号", prop:"brakesModel", span: 8, },
                 { label:"制动器台数", prop:"brakesSum", span: 8, },
                 { label:"生产日期", prop:"produceTime", span: 8, formType: "date",  },
                 { label:"设备型号", prop:"deviceModel", span: 8, },
