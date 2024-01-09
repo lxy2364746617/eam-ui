@@ -53,18 +53,20 @@ export default {
             xType: 'select',
             name: 'processCategory',
             label: '流程分类',
-            dic: { data: _this.categorys, label: 'dictLabel', value: 'dictValue' }
+            dic: { data: _this.categorys, label: 'dictLabel', value: 'dictValue' },
+            rules: [{ required: true, message: '流程分类不能为空' }]
           },
           {
             xType: 'input',
             name: 'id',
             label: '流程标识key',
-            rules: [{ required: true, message: 'Id 不能为空' }]
+            rules: [{ required: true, message: '流程标识不能为空' }]
           },
           {
             xType: 'input',
             name: 'name',
-            label: '流程名称'
+            label: '流程名称',
+            rules: [{ required: true, message: '流程名称不能为空' }]
           },
           {
             xType: 'input',
