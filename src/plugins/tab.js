@@ -67,5 +67,50 @@ export default {
   // 修改tab页签
   updatePage(obj) {
     return store.dispatch('tagsView/updateVisitedView', obj);
-  }
+  },
+
+
+
+
+
+  isActive(route) {
+    return route.path === route.path
+  },
+  toLastView(visitedViews, view) {
+    console.log(visitedViews)
+    const latestView = visitedViews.slice(-1)[0]
+    if (latestView) {
+      router.push(latestView.fullPath)
+    } else {
+      // now the default is to redirect to the home page if there is no tags-view,
+      // you can adjust it according to your needs.
+      if (view.name === 'Dashboard') {
+        // to reload home page
+        router.replace({ path: '/redirect' + view.fullPath })
+      } else {
+        router.push('/')
+      }
+    }
+  },
+  closePage1(obj) {
+    let newObj = null
+    if (obj === undefined) {
+      newObj =  store.dispatch('tagsView/delView', router.currentRoute).then(({ visitedViews }) => {
+        const latestView = visitedViews.slice(-1)[0]
+        if (latestView) {
+          newObj = router.push(latestView.fullPath)
+        }
+        newObj = router.push('/');
+      });
+    }
+    newObj = store.dispatch('tagsView/delView', obj);
+    newObj.then(res=>{
+      console.log(res)
+      if (this.isActive(obj)) {
+        this.toLastView(res.visitedViews,obj)
+      }
+    })
+  
+  },
+
 }

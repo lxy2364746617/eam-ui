@@ -184,8 +184,8 @@ export default {
     /** 返回页面 */
     goBack() {
       // 关闭当前标签页并返回上个页面
-      const obj = { path: "/task/process", query: { t: Date.now()} };
-      this.$tab.closeOpenPage(obj);
+      const obj = this.$route
+      this.$tab.closePage1(obj);
     },
   }
 };

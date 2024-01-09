@@ -723,6 +723,44 @@ export const constantRoutes = [
       },
     ],
   },
+  // 知识库
+  {
+    path: "/knowledge",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/knowledge/navigation",
+        component: () => import("@/views/knowledge/navigation/index"),
+        name: "navigation",
+        meta: { title: "知识导航", icon: "" },
+      },
+      {
+        path: "/knowledge/faults",
+        component: () => import("@/views/knowledge/faults/index"),
+        name: "faults",
+        meta: { title: "故障案例库", icon: "" },
+      },
+      {
+        path: "/knowledge/technology",
+        component: () => import("@/views/knowledge/technology/index"),
+        name: "technology",
+        meta: { title: "技术资料库", icon: "" },
+      },
+      {
+        path: "/knowledge/maintenance",
+        component: () => import("@/views/knowledge/maintenance/index"),
+        name: "maintenance",
+        meta: { title: "运维文档", icon: "" },
+      },
+      {
+        path: "/knowledge/regulations",
+        component: () => import("@/views/knowledge/regulations/index"),
+        name: "regulations",
+        meta: { title: "规章制度", icon: "" },
+      },
+    ],
+  }
 ]
 
 // 动态路由，基于用户权限动态去加载

@@ -161,6 +161,7 @@ export default {
       }
     },
     closeSelectedTag(view) {
+      console.log(view)
       this.$tab.closePage(view).then(({ visitedViews }) => {
         if (this.isActive(view)) {
           this.toLastView(visitedViews, view)

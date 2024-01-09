@@ -34,6 +34,7 @@ import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
+import store from '@/store'
 export default {
   name: "bookadd",
   dicts: [
@@ -217,17 +218,49 @@ export default {
     save(fn){
       this.submitForm(fn)
     },
+    // 修改====
+    isActive(route) {
+      return route.path === this.$route.path
+    },
+    toLastView(visitedViews, view) {
+      const latestView = visitedViews.slice(-1)[0]
+      if (latestView) {
+        this.$router.push(latestView.fullPath)
+      } else {
+        // now the default is to redirect to the home page if there is no tags-view,
+        // you can adjust it according to your needs.
+        if (view.name === 'Dashboard') {
+          // to reload home page
+          this.$router.replace({ path: '/redirect' + view.fullPath })
+        } else {
+          this.$router.push('/')
+        }
+      }
+    },
+    // 修改====
     /** 提交按钮 */
     submitForm: function(fn) {
       var formData = this.$parent.getFormDataParams();
+      // 当前路由
+      let obj = this.$route
       if (formData.deviceId != undefined) {
         updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
+          this.$tab.closePage(obj).then(({ visitedViews }) => {
+            if (this.isActive(obj)) {
+              this.toLastView(visitedViews, obj)
+            }
+          })
           if(typeof fn == 'function') fn()
         });
       } else {
         addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
+          this.$tab.closePage(obj).then(({ visitedViews }) => {
+            if (this.isActive(obj)) {
+              this.toLastView(visitedViews, obj)
+            }
+          })
           if(typeof fn == 'function') fn()
         });
       }
