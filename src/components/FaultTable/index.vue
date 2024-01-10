@@ -12,7 +12,7 @@
         >添加</el-button
       >
     </div>
-    <JmTableNoPaging
+    <ContTable
       :tableData="equipmentList"
       @getList="getList"
       @handleSelectionChange="handleSelectionChange"
@@ -77,7 +77,7 @@
           >删除</el-button
         >
       </template>
-    </JmTableNoPaging>
+    </ContTable>
 
     <!-- 选取设备 -->
     <el-drawer
@@ -136,7 +136,7 @@
 </template>
 <script>
 import { getProjectList, downDetailLoad } from "@/api/property/scrapping";
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -153,7 +153,7 @@ import CarryForm from "@/components/CarryForm/index";
 import { getWomDevice } from "@/api/work/schedule";
 export default {
   components: {
-    JmTableNoPaging,
+    ContTable,
     SelectParentDeviceDialog,
     "carry-form": CarryForm,
   },

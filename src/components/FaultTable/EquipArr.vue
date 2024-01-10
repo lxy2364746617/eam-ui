@@ -41,7 +41,7 @@
         >
       </el-row>
       <div class="title">设备信息</div>
-      <JmTableNoPaging
+      <ContTable
         :tableData="equipmentList"
         @getList="getList"
         @handleSelectionChange="handleSelectionChange"
@@ -65,7 +65,7 @@
             >查看故障</el-button
           >
         </template>
-      </JmTableNoPaging>
+      </ContTable>
     </div>
 
     <!-- 维护故障弹窗 -->
@@ -110,7 +110,7 @@
 </template>
 <script>
 import { getProjectList, downDetailLoad } from "@/api/property/scrapping";
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
 
 import { saveAs } from "file-saver";
@@ -118,7 +118,7 @@ import { orderTemplate } from "@/api/work/template";
 import { getWomDevice, getWomInfo } from "@/api/work/schedule";
 export default {
   components: {
-    JmTableNoPaging,
+    ContTable,
     SelectParentDeviceDialog,
   },
   dicts: ["em_device_state", "em_is_special", "order_obj"],

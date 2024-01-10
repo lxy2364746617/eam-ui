@@ -12,7 +12,7 @@
       >
     </div>
 
-    <JmTableNoPaging
+    <ContTable
       :tableData.sync="fileResourceList"
       ref="jmtable2"
       :columns="columns"
@@ -47,7 +47,7 @@
           >预览</el-button
         >
       </template>
-    </JmTableNoPaging>
+    </ContTable>
 
     <!-- 上传文件 -->
     <el-drawer
@@ -68,12 +68,12 @@
   </div>
 </template>
 <script>
-import JmTableNoPaging from "@/components/JmTableNoPaging/index3";
+import ContTable from "@/components/ContTable/index3";
 import { getRelevanceInfo } from "@/api/work/schedule";
 
 export default {
   components: {
-    JmTableNoPaging,
+    ContTable,
   },
   props: {
     disabled: {

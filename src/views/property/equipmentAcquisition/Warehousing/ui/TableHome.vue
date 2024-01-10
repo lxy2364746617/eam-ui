@@ -84,7 +84,7 @@
       title="设备入库-选择需求计划"
       :visible.sync="drawer"
     >
-      <JmTableNoPaging
+      <ContTable
         :tableData="equipmentList2"
         @getList="getList2"
         @handleSelectionChange="handleSelectionChange2"
@@ -96,7 +96,7 @@
         :isEdit="false"
         v-if="!addEdit2"
       >
-      </JmTableNoPaging>
+      </ContTable>
 
       <div class="submit">
         <el-button type="primary" @click="save">保存</el-button>
@@ -115,13 +115,13 @@ import {
   deleteBASE,
 } from "@/api/property/warehousing";
 import JmTable from "@/components/JmTable";
-import JmTableNoPaging from "@/components/JmTableNoPaging/index2";
+import ContTable from "@/components/ContTable/index2";
 
 export default {
   components: {
     JmTable,
 
-    JmTableNoPaging,
+    ContTable,
   },
   dicts: ["em_device_att", "em_device_level", "apv_status"],
   props: {},

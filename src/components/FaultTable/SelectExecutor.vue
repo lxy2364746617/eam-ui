@@ -3,7 +3,7 @@
     <el-row :gutter="24">
       <!--用户数据-->
       <el-col :span="24" :xs="24">
-        <JmTableNoPaging
+        <ContTable
           :tableData="equipmentList"
           @getList="getList"
           @handleSelectionChange="handleSelectionChange"
@@ -16,7 +16,7 @@
           :rightToolbarShow="false"
           :showSearch="false"
         >
-        </JmTableNoPaging>
+        </ContTable>
       </el-col>
     </el-row>
     <div
@@ -43,11 +43,11 @@
 </template>
 
 <script>
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import { getExecutorList } from "@/api/work/schedule";
 export default {
   dicts: ["apv_status"],
-  components: { JmTableNoPaging },
+  components: { ContTable },
   props: {
     isChoose: {
       default: true,

@@ -246,7 +246,7 @@
   </Wrapper>
 </template>
 <script>
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import JmTable from "@/components/JmTable";
 import TitleForm from "@/components/TitleForm";
 import Wrapper from "@/components/wrapper";
@@ -263,7 +263,7 @@ import { getWomLine } from "@/api/work/schedule";
 export default {
   components: {
     Wrapper,
-    JmTableNoPaging,
+    ContTable,
     JmTable,
     TitleForm,
   },

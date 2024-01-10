@@ -12,7 +12,7 @@
     </div>
 
     <div>
-      <JmTableNoPaging
+      <ContTable
         :tableData="standardList"
         @getList="getList"
         @handleSelectionChange="handleSelectionChange"
@@ -42,7 +42,7 @@
             v-hasPermi="['maintain:standard:remove']"
             >删除</el-button
           >
-        </template></JmTableNoPaging
+        </template></ContTable
       >
     </div>
 
@@ -152,7 +152,7 @@
       title="选择执行人员"
       :visible.sync="isDrawer"
     >
-      <JmTableNoPaging2
+      <ContTable2
         class="mr20 ml20"
         :tableData="equipmentList2"
         @getList="getList2"
@@ -167,7 +167,7 @@
         :rightToolbarShow="false"
         :showSearch="false"
       >
-      </JmTableNoPaging2>
+      </ContTable2>
 
       <div class="submit">
         <el-button type="primary" @click="save">保存</el-button>
@@ -178,13 +178,13 @@
 </template>
 <script>
 import TitleForm from "@/components/TitleForm";
-import JmTableNoPaging from "@/components/JmTableNoPaging/index3";
-import JmTableNoPaging2 from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable/index3";
+import ContTable2 from "@/components/ContTable";
 import { listDept } from "@/api/system/dept";
 import { getExecutorList } from "@/api/work/schedule";
 import request from "@/utils/request";
 export default {
-  components: { TitleForm, JmTableNoPaging,JmTableNoPaging2 },
+  components: { TitleForm, ContTable, ContTable2 },
   props: {
     disabled: {
       default: false,

@@ -12,7 +12,7 @@
     </div>
 
     <div>
-      <JmTableNoPaging
+      <ContTable
         :tableData="standardList"
         @getList="getList"
         @handleSelectionChange="handleSelectionChange"
@@ -42,7 +42,7 @@
             v-hasPermi="['work:quest:remove']"
             >删除</el-button
           >
-        </template></JmTableNoPaging
+        </template></ContTable
       >
     </div>
 
@@ -73,12 +73,12 @@
   </div>
 </template>
 <script>
-import JmTableNoPaging from "@/components/JmTableNoPaging/index3";
+import ContTable from "@/components/ContTable/index3";
 import { listDept } from "@/api/system/dept";
 import request from "@/utils/request";
 import { v4 as uuidv4 } from "uuid";
 export default {
-  components: { JmTableNoPaging },
+  components: { ContTable },
   props: {
     disabled: {
       default: false,

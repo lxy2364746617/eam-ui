@@ -772,6 +772,64 @@ export const constantRoutes = [
       },
     ],
   },
+  // ! 备件详情
+  {
+    path: "/sparepart",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/sparepart/spareListDetails",
+        component: () => import("@/views/sparepart/spareList/details/index"),
+        name: "spareListDetails",
+        meta: { title: "备件详情", icon: "" },
+      },
+    ],
+  },
+  // ! 备件需求
+  {
+    path: "/sparepart",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/sparepart/requirementControls",
+        component: () => import("@/views/sparepart/requirement/ui/index.vue"),
+        name: "requirementControls",
+        beforeEnter: (to, from, next) => {
+          console.log("========================", to, from, next);
+          to.meta.title = Number(to.query.isShowCard)
+            ? "备件需求/详情"
+            : "备件需求/新增";
+          to.query.d == "true" ? (to.meta.title = "备件需求/编辑") : "";
+          next();
+        },
+        meta: { title: "备件需求", icon: "" },
+      },
+    ],
+  },
+  // ! 备件领用
+  {
+    path: "/sparepart",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/sparepart/spareReceiveControls",
+        component: () => import("@/views/sparepart/spareReceive/ui/index.vue"),
+        name: "spareReceiveControls",
+        beforeEnter: (to, from, next) => {
+          console.log("========================", to, from, next);
+          to.meta.title = Number(to.query.isShowCard)
+            ? "备件领用/详情"
+            : "备件领用/新增";
+          to.query.d == "true" ? (to.meta.title = "备件领用/编辑") : "";
+          next();
+        },
+        meta: { title: "备件领用", icon: "" },
+      },
+    ],
+  },
 ];
 
 // 动态路由，基于用户权限动态去加载

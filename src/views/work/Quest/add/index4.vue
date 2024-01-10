@@ -180,7 +180,7 @@
       :wrapperClosable="false"
     >
       <div v-if="title == '保养人员'">
-        <JmTableNoPaging
+        <ContTable
           class="table"
           :tableData="equipmentList3"
           @getList="getList3"
@@ -215,10 +215,10 @@
               >删除</el-button
             >
           </template>
-        </JmTableNoPaging>
+        </ContTable>
 
         <div class="drawer-title" v-if="selectUser.id">保养人员工时</div>
-        <JmTableNoPaging
+        <ContTable
           v-if="selectUser.id"
           class="table"
           :tableData="equipmentList4"
@@ -262,7 +262,7 @@
               >删除</el-button
             >
           </template>
-        </JmTableNoPaging>
+        </ContTable>
       </div>
       <!-- 关联文档 -->
       <div v-else>
@@ -308,7 +308,7 @@
       :visible.sync="isDrawer"
       :wrapperClosable="false"
     >
-      <JmTableNoPaging
+      <ContTable
         class="table"
         :tableData="equipmentList2"
         @getList="getList2"
@@ -320,7 +320,7 @@
         :isShow="true"
         :showSearch="false"
       >
-      </JmTableNoPaging>
+      </ContTable>
 
       <div class="submit">
         <el-button type="primary" @click="save">提交</el-button>
@@ -358,7 +358,7 @@
   </Wrapper>
 </template>
 <script>
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import JmTable from "@/components/JmTable";
 import TitleForm from "@/components/TitleForm";
 import Wrapper from "@/components/wrapper";
@@ -384,7 +384,7 @@ import {
 export default {
   components: {
     Wrapper,
-    JmTableNoPaging,
+    ContTable,
     JmTable,
     TitleForm,
   },

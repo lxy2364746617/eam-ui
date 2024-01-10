@@ -2,7 +2,7 @@
   <div class="box">
     <slot></slot>
 
-    <JmTableNoPaging
+    <ContTable
       :tableData="equipmentList"
       @getList="getList"
       @handleSelectionChange="handleSelectionChange"
@@ -56,7 +56,7 @@
           >删除</el-button
         >
       </template>
-    </JmTableNoPaging>
+    </ContTable>
 
     <el-drawer :title="title" :visible.sync="drawer" :wrapperClosable="false">
       <div class="drawer-wrapper">
@@ -215,7 +215,7 @@
 <script>
 import { getProjectList, downDetailLoad } from "@/api/property/scrapping";
 import Treeselect from "@riophae/vue-treeselect";
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
 import {
   setStore,
@@ -229,7 +229,7 @@ import { listDept } from "@/api/system/dept";
 import { saveAs } from "file-saver";
 export default {
   components: {
-    JmTableNoPaging,
+    ContTable,
     Treeselect,
     SelectParentDeviceDialog,
   },

@@ -1,4 +1,3 @@
-import Wrapper from '@/components/wrapper';
 <template>
   <Wrapper :title="wrapperTitle">
     <div class="box">
