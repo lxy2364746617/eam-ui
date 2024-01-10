@@ -42,6 +42,11 @@
     <el-table v-loading="loading" :data="finishedList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true"/>
+      <el-table-column label="流程类别" align="center" prop="category" width="100px" >
+        <template slot-scope="scope">
+            <dict-tag :options="dict.type.process_category" :value="scope.row.category"/>
+        </template>
+      </el-table-column>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
       <el-table-column label="任务节点" align="center" prop="taskName" />
       <el-table-column label="流程发起人" align="center">
@@ -86,6 +91,7 @@ import { finishedList, getDeployment, delDeployment, addDeployment, updateDeploy
 
 export default {
   name: "Deploy",
+  dicts: ['wf_process_status','process_category'],
   components: {
   },
   data() {
