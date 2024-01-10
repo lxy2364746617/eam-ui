@@ -197,7 +197,7 @@
             <!--          <el-input v-model="upload.category"/>-->
             <el-select v-model="upload.category" placeholder="请选择流程分类">
               <el-option
-                v-for="dict in dict.type.sys_process_category"
+                v-for="dict in dict.type.process_category"
                 :key="dict.value"
                 :label="dict.label"
                 :value="dict.value"
@@ -297,7 +297,7 @@ import Model from './model'
 
 export default {
   name: 'Definition',
-  dicts: ['sys_process_category'],
+  dicts: ['process_category'],
   components: {
     Parser,
     flow,

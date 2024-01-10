@@ -53,19 +53,22 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="申请时间" align="center" prop="createTime" width="180"/>
       <el-table-column label="申请编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
-      <el-table-column label="申请部门" align="center" prop="assigneeDeptName"/>
-      <el-table-column label="申请人" align="center" prop="assigneeName"/>
+      <el-table-column label="申请部门" align="center" prop="startDeptName"/>
+      <el-table-column label="申请人" align="center" prop="startUserName"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程类别" align="center" prop="category" width="100px" />
+      <el-table-column label="流程类别" align="center" prop="category" width="100px" >
+        <template slot-scope="scope">
+            <dict-tag :options="dict.type.process_category" :value="scope.row.category"/>
+        </template>
+      </el-table-column>
       <el-table-column label="流程版本" align="center" width="80px">
         <template slot-scope="scope">
           <el-tag size="medium" >v{{ scope.row.procDefVersion }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="审批状态" align="center" width="100">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.finishTime == null" size="mini">进行中</el-tag>
-          <el-tag type="success" v-if="scope.row.finishTime != null" size="mini">已完成</el-tag>
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.wf_process_status" :value="scope.row.processStatus"/>
         </template>
       </el-table-column>
       <el-table-column label="耗时" align="center" prop="duration" width="180"/>
@@ -149,6 +152,7 @@ import { myProcessList,stopProcess } from "@/api/flowable/process";
 import {listDefinition} from "@/api/flowable/definition";
 export default {
   name: "Deploy",
+  dicts: ['wf_process_status','process_category'],
   components: {
   },
   data() {

@@ -84,7 +84,7 @@ export default {
     if (deployId) {
       this.getXmlData(deployId);
     }
-    this.getDicts("sys_process_category").then(res => {
+    this.getDicts("process_category").then(res => {
       this.categorys = res.data;
     });
     this.getDataList()
