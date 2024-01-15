@@ -24,7 +24,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <!-- <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -47,7 +47,7 @@
         >删除</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
+    </el-row> -->
 
     <el-table v-loading="loading" :data="myProcessList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
@@ -77,8 +77,9 @@
       <el-table-column label="操作" width="150" fixed="right" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button @click="handleFlowRecord(scope.row)" type="text" size="small">详情</el-button>
-          <el-button @click="handleStop(scope.row)" type="text" size="small">取消申请</el-button>
-          <el-button @click="handleDelete(scope.row)" type="text" size="small" v-hasPermi="['system:deployment:remove']">删除</el-button>
+          <el-button @click="handleFlow(scope.row)" type="text" size="small">审批流程</el-button>
+          <!-- <el-button @click="handleStop(scope.row)" type="text" size="small">取消申请</el-button>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small" v-hasPermi="['system:deployment:remove']">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -149,7 +150,7 @@ import {
   flowRecord
 } from "@/api/flowable/finished";
 import { myProcessList,stopProcess } from "@/api/flowable/process";
-import {listDefinition} from "@/api/flowable/definition";
+import {listDefinition,getProcessVariables} from "@/api/flowable/definition";
 export default {
   name: "Deploy",
   dicts: ['wf_process_status','process_category'],
@@ -306,14 +307,31 @@ export default {
         this.getList();
       });
     },
-    /** 流程流转记录 */
+    /** 详情 */
     handleFlowRecord(row){
-      this.$router.push({ path: '/flowable/task/myProcess/detail/index',
-        query: {
+      getProcessVariables(row.taskId).then(res => {
+        if(res.data.path){
+          this.$router.push({path: res.data.path+ '?i=' + row.businessId + '&t=详情&isReadonly=true' }) 
+        }else{
+          this.$router.push({ path: '/flowable/task/myProcess/detail/index',
+          query: {
           procInsId: row.procInsId,
           deployId: row.deployId,
-          taskId: row.taskId
-      }})
+          taskId: row.taskId,
+          isDetail:true
+          }}) 
+        }          
+        });
+       
+    },
+    //审批流程
+    handleFlow(row){
+      this.$router.push({ path: '/flowable/task/myProcess/detail/index',
+          query: {
+          procInsId: row.procInsId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+          }})
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

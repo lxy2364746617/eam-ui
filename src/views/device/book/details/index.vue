@@ -8,7 +8,7 @@
         </el-col>
         <el-col :span="5" v-if="disabled1" style="font-size: 12px;color: #888;">
           <!-- <el-button type="text" icon="el-icon-s-help">快速工单</el-button> -->
-          <el-button type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
+          <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
         </el-col>
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px;">
@@ -41,7 +41,7 @@
       </el-row>
       <el-tabs v-model="activeName" @tab-click="tabsHandleClick">
         <el-tab-pane :label="item.label" :name="item.name" v-for="item in tabs" :key="item.label" v-if="item.visible">
-          <component :is="item.name" v-if="formData1" :formData="formData1"  @submitForm="submitForm" @close="close"></component>
+          <component :is="item.name" :isReadonly='isReadonly' v-if="formData1" :formData="formData1"  @submitForm="submitForm" @close="close"></component>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -178,11 +178,13 @@ export default {
       // 部门树选项
       categoryOptions: [],
       categoryName: '',
+      isReadonly:false,
     };
   },
   created() {
     this.getTreeSelect()
     // 编辑
+    this.isReadonly=this.$route.query.isReadonly?true:false
     const deviceId = this.$route.query.i
     this.formTitle = this.$route.query.t
     getBASE(deviceId).then(response => {

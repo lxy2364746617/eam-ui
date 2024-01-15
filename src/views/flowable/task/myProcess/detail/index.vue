@@ -7,7 +7,7 @@
       </div>
       <el-tabs  tab-position="top" v-model="activeName" @tab-click="handleClick">
         <!--表单信息-->
-        <el-tab-pane label="表单信息" name="1">
+        <el-tab-pane label="表单信息" name="1" v-if="isDetail">
           <el-col :span="16" :offset="4">
             <div class="test-form">
                 <parser :key="new Date().getTime()" :form-conf="variablesData" />
@@ -15,53 +15,47 @@
          </el-col>
         </el-tab-pane>
         <!--流程流转记录-->
-        <el-tab-pane label="流转记录" name="2">
-          <el-col :span="16" :offset="4" >
+        <el-tab-pane label="流转记录" name="2" v-if="!isDetail">
+          <!-- <el-col :span="8">
+            <flow :flowData="flowData"/>
+          </el-col> -->
+          <el-col :span="16"  :offset="4">
             <div class="block">
-              <el-timeline>
+              <!-- <el-timeline>
+                <el-timeline-item icon='el-icon-plus'>
+
+                </el-timeline-item>
                 <el-timeline-item
                   v-for="(item,index ) in flowRecordList"
                   :key="index"
-                  :icon="setIcon(item.finishTime)"
-                  :color="setColor(item.finishTime)"
+                  
+                  placement="top"
                 >
-                  <p style="font-weight: 700">{{item.taskName}}</p>
+                   <p style="font-weight: 700">{{item.taskName}}</p> 
                   <el-card :body-style="{ padding: '10px' }">
-                    <el-descriptions class="margin-top" :column="1" size="small" border>
-                      <el-descriptions-item v-if="item.assigneeName" label-class-name="my-label">
-                        <template slot="label"><i class="el-icon-user"></i>办理人</template>
-                        {{item.assigneeName}}
-                        <el-tag type="info" size="mini">{{item.deptName}}</el-tag>
-                      </el-descriptions-item>
-                      <el-descriptions-item v-if="item.candidate" label-class-name="my-label">
-                        <template slot="label"><i class="el-icon-user"></i>候选办理</template>
-                        {{item.candidate}}
-                      </el-descriptions-item>
-                      <el-descriptions-item label-class-name="my-label">
-                        <template slot="label"><i class="el-icon-date"></i>接收时间</template>
-                        {{item.createTime}}
-                      </el-descriptions-item>
-                      <el-descriptions-item v-if="item.finishTime" label-class-name="my-label">
-                        <template slot="label"><i class="el-icon-date"></i>处理时间</template>
-                        {{item.finishTime}}
-                      </el-descriptions-item>
-                      <el-descriptions-item v-if="item.duration"  label-class-name="my-label">
-                        <template slot="label"><i class="el-icon-time"></i>耗时</template>
-                        {{item.duration}}
-                      </el-descriptions-item>
-                      <el-descriptions-item v-if="item.comment" label-class-name="my-label">
-                        <template slot="label"><i class="el-icon-tickets"></i>处理意见</template>
-                        {{item.comment.comment}}
-                      </el-descriptions-item>
-                    </el-descriptions>
+                    <p>{{item.assigneeName+'('+item.duration+')'}}</p>
+                    <p>同意</p>
+                    <p>具体意见。。。</p>
+                    <p>{{item.finishTime}}</p>
                   </el-card>
                 </el-timeline-item>
-              </el-timeline>
+              </el-timeline> -->
+              <ul>
+                <li class="linetime" v-for="(item,index ) in flowRecordList" :key="index">
+                 <el-card :body-style="{ padding: '10px' }">
+                    <p>{{item.assigneeName+(item.duration? ('('+item.duration+')'):'')}}</p>
+                    <p style="color:#02B606" v-if="item.comment&&item.comment.type==1">同意</p>
+                    <p style="color:#EA0000" v-if="item.comment&&item.comment.type==3">驳回</p>
+                    <p>{{item.comment?item.comment.comment:''}}</p>
+                    <p>{{item.createTime}}</p>
+                  </el-card>
+                  </li>
+              </ul>
             </div>
           </el-col>
         </el-tab-pane>
         <!--流程图-->
-        <el-tab-pane label="流程图" name="3">
+        <el-tab-pane label="流程图" name="3" v-if="!isDetail">
           <flow :flowData="flowData"/>
         </el-tab-pane>
     </el-tabs>
@@ -85,6 +79,7 @@ export default {
   props: {},
   data() {
     return {
+      isDetail:false,
       // 模型xml数据
       flowData: {},
       activeName: '1',
@@ -111,10 +106,15 @@ export default {
     this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
     this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
+    this.isDetail=this.$route.query.isDetail=='true'?true:false
+    this.activeName=this.isDetail?'1':'2'
     // 回显流程记录
     // 流程任务重获取变量表单
     this.processVariables( this.taskForm.taskId)
     this.getFlowRecordList(this.taskForm.procInsId, this.taskForm.deployId);
+    flowXmlAndNode({procInsId:this.taskForm.procInsId,deployId:this.taskForm.deployId}).then(res => {
+          this.flowData = res.data;
+        })
   },
   methods: {
     handleClick(tab, event) {
@@ -217,5 +217,26 @@ export default {
 
 .my-label {
   background: #E1F3D8;
+}
+.linetime{
+  list-style:none;
+  border-left:4px solid #D9D9D9;
+  padding:20px;
+  position: relative;
+}
+.linetime::before{
+  content:'';
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 4px solid #1890FF;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: -12px;
+  transform: translateY(-50%);
+}
+.el-card{
+  padding-left: 10px;
 }
 </style>

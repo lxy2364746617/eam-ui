@@ -1,6 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item>
+         <el-button class="btn_status" style="background:#92E182;color:#02B606;">已同意</el-button>
+         <el-button class="btn_status" style="background:#F7CCCC;color:#EA0000;">已删除</el-button>
+      </el-form-item>
       <el-form-item label="名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -24,7 +28,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <!-- <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -37,16 +41,41 @@
         >删除</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <el-table v-loading="loading" :data="finishedList" border @selection-change="handleSelectionChange">
+    </el-row> -->
+    <el-empty v-if="finishedList.length==0" :image-size="200"></el-empty>
+    <el-card v-for="item in finishedList" :key="item.taskId">
+      <div class="card_status" :style="'color:'+'#4DCA38;'+'background:#CAF6C2'">
+        同意
+      </div>
+      <el-col :span="8" class="card_col1">
+        <img src="@/assets/images/device.svg" style="width:80px;height:80px;margin:auto 0"> 
+        <div class="card_info">
+          <p>{{item.procDefName}}</p>
+          <p>{{item.taskId}}</p>
+        </div>
+      </el-col>
+      <el-col :span="8" class="card_col2">
+        <div class="card_info">
+          <p>申请部门：</p>
+        <p>申请部门负责人：</p>
+        <p>申请时间：</p>
+        </div>
+        
+      </el-col>
+      <el-col :span="4" class="card_col3">
+        <div class="card_info">
+          <p>当前节点</p>
+          <p>审核人：三个字</p>
+        </div>
+        
+      </el-col>
+      <el-col :span="4" class="card_col4">
+        <el-button type="primary"  @click="handleFlowRecord(item)">审批流程</el-button>
+      </el-col>
+    </el-card>
+    <!-- <el-table v-loading="loading" :data="finishedList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="任务编号" align="center" prop="taskId" :show-overflow-tooltip="true"/>
-      <el-table-column label="流程类别" align="center" prop="category" width="100px" >
-        <template slot-scope="scope">
-            <dict-tag :options="dict.type.process_category" :value="scope.row.category"/>
-        </template>
-      </el-table-column>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
       <el-table-column label="任务节点" align="center" prop="taskName" />
       <el-table-column label="流程发起人" align="center">
@@ -74,7 +103,7 @@
           </el-button>
         </template>
       </el-table-column>
-    </el-table>
+    </el-table> -->
 
     <pagination
       v-show="total>0"
@@ -91,7 +120,6 @@ import { finishedList, getDeployment, delDeployment, addDeployment, updateDeploy
 
 export default {
   name: "Deploy",
-  dicts: ['wf_process_status','process_category'],
   components: {
   },
   data() {
@@ -287,4 +315,58 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.btn_status{
+  margin: 0;
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.302);
+}
+.btn_status:active{
+  box-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.302) !important;
+  border:1px solid transparent
+}
+::v-deep .el-card{
+  position: relative;
+   height: 168px;
+   margin-bottom: 10px;
+   p{
+     padding: 0;
+     margin: 0;
+   }
+   .el-card__body, [class*=el-col-]{
+     text-align: center;
+     height: 100% !important;
+   }
+   .card_col1{
+     display: flex;
+     justify-content: space-around;
+   }
+   .card_col1,.card_col2,.card_col3{
+     display: flex;
+     justify-content: space-around;
+     border-right: 1px solid #9C9393;
+     
+   }
+   .card_col4{
+     line-height: 128px;
+   }
+   .card_status{
+     width: 86px;
+     height: 42px;
+     border-radius:5px ;
+     position: absolute;
+     top: 0;
+     right: 0;
+     line-height: 42px;
+     text-align: center;
+     font-weight: 500;
+   }
+   .card_info{
+     height:80px;
+     display:flex;
+     flex-direction: column;
+     justify-content: space-between;
+     margin:auto 0
+   }
+}
 
+</style>

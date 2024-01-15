@@ -3,10 +3,10 @@
     <div v-if="formData.emArchivesIndex">
       <p class="subtitle"><i class="el-icon-magic-stick"></i> 主要指标
         <span v-if="disabled5" class="rightbutton">
-          <el-button type="text" icon="el-icon-edit" @click="disabled5=false">编辑</el-button>
+          <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled5=false">编辑</el-button>
         </span><span v-else class="rightbutton">
-          <el-button type="text" @click="save('5')">确认</el-button>
-          <el-button type="text" @click="closeEdit('5')">取消</el-button>
+          <el-button v-if="!isReadonly" type="text" @click="save('5')">确认</el-button>
+          <el-button v-if="!isReadonly" type="text" @click="closeEdit('5')">取消</el-button>
         </span>
       </p>
       <jm-form 
@@ -75,6 +75,10 @@ export default {
     devicebook: ()=> import("@/views/device/book/index"),
   },
   props:{
+    isReadonly:{
+      type:Boolean,
+      default:false,
+    },
     formData: {
       default: ()=>{},
       type: Object,

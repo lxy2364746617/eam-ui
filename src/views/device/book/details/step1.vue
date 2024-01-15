@@ -2,7 +2,7 @@
   <div>
     <p class="subtitle"><i class="el-icon-magic-stick"></i> 重要数据
       <span v-if="disabled1" class="rightbutton">
-        <el-button type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
+        <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
       </span>
       <span v-else class="rightbutton">
         <el-button type="text" @click="save('1')">确认</el-button>
@@ -21,7 +21,7 @@
     </jm-form>
     <p class="subtitle"><i class="el-icon-magic-stick"></i> 常规数据
       <span v-if="disabled2" class="rightbutton">
-        <el-button type="text" icon="el-icon-edit" @click="disabled2=false">编辑</el-button>
+        <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled2=false">编辑</el-button>
       </span>
       <span v-else class="rightbutton">
         <el-button type="text" @click="save('2')">确认</el-button>
@@ -40,7 +40,7 @@
     </jm-form>
     <p class="subtitle"><i class="el-icon-magic-stick"></i> 财务数据
       <span v-if="disabled3" class="rightbutton">
-        <el-button type="text" icon="el-icon-edit" @click="disabled3=false">编辑</el-button>
+        <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled3=false">编辑</el-button>
       </span>
       <span v-else class="rightbutton">
         <el-button type="text" @click="save('3')">确认</el-button>
@@ -59,7 +59,7 @@
     </jm-form>
     <p class="subtitle"><i class="el-icon-magic-stick"></i> 购置数据
       <span v-if="disabled4" class="rightbutton">
-        <el-button type="text" icon="el-icon-edit" @click="disabled4=false">编辑</el-button>
+        <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled4=false">编辑</el-button>
       </span>
       <span v-else class="rightbutton">
         <el-button type="text" @click="save('4')">确认</el-button>
@@ -78,7 +78,7 @@
     </jm-form>
     <p class="subtitle"><i class="el-icon-magic-stick"></i> 扩展属性
       <span v-if="disabled5" class="rightbutton">
-        <el-button type="text" icon="el-icon-edit" @click="disabled5=false">编辑</el-button>
+        <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled5=false">编辑</el-button>
       </span>
       <span v-else class="rightbutton">
         <el-button type="text" @click="save('5')">确认</el-button>
@@ -130,6 +130,10 @@ export default {
     Treeselect, JmUserTree, JmTable, JmForm, parentdevice,
   },
   props:{
+    isReadonly:{
+      type:Boolean,
+      default:false,
+    },
     formData: {
       default: ()=>{},
       type: Object,

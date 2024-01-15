@@ -8,11 +8,18 @@ export function listDefinition(query) {
     params: query
   })
 }
-
-// 部署流程实例
-export function definitionStart(procDefId, data) {
+//设备档案提交时列表
+export function listDefinition1(query) {
   return request({
-    url: '/flowable/definition/start/' + procDefId,
+    url: 'flowable/task/myFlow',
+    method: 'get',
+    params: query
+  })
+}
+// 部署流程实例
+export function definitionStart(procDefId,businessId,businessType,data) {
+  return request({
+    url: '/flowable/definition/start/' + procDefId + '/'+businessId+'/'+businessType,
     method: 'post',
     data: data
   })

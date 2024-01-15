@@ -7,18 +7,18 @@
       </div>
       <el-tabs  tab-position="top" v-model="activeName" @tab-click="handleClick">
         <!--表单信息-->
-        <el-tab-pane label="表单信息" name="1">
+        <!-- <el-tab-pane label="表单信息" name="1">
           <el-col :span="16" :offset="4" v-if="variableOpen">
             <div class="test-form">
               <parser :key="new Date().getTime()" :form-conf="variablesData" />
             </div>
           </el-col>
-        </el-tab-pane>
+        </el-tab-pane> -->
         <!--流程流转记录-->
         <el-tab-pane label="流转记录" name="2">
           <el-col :span="16" :offset="4" >
             <div class="block">
-              <el-timeline>
+               <!--<el-timeline>
                 <el-timeline-item
                   v-for="(item,index ) in flowRecordList"
                   :key="index"
@@ -56,8 +56,20 @@
                     </el-descriptions>
                   </el-card>
                 </el-timeline-item>
-              </el-timeline>
+              </el-timeline> -->
+              <ul>
+                <li class="linetime" v-for="(item,index ) in flowRecordList" :key="index">
+                 <el-card :body-style="{ padding: '10px' }">
+                    <p>{{item.assigneeName+(item.duration? ('('+item.duration+')'):'')}}</p>
+                    <p style="color:#02B606" v-if="item.comment&&item.comment.type==1">同意</p>
+                    <p style="color:#EA0000" v-if="item.comment&&item.comment.type==3">驳回</p>
+                    <p>{{item.comment?item.comment.comment:''}}</p>
+                    <p>{{item.createTime}}</p>
+                  </el-card>
+                  </li>
+              </ul>
             </div>
+            
           </el-col>
         </el-tab-pane>
         <el-tab-pane label="流程图" name="3">
@@ -86,7 +98,7 @@ export default {
     return {
       // 模型xml数据
       flowData: {},
-      activeName: '1',
+      activeName: '2',
       // 用户表格数据
       userList: null,
       defaultProps: {
@@ -174,8 +186,9 @@ export default {
     /** 返回页面 */
     goBack() {
       // 关闭当前标签页并返回上个页面
-      const obj = { path: "/task/finished", query: { t: Date.now()} };
-      this.$tab.closeOpenPage(obj);
+      /* const obj = { path: "/task/finished", query: { t: Date.now()} };
+      this.$tab.closeOpenPage(obj); */
+      this.$tab.closePage()
     },
   }
 };
@@ -207,5 +220,26 @@ export default {
 
 .my-label {
   background: #E1F3D8;
+}
+.linetime{
+  list-style:none;
+  border-left:4px solid #D9D9D9;
+  padding:20px;
+  position: relative;
+}
+.linetime::before{
+  content:'';
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 4px solid #1890FF;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: -12px;
+  transform: translateY(-50%);
+}
+.el-card{
+  padding-left: 10px;
 }
 </style>

@@ -75,6 +75,10 @@ export default {
     devicebook: ()=> import("@/views/device/book/index"),
   },
   props:{
+    isReadonly:{
+      type:Boolean,
+      default:false,
+    },
     formData: {
       default: ()=>{},
       type: Object,

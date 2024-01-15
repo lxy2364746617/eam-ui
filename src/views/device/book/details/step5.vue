@@ -10,13 +10,13 @@
       :initLoading="false"
       :handleWidth="130"
       :columns="columns">
-      <template slot="right_end">
+      <!-- <template slot="right_end">
         <el-radio-group v-model="radio3" size="mini" style="margin-left: 10px;">
           <el-radio-button label="图示"></el-radio-button>
           <el-radio-button label="列表"></el-radio-button>
         </el-radio-group>
-      </template>
-      <template slot="headerLeft">
+      </template> -->
+      <template slot="headerLeft" v-if="!isReadonly">
         <el-col :span="1.5">
           <el-button
             type="primary"
@@ -37,7 +37,7 @@
           >解除</el-button>
         </el-col>
       </template>
-      <template #end_handle="scope">
+      <template #end_handle="scope" v-if="!isReadonly">
         <el-button
           size="mini"
           type="text"
@@ -83,7 +83,7 @@
         <el-col :span="8" v-for="item in equipmentList" :key="item.partsCode">
           <el-card style="margin-bottom: 2px;font-size: 14px;">
             <p>
-              {{ item.partsName }}[{{ item.partsCode }}]
+              <span style="margin-right:10px">{{ item.partsName }} </span> <span>[{{ item.partsCode }}] </span> 
               <span style="float: right;">
                 <el-tag size="mini" type="success">在用</el-tag>
               </span>
@@ -112,7 +112,7 @@
         size="60%"
         direction="rtl"
         :wrapperClosable="false">
-        <supplier @submitRadio="submitRadio" :isRadio="true" @close="closesupplier"></supplier>
+        <supplier  @submitRadio="submitRadio" :isRadio="true" @close="closesupplier" :isHidden='drawersupplier'></supplier>
       </el-drawer>
   </div>
 </template>
@@ -137,6 +137,10 @@ export default {
     Treeselect, JmUserTree, JmTable, JmForm, supplier, 
   },
   props:{
+    isReadonly:{
+      type:Boolean,
+      default:false,
+    },
     formData: {
       default: {},
       type: Object,
@@ -263,13 +267,14 @@ export default {
       }
     };
   },
-  created() {
-    this.getList(this.queryParams)
-    this.getTreeSelect()
+  async created() {
+    await this.getTreeSelect()
+    await this.getList(this.queryParams)
+    
   },
   methods: {
     getTreeSelect(){
-      this.deptOptions=[{label:'label1',value:'value1'},{label:'label2',value:'value2'}]
+      this.deptOptions=[]
       listDept().then(response => {
         this.$set(this,'deptOptions',response.data)
         this.$forceUpdate()

@@ -4,6 +4,7 @@
       <span style="font-size: 14px;font-weight: bold;">父级设备信息</span>
       <span style="float: right;">
         <el-button
+        v-if="!isReadonly"
           type="primary"
           plain
           icon="el-icon-plus"
@@ -11,6 +12,7 @@
           @click="handleAdd"
         >选择父级设备</el-button>
         <el-button
+        v-if="!isReadonly"
           type="danger"
           plain
           icon="el-icon-upload2"
@@ -74,6 +76,10 @@ export default {
     Treeselect, JmUserTree, JmTable, JmForm, parentdevice, 
   },
   props:{
+    isReadonly:{
+      type:Boolean,
+      default:false,
+    },
     formData: {
       default: ()=>{},
       type: Object,

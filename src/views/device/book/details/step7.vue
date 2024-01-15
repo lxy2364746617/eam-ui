@@ -10,13 +10,13 @@
       :initLoading="false"
       :handleWidth="130"
       :columns="columns">
-      <template slot="right_end">
+      <!-- <template slot="right_end">
         <el-radio-group v-model="radio3" size="mini" style="margin-left: 10px;">
           <el-radio-button label="图示"></el-radio-button>
           <el-radio-button label="列表"></el-radio-button>
         </el-radio-group>
-      </template>
-      <template slot="headerLeft">
+      </template> -->
+      <template slot="headerLeft" v-if="!isReadonly">
         <el-col :span="1.5">
           <el-button
             type="primary"
@@ -123,6 +123,10 @@ export default {
     Treeselect, JmUserTree, JmTable, JmForm, childdevice
   },
   props:{
+    isReadonly:{
+      type:Boolean,
+      default:false,
+    },
     formData: {
       default: {},
       type: Object,

@@ -16,7 +16,7 @@
       :file-list="fileList"
       :disabled="disabled"
       :on-preview="handlePictureCardPreview"
-      :class="{hide: this.fileList.length >= this.limit}"
+      :class="{hide: this.fileList.length >= this.limit||isReadonly}"
     >
       <i class="el-icon-plus"></i>
     </el-upload>
@@ -48,6 +48,10 @@ import { getToken } from "@/utils/auth";
 
 export default {
   props: {
+    isReadonly:{
+      type:Boolean,
+      default:false
+    },
     value: [String, Object, Array],
     // 图片数量限制
     limit: {

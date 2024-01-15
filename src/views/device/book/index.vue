@@ -144,6 +144,7 @@
               :loading="btnLoading"
               @click="handleUpdate(scope.row,'edit')"
               v-hasPermi="['equipment:base:edit']"
+               v-if="scope.row.processStatus=='uncommitted'||scope.row.processStatus=='reject'||scope.row.processStatus=='canceled'"
             >修改</el-button>
             <el-button
               size="mini"
@@ -151,6 +152,7 @@
               icon="el-icon-delete"
               @click="handleDelete(scope.row)"
               v-hasPermi="['equipment:base:remove']"
+               v-if="scope.row.processStatus=='uncommitted'||scope.row.processStatus=='reject'||scope.row.processStatus=='canceled'"
             >删除</el-button>
             <el-button
               size="mini"
@@ -158,6 +160,7 @@
               icon="el-icon-document-add"
               @click="handleSet(scope.row)"
               v-hasPermi="['equipment:book:edit']"
+              v-if="scope.row.processStatus=='uncommitted'||scope.row.processStatus=='reject'||scope.row.processStatus=='canceled'"
             >提交</el-button>
           </template>
         </jm-table>
@@ -229,6 +232,10 @@
         @close="addItem.choosedrawer=false"
       ></parentdevice>
     </el-drawer>
+    <!-- 提交 -->
+    <el-dialog :title="subtitle" :visible.sync="subopen" width="60%" append-to-body>
+      <subprocess :tableData='tableData' @submit="sub" @getTableData='getTableData'></subprocess>
+    </el-dialog>
   </div>
 </template>
 
@@ -236,6 +243,7 @@
 import { findByTemplateType } from '@/api/equipment/attribute'
 import { listDept } from '@/api/system/dept'
 import { equipmentTree } from '@/api/equipment/category'
+import {listDefinition1} from "@/api/flowable/definition";
 import {
   listBASE,
   getBASE,
@@ -256,10 +264,11 @@ import JmUserTree from '@/components/JmUserTree'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import fileImport from '@/components/FileImport'
 import parentdevice from '@/views/device/book/device'
-
+import  subprocess  from '@/views/device/book/process'
+import {definitionStart} from "@/api/flowable/definition";
 export default {
   name: 'devicebook',
-  dicts: ['em_device_state', 'em_device_att', 'apv_status', 'em_device_level'],
+  dicts: ['em_device_state', 'em_device_att', 'wf_process_status', 'em_device_level','process_category'],
   components: {
     Treeselect,
     JmUserTree,
@@ -269,6 +278,7 @@ export default {
     deviceIndex,
     fileImport,
     parentdevice,
+    subprocess
   },
   props: {
     isChoose: {
@@ -329,15 +339,20 @@ export default {
         { label: '上级设备', prop: 'parentDeviceName' }, //(0 父级)
         {
           label: '审批状态',
-          prop: 'apvStatus',
+          prop: 'processStatus',
           formType: 'selectTag',
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         }, //apv_status
       ]
     },
   },
   data() {
     return {
+      id:'',
+      tableData:[],
+      subopen:false,
+      subtitle:'',
+      processLoading: true,
       addItem: {
         choosedrawer: false,
         copyInputName: '',
@@ -469,6 +484,7 @@ export default {
   created() {
     this.getTree()
     this.getTreeSelect()
+    console.log(this.dict.type.process_category)
   },
   methods: {
     /** 导入按钮操作 */
@@ -771,6 +787,38 @@ export default {
           this.$modal.msgSuccess('删除成功')
         })
         .catch(() => {})
+    },
+    /* 提交按钮 */
+    handleSet(row){
+      this.id = row.deviceId
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data={
+        pageNum:1,
+        pageSize:10,
+        category:'EA'
+      }
+      listDefinition1(data).then(res=>{
+        this.tableData=res.data.records
+      })
+    },
+    getTableData(val){
+      let data={
+        pageNum:val.page,
+        pageSize:val.limit,
+        category:'EA'
+
+      }
+      listDefinition1(data).then(res=>{
+        this.tableData=res.data.records
+      })
+    },
+    sub(val){
+        definitionStart(val.id,this.id,'EA',{path:'/device/book/details'}).then(res=>{
+          this.subopen=false
+          this.getList()
+      })  
+      
     },
     /** 导出按钮操作 */
     // handleExport() {

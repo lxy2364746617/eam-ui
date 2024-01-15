@@ -7,8 +7,8 @@
       ref="jmtable"
       :handleWidth="230"
       :columns="columns">
-      <template slot="headerLeft">
-        <el-col :span="1.5">
+      <template slot="headerLeft" >
+        <el-col :span="1.5" v-if="!isReadonly">
           <el-button
             type="primary"
             plain
@@ -18,14 +18,16 @@
           >上传</el-button>
         </el-col>
       </template>
-      <template #end_handle="scope">
+      <template #end_handle="scope" >
         <el-button
+         v-if="!isReadonly"
           size="mini"
           type="text"
           icon="el-icon-view"
           @click="downloadFile(scope.row)"
         >下载</el-button>
         <el-button
+         v-if="!isReadonly"
           size="mini"
           type="text"
           icon="el-icon-delete"
@@ -35,7 +37,7 @@
           size="mini"
           type="text"
           icon="el-icon-document-add"
-          v-if="fileType.includes(scope.row.fileType)"
+          v-if="!isReadonly&&fileType.includes(scope.row.fileType)"
           @click="handlePreview(scope.row)"
         >预览</el-button>
       </template>
@@ -81,6 +83,10 @@ export default {
     Treeselect, JmUserTree, JmTable, JmForm, 
   },
   props:{
+    isReadonly:{
+      type:Boolean,
+      default:false,
+    },
     formData: {
       default: ()=>{},
       type: Object,

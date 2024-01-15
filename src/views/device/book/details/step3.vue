@@ -12,11 +12,11 @@
       <el-col :span="8">
         <p class="subtitle"><i class="el-icon-magic-stick"></i> 设备图片
           <span v-if="disabled1" class="rightbutton">
-            <el-button type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
+            <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
           </span>
           <span v-else class="rightbutton">
-            <el-button type="text" @click="save('1')">确认</el-button>
-            <el-button type="text" @click="closeEdit('1')">取消</el-button>
+            <el-button v-if="!isReadonly" type="text" @click="save('1')">确认</el-button>
+            <el-button v-if="!isReadonly" type="text" @click="closeEdit('1')">取消</el-button>
           </span>
         </p>
         <div>
@@ -26,8 +26,9 @@
             :disabled="disabled1"
             :value="formData.imgFileResourceList"
             :extraData="{'category':1}"
-            :listType="'picture-card'">
-
+            :listType="'picture-card'"
+            :isReadonly='isReadonly'>
+            
           </image-upload>
         </div>
       </el-col>
@@ -54,6 +55,10 @@ export default {
     Treeselect, JmUserTree, JmTable, JmForm, 
   },
   props:{
+    isReadonly:{
+      type:Boolean,
+      default:false,
+    },
     formData: {
       default: ()=>{},
       type: Object,

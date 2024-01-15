@@ -228,10 +228,17 @@ export default {
     isRadio: {
       default: true,
       type: Boolean,
+    },
+    isHidden:{
+      type:Boolean,
+      default:false
     }
   },
   created() {
     this.getList(this.queryParams);
+    if(this.isHidden){
+      this.tablecolumns.splice(13,1)
+    } 
   },
   methods: {
     close(){
