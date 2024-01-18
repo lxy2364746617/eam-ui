@@ -736,10 +736,22 @@ export const constantRoutes = [
         meta: { title: "知识导航", icon: "" },
       },
       {
+        path: "/knowledge/navigation/searchPage",
+        component: () => import("@/views/knowledge/navigation/searchPage"),
+        name: "searchPage",
+        meta: { title: "搜索页", icon: "" },
+      },
+      {
         path: "/knowledge/faults",
         component: () => import("@/views/knowledge/faults/index"),
         name: "faults",
         meta: { title: "故障案例库", icon: "" },
+      },
+      {
+        path: "/knowledge/faults_details",
+        component: () => import("@/views/knowledge/faults/details"),
+        name: "faults_details",
+        meta: { title: "故障案例库-详情页", icon: "" },
       },
       {
         path: "/knowledge/technology",

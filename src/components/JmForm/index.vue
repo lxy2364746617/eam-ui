@@ -15,8 +15,8 @@
       <el-row :gutter="10">
         <el-col
           :span="col.span||12"
-          v-for="col in columns"
-          :key="col.prop"
+          v-for="(col,index) in columns"
+          :key="index"
           v-if="col.formVisible!=false"
         >
           <el-form-item v-if="col.subTitle" :label="col.label" class="subtitle"></el-form-item>

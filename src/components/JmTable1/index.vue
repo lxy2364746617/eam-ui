@@ -15,7 +15,7 @@
           @current-change="handleCurrentChange"
           :data="tableData2" 
           @selection-change="handleSelectionChange">
-          <el-table-column v-if="!isRadio" type="selection" width="55" align="center" :selectable="(row,index)=>index!=0 || !showSearch"/>
+          <el-table-column v-if="checkbox" type="selection" width="55" align="center" :selectable="(row,index)=>index!=0 || !showSearch"/>
           <el-table-column v-if="isRadio" width="50">
             <template slot-scope="scope">
                 <el-radio v-model="radio" :label="scope.$index" v-if="scope.$index!=0 && showSearch" class="leftRadio">&nbsp;</el-radio>
@@ -35,15 +35,10 @@
               :sortable="false"
               :prop="col.prop" 
               :min-width="col.width||100" 
-              :show-overflow-tooltip="col.showOverflowTooltip" 
+              :show-overflow-tooltip="true" 
               v-if="tableVisible[col.prop]">
               <template slot-scope="scope">
-                <div v-if="col.template">
-                <template>
-                  <div  v-html="col.template(scope.row,col)"></div>
-                </template>
-              </div>   
-                <div v-else-if="scope.$index == 0 && showSearch">
+                <div v-if="scope.$index == 0 && showSearch">
                   <el-form-item label="" :prop="col.prop" style="margin-bottom: 0;">
                     <el-date-picker
                       v-if="col.formType=='date'"
@@ -68,6 +63,26 @@
                           <span v-if="col.optionShowValue" style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
                         </el-option>
                     </el-select>
+
+                    <el-select v-else-if="col.formType=='selectF'"  
+                      v-model="queryParams[col.prop]"
+                      placeholder="请选择"  
+                      @keyup.enter.native="handleQuery"
+                      @change="selectchange($event,col.prop)"
+                      >
+                      <el-option-group
+                        v-for="group in col.options"
+                        :key="group.label"
+                        :label="group.label">
+                        <el-option
+                          v-for="item in group.options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                        </el-option>
+                      </el-option-group>
+                  </el-select>
+
                     <el-select 
                       v-else-if="col.formType=='selectTag'" 
                       clearable
@@ -111,7 +126,7 @@
                   </el-form-item>
                 </div>
                 <span v-else-if="col.formType=='date'">{{ parseTime(scope.row[col.prop], '{y}-{m}-{d}') }}</span>
-                <span v-else-if="col.formType=='select'||col.formType=='radio'" v-html="findName(col.options,scope.row[col.prop])"></span>
+                <span v-else-if="col.formType=='select'|| col.formType=='radio'" v-html="findName(col.options,scope.row[col.prop],col,scope.row)"></span>
                 <span v-else-if="col.formType=='selectTag'">
                   <el-tag class="selectTag" effect="light" :type="findClass(col.options,scope.row[col.prop])">
                     {{ findName(col.options,scope.row[col.prop]) }}
@@ -131,7 +146,14 @@
                   </el-radio-group>
                 </span>
                 <span v-else-if="col.formType=='selectTree'" v-html="findTreeName(col.options,scope.row[col.prop])"></span>
-                <span v-else v-html="scope.row[col.prop]" :class="{ 'active' : col.class  }"></span>
+                <div v-else-if="col.type == 'template'">
+                    <template>
+                      <div  v-html="col.template(scope.row,col)"></div>
+                    </template>
+                </div>
+                <span v-else-if="col.type == 'link'" v-html="scope.row[col.prop]" class="link" @click="linkClick(scope.row,col)"></span>
+                <span v-else v-html="scope.row[col.prop]" :class="{ 'active' : col.class }"></span>
+
               </template>
             </el-table-column>
           </template>
@@ -183,6 +205,10 @@ export default {
           type: Array
         },
         showPage:{
+          default: true,
+          type: Boolean
+        },
+        checkbox:{
           default: true,
           type: Boolean
         },
@@ -262,8 +288,8 @@ export default {
           tableData2: [],
           // 查询参数
           queryParams: {
-              pageNum: 1,
-              pageSize: 10,
+            pageNum: 1,
+            pageSize: 10,
           },
           tableVisible: {},
         }
@@ -305,14 +331,19 @@ export default {
         }
         return name
       },
-      findName(options,value){
+      findName(options,value,col,row){
         var name = ''
+        let text = ''
         for (let i = 0; i < options.length; i++) {
           if(options[i].value == value){
             name = options[i].label
           }
         }
-        return name || value
+        text = `<span>${name || value}</span>`
+        if(col.styleFn){
+          text = `<span style="${col.styleFn(row)}">${name || value}</span>`
+        }
+        return  text
       },
       findTreeName(options,value){
         var name = ''
@@ -367,6 +398,10 @@ export default {
       handleExport(){
         this.$emit('handleExport',this.queryParams)
       },
+      // 点击link 跳转
+      linkClick(row,item){
+        this.$emit('linkClick',row,item)
+      }
     },
 }
 
@@ -411,9 +446,18 @@ export default {
     display: none;
   }
 
+  ::v-deep .el-link.el-link--primary{
+    white-space: nowrap; /* 不换行 */
+    overflow: hidden; /* 超出部分隐藏 */
+    text-overflow: ellipsis; /* 显示省略号 */
+  }
   .active{
     color: #007bfe;
     cursor: pointer;
     text-decoration: underline;
+  }
+  .link{
+    color: #007bfe;
+    cursor: pointer;
   }
 </style>

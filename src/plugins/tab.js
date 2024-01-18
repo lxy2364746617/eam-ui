@@ -77,7 +77,6 @@ export default {
     return route.path === route.path
   },
   toLastView(visitedViews, view) {
-    console.log(visitedViews)
     const latestView = visitedViews.slice(-1)[0]
     if (latestView) {
       router.push(latestView.fullPath)
@@ -105,7 +104,6 @@ export default {
     }
     newObj = store.dispatch('tagsView/delView', obj);
     newObj.then(res=>{
-      console.log(res)
       if (this.isActive(obj)) {
         this.toLastView(res.visitedViews,obj)
       }

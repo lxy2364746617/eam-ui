@@ -5,13 +5,13 @@
         <div class="search">
           <div class="search_center">
             <el-input placeholder="知识搜索" v-model="search_text"></el-input>
-            <el-button type="primary" icon="el-icon-search" style="margin-left:20px">搜 索</el-button>
+            <el-button type="primary" icon="el-icon-search" style="margin-left:20px" @click="searchClick">搜 索</el-button>
           </div>
         </div>
         <div class="imgBox">
           <el-row :gutter="20">
-            <el-col :span="6" v-for="(item,index) in imgList" :key="index">
-              <div class="imgItem" :style="{ backgroundImage: `url(${item.imgUrl})` }">
+            <el-col :span="6" v-for="(item,index) in imgList" :key="index" >
+              <div class="imgItem" :style="{ backgroundImage: `url(${item.imgUrl})` }" @click="imgClick(item)">
                 <span class="imgText">{{item.text}}</span>
               </div>
             </el-col>
@@ -25,18 +25,18 @@
             <el-card class="box-card left" shadow="never">
               <div slot="header" class="clearfix">
                 <span class="clearfix_text">故障案例 <i class="clearfix_new">NEW</i></span>
-                <el-button style="float: right; padding: 3px 0" type="text">查看更多</el-button>
+                <el-button style="float: right; padding: 3px 0" type="text" @click="ClickMore('gzal')">查看更多</el-button>
               </div>
               <div class="content_body">
                 <el-table
                   :data="tableData.dataList"
                   height="178"
                   stripe
+                  @row-click="rowClick"
+                  :row-style="{'cursor': 'pointer'}"
                   :header-cell-style="{
                     backgroundColor:'#E8F3FF'
-                  }"
-                  border
-                  style="width: 100%">
+                  }">
                   <el-table-column v-for="(item,index) in tableData.headerList" :key="index" 
                   :prop="item.prop" 
                   :label="item.label" 
@@ -48,12 +48,12 @@
             <el-card class="box-card right" shadow="never">
               <div slot="header" class="clearfix">
                 <span class="clearfix_text">技术资料 <i class="clearfix_new">HOT</i></span>
-                <el-button style="float: right; padding: 3px 0" type="text">查看更多</el-button>
+                <el-button style="float: right; padding: 3px 0" type="text" @click="ClickMore('jszl')">查看更多</el-button>
               </div>
               <div class="content_body">
-                <div v-for="(item,index) in jszlData.list" :key="index" class="textItem">
-                  <span class="title">{{ item.title }}</span>
-                  <p>{{item.content}}</p>
+                <div v-for="(item,index) in jszlData.list" :key="index" class="textItem" @click=jszlClick(item)>
+                  <i class="title iconfont" :class="item.title"></i>
+                  <p class="text">{{item.content}}</p>
                   <span class="clickNo" :style="{color:item.color}">{{item.clickNo}}</span>
                 </div>
               </div>
@@ -63,7 +63,7 @@
             <el-card class="box-card" shadow="never">
               <div slot="header" class="clearfix">
                 <span>运维文档</span>
-                <el-button style="float: right; padding: 3px 0" type="text">查看更多</el-button>
+                <el-button style="float: right; padding: 3px 0" type="text" @click="ClickMore('yywd')">查看更多</el-button>
               </div>
               <div class="content_body content_body2">
                 <el-row :gutter="20" style="width:100%">
@@ -73,7 +73,7 @@
                       <p class="name">{{item.name}}</p>
                       <p class="type">{{item.type}}</p>
                       <el-divider></el-divider>
-                      <p class="icon_bottom"><span class="el-icon-right"></span></p>
+                      <p class="icon_bottom"><span class="el-icon-right" @click="ywwdClick(item)"></span></p>
                     </div>
                   </el-col>
                 </el-row>
@@ -86,15 +86,15 @@
           <el-card class="box-card" shadow="never">
             <div slot="header" class="clearfix">
               <span class="clearfix_text">规章制度 <i class="clearfix_new">NEW</i></span>
-              <el-button style="float: right; padding: 3px 0" type="text">查看更多</el-button>
+              <el-button style="float: right; padding: 3px 0" type="text" @click="ClickMore('gzzd')">查看更多</el-button>
             </div>
             <div class="content_body1">
-              <div v-for="(item,index) in gzzdData.list" :key="index" class="zd_text">
+              <div v-for="(item,index) in gzzdData.list" :key="index" class="zd_text" @click="gzzdClick(item)">
                 <p>{{item.title}}</p>
                 <el-divider></el-divider>
                 <p>{{item.content}}</p>
                 <el-divider></el-divider>
-                <p>{{item.date}}</p>
+                <p>实施时间：{{item.date}}</p>
               </div>
             </div>
           </el-card>
@@ -106,6 +106,7 @@
 </template>
 
 <script>
+import { getFaultList } from '@/api/knowledge'
   export default {
     name:'navigation',
     data(){
@@ -135,10 +136,10 @@
         },
         jszlData:{
           list:[
-            {title:'插图',content:'某文件解决技术方案.doc',clickNo:'点击NO.1',color:'#FC297D'},
-            {title:'插图插图',content:'某文件解决技术方案.doc',clickNo:'点击NO.2',color:'#FFB64F'},
-            {title:'插插图插图图',content:'某文件解决技术方案.doc',clickNo:'点击NO.3',color:'#007BFE'},
-            {title:'插插图插图插图图',content:'某文件解决技术方案.doc',clickNo:'点击NO.4'},
+            {title:'icon-JPGtubiao',content:'某文件解决技术方案.doc',clickNo:'点击NO.1',color:'#FC297D'},
+            {title:'icon-word1',content:'某文件解决技术方案.doc',clickNo:'点击NO.2',color:'#FFB64F'},
+            {title:'icon-PDFtubiao',content:'某文件解决技术方案.doc',clickNo:'点击NO.3',color:'#007BFE'},
+            {title:'icon-MPtubiao',content:'某文件解决技术方案.doc',clickNo:'点击NO.4'},
           ]
         },
         gzzdData:{
@@ -159,6 +160,122 @@
             {name:'文档1.doc',type:'故障案例'},
           ]
         }
+      }
+    },
+    mounted(){
+
+    },
+    methods:{
+      // 点击搜索按钮
+      searchClick(){
+        this.$router.push({name:'searchPage',query:{searchText:this.search_text}})
+      },
+      // 点击故障案例更多
+      ClickMore(type){
+        if(type == 'gzal'){
+          this.getGzglList()
+        }else if(type == 'jszl'){
+          this.getJszlList()
+        }else if(type == 'ywwd'){
+          this.getYwwdList()
+        }else if(type == 'gzzd'){
+          this.getGzzdList()
+        }
+        
+      },
+      // 获取故障案例列表
+      getGzglList(page = 1){
+        getFaultList({page:page,limit:'10'}).then(res=>{
+          console.log(res)
+          this.tableData.dataList = res.data
+        })
+      },
+      // 获取技术资料
+      getJszlList(page = 1){
+        getFaultList({page:page,limit:'10'}).then(res=>{
+          console.log(res)
+          this.jszlData.list = res.data.top5Statics
+          if(this.jszlData.list){
+            let colorArr = ['#FC297D','#FFB64F','#007BFE']
+            let iconObj = {jpg:'icon-JPGtubiao',word:'icon-word1',pdf:'icon-PDFtubiao',mp4:'icon-MPtubiao'}
+            this.jszlData.list.forEach((item,idx)=>{
+              if(colorArr[idx]){
+                item.color = colorArr[idx]
+              }
+              item.name.slice(item.name.indexof('.'),-1)
+              console.log(item.name)
+              if(item.name == '.jpg'){
+                item.icon = iconObj.jpg
+              }else if(item.name == '.doc'){
+                item.icon = iconObj.word
+              }else if(item.name == '.pdf'){
+                item.icon = iconObj.pdf
+              }else if(item.name == '.mp4'){
+                item.icon = iconObj.mp4
+              }
+            })
+          }
+        })
+      },
+      // 获取运维文档
+      getYwwdList(){
+        getFaultList({page:page,limit:'10'}).then(res=>{
+          console.log(res)
+          this.tableData.dataList = res.data
+        })
+      },
+      // 获取规章制度
+      getGzzdList(){
+        getFaultList({page:page,limit:'10'}).then(res=>{
+          console.log(res)
+          this.tableData.dataList = res.data
+        })
+      },
+      // 点击img触发
+      imgClick(row){
+        console.log(row.text)
+        switch(row.text){
+          case '故障案例':{
+            this.gzalClick()
+            break
+          }
+          case '技术资料':{
+            this.jszlClick()
+            break
+          } 
+          case '运维文档':{
+            this.ywwdClick()
+            break
+          } 
+          case '规章制度':{
+            this.gzzdClick()
+            break
+          } 
+        }
+      },
+      // 点击img故障案例跳转
+      gzalClick(){
+        this.$router.push({name:'faults'})
+      },
+      // 点击故障案例的每一行触发
+      rowClick(row){
+        console.log(row)
+        this.$router.push({name:'faults_details',query:{id:row.id}})
+      },
+      // 点击技术资料每一行
+      jszlClick(row = {}){
+        console.log(row)
+        this.$router.push({name:'technology',query:{code:row.code}})
+      },
+      // 点击运维文档每一行
+      ywwdClick(row){
+        console.log(row = {})
+        this.$router.push({name:'maintenance',query:{code:row.code}})
+      },
+      // 点击规章制度每一行
+      gzzdClick(row = {}){
+        console.log(row)
+        this.$router.push({name:'regulations',query:{code:row.code}})
       }
     }
   }
@@ -186,6 +303,7 @@
     // background-size: 130%;
     position: relative;
     border-radius: 10px;
+    cursor: pointer;
     .imgText{
       display: block;
       width: 100%;
@@ -215,22 +333,21 @@
     .textItem{
       display: flex;
       line-height: 35px;
-      justify-content: space-between;
+      cursor: pointer;
       .title{
-        width: 130px;
-        margin: 0;
-        white-space: nowrap; /* 不换行 */
-        overflow: hidden; /* 超出部分隐藏 */
-        text-overflow: ellipsis; /* 显示省略号 */
+        margin-right: 20px;
+        font-size: 20px;
       }
       .clickNo{
+        text-align: right;
         width: 100px;
         text-align: right;
         white-space: nowrap; /* 不换行 */
         overflow: hidden; /* 超出部分隐藏 */
         text-overflow: ellipsis; /* 显示省略号 */
       }
-      p{
+      .text{
+        width: 80%;
         padding: 0;
         margin: 0;
         white-space: nowrap; /* 不换行 */
@@ -246,7 +363,7 @@
 }
 .content_body1{
   padding: 10px 15px;
-  height: 561px;
+  height: 546px;
   overflow-y: auto;
 }
 .content_body2{
@@ -283,21 +400,22 @@
     margin: 0;
     line-height: 25px;
   }
-  .name{
-    font-size: 20px;
+  .type{
+    font-size: 13px;
   }
   .icon_top{
     color:#FFB64F;
     font-size: 23px;
-    font-weight: bold;
+    // font-weight: bold;
   }
   .icon_bottom{
     text-align: right;
     span{
       font-size: 23px;
       color:#FFB64F;
-      font-weight: bold;
       line-height: 30px;
+      // font-weight: bold;
+      cursor: pointer;
     }
   }
 }
@@ -307,6 +425,7 @@
   padding: 10PX;
   margin-bottom: 10PX;
   border-radius: 5px;
+  cursor: pointer;
   p{
     margin: 0;
     line-height: 30px;
@@ -328,9 +447,27 @@
 ::v-deep .el-card{
   margin-top: 10px;
 }
-
+// ::v-deep .el-table tr{
+//   cursor: pointer;
+// }
 
 .box-card1{
   margin-top: 0;
+}
+
+.icon-JPGtubiao {
+  color:#E986A5;
+}
+
+.icon-word1 {
+  color:#4070FF;
+}
+
+.icon-PDFtubiao {
+  color:#F05542;
+}
+
+.icon-MPtubiao{
+  color:#14A9DA;
 }
 </style>
