@@ -262,7 +262,7 @@
 </template>
 
 <script>
-import { listFaultcode, getFaultcode, delFaultcode, addFaultcode, updateFaultcode } from "@/api/maintain/faultcode";
+import { listFaultcode, getFaultcode, delFaultcode, addFaultcode, updateFaultcode } from "@/api/monitor/faultcode";
 
 export default {
   name: "Faultcode",

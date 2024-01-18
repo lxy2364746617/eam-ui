@@ -225,7 +225,7 @@
 </template>
 
 <script>
-import { listFaultLib, getFaultLib, delFaultLib, addFaultLib, updateFaultLib } from "@/api/maintain/faultlib";
+import { listFaultLib, getFaultLib, delFaultLib, addFaultLib, updateFaultLib } from "@/api/monitor/faultlib";
 
 export default {
   name: "FaultLib",
