@@ -100,8 +100,8 @@ export default {
           formType: "select",
           options: [],
         }, //(0 父级)
-        { label: "所属组织", prop: "affDeptId" },
-        { label: "当前使用组织", prop: "currDeptId" },
+        { label: "所属组织", prop: "affDeptId", width: 150 },
+        { label: "当前使用组织", prop: "currDeptId", width: 150 },
       ];
     },
   },

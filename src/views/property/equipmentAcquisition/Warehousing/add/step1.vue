@@ -102,7 +102,7 @@ export default {
     },
   },
   watch: {
-    "formData.categoryId": {
+    "formData.deviceType": {
       handler(val) {
         this.getTreeItem(val, this.categoryOptions);
         var b = this.treeItem;
@@ -171,7 +171,7 @@ export default {
         },
         {
           label: "设备类别",
-          prop: "categoryId",
+          prop: "deviceType",
           formType: "selectTree",
           options: this.categoryOptions,
           span: 8,
@@ -475,7 +475,6 @@ export default {
         });
       } else {
         addBASE(formData).then((response) => {
-          console.log("========================", 213213123);
           this.$modal.msgSuccess("保存成功");
           this.formData.deviceId = response.msg;
           if (typeof fn == "function") fn();

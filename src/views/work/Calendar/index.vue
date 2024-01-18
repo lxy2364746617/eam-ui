@@ -236,7 +236,6 @@ export default {
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
     let formattedDate = `${year}-${month < 10 ? "0" + month : month}`;
-    console.log(formattedDate);
     getCalendarMonth({ date: formattedDate }).then((res) => {
       if (res.code === 200) {
         this.dataList = res.data.map((item, index) => ({

@@ -13,7 +13,7 @@
       </div>
       <br />
       <el-row>
-        <el-col :span="22">
+        <el-col :span="24">
           <el-col :span="6" class="mb20"
             ><span class="show">工单编码:</span>{{ formData.orderCode }}</el-col
           >
@@ -57,17 +57,18 @@
             ><span class="show">用时:</span>{{ formData.duration }}</el-col
           >
           <el-col :span="6"
-            ><span class="show">保养人数:</span>{{ 123123213 }}</el-col
+            ><span class="show">保养人数:</span
+            >{{ equipmentList3.length }}</el-col
           >
         </el-col>
-        <el-col :span="2">
+        <!-- <el-col :span="2">
           <img
             :src="'/dev-api/profile/upload/2023/10/26/abc_20231026163120A074.jpg'"
             alt=""
             srcset=""
             style="width: 100%; vertical-align: top; height: 120px"
           />
-        </el-col>
+        </el-col> -->
       </el-row>
       <!-- 下方 -->
     </div>
@@ -193,7 +194,7 @@
       :wrapperClosable="false"
     >
       <div v-if="title == '保养人员'">
-        <JmTableNoPaging
+        <ContTable
           class="table"
           :tableData="equipmentList3"
           @getList="getList3"
@@ -229,10 +230,10 @@
               >删除</el-button
             >
           </template>
-        </JmTableNoPaging>
+        </ContTable>
 
         <div class="drawer-title" v-if="selectUser.id">保养人员工时</div>
-        <JmTableNoPaging
+        <ContTable
           v-if="selectUser.id"
           class="table"
           :tableData="equipmentList4"
@@ -276,7 +277,7 @@
               >删除</el-button
             >
           </template>
-        </JmTableNoPaging>
+        </ContTable>
       </div>
       <!-- 关联文档 -->
       <div v-else>
@@ -322,7 +323,7 @@
       :visible.sync="isDrawer"
       :wrapperClosable="false"
     >
-      <JmTableNoPaging
+      <ContTable
         class="table"
         :tableData="equipmentList2"
         @getList="getList2"
@@ -334,7 +335,7 @@
         :isShow="true"
         :showSearch="false"
       >
-      </JmTableNoPaging>
+      </ContTable>
 
       <div class="submit">
         <el-button type="primary" @click="save">提交</el-button>
@@ -372,7 +373,7 @@
   </Wrapper>
 </template>
 <script>
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import JmTable from "@/components/JmTable";
 import TitleForm from "@/components/TitleForm";
 import Wrapper from "@/components/wrapper";
@@ -399,7 +400,7 @@ import {
 export default {
   components: {
     Wrapper,
-    JmTableNoPaging,
+    ContTable,
     JmTable,
     TitleForm,
   },
@@ -843,11 +844,11 @@ export default {
           response.data = response.data.filter((user) =>
             this.equipmentList3.some((u) => u.userId !== user.userId)
           );
+          this.equipmentList2 = response.data;
+          this.total2 = response.total;
+          this.loading2 = false;
         }
         // getOrderExecutor({ workOrderCode: this.formData.orderCode }).then((response) => {
-        this.equipmentList2 = response.data;
-        this.total2 = response.total;
-        this.loading2 = false;
       });
     },
     // 抽屉

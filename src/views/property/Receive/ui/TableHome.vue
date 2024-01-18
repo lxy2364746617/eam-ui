@@ -34,7 +34,7 @@
           >详情</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -43,7 +43,7 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -51,7 +51,7 @@
           >删除</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -59,12 +59,20 @@
           >提交</el-button
         >
         <el-button
+          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
           v-hasPermi="['property:receive:edit']"
           >审批流</el-button
         >
+        <!-- <el-button
+          size="mini"
+          type="text"
+          @click="handlePrint(scope.row)"
+          v-hasPermi="['property:receive:print']"
+          >打印单据</el-button
+        > -->
       </template>
     </jm-table>
     <add-edit
@@ -127,11 +135,17 @@ export default {
         { label: "领用单号", prop: "neckNo", tableVisible: true, width: 200 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         { label: "业务日期", prop: "neckDate", tableVisible: true },
-        { label: "所属组织", prop: "affDeptName", tableVisible: true },
+        {
+          label: "所属组织",
+          prop: "affDeptName",
+          tableVisible: true,
+          width: 150,
+        },
         {
           label: "申请部门",
           prop: "applyDeptName",
           tableVisible: true,
+          width: 150,
         },
         {
           label: "申请部门负责人",
@@ -156,6 +170,21 @@ export default {
   },
   mounted() {},
   methods: {
+    handlePrint(row) {
+      // 打印单据跳转
+      this.$router.push({
+        path: "/property/print",
+        query: {
+          title: "设备领用/打印单据",
+          routeMethod: "post",
+          routeUrl: "/property/neck/printDocument",
+          id: row.id,
+          thead: ["名称", "型号", "单位", "数量", "安装地点", "备注"],
+        },
+      });
+    },
+    handleSet() {},
+
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",

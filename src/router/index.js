@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-Vue.use(Router)
+Vue.use(Router);
 
 /* Layout */
-import Layout from '@/layout'
+import Layout from "@/layout";
 
 /**
  * Note: 路由配置项
@@ -31,414 +31,431 @@ import Layout from '@/layout'
 // 公共路由
 export const constantRoutes = [
   {
-    path: '/redirect',
+    path: "/redirect",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: '/redirect/:path(.*)',
-        component: () => import('@/views/redirect')
-      }
-    ]
+        path: "/redirect/:path(.*)",
+        component: () => import("@/views/redirect"),
+      },
+    ],
   },
   {
-    path: '/login',
-    component: () => import('@/views/login'),
-    hidden: true
+    path: "/login",
+    component: () => import("@/views/login"),
+    hidden: true,
   },
   {
-    path: '/register',
-    component: () => import('@/views/register'),
-    hidden: true
+    path: "/register",
+    component: () => import("@/views/register"),
+    hidden: true,
   },
   {
-    path: '/404',
-    component: () => import('@/views/error/404'),
-    hidden: true
+    path: "/404",
+    component: () => import("@/views/error/404"),
+    hidden: true,
   },
   {
-    path: '/401',
-    component: () => import('@/views/error/401'),
-    hidden: true
+    path: "/401",
+    component: () => import("@/views/error/401"),
+    hidden: true,
   },
   {
-    path: '',
+    path: "",
     component: Layout,
-    redirect: 'index',
+    redirect: "index",
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/index'),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
-      }
-    ]
+        path: "index",
+        component: () => import("@/views/index"),
+        name: "Index",
+        meta: { title: "首页", icon: "dashboard", affix: true },
+      },
+    ],
   },
   {
-    path: '/user',
+    path: "/user",
     component: Layout,
     hidden: true,
-    redirect: 'noredirect',
+    redirect: "noredirect",
     children: [
       {
-        path: 'profile',
-        component: () => import('@/views/system/user/profile/index'),
-        name: 'Profile',
-        meta: { title: '个人中心', icon: 'user' }
-      }
-    ]
+        path: "profile",
+        component: () => import("@/views/system/user/profile/index"),
+        name: "Profile",
+        meta: { title: "个人中心", icon: "user" },
+      },
+    ],
   },
   {
-    path: '/flowable',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: 'definition/model/',
-        component: () => import('@/views/flowable/definition/model'),
-        name: 'Model',
-        meta: { title: '流程设计', icon: '' }
-      },
-      {
-        path: 'task/finished/detail/index',
-        component: () => import('@/views/flowable/task/finished/detail/index'),
-        name: 'FinishedRecord',
-        meta: { title: '流程详情', icon: '' }
-      },
-      {
-        path: 'task/myProcess/detail/index',
-        component: () => import('@/views/flowable/task/myProcess/detail/index'),
-        name: 'MyProcessRecord',
-        meta: { title: '流程详情', icon: '' }
-      },
-      {
-        path: 'task/myProcess/send/index',
-        component: () => import('@/views/flowable/task/myProcess/send/index'),
-        name: 'SendRecord',
-        meta: { title: '流程发起', icon: '' }
-      },
-      {
-        path: 'task/todo/detail/index',
-        component: () => import('@/views/flowable/task/todo/detail/index'),
-        name: 'TodoRecord',
-        meta: { title: '流程处理', icon: '' }
-      }
-    ]
-  },
-  {
-    path: '/tool',
+    path: "/flowable",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: 'build/index',
-        component: () => import('@/views/tool/build/index'),
-        name: 'FormBuild',
-        meta: { title: '表单配置', icon: '' }
-      }
-    ]
+        path: "definition/model/",
+        component: () => import("@/views/flowable/definition/model"),
+        name: "Model",
+        meta: { title: "流程设计", icon: "" },
+      },
+      {
+        path: "task/finished/detail/index",
+        component: () => import("@/views/flowable/task/finished/detail/index"),
+        name: "FinishedRecord",
+        meta: { title: "流程详情", icon: "" },
+      },
+      {
+        path: "task/myProcess/detail/index",
+        component: () => import("@/views/flowable/task/myProcess/detail/index"),
+        name: "MyProcessRecord",
+        meta: { title: "流程详情", icon: "" },
+      },
+      {
+        path: "task/myProcess/send/index",
+        component: () => import("@/views/flowable/task/myProcess/send/index"),
+        name: "SendRecord",
+        meta: { title: "流程发起", icon: "" },
+      },
+      {
+        path: "task/todo/detail/index",
+        component: () => import("@/views/flowable/task/todo/detail/index"),
+        name: "TodoRecord",
+        meta: { title: "流程处理", icon: "" },
+      },
+    ],
+  },
+  {
+    path: "/tool",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "build/index",
+        component: () => import("@/views/tool/build/index"),
+        name: "FormBuild",
+        meta: { title: "表单配置", icon: "" },
+      },
+    ],
   },
   ///////////////////////////////////////////////////////////
   {
-    path: '/device/big',
+    path: "/device/big",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: 'lbase/add',
-        component: () => import('@/views/equipment/big/lbase/add.vue'),
-        name: 'bigAdd',
+        path: "lbase/add",
+        component: () => import("@/views/equipment/big/lbase/add.vue"),
+        name: "bigAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '供电设备/编辑' : '供电设备/新增'
-          to.query.d == 'true' ? to.meta.title = '供电设备/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "供电设备/编辑" : "供电设备/新增";
+          to.query.d == "true" ? (to.meta.title = "供电设备/查看") : "";
+          next();
         },
-        meta: { title: '供电设备', icon: '' }
+        meta: { title: "供电设备", icon: "" },
       },
       {
-        path: 'compressor/add',
-        component: () => import('@/views/equipment/big/compressor/add'),
-        name: 'bigCompressor',
+        path: "compressor/add",
+        component: () => import("@/views/equipment/big/compressor/add"),
+        name: "bigCompressor",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '空压机/编辑' : '空压机/新增'
-          to.query.d == 'true' ? to.meta.title = '空压机/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "空压机/编辑" : "空压机/新增";
+          to.query.d == "true" ? (to.meta.title = "空压机/查看") : "";
+          next();
         },
-        meta: { title: '空压机', icon: '' }
+        meta: { title: "空压机", icon: "" },
       },
       {
-        path: 'elevator/add',
-        component: () => import('@/views/equipment/big/elevator/add'),
-        name: 'bigElevator',
+        path: "elevator/add",
+        component: () => import("@/views/equipment/big/elevator/add"),
+        name: "bigElevator",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '提升机/编辑' : '提升机/新增'
-          to.query.d == 'true' ? to.meta.title = '提升机/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "提升机/编辑" : "提升机/新增";
+          to.query.d == "true" ? (to.meta.title = "提升机/查看") : "";
+          next();
         },
-        meta: { title: '提升机', icon: '' }
+        meta: { title: "提升机", icon: "" },
       },
       {
-        path: 'gas/add',
-        component: () => import('@/views/equipment/big/gas/add'),
-        name: 'bigGas',
+        path: "gas/add",
+        component: () => import("@/views/equipment/big/gas/add"),
+        name: "bigGas",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '瓦斯抽放泵/编辑' : '瓦斯抽放泵/新增'
-          to.query.d == 'true' ? to.meta.title = '瓦斯抽放泵/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "瓦斯抽放泵/编辑" : "瓦斯抽放泵/新增";
+          to.query.d == "true" ? (to.meta.title = "瓦斯抽放泵/查看") : "";
+          next();
         },
-        meta: { title: '瓦斯抽放泵', icon: '' }
+        meta: { title: "瓦斯抽放泵", icon: "" },
       },
       {
-        path: 'gather/add',
-        component: () => import('@/views/equipment/big/gather/add'),
-        name: 'bigGather',
+        path: "gather/add",
+        component: () => import("@/views/equipment/big/gather/add"),
+        name: "bigGather",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '采区排水/加压泵房/编辑' : '采区排水/加压泵房/新增'
-          to.query.d == 'true' ? to.meta.title = '采区排水/加压泵房/查看' : ''
-          next()
+          to.meta.title = to.query.l
+            ? "采区排水/加压泵房/编辑"
+            : "采区排水/加压泵房/新增";
+          to.query.d == "true"
+            ? (to.meta.title = "采区排水/加压泵房/查看")
+            : "";
+          next();
         },
-        meta: { title: '采区排水/加压泵房', icon: '' }
+        meta: { title: "采区排水/加压泵房", icon: "" },
       },
       {
-        path: 'nitrogen/add',
-        component: () => import('@/views/equipment/big/nitrogen/add'),
-        name: 'bigNitrogen',
+        path: "nitrogen/add",
+        component: () => import("@/views/equipment/big/nitrogen/add"),
+        name: "bigNitrogen",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '制氨机/编辑' : '制氨机/新增'
-          to.query.d == 'true' ? to.meta.title = '制氨机/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "制氨机/编辑" : "制氨机/新增";
+          to.query.d == "true" ? (to.meta.title = "制氨机/查看") : "";
+          next();
         },
-        meta: { title: '制氨机', icon: '' }
+        meta: { title: "制氨机", icon: "" },
       },
       {
-        path: 'passengers/add',
-        component: () => import('@/views/equipment/big/passengers/add'),
-        name: 'bigPassengers',
+        path: "passengers/add",
+        component: () => import("@/views/equipment/big/passengers/add"),
+        name: "bigPassengers",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '架空乘人装置/编辑' : '架空乘人装置/新增'
-          to.query.d == 'true' ? to.meta.title = '架空乘人装置/查看' : ''
-          next()
+          to.meta.title = to.query.l
+            ? "架空乘人装置/编辑"
+            : "架空乘人装置/新增";
+          to.query.d == "true" ? (to.meta.title = "架空乘人装置/查看") : "";
+          next();
         },
-        meta: { title: '架空乘人装置', icon: '' }
+        meta: { title: "架空乘人装置", icon: "" },
       },
       {
-        path: 'strong/add',
-        component: () => import('@/views/equipment/big/strong/add'),
-        name: 'bigStrong',
+        path: "strong/add",
+        component: () => import("@/views/equipment/big/strong/add"),
+        name: "bigStrong",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '强排泵/编辑' : '强排泵/新增'
-          to.query.d == 'true' ? to.meta.title = '强排泵/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "强排泵/编辑" : "强排泵/新增";
+          to.query.d == "true" ? (to.meta.title = "强排泵/查看") : "";
+          next();
         },
-        meta: { title: '强排泵', icon: '' }
+        meta: { title: "强排泵", icon: "" },
       },
       {
-        path: 'substation/add',
-        component: () => import('@/views/equipment/big/substation/add'),
-        name: 'bigSubstation',
+        path: "substation/add",
+        component: () => import("@/views/equipment/big/substation/add"),
+        name: "bigSubstation",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '井下变电所/编辑' : '井下变电所/新增'
-          to.query.d == 'true' ? to.meta.title = '井下变电所/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "井下变电所/编辑" : "井下变电所/新增";
+          to.query.d == "true" ? (to.meta.title = "井下变电所/查看") : "";
+          next();
         },
-        meta: { title: '井下变电所', icon: '' }
+        meta: { title: "井下变电所", icon: "" },
       },
       {
-        path: 'transport/add',
-        component: () => import('@/views/equipment/big/transport/add'),
-        name: 'bigTransport',
+        path: "transport/add",
+        component: () => import("@/views/equipment/big/transport/add"),
+        name: "bigTransport",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '主要辅助运/编辑' : '主要辅助运/新增'
-          to.query.d == 'true' ? to.meta.title = '主要辅助运/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "主要辅助运/编辑" : "主要辅助运/新增";
+          to.query.d == "true" ? (to.meta.title = "主要辅助运/查看") : "";
+          next();
         },
-        meta: { title: '主要辅助运', icon: '' }
+        meta: { title: "主要辅助运", icon: "" },
       },
       {
-        path: 'ventilator/add',
-        component: () => import('@/views/equipment/big/ventilator/add'),
-        name: 'bigVentilator',
+        path: "ventilator/add",
+        component: () => import("@/views/equipment/big/ventilator/add"),
+        name: "bigVentilator",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '主通风机/编辑' : '主通风机/新增'
-          to.query.d == 'true' ? to.meta.title = '主通风机/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "主通风机/编辑" : "主通风机/新增";
+          to.query.d == "true" ? (to.meta.title = "主通风机/查看") : "";
+          next();
         },
-        meta: { title: '主通风机', icon: '' }
+        meta: { title: "主通风机", icon: "" },
       },
       {
-        path: 'water/add',
-        component: () => import('@/views/equipment/big/water/add'),
-        name: 'bigWater',
+        path: "water/add",
+        component: () => import("@/views/equipment/big/water/add"),
+        name: "bigWater",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '水泵房/编辑' : '水泵房/新增'
-          to.query.d == 'true' ? to.meta.title = '水泵房/查看' : ''
-          next()
+          to.meta.title = to.query.l ? "水泵房/编辑" : "水泵房/新增";
+          to.query.d == "true" ? (to.meta.title = "水泵房/查看") : "";
+          next();
         },
-        meta: { title: '水泵房', icon: '' }
+        meta: { title: "水泵房", icon: "" },
       },
       {
-        path: 'well/add',
-        component: () => import('@/views/equipment/big/well/add'),
-        name: 'bigWell',
+        path: "well/add",
+        component: () => import("@/views/equipment/big/well/add"),
+        name: "bigWell",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? '主井集中皮带/编辑' : '主井集中皮带/新增'
-          to.query.d == 'true' ? to.meta.title = '主井集中皮带/查看' : ''
-          next()
+          to.meta.title = to.query.l
+            ? "主井集中皮带/编辑"
+            : "主井集中皮带/新增";
+          to.query.d == "true" ? (to.meta.title = "主井集中皮带/查看") : "";
+          next();
         },
-        meta: { title: '主井集中皮带', icon: '' }
+        meta: { title: "主井集中皮带", icon: "" },
       },
-    ]
+    ],
   },
   {
-    path: '/device/book',
+    path: "/device/book",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: 'add',
-        component: () => import('@/views/device/book/add/index.vue'),
-        name: 'bookAdd',
+        path: "add",
+        component: () => import("@/views/device/book/add/index.vue"),
+        name: "bookAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '设备档案/编辑' : '设备档案/新增'
-          to.query.d == 'true' ? to.meta.title = '设备档案/查看' : ''
-          next()
+          to.meta.title = to.query.i ? "设备档案/编辑" : "设备档案/新增";
+          to.query.d == "true" ? (to.meta.title = "设备档案/查看") : "";
+          next();
         },
-        meta: { title: '设备档案', icon: '' }
+        meta: { title: "设备档案", icon: "" },
       },
       {
-        path: 'details',
-        component: () => import('@/views/device/book/details/index.vue'),
-        name: 'bookDetails',
+        path: "details",
+        component: () => import("@/views/device/book/details/index.vue"),
+        name: "bookDetails",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '设备档案/编辑' : '设备档案/新增'
-          to.query.d == 'true' ? to.meta.title = '设备档案/查看' : ''
-          next()
+          to.meta.title = to.query.i ? "设备档案/编辑" : "设备档案/新增";
+          to.query.d == "true" ? (to.meta.title = "设备档案/查看") : "";
+          next();
         },
-        meta: { title: '设备档案', icon: '' }
+        meta: { title: "设备档案", icon: "" },
       },
-    ]
+    ],
   },
   {
-    path: '/maintain/patrol',
+    path: "/maintain/patrol",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: 'p_standard/add',
-        component: () => import('@/views/maintain/standard/add.vue'),
-        name: 'PStandardAdd',
+        path: "p_standard/add",
+        component: () => import("@/views/maintain/standard/add.vue"),
+        name: "PStandardAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '巡点检标准管理/编辑' : '巡点检标准管理/新增'
-          to.query.d == 'true' ? to.meta.title = '巡点检标准管理 /查看' : ''
-          next()
+          to.meta.title = to.query.i
+            ? "巡点检标准管理/编辑"
+            : "巡点检标准管理/新增";
+          to.query.d == "true" ? (to.meta.title = "巡点检标准管理 /查看") : "";
+          next();
         },
-        meta: { title: '巡点检标准管理', icon: '' }
+        meta: { title: "巡点检标准管理", icon: "" },
       },
       {
-        path: 'p_standard/copyTo',
-        component: () => import('@/views/maintain/standard/copyTo.vue'),
-        name: 'PStandardCopy',
-        meta: { title: '复制巡点检标准管理', icon: '' }
+        path: "p_standard/copyTo",
+        component: () => import("@/views/maintain/standard/copyTo.vue"),
+        name: "PStandardCopy",
+        meta: { title: "复制巡点检标准管理", icon: "" },
       },
       {
-        path: 'pline/add',
-        component: () => import('@/views/maintain/pline/add.vue'),
-        name: 'PlineAdd',
+        path: "pline/add",
+        component: () => import("@/views/maintain/pline/add.vue"),
+        name: "PlineAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '巡点检路线/编辑' : '巡点检路线/新增'
-          to.query.d == 'true' ? to.meta.title = '巡点检路线/查看' : ''
-          next()
+          to.meta.title = to.query.i ? "巡点检路线/编辑" : "巡点检路线/新增";
+          to.query.d == "true" ? (to.meta.title = "巡点检路线/查看") : "";
+          next();
         },
-        meta: { title: '巡点检路线管理', icon: '' }
+        meta: { title: "巡点检路线管理", icon: "" },
       },
       {
-        path: 'pplan/add',
-        component: () => import('@/views/maintain/pplan/add.vue'),
-        name: 'PplanAdd',
+        path: "pplan/add",
+        component: () => import("@/views/maintain/pplan/add.vue"),
+        name: "PplanAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '巡点检计划/编辑' : '巡点检计划/新增'
-          to.query.d == 'true' ? to.meta.title = '巡点检计划/查看' : ''
-          next()
+          to.meta.title = to.query.i ? "巡点检计划/编辑" : "巡点检计划/新增";
+          to.query.d == "true" ? (to.meta.title = "巡点检计划/查看") : "";
+          next();
         },
-        meta: { title: '巡点检计划管理', icon: '' }
+        meta: { title: "巡点检计划管理", icon: "" },
       },
-    ]
+    ],
   },
   {
-    path: '/maintain',
+    path: "/maintain",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: 'mstandard/add',
-        component: () => import('@/views/maintain/mstandard/add.vue'),
-        name: 'MstandardAdd',
+        path: "mstandard/add",
+        component: () => import("@/views/maintain/mstandard/add.vue"),
+        name: "MstandardAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '保养检修标准管理/编辑' : '保养检修标准管理/新增'
-          to.query.d == 'true' ? to.meta.title = '保养检修标准管理/查看' : ''
-          next()
+          to.meta.title = to.query.i
+            ? "保养检修标准管理/编辑"
+            : "保养检修标准管理/新增";
+          to.query.d == "true" ? (to.meta.title = "保养检修标准管理/查看") : "";
+          next();
         },
-        meta: { title: '保养检修标准管理', icon: '' }
+        meta: { title: "保养检修标准管理", icon: "" },
       },
       {
-        path: 'mstandard/copyTo',
-        component: () => import('@/views/maintain/mstandard/copyTo.vue'),
-        name: 'PStandardCopy',
-        meta: { title: '复制保养检修标准管理', icon: '' }
+        path: "mstandard/copyTo",
+        component: () => import("@/views/maintain/mstandard/copyTo.vue"),
+        name: "PStandardCopy",
+        meta: { title: "复制保养检修标准管理", icon: "" },
       },
       {
-        path: 'mline/add',
-        component: () => import('@/views/maintain/mline/add.vue'),
-        name: 'MlineAdd',
+        path: "mline/add",
+        component: () => import("@/views/maintain/mline/add.vue"),
+        name: "MlineAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '保养检修路线管理/编辑' : '保养检修路线管理/新增'
-          to.query.d == 'true' ? to.meta.title = '保养检修路线管理/查看' : ''
-          next()
+          to.meta.title = to.query.i
+            ? "保养检修路线管理/编辑"
+            : "保养检修路线管理/新增";
+          to.query.d == "true" ? (to.meta.title = "保养检修路线管理/查看") : "";
+          next();
         },
-        meta: { title: '保养检修路线管理', icon: '' }
+        meta: { title: "保养检修路线管理", icon: "" },
       },
       {
-        path: 'mplan/add',
-        component: () => import('@/views/maintain/mplan/add.vue'),
-        name: 'MlineAdd',
+        path: "mplan/add",
+        component: () => import("@/views/maintain/mplan/add.vue"),
+        name: "MlineAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '保养检修计划管理/编辑' : '保养检修计划管理/新增'
-          to.query.d == 'true' ? to.meta.title = '保养检修计划管理/查看' : ''
-          next()
+          to.meta.title = to.query.i
+            ? "保养检修计划管理/编辑"
+            : "保养检修计划管理/新增";
+          to.query.d == "true" ? (to.meta.title = "保养检修计划管理/查看") : "";
+          next();
         },
-        meta: { title: '保养检修计划管理', icon: '' }
+        meta: { title: "保养检修计划管理", icon: "" },
       },
       {
-        path: 'rplan/add',
-        component: () => import('@/views/maintain/rplan/add.vue'),
-        name: 'MlineAdd',
+        path: "rplan/add",
+        component: () => import("@/views/maintain/rplan/add.vue"),
+        name: "MlineAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '定期检验计划管理/编辑' : '定期检验计划管理/新增'
-          to.query.d == 'true' ? to.meta.title = '定期检验计划管理/查看' : ''
-          next()
+          to.meta.title = to.query.i
+            ? "定期检验计划管理/编辑"
+            : "定期检验计划管理/新增";
+          to.query.d == "true" ? (to.meta.title = "定期检验计划管理/查看") : "";
+          next();
         },
-        meta: { title: '定期检验计划管理', icon: '' }
+        meta: { title: "定期检验计划管理", icon: "" },
       },
-      
-    ]
+    ],
   },
   {
-    path: '/system',
+    path: "/system",
     component: Layout,
     hidden: true,
-    children:[
+    children: [
       {
-        path: 'group/add',
-        component: () => import('@/views/system/group/add.vue'),
-        name: 'GroupAdd',
+        path: "group/add",
+        component: () => import("@/views/system/group/add.vue"),
+        name: "GroupAdd",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? '班组管理/编辑' : '班组管理/新增'
-          to.query.d == 'true' ? to.meta.title = '班组管理/查看' : ''
-          next()
+          to.meta.title = to.query.i ? "班组管理/编辑" : "班组管理/新增";
+          to.query.d == "true" ? (to.meta.title = "班组管理/查看") : "";
+          next();
         },
-        meta: { title: '班组管理', icon: '' }
+        meta: { title: "班组管理", icon: "" },
       },
-    ]
+    ],
   },
   // ! 年度
   {
@@ -499,6 +516,20 @@ export const constantRoutes = [
           ),
         name: "TemporarilyDetails",
         meta: { title: "购置临时计划/详情", icon: "" },
+      },
+    ],
+  },
+  {
+    path: "/property",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/purchase/warehousingAdd",
+        component: () =>
+          import("@/views/property/equipmentAcquisition/Warehousing/add/index"),
+        name: "WarehousingAdd",
+        meta: { title: "设备入库/操作", icon: "" },
       },
     ],
   },
@@ -633,7 +664,25 @@ export const constantRoutes = [
       },
     ],
   },
-
+  // ! 打印单据
+  {
+    path: "/print",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/property/print",
+        component: () => import("@/views/property/PrintReceipt/index"),
+        name: "Print",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = to.query.title;
+          next();
+        },
+        meta: { title: "打印单据", icon: "" },
+      },
+    ],
+  },
+  // ! 工单模块
   {
     path: "/work",
     component: Layout,
@@ -725,144 +774,187 @@ export const constantRoutes = [
   },
   // 知识库
   {
-    path: "/knowledge",
+  path: "/knowledge",
+  component: Layout,
+  hidden: true,
+  children: [
+    {
+      path: "/knowledge/navigation",
+      component: () => import("@/views/knowledge/navigation/index"),
+      name: "navigation",
+      meta: { title: "知识导航", icon: "" },
+    },
+    {
+      path: "/knowledge/navigation/searchPage",
+      component: () => import("@/views/knowledge/navigation/searchPage"),
+      name: "searchPage",
+      meta: { title: "搜索页", icon: "" },
+    },
+    {
+      path: "/knowledge/faults",
+      component: () => import("@/views/knowledge/faults/index"),
+      name: "faults",
+      meta: { title: "故障案例库", icon: "" },
+    },
+    {
+      path: "/knowledge/faults_details",
+      component: () => import("@/views/knowledge/faults/details"),
+      name: "faults_details",
+      meta: { title: "故障案例库-详情页", icon: "" },
+    },
+    {
+      path: "/knowledge/technology",
+      component: () => import("@/views/knowledge/technology/index"),
+      name: "technology",
+      meta: { title: "技术资料库", icon: "" },
+    },
+    {
+      path: "/knowledge/maintenance",
+      component: () => import("@/views/knowledge/maintenance/index"),
+      name: "maintenance",
+      meta: { title: "运维文档", icon: "" },
+    },
+    {
+      path: "/knowledge/regulations",
+      component: () => import("@/views/knowledge/regulations/index"),
+      name: "regulations",
+      meta: { title: "规章制度", icon: "" },
+    },
+  ],
+  },
+  // ! 备件需求
+  {
+    path: "/sparepart",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: "/knowledge/navigation",
-        component: () => import("@/views/knowledge/navigation/index"),
-        name: "navigation",
-        meta: { title: "知识导航", icon: "" },
-      },
-      {
-        path: "/knowledge/navigation/searchPage",
-        component: () => import("@/views/knowledge/navigation/searchPage"),
-        name: "searchPage",
-        meta: { title: "搜索页", icon: "" },
-      },
-      {
-        path: "/knowledge/faults",
-        component: () => import("@/views/knowledge/faults/index"),
-        name: "faults",
-        meta: { title: "故障案例库", icon: "" },
-      },
-      {
-        path: "/knowledge/faults_details",
-        component: () => import("@/views/knowledge/faults/details"),
-        name: "faults_details",
-        meta: { title: "故障案例库-详情页", icon: "" },
-      },
-      {
-        path: "/knowledge/technology",
-        component: () => import("@/views/knowledge/technology/index"),
-        name: "technology",
-        meta: { title: "技术资料库", icon: "" },
-      },
-      {
-        path: "/knowledge/maintenance",
-        component: () => import("@/views/knowledge/maintenance/index"),
-        name: "maintenance",
-        meta: { title: "运维文档", icon: "" },
-      },
-      {
-        path: "/knowledge/regulations",
-        component: () => import("@/views/knowledge/regulations/index"),
-        name: "regulations",
-        meta: { title: "规章制度", icon: "" },
+        path: "/sparepart/requirementControls",
+        component: () => import("@/views/sparepart/requirement/ui/index.vue"),
+        name: "requirementControls",
+        beforeEnter: (to, from, next) => {
+          console.log("========================", to, from, next);
+          to.meta.title = Number(to.query.isShowCard)
+            ? "备件需求/详情"
+            : "备件需求/新增";
+          to.query.d == "true" ? (to.meta.title = "备件需求/编辑") : "";
+          next();
+        },
+        meta: { title: "备件需求", icon: "" },
       },
     ],
-  }
-]
-
+  },
+  // ! 备件领用
+  {
+    path: "/sparepart",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/sparepart/spareReceiveControls",
+        component: () => import("@/views/sparepart/spareReceive/ui/index.vue"),
+        name: "spareReceiveControls",
+        beforeEnter: (to, from, next) => {
+          console.log("========================", to, from, next);
+          to.meta.title = Number(to.query.isShowCard)
+            ? "备件领用/详情"
+            : "备件领用/新增";
+          to.query.d == "true" ? (to.meta.title = "备件领用/编辑") : "";
+          next();
+        },
+        meta: { title: "备件领用", icon: "" },
+      },
+    ],
+  },
+];
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
   {
-    path: '/system/user-auth',
+    path: "/system/user-auth",
     component: Layout,
     hidden: true,
-    permissions: ['system:user:edit'],
+    permissions: ["system:user:edit"],
     children: [
       {
-        path: 'role/:userId(\\d+)',
-        component: () => import('@/views/system/user/authRole'),
-        name: 'AuthRole',
-        meta: { title: '分配角色', activeMenu: '/system/user' }
-      }
-    ]
+        path: "role/:userId(\\d+)",
+        component: () => import("@/views/system/user/authRole"),
+        name: "AuthRole",
+        meta: { title: "分配角色", activeMenu: "/system/user" },
+      },
+    ],
   },
   {
-    path: '/system/role-auth',
+    path: "/system/role-auth",
     component: Layout,
     hidden: true,
-    permissions: ['system:role:edit'],
+    permissions: ["system:role:edit"],
     children: [
       {
-        path: 'user/:roleId(\\d+)',
-        component: () => import('@/views/system/role/authUser'),
-        name: 'AuthUser',
-        meta: { title: '分配用户', activeMenu: '/system/role' }
-      }
-    ]
+        path: "user/:roleId(\\d+)",
+        component: () => import("@/views/system/role/authUser"),
+        name: "AuthUser",
+        meta: { title: "分配用户", activeMenu: "/system/role" },
+      },
+    ],
   },
   {
-    path: '/system/dict-data',
+    path: "/system/dict-data",
     component: Layout,
     hidden: true,
-    permissions: ['system:dict:list'],
+    permissions: ["system:dict:list"],
     children: [
       {
-        path: 'index/:dictId(\\d+)',
-        component: () => import('@/views/system/dict/data'),
-        name: 'Data',
-        meta: { title: '字典数据', activeMenu: '/system/dict' }
-      }
-    ]
+        path: "index/:dictId(\\d+)",
+        component: () => import("@/views/system/dict/data"),
+        name: "Data",
+        meta: { title: "字典数据", activeMenu: "/system/dict" },
+      },
+    ],
   },
   {
-    path: '/monitor/job-log',
+    path: "/monitor/job-log",
     component: Layout,
     hidden: true,
-    permissions: ['monitor:job:list'],
+    permissions: ["monitor:job:list"],
     children: [
       {
-        path: 'index/:jobId(\\d+)',
-        component: () => import('@/views/monitor/job/log'),
-        name: 'JobLog',
-        meta: { title: '调度日志', activeMenu: '/monitor/job' }
-      }
-    ]
+        path: "index/:jobId(\\d+)",
+        component: () => import("@/views/monitor/job/log"),
+        name: "JobLog",
+        meta: { title: "调度日志", activeMenu: "/monitor/job" },
+      },
+    ],
   },
   {
-    path: '/tool/gen-edit',
+    path: "/tool/gen-edit",
     component: Layout,
     hidden: true,
-    permissions: ['tool:gen:edit'],
+    permissions: ["tool:gen:edit"],
     children: [
       {
-        path: 'index/:tableId(\\d+)',
-        component: () => import('@/views/tool/gen/editTable'),
-        name: 'GenEdit',
-        meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
-      }
-    ]
-  }
-]
+        path: "index/:tableId(\\d+)",
+        component: () => import("@/views/tool/gen/editTable"),
+        name: "GenEdit",
+        meta: { title: "修改生成配置", activeMenu: "/tool/gen" },
+      },
+    ],
+  },
+];
 
 // 防止连续点击多次路由报错
 let routerPush = Router.prototype.push;
 let routerReplace = Router.prototype.replace;
 // push
 Router.prototype.push = function push(location) {
-  return routerPush.call(this, location).catch(err => err)
-}
+  return routerPush.call(this, location).catch((err) => err);
+};
 // replace
 Router.prototype.replace = function push(location) {
-  return routerReplace.call(this, location).catch(err => err)
-}
+  return routerReplace.call(this, location).catch((err) => err);
+};
 
 export default new Router({
-  mode: 'history', // 去掉url中的#
+  mode: "history", // 去掉url中的#
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+  routes: constantRoutes,
+});

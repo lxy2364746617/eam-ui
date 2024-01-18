@@ -12,7 +12,7 @@
     </div>
 
     <div>
-      <JmTableNoPaging
+      <ContTable
         :tableData="standardList"
         @getList="getList"
         @handleSelectionChange="handleSelectionChange"
@@ -42,7 +42,7 @@
             v-hasPermi="['maintain:standard:remove']"
             >删除</el-button
           >
-        </template></JmTableNoPaging
+        </template></ContTable
       >
     </div>
 
@@ -152,7 +152,7 @@
       title="选择执行人员"
       :visible.sync="isDrawer"
     >
-      <JmTableNoPaging
+      <ContTable2
         class="mr20 ml20"
         :tableData="equipmentList2"
         @getList="getList2"
@@ -167,7 +167,7 @@
         :rightToolbarShow="false"
         :showSearch="false"
       >
-      </JmTableNoPaging>
+      </ContTable2>
 
       <div class="submit">
         <el-button type="primary" @click="save">保存</el-button>
@@ -178,12 +178,13 @@
 </template>
 <script>
 import TitleForm from "@/components/TitleForm";
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable/index3";
+import ContTable2 from "@/components/ContTable";
 import { listDept } from "@/api/system/dept";
 import { getExecutorList } from "@/api/work/schedule";
 import request from "@/utils/request";
 export default {
-  components: { TitleForm, JmTableNoPaging },
+  components: { TitleForm, ContTable, ContTable2 },
   props: {
     disabled: {
       default: false,
@@ -520,15 +521,21 @@ export default {
 }
 
 .title {
-  padding: 0 20px;
-  width: 100%;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
+  background-color: #ebf4fc;
+  color: #555;
   font-weight: 700;
-  background: rgba(0, 116, 217, 0.08);
+  text-align: left;
+  font-size: 14px;
+  height: 30px;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
   justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0 18px;
 }
 .submit {
   display: flex;

@@ -2,7 +2,7 @@
   <div class="box">
     <slot></slot>
 
-    <JmTableNoPaging
+    <ContTable
       :tableData="equipmentList"
       @getList="getList"
       @handleSelectionChange="handleSelectionChange"
@@ -66,7 +66,7 @@
           >删除</el-button
         >
       </template>
-    </JmTableNoPaging>
+    </ContTable>
 
     <!-- 选择设备 -->
     <el-dialog
@@ -131,7 +131,7 @@
 <script>
 import { getProjectList, downDetailLoad } from "@/api/property/positionchange";
 import Treeselect from "@riophae/vue-treeselect";
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import JmTable from "@/components/JmTable";
 import {
   setStore,
@@ -147,7 +147,7 @@ import { listBASE, countBASE } from "@/api/equipment/BASE";
 import { formatDate } from "../../../../utils";
 export default {
   components: {
-    JmTableNoPaging,
+    ContTable,
     Treeselect,
     JmTable,
   },
@@ -311,12 +311,14 @@ export default {
           prop: "affDeptId",
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "当前使用组织",
           prop: "currDeptId",
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         { label: "入账日期", prop: "makerAoTime", formType: "date" },
         {

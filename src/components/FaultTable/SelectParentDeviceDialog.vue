@@ -76,10 +76,10 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: "设备编码", prop: "deviceCode" },
-        { label: "设备名称", prop: "deviceName" },
-        { label: "规格型号", prop: "specas" },
-        { label: "设备类别", prop: "categoryId" },
+        { label: "设备编码", prop: "deviceCode", width: 200 },
+        { label: "设备名称", prop: "deviceName", width: 200 },
+        { label: "规格型号", prop: "specas", width: 200 },
+        { label: "设备类别", prop: "categoryId", width: 200 },
         {
           label: "设备属性",
           prop: "deviceAtt",
@@ -100,7 +100,7 @@ export default {
           formType: "select",
           options: [],
         }, //(0 父级)
-        { label: "所属组织", prop: "affDeptId" },
+        { label: "所属组织", prop: "affDeptId", width: 150 },
         { label: "当前使用组织", prop: "currDeptId" },
       ];
     },

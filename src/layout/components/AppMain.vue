@@ -10,26 +10,26 @@
 </template>
 
 <script>
-import iframeToggle from "./IframeToggle/index"
+import iframeToggle from "./IframeToggle/index";
 
 export default {
-  name: 'AppMain',
+  name: "AppMain",
   components: { iframeToggle },
   computed: {
     cachedViews() {
-      return this.$store.state.tagsView.cachedViews
+      return this.$store.state.tagsView.cachedViews;
     },
     key() {
-      return this.$route.path
-    }
-  }
-}
+      return this.$route.path;
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .app-main {
   /* 50= navbar  50  */
-  min-height: calc(100vh - 50px);
+  min-height: 100vh;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -42,11 +42,12 @@ export default {
 .hasTagsView {
   .app-main {
     /* 100 = navbar + tags-view = 50 + 51 */
-    min-height: calc(100vh - 101px);
+    min-height: calc(100vh - 111px);
   }
 
   .fixed-header + .app-main {
-    padding-top: 101px;
+    padding-top: 111px;
+    background-color: #f4f4f6;
   }
 }
 </style>

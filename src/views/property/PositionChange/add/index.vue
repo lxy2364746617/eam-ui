@@ -6,9 +6,7 @@
       @submitForm="submitValue"
       ref="headEdit"
     ></HeadEdit>
-    <TableProject :isShow="false"
-      ></TableProject
-    >
+    <TableProject :isShow="false"></TableProject>
     <div class="submit">
       <el-button type="primary" @click="submit">保存</el-button>
       <el-button type="primary">保存并提交审批</el-button>
@@ -37,6 +35,7 @@ export default {
       isEdit: true,
       // 头部表单
       formData: {
+        applyPersonId: this.$store.state.user.standing.userId,
         applyPersonName: this.$store.state.user.standing.nickName,
         applyDeptId: this.$store.state.user.standing.deptId,
         affOrgId: this.$store.state.user.standing.deptId,
@@ -70,7 +69,6 @@ export default {
       } else {
         val["addDetails"] = [];
       }
-
       setProject(val).then((res) => {
         if (res.code === 200) {
           this.$message({

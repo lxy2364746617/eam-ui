@@ -23,6 +23,12 @@
             :src="qrCode"
             alt=""
             srcset=""
+            style="
+              width: 100px;
+              vertical-align: top;
+              height: 100px;
+              margin-left: 50px;
+            "
           />
         </el-col>
         <el-col

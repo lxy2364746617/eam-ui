@@ -22,7 +22,12 @@
             class="qrcodeimg"
             :src="qrCode"
             alt=""
-            srcset=""
+            srcset="" style="
+              width: 100px;
+              vertical-align: top;
+              height: 100px;
+              margin-left: 50px;
+            "
           />
         </el-col>
         <el-col

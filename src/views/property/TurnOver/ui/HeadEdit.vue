@@ -56,13 +56,13 @@ export default {
         {
           label: "移交单编号",
           prop: "transferNo",
-          span: 8,
+          span: 6,
           formDisabled: true,
         },
         {
           label: "业务日期",
           prop: "transferDate",
-          span: 8,
+          span: 6,
           required: true,
           formType: "date",
         },
@@ -111,6 +111,7 @@ export default {
           label: "参考信息",
           prop: "referenceInformation",
           span: 24,
+          required: true,
         },
       ];
     },

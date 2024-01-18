@@ -41,7 +41,7 @@
         >
       </el-row>
       <div class="title">设备信息</div>
-      <JmTableNoPaging
+      <ContTable
         :tableData="equipmentList"
         @getList="getList"
         @handleSelectionChange="handleSelectionChange"
@@ -65,7 +65,7 @@
             >查看故障</el-button
           >
         </template>
-      </JmTableNoPaging>
+      </ContTable>
     </div>
 
     <!-- 维护故障弹窗 -->
@@ -110,7 +110,7 @@
 </template>
 <script>
 import { getProjectList, downDetailLoad } from "@/api/property/scrapping";
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
 
 import { saveAs } from "file-saver";
@@ -118,7 +118,7 @@ import { orderTemplate } from "@/api/work/template";
 import { getWomDevice, getWomInfo } from "@/api/work/schedule";
 export default {
   components: {
-    JmTableNoPaging,
+    ContTable,
     SelectParentDeviceDialog,
   },
   dicts: ["em_device_state", "em_is_special", "order_obj"],
@@ -427,29 +427,37 @@ export default {
   height: auto;
   background-color: #fff;
   .title {
-    margin-top: 20px;
-    padding: 0 20px;
-    width: 100%;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
+    background-color: #ebf4fc;
+    color: #555;
     font-weight: 700;
-    background: rgba(0, 116, 217, 0.08);
+    text-align: left;
+    font-size: 14px;
+    height: 30px;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
     justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
   }
 }
 .subtitle {
-  //   border-bottom: 1px solid #ddd;
   background-color: #ebf4fc;
-  color: #55566d;
-  font-weight: bold;
+  color: #555;
+  font-weight: 700;
   text-align: left;
-  font-size: 16px;
-  padding: 5px 0;
-  padding-left: 20px;
+  font-size: 14px;
+  height: 30px;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
   justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;padding: 0 18px;
   span {
     font-weight: 400;
     padding-right: 5px;

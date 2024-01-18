@@ -61,13 +61,13 @@ export default {
         {
           label: "领用单号",
           prop: "neckNo",
-          span: 8,
+          span: 6,
           formDisabled: true,
         },
         {
           label: "业务日期",
           prop: "neckDate",
-          span: 8,
+          span: 6,
           required: true,
           formType: "date",
         },

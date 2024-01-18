@@ -43,7 +43,7 @@
           >详情</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -52,7 +52,7 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -61,7 +61,7 @@
         >
 
         <el-button
-          v-if="scope.row.apvStatus === 4 || scope.row.apvStatus === 1"
+          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -69,6 +69,7 @@
           >提交</el-button
         >
         <el-button
+          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -184,6 +185,8 @@ export default {
   },
   mounted() {},
   methods: {
+    handleSet() {},
+
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",

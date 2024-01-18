@@ -1,15 +1,24 @@
 <template>
   <div class="navbar">
-    <img :src="logo" class="sidebar-logo"/>
-    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <img :src="logo" class="sidebar-logo" />
+    <hamburger
+      id="hamburger-container"
+      :is-active="sidebar.opened"
+      class="hamburger-container"
+      @toggleClick="toggleSideBar"
+    />
 
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
-    <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
+    <breadcrumb
+      id="breadcrumb-container"
+      class="breadcrumb-container"
+      v-if="!topNav"
+    />
+    <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav" />
 
     <div class="right-menu">
-      <template v-if="device!=='mobile'">
+      <template v-if="device !== 'mobile'">
         <search id="header-search" class="right-menu-item" />
-        
+
         <!-- <el-tooltip content="源码地址" effect="dark" placement="bottom">
           <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
         </el-tooltip> -->
@@ -27,12 +36,14 @@
         <el-tooltip content="设备数" effect="dark" placement="bottom">
           <header-device class="right-menu-item hover-effect" />
         </el-tooltip>
-
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+      <el-dropdown
+        class="avatar-container right-menu-item hover-effect"
+        trigger="click"
+      >
         <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar">
+          <img :src="avatar" class="user-avatar" />
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -52,17 +63,17 @@
 </template>
 
 <script>
-import logoImg from '@/assets/logo/logo.png'
-import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import TopNav from '@/components/TopNav'
-import Hamburger from '@/components/Hamburger'
-import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import Search from '@/components/HeaderSearch'
-import RuoYiGit from '@/components/RuoYi/Git'
-import RuoYiDoc from '@/components/RuoYi/Doc'
-import HeaderDevice from '@/components/HeaderDevice'
+import logoImg from "@/assets/logo/logo.png";
+import { mapGetters } from "vuex";
+import Breadcrumb from "@/components/Breadcrumb";
+import TopNav from "@/components/TopNav";
+import Hamburger from "@/components/Hamburger";
+import Screenfull from "@/components/Screenfull";
+import SizeSelect from "@/components/SizeSelect";
+import Search from "@/components/HeaderSearch";
+import RuoYiGit from "@/components/RuoYi/Git";
+import RuoYiDoc from "@/components/RuoYi/Doc";
+import HeaderDevice from "@/components/HeaderDevice";
 export default {
   components: {
     Breadcrumb,
@@ -77,33 +88,29 @@ export default {
   },
   data() {
     return {
-      logo: logoImg
-    }
+      logo: logoImg,
+    };
   },
   computed: {
-    ...mapGetters([
-      'sidebar',
-      'avatar',
-      'device'
-    ]),
+    ...mapGetters(["sidebar", "avatar", "device"]),
     // ...mapState({
     //   sidebar: state => state.app.sidebar,
     // }),
     setting: {
       get() {
-        return this.$store.state.settings.showSettings
+        return this.$store.state.settings.showSettings;
       },
       set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'showSettings',
-          value: val
-        })
-      }
+        this.$store.dispatch("settings/changeSetting", {
+          key: "showSettings",
+          value: val,
+        });
+      },
     },
     topNav: {
       get() {
-        return this.$store.state.settings.topNav
-      }
+        return this.$store.state.settings.topNav;
+      },
     },
     // isCollapse() {
     //   return !this.sidebar.opened;
@@ -111,32 +118,34 @@ export default {
   },
   methods: {
     toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
+      this.$store.dispatch("app/toggleSideBar");
     },
     async logout() {
-      this.$confirm('确定注销并退出系统吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('LogOut').then(() => {
-          location.href = '/index';
+      this.$confirm("确定注销并退出系统吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$store.dispatch("LogOut").then(() => {
+            location.href = "/index";
+          });
         })
-      }).catch(() => {});
-    }
-  }
-}
+        .catch(() => {});
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 60px;
   overflow: hidden;
   position: fixed;
   left: 0;
   right: 0;
   background: #0f182b;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  // box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .sidebar-logo {
     // float: left;
@@ -149,18 +158,18 @@ export default {
 
   .hamburger-container {
     color: #9da3ab;
-    line-height: 46px;
+    line-height: 56px;
     height: 100%;
     display: inline-block;
     vertical-align: top;
     // float: left;
     // position: absolute;
     cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    transition: background 0.3s;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(0, 0, 0, .025)
+      background: rgba(0, 0, 0, 0.025);
     }
   }
 
@@ -183,7 +192,7 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
-
+    padding-top: 5px;
     &:focus {
       outline: none;
     }
@@ -198,10 +207,10 @@ export default {
 
       &.hover-effect {
         cursor: pointer;
-        transition: background .3s;
+        transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, .025)
+          background: rgba(0, 0, 0, 0.025);
         }
       }
     }
@@ -210,13 +219,13 @@ export default {
       margin-right: 30px;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        margin-top: 10px;
         position: relative;
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
+          width: 32px;
+          height: 32px;
           border-radius: 10px;
         }
 

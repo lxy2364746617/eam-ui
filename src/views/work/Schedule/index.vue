@@ -62,7 +62,7 @@
         title="选择执行人员"
         :visible.sync="isDrawer"
       >
-        <JmTableNoPaging
+        <ContTable
           class="mr20 ml20"
           :tableData="equipmentList2"
           @getList="getList2"
@@ -77,7 +77,7 @@
           :rightToolbarShow="false"
           :showSearch="false"
         >
-        </JmTableNoPaging>
+        </ContTable>
 
         <div class="submit">
           <el-button type="primary" @click="save">保存</el-button>
@@ -166,7 +166,7 @@ import {
   updateAllocation,
 } from "@/api/work/schedule";
 import JmTable from "@/components/JmTable/index.vue";
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import { v4 as uuidv4 } from "uuid";
 import Wrapper from "@/components/wrapper";
 import { orderTemplate } from "@/api/work/template";
@@ -175,7 +175,7 @@ import { findAll } from "@/api/system/group";
 export default {
   components: {
     JmTable,
-    JmTableNoPaging,
+    ContTable,
     Wrapper,
   },
   dicts: ["order_source", "is_overdue"],
@@ -262,7 +262,7 @@ export default {
           label: "工单名称",
           prop: "orderName",
           tableVisible: true,
-          width: 150,
+          width: 200,
         },
 
         {
@@ -298,10 +298,11 @@ export default {
           formType: "selectTree",
           options: this.typeAll,
           tableVisible: true,
+          width: 150,
         },
         {
           label: "执行人员",
-          prop: "executor",
+          prop: "director",
           formType: "selectTree",
           options: this.userList,
           tableVisible: true,

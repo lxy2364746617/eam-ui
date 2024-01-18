@@ -1,6 +1,6 @@
 <template>
-  <div class="wrapper">
-    <div class="title">{{ title }}</div>
+  <div class="wrapper app-container">
+    <div class="title">{{ title2 }}</div>
     <slot></slot>
   </div>
 </template>
@@ -10,9 +10,13 @@ export default {
     title: String,
   },
   data() {
-    return {};
+    return {
+      title2: "",
+    };
   },
-  mounted() {},
+  mounted() {
+    this.title2 = this.$route.meta.title;
+  },
   computed: {},
   methods: {},
 };
@@ -21,15 +25,7 @@ export default {
 .wrapper {
   font-family: PingFang SC;
   color: #55566d;
-  width: 100%;
-  // min-height: 805px;
-  height: 100%;
-  height: auto;
-  background-color: #fff;
-  border-radius: 15px;
-  padding: 20px 10px;
-  padding-right: 25px;
-  margin: 8px;
+
   .title {
     font-size: 16px;
     font-weight: 400;

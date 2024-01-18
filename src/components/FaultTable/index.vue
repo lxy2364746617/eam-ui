@@ -12,7 +12,7 @@
         >添加</el-button
       >
     </div>
-    <JmTableNoPaging
+    <ContTable
       :tableData="equipmentList"
       @getList="getList"
       @handleSelectionChange="handleSelectionChange"
@@ -77,7 +77,7 @@
           >删除</el-button
         >
       </template>
-    </JmTableNoPaging>
+    </ContTable>
 
     <!-- 选取设备 -->
     <el-drawer
@@ -136,7 +136,7 @@
 </template>
 <script>
 import { getProjectList, downDetailLoad } from "@/api/property/scrapping";
-import JmTableNoPaging from "@/components/JmTableNoPaging";
+import ContTable from "@/components/ContTable";
 import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -153,7 +153,7 @@ import CarryForm from "@/components/CarryForm/index";
 import { getWomDevice } from "@/api/work/schedule";
 export default {
   components: {
-    JmTableNoPaging,
+    ContTable,
     SelectParentDeviceDialog,
     "carry-form": CarryForm,
   },
@@ -223,17 +223,37 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "设备编码", prop: "deviceCode", tableVisible: true },
-        { label: "设备名称", prop: "deviceName", tableVisible: true },
-        { label: "规格型号", prop: "specs", tableVisible: true },
-        { label: "设备类别", prop: "deviceType", tableVisible: true },
+        {
+          label: "设备编码",
+          prop: "deviceCode",
+          tableVisible: true,
+          width: 200,
+        },
+        {
+          label: "设备名称",
+          prop: "deviceName",
+          tableVisible: true,
+          width: 200,
+        },
+        { label: "规格型号", prop: "specs", tableVisible: true, width: 200 },
+        {
+          label: "设备类别",
+          prop: "deviceType",
+          tableVisible: true,
+          width: 200,
+        },
         {
           label: "功能位置",
           prop: "location",
           tableVisible: true,
         },
         { label: "当前使用组织", prop: "currDeptName", tableVisible: true },
-        { label: "所属组织", prop: "affDeptName", tableVisible: true },
+        {
+          label: "所属组织",
+          prop: "affDeptName",
+          tableVisible: true,
+          width: 150,
+        },
 
         {
           label: "设备状态",
@@ -621,15 +641,20 @@ export default {
     }
   }
   .title {
-    padding: 0 20px;
-    height: 40px;
+    background-color: #ebf4fc;
+    color: #555;
+    font-weight: 700;
+    text-align: left;
+    font-size: 14px;
+    height: 30px;
+    display: -ms-flexbox;
     display: flex;
-    align-items: center;
-    font-size: 16px;
-    font-weight: bold;
-    background: rgba(0, 116, 217, 0.08);
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
     justify-content: space-between;
-    margin-bottom: 20px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;padding: 0 18px;
   }
   .icon {
     span {

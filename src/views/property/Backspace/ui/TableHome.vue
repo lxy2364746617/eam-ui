@@ -104,6 +104,7 @@
           >提交</el-button
         >
         <el-button
+          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -188,6 +189,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "申请部门",
@@ -195,6 +197,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "申请部门负责人",
@@ -208,6 +211,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.deptOptions,
+          width: 150,
         },
         {
           label: "调入部门负责人",
@@ -235,6 +239,7 @@ export default {
   },
   mounted() {},
   methods: {
+    handleSet() {},
     /** 查询部门下拉树结构 */
     getTreeSelect() {
       listDept().then((response) => {
