@@ -76,13 +76,15 @@
       <el-table-column label="名称" align="center" prop="name" />
       <el-table-column label="监听类型" align="center" prop="type">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_listener_type" :value="scope.row.type"/>
+          <!-- <dict-tag :options="dict.type.sys_listener_type" :value="scope.row.type"/> -->
+          {{findName(dict.type.sys_listener_type,scope.row.type)}}
         </template>
       </el-table-column>
       <el-table-column label="事件类型" align="center" prop="eventType"/>
       <el-table-column label="值类型" align="center" prop="valueType">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_listener_value_type" :value="scope.row.valueType"/>
+          <!-- <dict-tag :options="dict.type.sys_listener_value_type" :value="scope.row.valueType"/> -->
+          {{findName(dict.type.sys_listener_value_type,scope.row.valueType)}}
         </template>
       </el-table-column>
       <el-table-column label="执行内容" align="center" prop="value" />
@@ -117,10 +119,10 @@
     <!-- 添加或修改流程监听对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="名称" prop="name">
+        <el-form-item label="名称" prop="name" :rules='[{required:true,message:"请输入名称"}]'>
           <el-input v-model="form.name" placeholder="请输入名称" />
         </el-form-item>
-        <el-form-item label="监听类型" prop="type">
+        <el-form-item label="监听类型" prop="type" :rules='[{required:true,message:"请选择监听类型"}]'>
           <el-select v-model="form.type" placeholder="请选择监听类型">
             <el-option
               v-for="dict in dict.type.sys_listener_type"
@@ -130,7 +132,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="事件类型" prop="eventType" v-if="form.type === '1'">
+        <el-form-item label="事件类型" prop="eventType" v-if="form.type === '1'" :rules='[{required:true,message:"请选择事件类型"}]'>
           <el-select v-model="form.eventType" placeholder="请选择事件类型">
             <el-option
               v-for="dict in taskListenerEventList"
@@ -140,7 +142,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="事件类型" prop="eventType" v-else>
+        <el-form-item label="事件类型" prop="eventType" v-else :rules='[{required:true,message:"请选择事件类型"}]'>
           <el-select v-model="form.eventType" placeholder="请选择事件类型">
             <el-option
               v-for="dict in executionListenerEventList"
@@ -150,7 +152,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="值类型" prop="valueType">
+        <el-form-item label="值类型" prop="valueType" :rules='[{required:true,message:"请选择值类型"}]'>
           <el-radio-group v-model="form.valueType">
             <el-radio
               v-for="dict in dict.type.sys_listener_value_type"
@@ -230,6 +232,15 @@ export default {
     this.getList();
   },
   methods: {
+    findName(options,value){
+        var name = ''
+        for (let i = 0; i < options.length; i++) {
+          if(options[i].value == value){
+            name = options[i].label
+          }
+        }
+        return name || value
+      },
     /** 查询流程监听列表 */
     getList() {
       this.loading = true;

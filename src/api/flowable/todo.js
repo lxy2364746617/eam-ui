@@ -45,7 +45,14 @@ export function rejectTask(data) {
     data: data
   })
 }
-
+// 审批任务并结束流程
+export function completeFinish(data) {
+  return request({
+    url: '/flowable/task/completeFinish',
+    method: 'post',
+    data: data
+  })
+}
 // 可退回任务列表
 export function returnList(data) {
   return request({
@@ -129,5 +136,13 @@ export function flowTaskForm(query) {
     url: '/flowable/task/flowTaskForm',
     method: 'get',
     params: query
+  })
+}
+// 指定流程下一步办理人员列表
+export function userList(data) {
+  return request({
+    url: '/flowable/task/userList',
+    method: 'post',
+    data: data
   })
 }

@@ -195,7 +195,8 @@ export default {
             xType: 'input',
             name: 'id',
             label: '节点 id',
-            rules: [{ required: true, message: 'Id 不能为空' }]
+            rules: [{ required: true, message: 'Id 不能为空' }],
+            
           },
           {
             xType: 'input',
@@ -248,6 +249,16 @@ export default {
             label: '候选角色',
             // rules: [{ required: true, message: '候选角色不能为空' }],
             show: !!_this.showConfig.candidateGroups && _this.formData.userType === 'candidateGroups'
+          },
+          {
+            xType: 'radio',
+            name: 'radioMul',
+            label: '多实例审批方式',
+            dic:[
+              {label:'无',value:0},
+              {label:'或签(需所有审批人同意)',value:1},
+              {label:'或签(一名审批人同意即可)',value:2}
+            ]
           },
           {
             xType: 'slot',
@@ -537,10 +548,10 @@ export default {
       }
       this.dialogName = ''
     },
-    /*单选人员*/
+    /*指定人员*/
     singleUserCheck(){
       this.userVisible = true;
-      this.checkType = "single";
+      this.checkType = "multiple";
     },
     /*多选人员*/
     multipleUserCheck(){

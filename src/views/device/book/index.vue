@@ -703,7 +703,7 @@ export default {
           ' > ' +
           row.deviceName
         this.$router.push({
-          path: '/device/book/details?i=' + deviceId + '&t=' + this.title,
+          path: '/device/book/details?i=' + deviceId + '&t=' + this.title+'&isReadonly=true',
         })
         // this.addDetails = true;
       }

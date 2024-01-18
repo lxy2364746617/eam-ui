@@ -149,7 +149,7 @@ export default {
   }
   // 设置设计器右侧表单高度
   .el-form-item {
-    margin-bottom: 6px;
+    margin-bottom: 16px;
   }
   .tab-table .el-form-item {
     margin-bottom: 16px;

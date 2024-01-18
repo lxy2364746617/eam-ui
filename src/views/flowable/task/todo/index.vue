@@ -73,28 +73,28 @@
       <el-col :span="8" class="card_col1">
         <img src="@/assets/images/device.svg" style="width:80px;height:80px;margin:auto 0"> 
         <div class="card_info">
-          <p>{{item.procDefName}}</p>
+          <p>{{findName(dict.type.process_category,item.category)}}</p>
           <p>{{item.taskId}}</p>
         </div>
       </el-col>
       <el-col :span="8" class="card_col2">
         <div class="card_info">
-          <p>申请部门：</p>
-        <p>申请部门负责人：</p>
-        <p>申请时间：</p>
+        <p>申请部门：{{item.startDeptName}}</p>
+        <p>申请部门负责人：{{item.startUserName}}</p>
+        <p>申请时间：{{item.createTime}}</p>
         </div>
         
       </el-col>
       <el-col :span="4" class="card_col3">
         <div class="card_info">
-          <p>当前节点:{{item.taskName}}</p>
-          <p>审核人：三个字</p>
+          <p>当前节点</p>
+          <p>{{item.taskName}}</p>
         </div>
         
       </el-col>
       <el-col :span="4" class="card_col4">
         <el-button type="primary"  @click="handleProcess(item)">审批</el-button>
-        <el-button type="primary"  @click="handleFlowRecord(item)">审批流程</el-button>
+        <!-- <el-button type="primary"  @click="handleFlowRecord(item)">审批流程</el-button> -->
       </el-col>
     </el-card>
     <pagination
@@ -116,7 +116,8 @@ import {
   rejectTask,
   getDeployment,
   delDeployment,
-  exportDeployment
+  exportDeployment,
+  getNextFlowNode
 } from "@/api/flowable/todo";
 
 export default {
@@ -160,6 +161,15 @@ export default {
     this.getList();
   },
   methods: {
+    findName(options,value){
+        var name = ''
+        for (let i = 0; i < options.length; i++) {
+          if(options[i].value == value){
+            name = options[i].label
+          }
+        }
+        return name || value
+      },
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
@@ -179,6 +189,7 @@ export default {
           taskId: row.taskId,
           taskName: row.taskName,
           startUser: row.startUserName + '-' + row.startDeptName,
+          businessId:row.businessId
         }})
     },
     // 取消按钮

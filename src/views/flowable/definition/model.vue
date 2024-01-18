@@ -100,7 +100,8 @@ export default {
     },
     /** 保存xml */
     save(data) {
-      const params = {
+       if(data.process.name&&data.process.category&&data.xml){
+        const params = {
         name: data.process.name,
         category: data.process.category,
         xml: data.xml
@@ -111,6 +112,7 @@ export default {
         const obj = this.$route
         this.$tab.closePage1(obj);
       })
+      } 
     },
     /** 指定流程办理人员列表 */
     getDataList() {

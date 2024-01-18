@@ -157,6 +157,14 @@ export default {
     //   default: {},
     //   type: Object,
     // },
+    detailReadonly:{
+      type:Boolean,
+      default:false
+    },
+    detailId:{
+      type:String,
+      default:''
+    }
   },
   watch: {
     // formData: {
@@ -184,8 +192,8 @@ export default {
   created() {
     this.getTreeSelect()
     // 编辑
-    this.isReadonly=this.$route.query.isReadonly?true:false
-    const deviceId = this.$route.query.i
+    this.isReadonly=(this.$route.query.isReadonly||this.detailReadonly)?true:false
+    const deviceId = this.$route.query.i||this.detailId
     this.formTitle = this.$route.query.t
     getBASE(deviceId).then(response => {
       

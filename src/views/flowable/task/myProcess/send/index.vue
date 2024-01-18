@@ -109,8 +109,9 @@ export default {
     /** 返回页面 */
     goBack() {
       // 关闭当前标签页并返回上个页面
-      const obj = { path: "/task/process", query: { t: Date.now()} };
-      this.$tab.closeOpenPage(obj);
+      /* const obj = { path: "/task/process", query: { t: Date.now()} };
+      this.$tab.closeOpenPage(obj); */
+      this.$tab.closePage()
     },
     /** 接收子组件传的值 */
     getData(data) {
@@ -166,7 +167,7 @@ export default {
             if (this.procDefId) {
               variables.variables = formData;
               // 启动流程并将表单数据加入流程变量
-              definitionStart(this.procDefId, JSON.stringify(variables)).then(res => {
+              definitionStart(this.procDefId,this.procDefId,'EA', JSON.stringify(variables)).then(res => {
                 this.$modal.msgSuccess(res.msg);
                 this.goBack();
               })
@@ -200,7 +201,7 @@ export default {
         }
         console.log(variables,"流程发起提交表单数据")
         // 启动流程并将表单数据加入流程变量
-        definitionStart(this.procDefId, JSON.stringify(variables)).then(res => {
+        definitionStart(this.procDefId,this.procDefId,'EA', JSON.stringify(variables)).then(res => {
           this.$modal.msgSuccess(res.msg);
           this.goBack();
         })

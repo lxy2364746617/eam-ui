@@ -82,7 +82,11 @@
         :show-overflow-tooltip="true"
       />
       <el-table-column label="流程标识" align="center" prop="flowKey" :show-overflow-tooltip="true" />
-      <el-table-column label="流程分类" align="center" prop="category" />
+      <el-table-column label="流程分类" align="center" prop="category">
+        <template slot-scope="scope">
+          {{findName(dict.type.process_category,scope.row.category) }}
+        </template>
+      </el-table-column>
       <el-table-column label="流程名称" align="center" width="120" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button type="text" @click="handleReadImage(scope.row.deploymentId)">
@@ -90,14 +94,14 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="业务表单" align="center" :show-overflow-tooltip="true">
+      <!-- <el-table-column label="业务表单" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button v-if="scope.row.formId" type="text" @click="handleForm(scope.row.formId)">
             <span>{{ scope.row.formName }}</span>
           </el-button>
           <label v-else>暂无表单</label>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="流程版本" align="center">
         <template slot-scope="scope">
           <el-tag size="medium">v{{ scope.row.version }}</el-tag>
@@ -118,13 +122,13 @@
             type="text"
             size="small"
           >设计</el-button>
-          <el-button
+          <!-- <el-button
             @click="handleAddForm(scope.row)"
             icon="el-icon-edit-el-icon-s-promotion"
             type="text"
             size="small"
             v-if="scope.row.formId == null"
-          >配置主表单</el-button>
+          >配置主表单</el-button> -->
           <el-button
             @click="handleUpdateSuspensionState(scope.row)"
             icon="el-icon-video-pause"
@@ -386,13 +390,22 @@ export default {
   created() {
     this.getList()
   },
-  activated() {
+  /* activated() {
     const time = this.$route.query.t
     if (time != null) {
       this.getList()
     }
-  },
+  }, */
   methods: {
+    findName(options,value){
+        var name = ''
+        for (let i = 0; i < options.length; i++) {
+          if(options[i].value == value){
+            name = options[i].label
+          }
+        }
+        return name || value
+      },
     /** 查询流程定义列表 */
     getList() {
       this.loading = true

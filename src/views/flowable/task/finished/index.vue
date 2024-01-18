@@ -44,28 +44,28 @@
     </el-row> -->
     <el-empty v-if="finishedList.length==0" :image-size="200"></el-empty>
     <el-card v-for="item in finishedList" :key="item.taskId">
-      <div class="card_status" :style="'color:'+'#4DCA38;'+'background:#CAF6C2'">
-        同意
+      <div v-if="item.processStatus" class="card_status" :style="'color:'+'#4DCA38;'+'background:#CAF6C2'">
+        {{item.processStatus}}
       </div>
       <el-col :span="8" class="card_col1">
         <img src="@/assets/images/device.svg" style="width:80px;height:80px;margin:auto 0"> 
         <div class="card_info">
-          <p>{{item.procDefName}}</p>
+          <p>{{findName(dict.type.process_category,item.category)}}</p>
           <p>{{item.taskId}}</p>
         </div>
       </el-col>
       <el-col :span="8" class="card_col2">
         <div class="card_info">
-          <p>申请部门：</p>
-        <p>申请部门负责人：</p>
-        <p>申请时间：</p>
+        <p>申请部门：{{item.startDeptName}}</p>
+        <p>申请部门负责人：{{item.startUserName}}</p>
+        <p>申请时间：{{item.createTime}}</p>
         </div>
         
       </el-col>
       <el-col :span="4" class="card_col3">
         <div class="card_info">
-          <p>当前节点</p>
-          <p>审核人：三个字</p>
+         <p>审核人：</p> 
+         <p>{{item.assigneeName}}</p>
         </div>
         
       </el-col>
@@ -120,6 +120,7 @@ import { finishedList, getDeployment, delDeployment, addDeployment, updateDeploy
 
 export default {
   name: "Deploy",
+  dicts: ['wf_process_status','process_category'],
   components: {
   },
   data() {
@@ -161,13 +162,24 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      categoryObj:{}
     };
   },
   created() {
+    
     this.getList();
   },
   methods: {
+    findName(options,value){
+        var name = ''
+        for (let i = 0; i < options.length; i++) {
+          if(options[i].value == value){
+            name = options[i].label
+          }
+        }
+        return name || value
+      },
     /** 查询流程定义列表 */
     getList() {
       this.loading = true;
@@ -322,7 +334,8 @@ export default {
 }
 .btn_status:active{
   box-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.302) !important;
-  border:1px solid transparent
+  border:1px solid transparent;
+  transform: translateY(2px);
 }
 ::v-deep .el-card{
   position: relative;

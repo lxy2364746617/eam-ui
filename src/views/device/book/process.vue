@@ -53,11 +53,9 @@ export default {
     }
 
     },
-
     methods:{
         handleStartProcess(row){
             this.$emit('submit',row)
-            
         },
         listDefinition(val){
             this.$emit('getTableData',val)
