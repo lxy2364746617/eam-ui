@@ -171,7 +171,7 @@ import JmTable from "@/components/JmTable1";
       // 获取运维文档类型 
       getType(){
         maintainType().then(res=>{
-          console.log(res.data)
+          // console.log(res.data)
           this.options = res.data
           this.tablecolumns.forEach(item=>{
             if(item.prop == 'kdbType'){
@@ -182,7 +182,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 上传成功回调
       onSuccess(res,file){
-        console.log(res,'上传成功~')
+        // console.log(res,'上传成功~')
         this.ruleForm.fileResources.push({
           name:res.originalFileName,
           ...res,
@@ -217,7 +217,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击删除
       handleDelete(row){
-        console.log(row)
+        // console.log(row)
         maintainListDel({id:row.id,fileId:row.fileId}).then(res=>{
           this.getList()
           this.$message({
@@ -228,13 +228,13 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击下载
       handleDownload(row){
-        console.log(row)
+        // console.log(row)
         let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
         download(url)
       },
       // 点击预览
       handlePreview(row){
-        console.log(row)
+        // console.log(row)
         let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
         window.open(url)
       }

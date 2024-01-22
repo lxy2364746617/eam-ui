@@ -140,7 +140,6 @@ import JmForm from "@/components/JmForm";
     methods:{
       // 获取路由参数
       getRouteData(){
-        console.log(this.$route.query)
         let routeData = this.$route.query
         this.orderCode = routeData.orderCode
         this.deviceCode = routeData.deviceCode
@@ -157,13 +156,12 @@ import JmForm from "@/components/JmForm";
       getDetails(row){
         // console.log(row)
         // 工单信息
-        console.log(this.deviceCode)
         let params = {
           deviceCode:this.deviceCode,
           orderCode:this.orderCode,
         }
         getWomInfo(params).then(res=>{
-          console.log(res,'工单基本信息')
+          // console.log(res,'工单基本信息')
           this.orderType = res.data.orderType
           this.infoList.forEach(item=>{    
             let value = res.data[item.prop] || res.data.faultInfoDTO[item.prop]
@@ -193,7 +191,7 @@ import JmForm from "@/components/JmForm";
       // 获取备件记录
       getBjjlInfo(){
         getWomAttachmentList({orderCode:this.orderCode}).then(res=>{
-          console.log(res,'备件记录')
+          // console.log(res,'备件记录')
           this.table.list = res.data
         })
       },
@@ -201,7 +199,7 @@ import JmForm from "@/components/JmForm";
       getClxxInfo(){
         // 处理信息
         getWomRepairInfo({orderCode:this.orderCode}).then(res=>{
-          console.log(res,'处理【维修】信息')
+          // console.log(res,'处理【维修】信息')
           this.infoList1 = [
             {label:'工单编码',value:'',prop:'orderCode'},
             {label:'维修单位',value:'',prop:'unit'},
@@ -230,7 +228,7 @@ import JmForm from "@/components/JmForm";
       // 获取【委外维修】处理信息
       getWWWXInfo(){
         getWomRepairInfoOut({orderCode:this.orderCode}).then(res=>{
-          console.log(res,'处理信息')
+          // console.log(res,'处理信息')
           this.infoList1 = [
             {label:'工单编码',value:'',prop:'orderCode'},
             {label:'委外维修单位',value:'',prop:'unit'},
@@ -253,10 +251,9 @@ import JmForm from "@/components/JmForm";
           id:this.detailsId
         }
         getFaultCaseEdit(params).then(res=>{
-          console.log(res,'对策补充')
+          // console.log(res,'对策补充')
           this.formData.prevention = res.data.prevention
           this.formData.footNote = res.data.footNote
-          console.log(this.formData)
         })
       },
       //保存
@@ -271,7 +268,6 @@ import JmForm from "@/components/JmForm";
           id:this.detailsId
         }
         faultCaseEdit(params).then(res=>{
-          console.log(res)
           this.$message({
             message: '操作成功！',
             type: 'success'

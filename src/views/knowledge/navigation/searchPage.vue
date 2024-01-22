@@ -17,7 +17,7 @@
           <el-col :span="8">
             <div class="grid-content">
               <p class="title"><i class="el-icon-s-order"></i>故障案例</p>
-              <el-collapse v-model="activeNames" @change="handleChange" accordion>
+              <el-collapse v-model="activeNames" accordion>
                 <el-collapse-item v-for="(item,index) in gzal.list" :key="index" :name="item.id">
                   <template slot="title">
                     <div class="gzal_title_box">
@@ -96,7 +96,7 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
       // 获取历史搜索列表
       getSSLSList(){
         searchHistoryList().then(res=>{
-          console.log(res,'搜素历史')
+          // console.log(res,'搜素历史')
           res.rows.length = 5
           this.tags = res.rows
         })
@@ -107,7 +107,7 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
           search: this.search_text
         }
         navSearchList(params).then(res=>{
-          console.log(res,'搜索结果')
+          // console.log(res,'搜索结果')
           // 新增历史记录
           searchHistoryAdd({searchContent:this.search_text}).then(res=>{
             this.getSSLSList()
@@ -143,26 +143,23 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
         // }
         // console.log(this.tags)
       },
-      handleChange(val) {
-        console.log(val);
-      },
       // 点击返回按钮
       backClick(){
         this.$router.push({name:'navigation'})
       },
       // 点击故障案例小手跳转及查看详情
       rowClick(row){
-        console.log(row)
+        // console.log(row)
         this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
       },
       // 点击技术资料每一行
       jszlClick(row){
-        console.log(row)
+        // console.log(row)
         this.$router.push({name:'technology',query:{id:row.id}})
       },
       // 点击运维文档每一行
       ywwdClick(row){
-        console.log(row)
+        // console.log(row)
         this.$router.push({name:'maintenance',query:{id:row.id}})
       },
     }

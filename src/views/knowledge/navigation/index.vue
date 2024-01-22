@@ -229,7 +229,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       },
       // 点击img触发
       imgClick(row){
-        console.log(row.text)
+        // console.log(row.text)
         switch(row.text){
           case '故障案例':{
             this.gzalClick()
@@ -255,7 +255,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       },
       // 点击故障案例的每一行触发
       rowClick(row = {}){
-        console.log(row)
+        // console.log(row)
         this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
       },
       // 点击技术资料每一行
@@ -264,12 +264,12 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       },
       // 点击运维文档每一行
       ywwdClick(row = {}){
-        console.log(row)
+        // console.log(row)
         this.$router.push({name:'maintenance',query:{id:row.id}})
       },
       // 点击规章制度每一行
       gzzdClick(row = {}){
-        console.log(row)
+        // console.log(row)
         this.$router.push({name:'regulations',query:{id:row.id}})
       }
     }

@@ -241,7 +241,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击删除
       handleDelete(row){
-        console.log(row)
+        // console.log(row)
         techListDel({id:row.id,fileId:row.fileId}).then(res=>{
           this.getList()
           this.$message({
@@ -252,14 +252,14 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击下载
       handleDownload(row){
-        console.log(row)
+        // console.log(row)
         let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
         download(url)
         addClickNum({id:row.id})
       },
       // 点击预览
       handlePreview(row){
-        console.log(row)
+        // console.log(row)
         let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
         window.open(url)
         addClickNum({id:row.id})
@@ -298,7 +298,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 上传成功回调
       onSuccess(res,file){
-        console.log(res,'上传成功~')
+        // console.log(res,'上传成功~')
         this.ruleForm.sysFileResources.push({
           name:res.originalFileName,
           ...res
@@ -358,14 +358,14 @@ import JmTable from "@/components/JmTable1";
       // 获取设备树
       getEquipmentTree(){
         equipmentTree().then(res=>{
-          console.log(res)
+          // console.log(res)
           this.dataTree = res.data
           this.dialogSbVisible = true
         })
       },
       // 点击树节点回调
       treeClick(row,node,el){
-        console.log(row)
+        // console.log(row)
         this.treeId = row.id
         this.getListDevice({categoryId:row.id})
       },
@@ -386,7 +386,7 @@ import JmTable from "@/components/JmTable1";
       // 点击左侧选择设备 按钮《隐藏》||《显示》
       mergeBtn(){
         this.isHide = !this.isHide
-        console.log(this.isHide)
+        // console.log(this.isHide)
         if(!this.isHide){
           this.$refs['left_box'].style.width = '30%'
           this.$refs['right_box'].style.width = '70%'
@@ -399,7 +399,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
-        console.log(selection)
+        // console.log(selection)
         this.deviceCheckboxData = selection
       },
       // 点击设备确认按钮

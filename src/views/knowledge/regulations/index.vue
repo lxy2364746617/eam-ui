@@ -205,7 +205,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 上传成功回调
       onSuccess(res,file){
-        console.log(res,'上传成功~')
+        // console.log(res,'上传成功~')
         this.ruleForm.fileResources.push({
           name:res.originalFileName,
           ...res
@@ -251,7 +251,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击编辑
       handleUpdate(row,text){
-        console.log(row)
+        // console.log(row)
         this.typeText = text
         let keys = Object.keys(this.ruleForm)
         keys.forEach(item=>{
@@ -262,7 +262,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击删除
       handleDelete(row){
-        console.log(row)
+        // console.log(row)
         ruleListDel({id:row.id,fileId:row.fileId}).then(res=>{
           this.getList()
           this.$message({

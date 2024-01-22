@@ -200,19 +200,17 @@ import * as echarts from "echarts";
     },
     methods:{
       initChart() {
-        console.log(echarts)
         this.myChart = echarts.init(this.$refs.chart);
         this.myChart1 = echarts.init(this.$refs.chart1);
       },
       // 获取表头所有信息
       getInfoAll(){
         faultCaseInfo().then(res=>{
-          console.log(res)
+          // console.log(res)
           this.monthNum = res.data.monthAdd
           this.yearNum = res.data.yearAdd
           this.option.series[0].data = res.data.faultStatics
           this.option1.series[0].data = res.data.levelStatics
-          console.log(this.option)
           this.jszlData.list = res.data.top5Statics
           if(this.jszlData.list){
             let colorArr = ['#FC297D','#FFB64F','#007BFE']
@@ -230,7 +228,7 @@ import * as echarts from "echarts";
       // 获取故障类型
       getFaultsType(){
         faultCaseType().then(res=>{
-          console.log(res,'故障类型')
+          // console.log(res,'故障类型')
           if(res.data){
             res.data.forEach(item=>{
               item.label = item.dictLabel
@@ -258,7 +256,7 @@ import * as echarts from "echarts";
       getList(queryParams) {
         this.loading = true;
         faultCaseList(queryParams).then(response => {
-          console.log(response)
+          // console.log(response)
           this.templateList = response.rows;
           this.total = response.total;
           this.loading = false;
@@ -279,7 +277,7 @@ import * as echarts from "echarts";
       },
       // 点击删除
       handleDelete(row){
-        console.log(row)
+        // console.log(row)
         faultCaseListDel({id:row.id}).then(res=>{
           this.getList()
           this.$message({
@@ -289,7 +287,7 @@ import * as echarts from "echarts";
         })
       },
       linkClick(row,item){
-        console.log(row,item)
+        // console.log(row,item)
         if(item.label == "故障设备编码"){
           this.$router.push({name:'bookDetails',query:{i:row.deviceId}})
         }else if(item.label == '工单编码'){
