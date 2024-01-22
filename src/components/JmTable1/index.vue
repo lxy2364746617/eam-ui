@@ -63,7 +63,6 @@
                           <span v-if="col.optionShowValue" style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
                         </el-option>
                     </el-select>
-
                     <el-select v-else-if="col.formType=='selectF'"  
                       v-model="queryParams[col.prop]"
                       placeholder="请选择"  
@@ -81,8 +80,7 @@
                           :value="item.value">
                         </el-option>
                       </el-option-group>
-                  </el-select>
-
+                    </el-select>
                     <el-select 
                       v-else-if="col.formType=='selectTag'" 
                       clearable
@@ -378,6 +376,7 @@ export default {
       },
       /** 搜索按钮操作 */
       handleQuery() {
+        console.log(this.queryParams)
         this.queryParams.pageNum = 1;
         this.getList()
       },

@@ -10,7 +10,7 @@
         </div>
       <div class="search_text">
         <span>历史搜索：</span>
-        <el-tag v-for="item in tags" :key="item" closable type="info" @close="handleClose(item)" @click="handleClick(item)">{{item}}</el-tag>
+        <el-tag v-for="(item,index) in tags" :key="index" type="info" @close="handleClose(item)">{{item.searchContent}}</el-tag>
       </div>
       <div class="content_box">
         <el-row :gutter="20">
@@ -18,24 +18,27 @@
             <div class="grid-content">
               <p class="title"><i class="el-icon-s-order"></i>故障案例</p>
               <el-collapse v-model="activeNames" @change="handleChange" accordion>
-                <el-collapse-item v-for="(item,index) in gzal.list" :key="index" :name="item.name">
+                <el-collapse-item v-for="(item,index) in gzal.list" :key="index" :name="item.id">
                   <template slot="title">
                     <div class="gzal_title_box">
-                      {{item.title}}<i class="right_sz iconfont icon-uniEAD1" @click.stop="rowClick(item)"></i>
+                      {{`${item.caseNo}${item.faultName}`}}<i class="right_sz iconfont icon-uniEAD1" @click.stop="rowClick(item)"></i>
                     </div>
                   </template>
-                  <div>{{item.content}}</div>
+                  <div>
+                    <p><span style="font-weight:bold">故障设备：</span>{{item.deviceName}}</p>
+                    <p><span style="font-weight:bold">故障描述：</span>{{item.faultInfo}}</p>
+                  </div>
                 </el-collapse-item>
               </el-collapse>
             </div>
-        </el-col>
+          </el-col>
           <el-col :span="8">
             <div class="grid-content">
               <p class="title"><i class="el-icon-s-order"></i>技术资料</p>
               <div class="ul">
-                <div class="li" v-for="(item,index) in gzal.list" :key="index">
-                  <p class="icon"><i class="icon_left el-icon-s-ticket"></i> 水泵入厂技术参数说明.pdf <i class="icon_right iconfont icon-uniEAD1" @click="jszlClick(item)"></i></p>
-                  <p class="text">{{item.title}}</p>
+                <div class="li" v-for="(item,index) in jszl.list" :key="index">
+                  <p class="icon"><i class="icon_left el-icon-s-ticket"></i> {{item.fileName}}<i class="icon_right iconfont icon-uniEAD1" @click="jszlClick(item)"></i></p>
+                  <p class="text">{{item.deviceName}}</p>
                 </div>
               </div>
             </div>
@@ -44,9 +47,9 @@
             <div class="grid-content">
               <p class="title"><i class="el-icon-s-order"></i>运维文档</p>
               <div class="ul">
-                <div class="li" v-for="(item,index) in gzal.list" :key="index">
-                  <p class="icon"><i class="icon_left el-icon-s-ticket"></i> 水泵入厂技术参数说明.pdf <i class="icon_right iconfont icon-uniEAD1" @click="ywwdClick(item)"></i></p>
-                  <p class="text">{{item.title}}</p>
+                <div class="li" v-for="(item,index) in ywwd.list" :key="index">
+                  <p class="icon"><i class="icon_left el-icon-s-ticket"></i> {{item.fileName}} <i class="icon_right iconfont icon-uniEAD1" @click="ywwdClick(item)"></i></p>
+                  <p class="text">{{item.planName}}</p>
                 </div>
               </div>
             </div>
@@ -59,23 +62,22 @@
 </template>
 
 <script>
+import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledge'
   export default {
     name:'searchPage',
     data(){
       return {
         search_text:'',
         tags: ['搜索一','搜索二','搜索三','搜索四','搜索五'],
-        activeNames: ['1'],
+        activeNames: [],
         gzal:{
-          list:[
-            {name:'1',title:'故障设备：1#水泵',content:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。'},
-            {name:'2',title:'故障设备：1#水泵',content:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。'},
-            {name:'3',title:'故障设备：1#水泵',content:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。'},
-            {name:'4',title:'故障设备：1#水泵',content:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。'},
-            {name:'5',title:'故障设备：1#水泵',content:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。'},
-            {name:'6',title:'故障设备：1#水泵',content:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。'},
-            {name:'7',title:'故障设备：1#水泵',content:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。'},
-          ]
+          list:[]
+        },
+        jszl:{
+          list:[]
+        },
+        ywwd:{
+          list:[]
         }
       }
     },
@@ -88,7 +90,36 @@
         let text = this.$route.query.searchText
         if(text){
           this.search_text = text
+          this.getSearchList(text)
         }
+      },
+      // 获取历史搜索列表
+      getSSLSList(){
+        searchHistoryList().then(res=>{
+          console.log(res,'搜素历史')
+          res.rows.length = 5
+          this.tags = res.rows
+        })
+      },
+      // 获取搜索结果
+      getSearchList(){
+        let params = {
+          search: this.search_text
+        }
+        navSearchList(params).then(res=>{
+          console.log(res,'搜索结果')
+          // 新增历史记录
+          searchHistoryAdd({searchContent:this.search_text}).then(res=>{
+            this.getSSLSList()
+          })
+          // 赋值
+          this.gzal.list = res.data.kdbFaultSearchVos
+          this.jszl.list = res.data.kdbEquSearchVos
+          this.ywwd.list = res.data.kdbMaintainSearchVos
+          if(this.gzal.list.length){
+            this.activeNames.push(res.data.kdbFaultSearchVos[0].id)
+          }
+        })
       },
       // 关闭tag
       handleClose(tag) {
@@ -97,18 +128,20 @@
       // 点击tag
       handleClick(row){
         this.search_text = row
+        this.getSearchList()
       },
       // 点击搜索
       searchClick(){
-        let text = this.search_text
-        if(this.tags.length < 5){
-          if(text){
-            if(!this.tags.includes(text)){
-              this.tags.push(text)
-            }
-          }
-        }
-        console.log(this.tags)
+        this.getSearchList()
+        // let text = this.search_text
+        // if(this.tags.length < 5){
+        //   if(text){
+        //     if(!this.tags.includes(text)){
+        //       this.tags.push(text)
+        //     }
+        //   }
+        // }
+        // console.log(this.tags)
       },
       handleChange(val) {
         console.log(val);
@@ -117,20 +150,20 @@
       backClick(){
         this.$router.push({name:'navigation'})
       },
-      // 点击小手跳转及查看详情
-      rowClick(){
+      // 点击故障案例小手跳转及查看详情
+      rowClick(row){
         console.log(row)
-        this.$router.push({name:'faults_details',query:{id:row.id}})
+        this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
       },
       // 点击技术资料每一行
       jszlClick(row){
         console.log(row)
-        this.$router.push({name:'technology',query:{code:row.code}})
+        this.$router.push({name:'technology',query:{id:row.id}})
       },
       // 点击运维文档每一行
       ywwdClick(row){
         console.log(row)
-        this.$router.push({name:'maintenance',query:{code:row.code}})
+        this.$router.push({name:'maintenance',query:{id:row.id}})
       },
     }
   }
@@ -148,9 +181,9 @@
   }
 }
 .search_text{
-  // text-align: center;
-  padding-left: 25%;
-  margin:20px 0;
+  text-align: center;
+  // padding-left: 15%;
+  margin:20px 20px 0 20px;
 }
 .content_box{
   padding: 20px;
@@ -178,6 +211,7 @@
     display: flex;
     justify-content: space-between;
     padding: 0 20px;
+    line-height: 20px;
     .right_sz{
       color:#1F77FC;
       cursor: pointer;
@@ -201,6 +235,10 @@
       }
       .icon{
         position: relative;
+        white-space: nowrap; /* 不换行 */
+        overflow: hidden; /* 超出部分隐藏 */
+        text-overflow: ellipsis; /* 显示省略号 */
+        padding-right: 25px;
         .icon_left{
           margin-right: 10px;
           color: #1F77FC;

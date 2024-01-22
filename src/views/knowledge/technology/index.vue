@@ -123,7 +123,7 @@
 
 <script>
 
-import { techList,equipmentTree,equipmentTreeList,techAdd,techListDel } from '@/api/knowledge'
+import { techList,equipmentTree,equipmentTreeList,techAdd,techListDel,addClickNum } from '@/api/knowledge'
 import { download } from '@/utils'
 import { getToken } from "@/utils/auth";
 import JmTable from "@/components/JmTable1";
@@ -217,16 +217,17 @@ import JmTable from "@/components/JmTable1";
     },
     mounted(){
       this.getRouteData()
-      this.getList()
     },
     methods:{
       // 获取路由参数
       getRouteData(){   
-        console.log(this.$refs['jmTable'])
-        let name = this.$route.query.name
-        if(name){
-          this.$refs['jmTable'].name = name
-          this.$refs['jmTable'].handleQuery()
+        let id = this.$route.query.id
+        if(id){
+          this.getList({id:id})
+          // this.$refs['jmTable'].queryParams.id = id
+          // this.$refs['jmTable'].handleQuery() // 模拟搜索
+        }else{
+          this.getList()
         }
       },
       // 获取表单数据
@@ -254,12 +255,14 @@ import JmTable from "@/components/JmTable1";
         console.log(row)
         let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
         download(url)
+        addClickNum({id:row.id})
       },
       // 点击预览
       handlePreview(row){
         console.log(row)
         let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
         window.open(url)
+        addClickNum({id:row.id})
       },
       // 点击添加（上传）
       addClick(){

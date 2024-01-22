@@ -1,7 +1,7 @@
 <template>
   <div class="pageStyle">
     <el-card class="box-card1" shadow="never">
-      <div class="title"><i class="el-icon-document"></i>案例详情</div>
+      <div class="title1"><i class="el-icon-document"></i>案例详情</div>
       <div class="detail_item">
         <el-descriptions :column="4">
           <el-descriptions-item v-for="(item,index) in infoList" :key="index" :label="item.label" :span="item.span">
@@ -19,7 +19,7 @@
           </el-descriptions-item>
         </el-descriptions>
       </div>
-      <div class="title"><i class="el-icon-document"></i>解决方案</div>
+      <div class="title1"><i class="el-icon-document"></i>解决方案</div>
       <div class="detail_item">
         <div class="subtitle"><i class="el-icon-caret-right"></i> 处理信息</div>
         <el-descriptions :column="4">
@@ -30,11 +30,11 @@
       </div>
       <div class="detail_item">
         <div class="subtitle"><i class="el-icon-caret-right"></i>备件记录</div>
-        <el-table
+        <el-table 
           :data="table.list"
           stripe
           style="width: 100%">
-          <el-table-column v-for="(item,index) in table.header" :key="index" :prop="item.prop" :label="item.label"></el-table-column>
+          <el-table-column v-for="(item,index) in table.header" :key="index" :prop="item.prop" :label="item.label" :show-overflow-tooltip="true"></el-table-column>
         </el-table>
       </div>
       <div class="detail_item">
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { faultCaseListDetails } from '@/api/knowledge'
+import { getWomInfo,getWomAttachmentList,getWomRepairInfo,getWomRepairInfoOut,faultCaseEdit,getFaultCaseEdit } from '@/api/knowledge'
 import JmForm from "@/components/JmForm";
   export default {
     name:'faults_details',
@@ -76,51 +76,40 @@ import JmForm from "@/components/JmForm";
         disabled3: true,
         // 案例详情
         infoList:[
-          {label:'案例编码',value:'A2309100001'},
-          {label:'故障代码',value:'GZ0001'},
-          {label:'故障名称',value:'电机转子不平衡'},
-          {label:'故障分类',value:'电气故障'},
-          {label:'设备名称',value:'空压机'},
-          {label:'设备编码',value:'SXJMSYK001'},
-          {label:'规格型号',value:'EBZ260A'},
-          {label:'设备类别',value:'洗选设备'},
-          {label:'故障部件',value:'电机'},
-          {label:'故障等级',value:'A级'},
-          {label:'故障时间',value:'2022-05-17'},
-          {label:'是否特种设备',value:'否'},
-          {label:'是否停机',value:'否'},
-          {label:'工单编码',value:'GDDZWX23090001'},
-          {label:'工单名称',value:'空压机电机转子不平衡'},
-          {label:'工单类型',value:'队组维修'},
-          {label:'故障描述',value:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。',span:4},
-          {label:'故障图片',value:[{src:'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg'}],type:'img',srcList:['https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg']},
+          {label:'案例编码',value:'',prop:'caseNo'},
+          {label:'故障代码',value:'',prop:'faultCode'},
+          {label:'故障名称',value:'',prop:'faultName'},
+          {label:'故障分类',value:'',prop:'faultType'},
+          {label:'设备名称',value:'',prop:'deviceName'},
+          {label:'设备编码',value:'',prop:'deviceCode'},
+          {label:'规格型号',value:'',prop:'specs'},
+          {label:'设备类别',value:'',prop:'deviceType'},
+          {label:'故障部件',value:'',prop:'faultLocation'},
+          {label:'故障等级',value:'',prop:'faultGrade'},
+          {label:'故障时间',value:'',prop:'faultDate'},
+          {label:'是否特种设备',value:'',prop:'specialFlag'},
+          {label:'是否停机',value:'',prop:'haltFlag'},
+          {label:'工单编码',value:'',prop:'orderCode'},
+          {label:'工单名称',value:'',prop:'orderName'},
+          {label:'工单类型',value:'',prop:'orderType'},
+          {label:'故障描述',value:'',span:4,prop:'faultInfo'},
+          {label:'故障图片',value:[],type:'img',srcList:[],prop:'fileList'},
         ],
         // 处理信息
-        infoList1:[
-          {label:'维修单位',value:'XXX队组维修队'},
-          {label:'执行人员',value:'李凡'},
-          {label:'维修结果',value:'完成'},
-          {label:'是否更换备件',value:'是'},
-          {label:'维修开始',value:'2022-05-17 09:57:32'},
-          {label:'维修结束',value:'2022-05-17 10:57:32'},
-          {label:'维修工时',value:'3.5h',span:2},
-          {label:'故障详情',value:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。',span:4},
-          {label:'故障原因',value:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。',span:4},
-          {label:'维修措施',value:'不平衡故障症状特征：振动主频率等于转子转速；径向振动占优势；振动相位稳定；振动随转速平方变化；振动相位偏移方向与测量方向成正比。',span:4},
-        ],
+        infoList1:[],
         // 备件记录
         table:{
           header:[
-           {label:'备件编码',prop:'date'},
-           {label:'备件名称',prop:'name'},
-           {label:'备件类别',prop:'address'},
-           {label:'规格型号',prop:'xh'},
-           {label:'供应商名称',prop:'mc'},
-           {label:'使用部位',prop:'bw'},
-           {label:'更换数量',prop:'sl'},
-           {label:'单位',prop:'dw'},
-           {label:'原件编码',prop:'bm'},
-           {label:'更换时间',prop:'sj'},
+           {label:'备件编码',prop:'attachmentCode'},
+           {label:'备件名称',prop:'attachmentName'},
+           {label:'备件类别',prop:'attachmentType'},
+           {label:'规格型号',prop:'specs'},
+           {label:'供应商名称',prop:'supplierName'},
+           {label:'使用部位',prop:'location'},
+           {label:'更换数量',prop:'replaceNum'},
+           {label:'单位',prop:'unit'},
+           {label:'原件编码',prop:'scriptCode'},
+           {label:'更换时间',prop:'createTime'},
           ],
           list:[
             { date: '2016-05-02', name: '王小虎', address: '上海市普陀'},
@@ -132,12 +121,17 @@ import JmForm from "@/components/JmForm";
         },
         // 补充对策
         columns3:[
-          { label:"预防对策", prop:"propertyNv", span: 24,formType:'textarea'},
-          { label:"补充说明：", prop:"propertyNv", span: 24,formType:'textarea' },
-          // { label:"故障分类", prop:"propertyType", formType: 'select', options: [], span: 12, },
+          { label:"预防对策", prop:"prevention", span: 24,formType:'textarea'},
+          { label:"补充说明：", prop:"footNote", span: 24,formType:'textarea' },
         ],
-        formData:{}, //   表格value 
-        id:''
+        formData:{
+          prevention:'',
+          footNote:''
+        }, //   表格value 
+        orderCode:'', // 工单编码
+        deviceCode:'', // 设备编码
+        orderType:'', // 工单类型
+        detailsId:'', // ID
       }
     },
     mounted(){
@@ -146,15 +140,123 @@ import JmForm from "@/components/JmForm";
     methods:{
       // 获取路由参数
       getRouteData(){
-        let id = this.$route.query.id
-        if(id){
-          this.id = id
+        console.log(this.$route.query)
+        let routeData = this.$route.query
+        this.orderCode = routeData.orderCode
+        this.deviceCode = routeData.deviceCode
+        this.detailsId =routeData.id
+        if(this.orderCode && this.deviceCode){
+          this.getDetails(routeData)
         }
+        if(this.detailsId){
+          this.getDcbcInfo()
+        }
+        this.getBjjlInfo()
       },
-      // 获取详情
-      getDetails(){
-        faultCaseListDetails().then(res=>{
-          conosle.log(res)
+      // 获取详情信息
+      getDetails(row){
+        // console.log(row)
+        // 工单信息
+        console.log(this.deviceCode)
+        let params = {
+          deviceCode:this.deviceCode,
+          orderCode:this.orderCode,
+        }
+        getWomInfo(params).then(res=>{
+          console.log(res,'工单基本信息')
+          this.orderType = res.data.orderType
+          this.infoList.forEach(item=>{    
+            let value = res.data[item.prop] || res.data.faultInfoDTO[item.prop]
+            if(item.prop == 'fileList'){
+              if(res.data.faultInfoDTO.fileList.length){
+                res.data.fileList.forEach(items=>{
+                  items.src = items.url
+                  item.srcList.push(items.url)
+                })
+                item.value = value
+              }
+            }else if(['haltFlag'].includes(item.prop)){
+              item.value = res.data[item.prop] === 0?'否':'是'
+            }else if(['caseNo'].includes(item.prop)){
+              item.value = this.$route.query.caseNo
+            }else{
+              item.value = value
+            }
+          })
+          if(this.orderType == 'WWWX'){
+            this.getWWWXInfo()
+          }else{
+            this.getClxxInfo()
+          }
+        })
+      },
+      // 获取备件记录
+      getBjjlInfo(){
+        getWomAttachmentList({orderCode:this.orderCode}).then(res=>{
+          console.log(res,'备件记录')
+          this.table.list = res.data
+        })
+      },
+      // 获取【维修】处理信息
+      getClxxInfo(){
+        // 处理信息
+        getWomRepairInfo({orderCode:this.orderCode}).then(res=>{
+          console.log(res,'处理【维修】信息')
+          this.infoList1 = [
+            {label:'工单编码',value:'',prop:'orderCode'},
+            {label:'维修单位',value:'',prop:'unit'},
+            {label:'执行人员',value:'',prop:'executor'},
+            {label:'维修开始',value:'',prop:'startTime'},
+            {label:'维修结束',value:'',prop:'endTime'},
+            {label:'维修工时',value:'',prop:'workHours'},
+            {label:'是否完成维修',value:'',prop:'finishFlag'},
+            {label:'是否更换备件',value:'', prop:'attachmentFlag'},
+            {label:'故障类型',value:'',prop:'faultType'},
+            {label:'维修措施',value:'',span:3,prop:'repairInfo'},
+            {label:'故障原因',value:'',span:4,prop:'faultReason'},
+            {label:'故障详情',value:'',span:4,prop:''},
+          ]
+          this.infoList1.forEach(item=>{
+            if(['finishFlag','attachmentFlag','haltFlag'].includes(item.prop)){
+              let val = res.data[item.prop] === 0?'否':'是'
+              item.value = val
+            }else{
+              item.value = res.data[item.prop]
+            }
+            
+          })
+        })
+      },
+      // 获取【委外维修】处理信息
+      getWWWXInfo(){
+        getWomRepairInfoOut({orderCode:this.orderCode}).then(res=>{
+          console.log(res,'处理信息')
+          this.infoList1 = [
+            {label:'工单编码',value:'',prop:'orderCode'},
+            {label:'委外维修单位',value:'',prop:'unit'},
+            {label:'委外单位负责人',value:'',prop:'director'},
+            {label:'联系方式',value:'',prop:'phonenumber'},
+            {label:'设备状态鉴定结果',value:'',prop:'identityResult'},
+            {label:'设备状态验收结果',value:'',prop:'acceptResult'},
+            {label:'鉴定报告',value:'',span:4,prop:'identityFile'},
+            {label:'验收报告',value:'',span:4,prop:'acceptFile'},
+            {label:'备注',value:'',span:4,prop:'remark'},
+          ]
+          this.infoList1.forEach(item=>{
+            item.value = res.data[item.prop]
+          })
+        })
+      },
+      // 获取对策补充
+      getDcbcInfo(){
+        let params = {
+          id:this.detailsId
+        }
+        getFaultCaseEdit(params).then(res=>{
+          console.log(res,'对策补充')
+          this.formData.prevention = res.data.prevention
+          this.formData.footNote = res.data.footNote
+          console.log(this.formData)
         })
       },
       //保存
@@ -163,7 +265,19 @@ import JmForm from "@/components/JmForm";
       },
       // 表单回调
       submitForm(val){
-        console.log(val)
+        // console.log(val)
+        let params = {
+          ...val,
+          id:this.detailsId
+        }
+        faultCaseEdit(params).then(res=>{
+          console.log(res)
+          this.$message({
+            message: '操作成功！',
+            type: 'success'
+          })
+          this.disabled3 = true
+        })
       },
       closeEdit(formref){
         this.disabled3 = true
@@ -173,10 +287,11 @@ import JmForm from "@/components/JmForm";
 </script>
 
 <style lang="scss" scoped>
-.title{
+.title1{
   background-color: #F7F8FA;
   height: 50px;
   line-height: 50px;
+  text-align: left;
   i{
     font-size: 25px;
     color: #1F77FC;

@@ -140,7 +140,14 @@ export function techListDel(data) {
     data: data
   })
 }
-
+// 增加点击数
+export function addClickNum(data) {
+  return request({
+    url: `/kdb/tech/addClickNum`,
+    method: 'post',
+    data: data
+  })
+}
 
 
 
@@ -187,10 +194,121 @@ export function faultCaseListDel(data) {
     data: data
   })
 }
-// 列表-详情
-export function faultCaseListDetails(data) {
+// 获取工单基本信息
+export function getWomInfo(query) {
   return request({
-    url: `/kdb/faultCase/remove`,
+    url: '/workorder/getWomFaultInfo',
+    method: 'get',
+    params: query
+  })
+}
+// 获取【维修】处理信息
+export function getWomRepairInfo(query) {
+  return request({
+    url: '/wom/repair/getWomRepairInfo',
+    method: 'get',
+    params: query
+  })
+}
+// 获取【委外维修】处理信息
+export function getWomRepairInfoOut(query) {
+  return request({
+    url: '/wom/repair/getWomRepairInfoOut',
+    method: 'get',
+    params: query
+  })
+}
+// 获取备件记录
+export function getWomAttachmentList(query) {
+  return request({
+    url: '/wom/repair/getWomAttachmentList',
+    method: 'get',
+    params: query
+  })
+}
+// 获取对策补充
+// export function getWomAttachmentList(query) {
+//   return request({
+//     url: '/wom/repair/getWomAttachmentList',
+//     method: 'get',
+//     params: query
+//   })
+// }
+// 保存对策补充
+export function faultCaseEdit(data) {
+  return request({
+    url: '/kdb/faultCase/edit',
+    method: 'post',
+    data: data
+  })
+}
+// 获取对策补充
+export function getFaultCaseEdit(query) {
+  return request({
+    url: '/kdb/faultCase/obtainFaultById',
+    method: 'get',
+    params: query
+  })
+}
+
+
+
+
+/**
+ * 知识导航
+ */
+// 获取故障案例
+export function navFaultCaseList(query) {
+  return request({
+    url: '/kdb/index/list',
+    method: 'get',
+    params: query
+  })
+}
+// 获取技术资料
+export function navTechList(query) {
+  return request({
+    url: '/kdb/index/techList',
+    method: 'get',
+    params: query
+  })
+}
+// 获取技术资料
+export function navMaintainList(query) {
+  return request({
+    url: '/kdb/index/maintainList',
+    method: 'get',
+    params: query
+  })
+}
+// 获取规章制度
+export function navRuleList(query) {
+  return request({
+    url: '/kdb/index/ruleList',
+    method: 'get',
+    params: query
+  })
+}
+// 获取搜索结果
+export function navSearchList(query) {
+  return request({
+    url: '/kdb/index/search',
+    method: 'get',
+    params: query
+  })
+}
+// 获取历史搜索列表
+export function searchHistoryList(query) {
+  return request({
+    url: '/kdb/searchHistory/list',
+    method: 'get',
+    params: query
+  })
+}
+// 新增历史搜索列表
+export function searchHistoryAdd(data) {
+  return request({
+    url: '/kdb/searchHistory/add',
     method: 'post',
     data: data
   })

@@ -134,16 +134,17 @@ import JmTable from "@/components/JmTable1";
     mounted(){
       this.getRouteData()
       this.getType()
-      this.getList()
     },
     methods:{
       // 获取路由参数
       getRouteData(){   
-        console.log(this.$refs['jmTable'])
-        let name = this.$route.query.name
-        if(name){
-          this.$refs['jmTable'].name = name
-          this.$refs['jmTable'].handleQuery()
+        let id = this.$route.query.id
+        if(id){
+          this.getList({id:id})
+          // this.$refs['jmTable'].queryParams.fileName = fileName
+          // this.$refs['jmTable'].handleQuery() // 模拟搜索
+        }else{
+          this.getList()
         }
       },
       // 点击新增

@@ -275,7 +275,7 @@ import * as echarts from "echarts";
       },
       // 点击编辑
       handleUpdate(row){
-        this.$router.push({name:'faults_details',query:{id:row.id}})
+        this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
       },
       // 点击删除
       handleDelete(row){
@@ -291,11 +291,10 @@ import * as echarts from "echarts";
       linkClick(row,item){
         console.log(row,item)
         if(item.label == "故障设备编码"){
-          this.$router.push({name:'bookDetails',query:{i:row.id,t:row.title}})
+          this.$router.push({name:'bookDetails',query:{i:row.deviceId}})
         }else if(item.label == '工单编码'){
-          this.$router.push({name:'faults_details',query:{id:row.id}})
+          this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
         }
-  
       }
     },
     beforeDestroy() {

@@ -168,13 +168,14 @@ import JmTable from "@/components/JmTable1";
     methods:{
       // 获取路由参数
       getRouteData(){   
-        console.log(this.$refs['jmTable'])
-        let name = this.$route.query.name
-        if(name){
-          this.$refs['jmTable'].name = name
-          this.$refs['jmTable'].handleQuery()
+        let id = this.$route.query.id
+        if(id){
+          // this.$refs['jmTable'].name = name
+          // this.$refs['jmTable'].handleQuery()
+          this.getList({id:id})
+        }else{
+          this.getList()
         }
-        this.getList()
       },
       // 获取规章制度类型 
       getType(){

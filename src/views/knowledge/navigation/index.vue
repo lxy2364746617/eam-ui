@@ -52,9 +52,9 @@
               </div>
               <div class="content_body">
                 <div v-for="(item,index) in jszlData.list" :key="index" class="textItem" @click=jszlClick(item)>
-                  <i class="title iconfont" :class="item.title"></i>
-                  <p class="text">{{item.content}}</p>
-                  <span class="clickNo" :style="{color:item.color}">{{item.clickNo}}</span>
+                  <i class="title iconfont" :class="item.icon"></i>
+                  <p class="text">{{item.originalFileName}}</p>
+                  <span class="clickNo" :style="{color:item.color}">点击NO.{{index+1}}</span>
                 </div>
               </div>
             </el-card>
@@ -63,14 +63,13 @@
             <el-card class="box-card" shadow="never">
               <div slot="header" class="clearfix">
                 <span>运维文档</span>
-                <el-button style="float: right; padding: 3px 0" type="text" @click="ClickMore('yywd')">查看更多</el-button>
               </div>
               <div class="content_body content_body2">
                 <el-row :gutter="20" style="width:100%">
                   <el-col :span="6" v-for="(item,index) in ywwdData.list" :key="index">
                     <div class="wd_box">
                       <p class="el-icon-folder-opened icon_top"></p>
-                      <p class="name">{{item.name}}</p>
+                      <p class="name">{{item.fileName}}</p>
                       <p class="type">{{item.type}}</p>
                       <el-divider></el-divider>
                       <p class="icon_bottom"><span class="el-icon-right" @click="ywwdClick(item)"></span></p>
@@ -86,15 +85,14 @@
           <el-card class="box-card" shadow="never">
             <div slot="header" class="clearfix">
               <span class="clearfix_text">规章制度 <i class="clearfix_new">NEW</i></span>
-              <el-button style="float: right; padding: 3px 0" type="text" @click="ClickMore('gzzd')">查看更多</el-button>
             </div>
             <div class="content_body1">
               <div v-for="(item,index) in gzzdData.list" :key="index" class="zd_text" @click="gzzdClick(item)">
-                <p>{{item.title}}</p>
+                <p>{{item.fileName}}</p>
                 <el-divider></el-divider>
                 <p>{{item.content}}</p>
                 <el-divider></el-divider>
-                <p>实施时间：{{item.date}}</p>
+                <p>实施时间：{{item.effectiveDate}}</p>
               </div>
             </div>
           </el-card>
@@ -106,7 +104,7 @@
 </template>
 
 <script>
-import { getFaultList } from '@/api/knowledge'
+import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList } from '@/api/knowledge'
   export default {
     name:'navigation',
     data(){
@@ -120,50 +118,29 @@ import { getFaultList } from '@/api/knowledge'
         ],
         tableData: {
           headerList:[
-            { prop:'albm',label:'案例编码',minWidth:'80px'},
-            { prop:'gzdm',label:'故障代码',minWidth:'80px'},
-            { prop:'gzmc',label:'故障名称',minWidth:'80px'},
-            { prop:'ljal',label:'累计案例',minWidth:'80px'},
-            { prop:'cs',label:'次数',minWidth:'50px'},
-            { prop:'tjsj',label:'添加时间'},
+            { prop:'code',label:'故障代码',minWidth:'80px'},
+            { prop:'faultName',label:'故障名称',minWidth:'80px'},
+            { prop:'total',label:'累计案例次数',minWidth:'80px'},
+            { prop:'creatTime',label:'添加时间'},
           ],
-          dataList:[
-            { albm: '1',gzdm: 'ZZSHNTPSJ-03',gzmc: '我出故障啦',ljal:'案例一',cs:'20',tjsj:'2023-11-11'},
-            { albm: '1',gzdm: 'ZZSHNTPSJ-03',gzmc: '我出故障啦',ljal:'案例一',cs:'20',tjsj:'2023-11-11'},
-            { albm: '1',gzdm: 'ZZSHNTPSJ-03',gzmc: '我出故障啦',ljal:'案例一',cs:'20',tjsj:'2023-11-11'},
-            { albm: '1',gzdm: 'ZZSHNTPSJ-03',gzmc: '我出故障啦',ljal:'案例一',cs:'20',tjsj:'2023-11-11'},
-          ]
+          dataList:[]
         },
         jszlData:{
-          list:[
-            {title:'icon-JPGtubiao',content:'某文件解决技术方案.doc',clickNo:'点击NO.1',color:'#FC297D'},
-            {title:'icon-word1',content:'某文件解决技术方案.doc',clickNo:'点击NO.2',color:'#FFB64F'},
-            {title:'icon-PDFtubiao',content:'某文件解决技术方案.doc',clickNo:'点击NO.3',color:'#007BFE'},
-            {title:'icon-MPtubiao',content:'某文件解决技术方案.doc',clickNo:'点击NO.4'},
-          ]
+          list:[]
         },
         gzzdData:{
-          list:[
-            {title:'我是规章要求.doc',content:'我是规章制度描述,我是规章制度描述我是规章制度描述,我是规章制度描述我是规章制度描述。',date:'2023-11-08 17:48'},
-            {title:'我是规章要求.doc',content:'我是规章制度描述,我是规章制度描述我是规章制度描述,我是规章制度描述我是规章制度描述。',date:'2023-11-08 17:48'},
-            {title:'我是规章要求.doc',content:'我是规章制度描述,我是规章制度描述我是规章制度描述,我是规章制度描述我是规章制度描述。',date:'2023-11-08 17:48'},
-            {title:'我是规章要求.doc',content:'我是规章制度描述,我是规章制度描述我是规章制度描述,我是规章制度描述我是规章制度描述。',date:'2023-11-08 17:48'},
-          ]
+          list:[]
         },
         ywwdData:{
-          list:[
-            {name:'文档1.doc',type:'故障案例'},
-            {name:'文档1.doc',type:'故障案例'},
-            {name:'文档1.doc',type:'故障案例'},
-            {name:'文档1.doc',type:'故障案例'},
-            {name:'文档1.doc',type:'故障案例'},
-            {name:'文档1.doc',type:'故障案例'},
-          ]
+          list:[]
         }
       }
     },
     mounted(){
-
+      this.getGzglList()
+      this.getJszlList()
+      this.getYwwdList()
+      this.getGzzdList()
     },
     methods:{
       // 点击搜索按钮
@@ -173,45 +150,52 @@ import { getFaultList } from '@/api/knowledge'
       // 点击故障案例更多
       ClickMore(type){
         if(type == 'gzal'){
-          this.getGzglList()
+          this.getGzglList(20)
         }else if(type == 'jszl'){
-          this.getJszlList()
-        }else if(type == 'ywwd'){
-          this.getYwwdList()
-        }else if(type == 'gzzd'){
-          this.getGzzdList()
+          this.getJszlList(20)
         }
         
       },
       // 获取故障案例列表
-      getGzglList(page = 1){
-        getFaultList({page:page,limit:'10'}).then(res=>{
-          console.log(res)
-          this.tableData.dataList = res.data
+      getGzglList(pageSize = 10){
+        let params = {
+          pageNum: 1,
+          pageSize: pageSize
+        }
+        navFaultCaseList(params).then(res=>{
+          this.tableData.dataList = res.rows
         })
       },
       // 获取技术资料
-      getJszlList(page = 1){
-        getFaultList({page:page,limit:'10'}).then(res=>{
-          console.log(res)
-          this.jszlData.list = res.data.top5Statics
+      getJszlList(pageSize = 10){
+        let params = {
+          pageNum: 1,
+          pageSize: pageSize
+        }
+        navTechList(params).then(res=>{
+          this.jszlData.list = res.rows
           if(this.jszlData.list){
             let colorArr = ['#FC297D','#FFB64F','#007BFE']
-            let iconObj = {jpg:'icon-JPGtubiao',word:'icon-word1',pdf:'icon-PDFtubiao',mp4:'icon-MPtubiao'}
+            let iconObj = {jpg:'icon-JPGtubiao',word:'icon-word1',pdf:'icon-PDFtubiao',mp4:'icon-MPtubiao',txt:'icon-TXTtubiao',png:'icon-PNGtubiao',qt:'icon-fuwenben'}
             this.jszlData.list.forEach((item,idx)=>{
               if(colorArr[idx]){
                 item.color = colorArr[idx]
               }
-              item.name.slice(item.name.indexof('.'),-1)
-              console.log(item.name)
-              if(item.name == '.jpg'){
+              let fileName = item.originalFileName.slice(item.originalFileName.indexOf('.'),item.originalFileName.length)
+              if(fileName == '.jpg'){
                 item.icon = iconObj.jpg
-              }else if(item.name == '.doc'){
+              }else if(fileName == '.doc'){
                 item.icon = iconObj.word
-              }else if(item.name == '.pdf'){
+              }else if(fileName == '.pdf'){
                 item.icon = iconObj.pdf
-              }else if(item.name == '.mp4'){
+              }else if(fileName == '.mp4'){
                 item.icon = iconObj.mp4
+              }else if(fileName == '.txt'){
+                item.icon = iconObj.txt
+              }else if(fileName == '.png'){
+                item.icon = iconObj.png
+              }else{
+                item.icon = iconObj.qt
               }
             })
           }
@@ -219,16 +203,28 @@ import { getFaultList } from '@/api/knowledge'
       },
       // 获取运维文档
       getYwwdList(){
-        getFaultList({page:page,limit:'10'}).then(res=>{
-          console.log(res)
-          this.tableData.dataList = res.data
+        navMaintainList().then(res=>{
+          // 获取运维文档类型 
+          maintainType().then(ress=>{
+            if(res.rows && ress.data){
+              res.rows.forEach(item=>{
+                ress.data.forEach(items=>{
+                  items.options.forEach(itemss=>{
+                    if( item.kdbType== itemss.value){
+                      item.type = itemss.label
+                    }
+                  })
+                })
+              })
+              this.ywwdData.list = res.rows
+            }
+          })
         })
       },
       // 获取规章制度
       getGzzdList(){
-        getFaultList({page:page,limit:'10'}).then(res=>{
-          console.log(res)
-          this.tableData.dataList = res.data
+        navRuleList().then(res=>{
+          this.gzzdData.list = res.rows
         })
       },
       // 点击img触发
@@ -258,24 +254,23 @@ import { getFaultList } from '@/api/knowledge'
         this.$router.push({name:'faults'})
       },
       // 点击故障案例的每一行触发
-      rowClick(row){
+      rowClick(row = {}){
         console.log(row)
-        this.$router.push({name:'faults_details',query:{id:row.id}})
+        this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
       },
       // 点击技术资料每一行
       jszlClick(row = {}){
-        console.log(row)
-        this.$router.push({name:'technology',query:{code:row.code}})
+        this.$router.push({name:'technology',query:{id:row.id}})
       },
       // 点击运维文档每一行
-      ywwdClick(row){
-        console.log(row = {})
-        this.$router.push({name:'maintenance',query:{code:row.code}})
+      ywwdClick(row = {}){
+        console.log(row)
+        this.$router.push({name:'maintenance',query:{id:row.id}})
       },
       // 点击规章制度每一行
       gzzdClick(row = {}){
         console.log(row)
-        this.$router.push({name:'regulations',query:{code:row.code}})
+        this.$router.push({name:'regulations',query:{id:row.id}})
       }
     }
   }
@@ -363,7 +358,7 @@ import { getFaultList } from '@/api/knowledge'
 }
 .content_body1{
   padding: 10px 15px;
-  height: 546px;
+  height: 562px;
   overflow-y: auto;
 }
 .content_body2{
@@ -469,5 +464,17 @@ import { getFaultList } from '@/api/knowledge'
 
 .icon-MPtubiao{
   color:#14A9DA;
+}
+
+.icon-PNGtubiao {
+  color:#FCCC00;
+}
+
+.icon-TXTtubiao{
+  color:#49B08F;
+}
+
+.icon-fuwenben{
+  color:#13227A;
 }
 </style>
