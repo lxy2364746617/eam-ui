@@ -17,9 +17,9 @@ export function listDefinition1(query) {
   })
 }
 // 部署流程实例 
-export function definitionStart(procDefId,businessId,businessType,data) {
+export function definitionStart(procDefId,businessId,businessType,businessCode,data) {
   return request({
-    url: '/flowable/definition/start/' + procDefId+ '/'+new Date().getTime()+'/EA',
+    url: '/flowable/definition/start/' + procDefId+ '/'+businessId+'/'+businessType+'/'+businessCode,
     method: 'post',
     data: data
   })

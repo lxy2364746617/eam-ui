@@ -104,7 +104,8 @@ import step5 from "@/views/device/book/details/step5";
 import step6 from "@/views/device/book/details/step6";
 import step7 from "@/views/device/book/details/step7";
 import step8 from "@/views/device/book/details/step8";
-
+import step9 from "@/views/device/book/details/step9";
+import step10 from "@/views/device/book/details/step10";
 export default {
   name: "bookadddetails",
   dicts: [
@@ -112,7 +113,7 @@ export default {
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, 
-    step1, step2, step3, step4, step5, step6, step7, step8,
+    step1, step2, step3, step4, step5, step6, step7, step8,step9,step10,
     devicebook: ()=> import("@/views/device/book/index"),
   },
   computed:{
@@ -141,6 +142,8 @@ export default {
         { label:'备件备品', name:'step5', visible: true, },
         { label:'关联设备', name:'step6', visible: this.formData.deviceAtt==1, },
         { label:'关联部件', name:'step7', visible: this.formData.deviceAtt==0, },
+        { label:'运维履历', name:'step9', visible: true, },
+        { label:'周转履历', name:'step10', visible: true, },
       ]
     },
   },

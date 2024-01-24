@@ -140,6 +140,14 @@
             <el-button
               size="mini"
               type="text"
+              icon="el-icon-view"
+              :loading="btnLoading"
+              @click="handleFlowRecord(scope.row)"
+              v-if="scope.row.processStatus=='running'||scope.row.processStatus=='completed'"
+            >审批流程</el-button>
+            <el-button
+              size="mini"
+              type="text"
               icon="el-icon-edit"
               :loading="btnLoading"
               @click="handleUpdate(scope.row,'edit')"
@@ -314,7 +322,7 @@ export default {
           formType: 'select',
           options: this.dict.type.em_device_level,
         }, //(A、B、C)
-        // { label:"所属子公司", prop:"",  },
+         { label:"所属子公司", prop:"subCompanyName",  },
         {
           label: '所属组织',
           prop: 'affDeptId',
@@ -703,7 +711,7 @@ export default {
           ' > ' +
           row.deviceName
         this.$router.push({
-          path: '/device/book/details?i=' + deviceId + '&t=' + this.title+'&isReadonly=true',
+          path: '/device/book/details?i=' + deviceId + '&t=' + this.title+((row.processStatus=='running'||row.processStatus=='completed')?'&isReadonly=true':''),
         })
         // this.addDetails = true;
       }
@@ -791,6 +799,7 @@ export default {
     /* 提交按钮 */
     handleSet(row){
       this.id = row.deviceId
+      this.deviceCode=row.deviceCode
       this.subopen = true;
       this.subtitle = "提交";
       let data={
@@ -814,18 +823,31 @@ export default {
       })
     },
     sub(val){
-        definitionStart(val.id,this.id,'EA',{path:'/device/book/details'}).then(res=>{
+        definitionStart(val.id,this.id,'EA',this.deviceCode,{path:'/device/book/details'}).then(res=>{
           this.subopen=false
           this.getList()
       })  
       
     },
-    /** 导出按钮操作 */
-    // handleExport() {
-    //   this.download('system/user/export', {
-    //     ...this.queryParams
-    //   }, `user_${new Date().getTime()}.xlsx`)
-    // },
+    handleFlowRecord(row){
+      console.log(row)
+      if(row.processStatus=='running'){ //待办
+        this.$router.push({ path: '/flowable/task/todo/detail/index',
+        query: {
+          procInsId: row.processInstanceId ,
+          deployId: row.deployId,
+          readonly:true
+        }})
+      }else{//已办
+        this.$router.push({ path: '/flowable/task/finished/detail/index',
+        query: {
+          procInsId: row.processInstanceId ,
+          deployId: row.deployId,
+          readonly:true
+      }})
+      }
+    },
+    
     handleExport() {
       var obj = {
         categoryId: this.queryParams.categoryId,

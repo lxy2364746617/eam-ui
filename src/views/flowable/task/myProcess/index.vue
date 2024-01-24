@@ -52,7 +52,7 @@
     <el-table v-loading="loading" :data="myProcessList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="申请时间" align="center" prop="createTime" width="180"/>
-      <el-table-column label="申请编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
+      <el-table-column label="申请编号" align="center" prop="businessCode" :show-overflow-tooltip="true"/>
       <el-table-column label="申请部门" align="center" prop="startDeptName"/>
       <el-table-column label="申请人" align="center" prop="startUserName"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
@@ -83,7 +83,6 @@
         </template>
       </el-table-column>
     </el-table>
-
     <pagination
       v-show="total>0"
       :total="total"

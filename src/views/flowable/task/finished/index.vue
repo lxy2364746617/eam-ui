@@ -45,13 +45,13 @@
     <el-empty v-if="finishedList.length==0" :image-size="200"></el-empty>
     <el-card v-for="item in finishedList" :key="item.taskId">
       <div v-if="item.processStatus" class="card_status" :style="'color:'+'#4DCA38;'+'background:#CAF6C2'">
-        {{item.processStatus}}
+        {{findName(dict.type.wf_process_status,item.processStatus)}}
       </div>
       <el-col :span="8" class="card_col1">
         <img src="@/assets/images/device.svg" style="width:80px;height:80px;margin:auto 0"> 
         <div class="card_info">
           <p>{{findName(dict.type.process_category,item.category)}}</p>
-          <p>{{item.taskId}}</p>
+          <p>{{item.businessCode}}</p>
         </div>
       </el-col>
       <el-col :span="8" class="card_col2">

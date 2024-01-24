@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询故障代码管理列表
 export function listFaultcode(query) {
   return request({
-    url: '/maintain/faultcode/list',
+    url: '/maintain/faultCode/list',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listFaultcode(query) {
 // 查询故障代码管理详细
 export function getFaultcode(codeId) {
   return request({
-    url: '/maintain/faultcode/' + codeId,
+    url: '/maintain/faultCode/' + codeId,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getFaultcode(codeId) {
 // 新增故障代码管理
 export function addFaultcode(data) {
   return request({
-    url: '/maintain/faultcode',
+    url: '/maintain/faultCode',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addFaultcode(data) {
 // 修改故障代码管理
 export function updateFaultcode(data) {
   return request({
-    url: '/maintain/faultcode',
+    url: '/maintain/faultCode',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updateFaultcode(data) {
 // 删除故障代码管理
 export function delFaultcode(codeId) {
   return request({
-    url: '/maintain/faultcode/' + codeId,
+    url: '/maintain/faultCode/' + codeId,
     method: 'delete'
   })
 }
