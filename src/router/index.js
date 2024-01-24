@@ -774,73 +774,51 @@ export const constantRoutes = [
   },
   // 知识库
   {
-  path: "/knowledge",
-  component: Layout,
-  hidden: true,
-  children: [
-    {
-      path: "/knowledge/navigation",
-      component: () => import("@/views/knowledge/navigation/index"),
-      name: "navigation",
-      meta: { title: "知识导航", icon: "" },
-    },
-    {
-      path: "/knowledge/navigation/searchPage",
-      component: () => import("@/views/knowledge/navigation/searchPage"),
-      name: "searchPage",
-      meta: { title: "搜索页", icon: "" },
-    },
-    {
-      path: "/knowledge/faults",
-      component: () => import("@/views/knowledge/faults/index"),
-      name: "faults",
-      meta: { title: "故障案例库", icon: "" },
-    },
-    {
-      path: "/knowledge/faults_details",
-      component: () => import("@/views/knowledge/faults/details"),
-      name: "faults_details",
-      meta: { title: "故障案例库-详情页", icon: "" },
-    },
-    {
-      path: "/knowledge/technology",
-      component: () => import("@/views/knowledge/technology/index"),
-      name: "technology",
-      meta: { title: "技术资料库", icon: "" },
-    },
-    {
-      path: "/knowledge/maintenance",
-      component: () => import("@/views/knowledge/maintenance/index"),
-      name: "maintenance",
-      meta: { title: "运维文档", icon: "" },
-    },
-    {
-      path: "/knowledge/regulations",
-      component: () => import("@/views/knowledge/regulations/index"),
-      name: "regulations",
-      meta: { title: "规章制度", icon: "" },
-    },
-  ],
-  },
-  // ! 备件需求
-  {
-    path: "/sparepart",
+    path: "/knowledge",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: "/sparepart/requirementControls",
-        component: () => import("@/views/sparepart/requirement/ui/index.vue"),
-        name: "requirementControls",
-        beforeEnter: (to, from, next) => {
-          console.log("========================", to, from, next);
-          to.meta.title = Number(to.query.isShowCard)
-            ? "备件需求/详情"
-            : "备件需求/新增";
-          to.query.d == "true" ? (to.meta.title = "备件需求/编辑") : "";
-          next();
-        },
-        meta: { title: "备件需求", icon: "" },
+        path: "/knowledge/navigation",
+        component: () => import("@/views/knowledge/navigation/index"),
+        name: "navigation",
+        meta: { title: "知识导航", icon: "" },
+      },
+      {
+        path: "/knowledge/navigation/searchPage",
+        component: () => import("@/views/knowledge/navigation/searchPage"),
+        name: "searchPage",
+        meta: { title: "搜索页", icon: "" },
+      },
+      {
+        path: "/knowledge/faults",
+        component: () => import("@/views/knowledge/faults/index"),
+        name: "faults",
+        meta: { title: "故障案例库", icon: "" },
+      },
+      {
+        path: "/knowledge/faults_details",
+        component: () => import("@/views/knowledge/faults/details"),
+        name: "faults_details",
+        meta: { title: "故障案例库-详情页", icon: "" },
+      },
+      {
+        path: "/knowledge/technology",
+        component: () => import("@/views/knowledge/technology/index"),
+        name: "technology",
+        meta: { title: "技术资料库", icon: "" },
+      },
+      {
+        path: "/knowledge/maintenance",
+        component: () => import("@/views/knowledge/maintenance/index"),
+        name: "maintenance",
+        meta: { title: "运维文档", icon: "" },
+      },
+      {
+        path: "/knowledge/regulations",
+        component: () => import("@/views/knowledge/regulations/index"),
+        name: "regulations",
+        meta: { title: "规章制度", icon: "" },
       },
     ],
   },
@@ -855,7 +833,6 @@ export const constantRoutes = [
         component: () => import("@/views/sparepart/spareReceive/ui/index.vue"),
         name: "spareReceiveControls",
         beforeEnter: (to, from, next) => {
-          console.log("========================", to, from, next);
           to.meta.title = Number(to.query.isShowCard)
             ? "备件领用/详情"
             : "备件领用/新增";
@@ -863,6 +840,43 @@ export const constantRoutes = [
           next();
         },
         meta: { title: "备件领用", icon: "" },
+      },
+    ],
+  },
+  // ! 备件需求
+  {
+    path: "/sparepart",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/sparepart/requirementControls",
+        component: () => import("@/views/sparepart/requirement/ui/index.vue"),
+        name: "requirementControls",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "备件需求/详情"
+            : "备件需求/新增";
+          to.query.d == "true" ? (to.meta.title = "备件需求/编辑") : "";
+          next();
+        },
+        meta: { title: "备件需求", icon: "" },
+      },
+    ],
+  },
+  // ! 备件详情
+  {
+    path: "/sparepart",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/sparepart/spareListDetails",
+        component: () =>
+          import("@/views/sparepart/spareList/details/index.vue"),
+        name: "spareListDetails",
+
+        meta: { title: "备件需求/详情", icon: "" },
       },
     ],
   },

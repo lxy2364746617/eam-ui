@@ -10,6 +10,7 @@
       :isRadio="false"
       :handleWidth="230"
       :columns="columns"
+      :isScroll="true"
     >
       <template slot="headerLeft">
         <el-col :span="1.5">
@@ -19,7 +20,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleControls(null, 'add')"
-            >添加</el-button
+            >新增</el-button
           >
         </el-col>
         <el-col :span="1.5">
@@ -38,7 +39,7 @@
             icon="el-icon-download"
             size="mini"
             :loading="btnLoading"
-            @click="handleSet"
+            @click="handleControls(null, 'download')"
             >下载</el-button
           >
         </el-col>
@@ -51,15 +52,46 @@
           >详情</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           :loading="btnLoading"
           @click="handleControls(scope.row, 'edit')"
           >编辑</el-button
         >
-        <el-button size="mini" type="text" @click="handleSet">删除</el-button>
-        <el-button size="mini" type="text" @click="handleSet">提交</el-button>
-        <el-button size="mini" type="text" @click="handleSet">审批流</el-button>
+        <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
+          size="mini"
+          type="text"
+          @click="handleControls(scope.row, 'delete')"
+          >删除</el-button
+        >
+        <el-button
+          size="mini"
+          type="text"
+          @click="handleSet"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
+          >提交</el-button
+        >
+        <el-button
+          size="mini"
+          type="text"
+          @click="handleSet"
+          v-if="scope.row.apvStatus == 'completed'"
+          >审批流</el-button
+        >
       </template>
     </ContTable>
     <!-- 上传文件 -->
@@ -83,11 +115,16 @@
 <script>
 import Wrapper from "@/components/wrapper";
 import ContTable from "@/components/ContTable";
-import { listParts } from "@/api/equipment/parts";
+import {
+  getAttachmentList,
+  delAttachment,
+  exportManagementList,
+} from "@/api/sparePart/requirement";
 import { listDept } from "@/api/system/dept";
 
 export default {
   components: { Wrapper, ContTable },
+  dicts: ["require_type", "apv_status"],
   data() {
     return {
       equipmentList: [],
@@ -100,6 +137,7 @@ export default {
         pageSize: 10,
       },
       deptOptions: [],
+      ids: [],
       // 文件上传
       filedrawer: false,
       fileType: [".xlsx"],
@@ -108,7 +146,6 @@ export default {
   },
   async created() {
     await this.getTreeSelect();
-    await this.getList(this.queryParams);
   },
   mounted() {},
   computed: {
@@ -116,34 +153,57 @@ export default {
       return [
         {
           label: "备件需求编号",
-          prop: "partsCode",
+          prop: "demandCode",
           tableVisible: true,
           width: 150,
         },
         {
           label: "备件需求名称",
-          prop: "partsName",
+          prop: "demandName",
           tableVisible: true,
           width: 150,
         },
-        { label: "需求类型", prop: "partsType", tableVisible: true },
-        { label: "需求数量", prop: "stock", tableVisible: true },
-        { label: "申报人员", prop: "createBy", tableVisible: true, width: 150 },
+        {
+          label: "需求类型",
+          prop: "demandType",
+          tableVisible: true,
+          formType: "select",
+          options: this.dict.type.require_type,
+          width: 150,
+        },
+        {
+          label: "需求数量",
+          prop: "demandNum",
+          tableVisible: true,
+        },
+        {
+          label: "申报人员",
+          prop: "createBy",
+
+          tableVisible: true,
+        },
+
         {
           label: "申报单位",
-          prop: "orgId",
+          prop: "applyDept",
+          tableVisible: true,
+          width: 200,
           formType: "selectTree",
           options: this.deptOptions,
-          width: 150,
-          tableVisible: true,
         },
         {
           label: "申报日期",
           prop: "createTime",
-          formType: "date",
           tableVisible: true,
+          formType: "date",
         },
-        { label: "审批状态", prop: "location", tableVisible: true },
+        {
+          label: "审批状态",
+          prop: "apvStatus",
+          tableVisible: true,
+          formType: "selectTag",
+          options: this.dict.type.apv_status,
+        },
       ];
     },
   },
@@ -154,16 +214,13 @@ export default {
         this.$router.push({
           path: "/sparepart/requirementControls",
           query: {
-            formData: {
-              applyDeptPerson: this.$store.state.user.standing.nickName,
-            },
+            formData: null,
             isShowCard: 0,
           },
         });
         return;
       } else if (act === "view") {
         // ! 详情
-        row.id = 4;
         this.$router.push({
           path: "/sparepart/requirementControls",
           query: { formData: row, isShowCard: 1 },
@@ -171,7 +228,6 @@ export default {
         return;
       } else if (act === "edit") {
         // ! 编辑
-        row.id = 4;
         this.$router.push({
           path: "/sparepart/requirementControls",
           query: { formData: row, isShowCard: 0, d: true },
@@ -181,10 +237,12 @@ export default {
         // ! 删除
 
         this.$modal
-          .confirm('是否确认删除备件编码为"' + row.partsCodes + '"的数据项？')
+          .confirm(
+            '是否确认删除备件领用单号为"' + row.demandCode + '"的数据项？'
+          )
           .then(() => {
             // return delParts(ids);
-            console.log("========================", row.id);
+            return delAttachment, exportManagementList(row.id);
           })
           .then(() => {
             this.getList(this.queryParams);
@@ -192,17 +250,27 @@ export default {
           })
           .catch(() => {});
         return;
+      } else if (act === "download") {
+        exportManagementList({ ids: this.ids }).then((res) => {
+          const blob = new Blob([res], {
+            type: "application/vnd.ms-excel;charset=utf-8",
+          });
+          saveAs(blob, `sparePart_${new Date().getTime()}`);
+        });
       } else {
         // ! 其他
         return;
       }
     },
-    getTreeSelect() {
-      listDept().then((response) => {
+    // 下载
+    handleDownload() {},
+    async getTreeSelect() {
+      await listDept().then(async (response) => {
         this.deptOptions = response.data;
+        await this.getList(this.queryParams);
       });
     },
-    //上传文件
+    // ! 上传文件
     AddFile() {
       this.filedrawer = true;
     },
@@ -215,13 +283,16 @@ export default {
     },
     async getList(queryParams) {
       this.loading = true;
-      listParts(queryParams).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
+      getAttachmentList(queryParams).then((response) => {
+        this.equipmentList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
-    handleSelectionChange() {},
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.id);
+    },
   },
 };
 </script>

@@ -21,6 +21,7 @@
       size="small"
       :inline="true"
       label-width="68px"
+      :class="{ 'content-body': isScroll }"
     >
       <el-table
         v-loading="loading"
@@ -326,6 +327,10 @@ export default {
       default: true,
       type: Boolean,
     },
+    isScroll: {
+      default: false,
+      type: Boolean,
+    },
   },
   watch: {
     tableData: {
@@ -519,5 +524,9 @@ export default {
 }
 ::v-deep .el-table__row:nth-child(odd) {
   background-color: #f7fbff;
+}
+.content-body {
+  max-height: 440px;
+  overflow-y: scroll;
 }
 </style>

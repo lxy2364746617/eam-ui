@@ -48,7 +48,7 @@
           type="text"
           icon="el-icon-view"
           :loading="btnLoading"
-          @click="handleUpdate(scope.row, 'view')"
+          @click="handleImport(scope.row, 'view')"
           v-hasPermi="['property:backspace:edit']"
           >下载</el-button
         >
@@ -76,6 +76,7 @@
 </template>
 <script>
 import { getAssociatedPlan } from "@/api/property/receive";
+import { downloadGet } from "@/utils/request";
 import JmTable from "@/components/JmTable";
 import { getToken } from "@/utils/auth";
 import {
@@ -165,6 +166,13 @@ export default {
   },
   mounted() {},
   methods: {
+    handleImport(row) {
+      downloadGet(
+        "/common/download?fileName=" + row.originalFileName,
+        {},
+        row.originalFileName
+      );
+    },
     handlePreview(row) {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
@@ -185,7 +193,7 @@ export default {
       if (res.code === 200) {
         res["createImport"] = Date.now();
         let msg = {
-          fileName: res.originalFileName,
+          fileName: res.fileName,
           originalFileName: res.originalFileName,
           newFileName: res.newFileName,
           fileSize: res.fileSize,
@@ -255,7 +263,6 @@ export default {
           return true;
         });
         this.equipmentList = matches;
-        this.total = matches.length;
         this.loading = false;
       });
     },
@@ -320,8 +327,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
-
+  padding-bottom: 20px;
   .icon {
     span {
       padding-left: 10px;

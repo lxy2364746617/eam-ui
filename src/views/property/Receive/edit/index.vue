@@ -97,7 +97,6 @@ export default {
       this.$router.go(-1); //跳回上页
     },
     submitValue(val) {
-      console.log("========================", val);
       if (getStore("addList") && getStore("addList").length > 0) {
         val["addList"] = getStore("addList");
       } else {

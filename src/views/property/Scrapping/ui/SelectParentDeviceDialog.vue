@@ -78,8 +78,14 @@ export default {
       return [
         { label: "设备编码", prop: "deviceCode" },
         { label: "设备名称", prop: "deviceName" },
-        { label: "规格型号", prop: "sModel" },
-        { label: "设备类别", prop: "categoryId" },
+        { label: "规格型号", prop: "specs" },
+        {
+          label: "设备类别",
+          prop: "categoryId",
+          formType: "selectTree",
+          options: this.categoryOptions,
+          width: 280,
+        },
         {
           label: "设备属性",
           prop: "deviceAtt",
@@ -126,6 +132,7 @@ export default {
       title: "",
       // 部门树选项
       deptOptions: undefined,
+      categoryOptions: null,
       radioRow: {},
       // 查询参数
       queryParams: {
@@ -190,6 +197,21 @@ export default {
     getTree() {
       equipmentTree().then((response) => {
         this.deptOptions = response.data;
+        this.categoryOptions = response.data;
+        // 方便获取父级tree
+        this.loops(this.categoryOptions);
+      });
+    },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        });
+        node.children = this.loops(children, node);
+        return node;
       });
     },
     // 节点单击事件

@@ -36,7 +36,7 @@
           >
         </el-col>
       </template>
-      <template #end_handle="scope" v-if="!isChoose">
+      <template #end_handle="scope" v-if="!isShow">
         <el-button
           size="mini"
           type="text"
@@ -337,9 +337,6 @@ export default {
   },
   async created() {
     await this.getTreeSelect();
-
-    await this.getList();
-    await this.getTree();
   },
   mounted() {},
 
@@ -378,12 +375,14 @@ export default {
         this.categoryOptions = response.data;
         // 方便获取父级tree
         await this.loops(this.categoryOptions);
+        await this.getList();
       });
     },
     /** 查询部门下拉树结构 */
     async getTreeSelect() {
       await listDept().then((response) => {
         this.deptOptions = response.data;
+        this.getTree();
       });
     },
     // 根据设备ID查找
@@ -479,17 +478,11 @@ export default {
         if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
           getStore("equipmentList").forEach((t) => {
             row = row.filter((item) => {
-              return (
-                item.specs +
-                  item.deviceCode +
-                  item.deviceName +
-                  item.batchNo !==
-                t.specs + t.deviceCode + t.deviceName + t.batchNo
-              );
+              return item.deviceId !== t.deviceId;
             });
           });
           this.equipData = row;
-          this.total2 = row.length;
+          this.total2 = response.total - getStore("equipmentList").length;
           this.loading = false;
         } else {
           this.equipData = response.rows;
@@ -536,10 +529,7 @@ export default {
       if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
         getStore("equipmentList").forEach((t) => {
           this.rowArr = this.rowArr.filter((item) => {
-            return (
-              item.sModel + item.deviceCode + item.deviceName + item.batchNo !==
-              t.sModel + t.deviceCode + t.deviceName + t.batchNo
-            );
+            return item.deviceId !== t.deviceId;
           });
         });
       }
@@ -690,7 +680,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
+
   .from {
     padding: 30px;
     padding-left: 10px;

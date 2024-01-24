@@ -8,7 +8,7 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       :isRadio="isChoose"
-      :handleWidth="230"
+      :handleWidth="150"
       :columns="columns"
       :isShow="isShow"
     >
@@ -51,7 +51,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit', 1)"
           v-hasPermi="['property:position:edit']"
@@ -60,7 +59,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:position:remove']"
           >删除</el-button
@@ -283,7 +281,7 @@ export default {
       return [
         { label: "设备编码", prop: "deviceCode", width: 200 },
         { label: "设备名称", prop: "deviceName", width: 200 },
-        { label: "规格型号", prop: "sModel", width: 200 },
+        { label: "规格型号", prop: "specs", width: 200 },
         {
           label: "设备类别",
           prop: "categoryId",
@@ -341,7 +339,6 @@ export default {
   async created() {
     await this.getTreeSelect();
     await this.getTree();
-    await this.getList();
   },
   mounted() {},
 
@@ -386,6 +383,7 @@ export default {
     async getTreeSelect() {
       await listDept().then((response) => {
         this.deptOptions = response.data;
+        this.getList();
       });
     },
     // 根据设备ID查找
@@ -481,17 +479,11 @@ export default {
         if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
           getStore("equipmentList").forEach((t) => {
             row = row.filter((item) => {
-              return (
-                item.specs +
-                  item.deviceCode +
-                  item.deviceName +
-                  item.batchNo !==
-                t.specs + t.deviceCode + t.deviceName + t.batchNo
-              );
+              return item.deviceId !== t.deviceId;
             });
           });
           this.equipData = row;
-          this.total2 = row.length;
+          this.total2 = response.total - getStore("equipmentList").length;
           this.loading = false;
         } else {
           this.equipData = response.rows;
@@ -539,10 +531,7 @@ export default {
       if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
         getStore("equipmentList").forEach((t) => {
           this.rowArr = this.rowArr.filter((item) => {
-            return (
-              item.sModel + item.deviceCode + item.deviceName + item.batchNo !==
-              t.sModel + t.deviceCode + t.deviceName + t.batchNo
-            );
+            return item.deviceId !== t.deviceId;
           });
         });
       }
@@ -700,7 +689,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
+
   .from {
     padding: 30px;
     padding-left: 10px;

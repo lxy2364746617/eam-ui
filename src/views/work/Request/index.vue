@@ -362,9 +362,10 @@ export default {
     },
     handlerDerive() {
       exportWomInfo({ ids: this.ids }).then((res) => {
-        if (res.code === 200) {
-          this.$message.success("导出成功");
-        }
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `work_${new Date().getTime()}`);
       });
     },
     async getList(

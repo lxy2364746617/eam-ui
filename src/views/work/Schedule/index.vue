@@ -650,7 +650,6 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
 
   .icon {
     span {

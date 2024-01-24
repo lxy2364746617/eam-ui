@@ -468,6 +468,7 @@ export default {
     /** 提交按钮 */
     submitForm(fn) {
       var formData = this.$parent.getFormDataParams();
+      console.log("========================", formData);
       if (formData.deviceId != undefined) {
         updateBASE(formData).then((response) => {
           this.$modal.msgSuccess("修改成功");
@@ -476,7 +477,8 @@ export default {
       } else {
         addBASE(formData).then((response) => {
           this.$modal.msgSuccess("保存成功");
-          this.formData.deviceId = response.msg;
+          this.formData.id = response.data;
+          this.formData.deviceId = response.data;
           if (typeof fn == "function") fn();
         });
       }

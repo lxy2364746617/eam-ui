@@ -122,6 +122,7 @@
             v-model="formData.demandNum"
             placeholder="需求数量"
             :step="1"
+            :min="1"
             controls-position="right"
             :max="99"
           ></el-input-number>
@@ -135,6 +136,7 @@
             v-model="formData.planPrice"
             placeholder="计划单价(万元)"
             :step="1"
+            :min="1"
             controls-position="right"
           ></el-input-number>
         </el-form-item>
@@ -397,7 +399,6 @@ export default {
   },
   async created() {
     await this.getDeptTree();
-    await this.getList();
     // data赋值
     this.columns.forEach((b) => {
       if (b.prop == "demandOrganization")
@@ -432,6 +433,7 @@ export default {
     async getDeptTree() {
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;
+        this.getList();
       });
     },
     /** 查询计划明细列表 */
@@ -475,7 +477,6 @@ export default {
           }
           return true;
         });
-        console.log("========================", search);
         this.equipmentList = matches;
       });
     },
@@ -648,7 +649,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
+
   .from {
     padding: 30px;
     padding-left: 10px;

@@ -6,7 +6,7 @@
       infoTitle="需求信息"
       :columnsInfo="columnsInfo"
       :columns="columns"
-      :equipmentList="equipmentList"
+      :equipmentList="equipmentList2"
       :getList="getList"
       :isShowCard="isShowCard"
       ref="spareForm"
@@ -19,7 +19,7 @@
           size="mini"
           style="margin-left: 5px"
           @click="handlerControls(null, 'add')"
-          >新增</el-button
+          >领用备件</el-button
         >
       </template>
       <!-- 操作 -->
@@ -67,6 +67,21 @@
         </template>
       </TitleForm>
     </el-drawer>
+
+    <!-- 选择备件 -->
+    <el-drawer
+      title="选择备件"
+      :visible.sync="drawersupplier"
+      size="60%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <spareList
+        @submitRadio="submitRadio"
+        :isRadio="true"
+        @close="closesupplier"
+      ></spareList>
+    </el-drawer>
   </Wrapper>
 </template>
 <script>
@@ -74,18 +89,27 @@ import Wrapper from "@/components/wrapper";
 import SparePartsOperation from "@/views/sparepart/SparePartsOperation/index.vue";
 import { listUser } from "@/api/system/user";
 import { v4 as uuidv4 } from "uuid";
+import spareList from "@/views/sparepart/spareList/spareList.vue";
 import { listDept } from "@/api/system/dept";
+import {
+  getAttachmentReceiptList,
+  getAttachmentDetail,
+  addAttachment,
+  updateAttachment,
+} from "@/api/sparePart/requirement";
 export default {
   components: {
     SparePartsOperation,
     Wrapper,
+    spareList,
   },
-  dicts: ["spare_parts_unit", "require_type"],
+  dicts: ["spare_parts_unit", "spare_parts_type", "require_type"],
 
   data() {
     return {
       isChoose: false,
-      equipmentList: null,
+      equipmentList: [],
+      equipmentList2: [],
       formData: {},
       // 对话框
       formDataNow: {},
@@ -94,57 +118,99 @@ export default {
       drawer: false,
       selectIndex: null,
       addList: [],
-      updateList: [],
-      deleteList: [],
+      updateDetailList: [],
+      delDetailList: [],
       isShowCard: false,
       deptOptions: [],
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+      },
+
+      // 选择备件
+      drawersupplier: false,
+      userList: [],
     };
   },
   created() {
     this.getTreeSelect();
-    this.getUserList();
-    this.getList();
-    this.isShowCard = Number(this.$route.query.isShowCard);
-    this.formData = this.$route.query.formData;
-    this.isChoose = Number(this.$route.query.isShowCard);
+    // this.getUserList();
+    if (this.$route.query.formData) {
+      this.formData = this.$route.query.formData;
+      this.isShowCard = Number(this.$route.query.isShowCard);
+      this.isChoose = Number(this.$route.query.isShowCard);
+      // this.getList(this.queryParams);
+
+      if (this.formData.id) {
+        getAttachmentDetail({ id: this.formData.id }).then((res) => {
+          if (res.code == 200) {
+            this.formData = res.data;
+            this.equipmentList = res.data.parts;
+          }
+        });
+        getAttachmentReceiptList({
+          ...this.formData,
+          pageNum: 1,
+          pageSize: 1000,
+        }).then((res) => {
+          if (res.code == 200) {
+            this.equipmentList = res.data.result;
+          }
+        });
+      }
+    } else {
+      this.formData = {
+        createBy: this.$store.state.user.standing.nickName,
+        // recruiterId: this.$store.state.user.standing.userId,
+        applyDept: this.$store.state.user.standing.deptId,
+      };
+      this.isShowCard = 0;
+    }
   },
   mounted() {},
+  watch: {
+    equipmentList: {
+      handler(val) {
+        this.equipmentList2 = JSON.parse(JSON.stringify(val));
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   computed: {
     columnsInfo() {
       return [
         {
-          label: "备件需求编号",
-          prop: "neckNo",
-          span: 6,
+          label: "备件需求编码",
+          prop: "demandCode",
+          span: 5,
           formDisabled: true,
         },
         {
           label: "备件需求名称",
-          prop: "neckNo2",
+          prop: "demandName",
           span: 5,
-          required: true,
         },
         {
           label: "需求类型",
-          prop: "neckNo3",
-          span: 4,
-
+          prop: "demandType",
+          span: 5,
+          required: true,
           formType: "select",
           options: this.dict.type.require_type,
         },
+
         {
           label: "申报人员",
-          prop: "applyDeptPerson",
-          span: 5,
+          prop: "createBy",
+          span: 4,
           required: true,
           formDisabled: true,
         },
-
         {
           label: "申报单位",
-          prop: "affDeptId",
-          span: 4,
-          required: true,
+          prop: "applyDept",
+          span: 5,
           formType: "selectTree",
           options: this.deptOptions,
         },
@@ -153,62 +219,87 @@ export default {
     columns() {
       return [
         {
-          label: "备件类别",
-          prop: "item1",
-          span: 22,
-          required: true,
-        },
-        {
           label: "备件编码",
-          prop: "item2",
+          prop: "partCode",
           span: 22,
           required: true,
+          clickFn: () => {
+            this.drawersupplier = true;
+          },
         },
         {
           label: "备件名称",
-          prop: "item3",
+          prop: "partName",
           span: 22,
           required: true,
+          formVisible: true,
+          formDisabled: true,
+        },
+        {
+          label: "备件类别",
+          prop: "partType",
+          span: 22,
+          required: true,
+          formType: "select",
+          options: this.dict.type.spare_parts_type,
+          formVisible: true,
+          formDisabled: true,
         },
         {
           label: "规格型号",
-          prop: "item4",
+          prop: "sModel",
           span: 22,
+          formVisible: true,
+          formDisabled: true,
         },
         {
           label: "需求数量",
-          prop: "item5",
+          prop: "demandNum",
           span: 22,
           formType: "number",
           required: true,
         },
         {
           label: "单位",
-          prop: "item6",
+          prop: "unit",
           span: 22,
           formType: "select",
           options: this.dict.type.spare_parts_unit,
           required: true,
+          formDisabled: true,
         },
         {
           label: "需求日期",
-          prop: "item7",
+          prop: "demandDate",
           span: 22,
           formType: "date",
-          required: true,
         },
         {
           label: "备注",
-          prop: "item8",
+          prop: "remark",
           span: 22,
           formType: "textarea",
           rows: 4,
-          span: 22,
+          width: 200,
         },
       ];
     },
   },
   methods: {
+    // ! 选择备件
+    submitRadio(row) {
+      // this.$set(this.formDataNow, "partCode", row.partCode);
+      // this.$set(this.formDataNow, "partName", row.partName);
+      // this.$set(this.formDataNow, "partType", row.partType);
+      // this.$set(this.formDataNow, "sModel", row.sModel);
+      // this.$set(this.formDataNow, "unit", row.unit);
+      // this.$set(this.formDataNow, "supplierId", row.supplierId);
+      this.formDataNow = row;
+      this.closesupplier();
+    },
+    closesupplier() {
+      this.drawersupplier = false;
+    },
     // ! 取消
     cancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
@@ -238,8 +329,9 @@ export default {
       } else {
         if (formVal.id) {
           this.equipmentList.splice(this.selectIndex, 1, formVal);
-          this.updateList.push(formVal);
-          console.log("========================有id编辑", this.updateList);
+          this.updateDetailList.push(formVal);
+        } else {
+          this.equipmentList.splice(this.selectIndex, 1, formVal);
         }
       }
       this.close();
@@ -248,7 +340,7 @@ export default {
     handlerControls(row, act, scope) {
       if (act === "add") {
         // ! 新增
-        this.title = "新增备件";
+        this.title = "领用备件";
         this.formDataNow = { uuid: uuidv4(), type: 1 };
         this.drawer = true;
         this.$refs.titleform.clearValidate();
@@ -256,7 +348,7 @@ export default {
         return;
       } else if (act === "edit") {
         // ! 编辑
-        this.title = "修改备件";
+        this.title = "修改领用备件";
         this.drawer = true;
         this.formDataNow = JSON.parse(JSON.stringify(row));
         this.selectIndex = scope.index - 1;
@@ -268,11 +360,11 @@ export default {
         this.$modal
           .confirm('是否确认删除备件编码为"' + row.partsCodes + '"的数据项？')
           .then(() => {
-            // return delParts(ids);
+            // return delDetailList(ids);
 
             if (row.id) {
               this.equipmentList.splice(this.selectIndex, 1);
-              this.deleteListList.push(row);
+              this.delDetailList.push(row.id);
             } else this.equipmentList.splice(this.selectIndex, 1);
           })
           .then(() => {
@@ -288,32 +380,56 @@ export default {
     },
     // ! 信息提交
     spareSubmitForm(val) {
-      console.log("========================父", val);
+      delete val.parts;
+      // * 新增
+      if (!this.formData.id) {
+        val["addDetailList"] = this.equipmentList;
+        // if (!(val["addDetailList"].length >=0))
+        addAttachment(val).then((res) => {
+          if (res.code === 200) {
+            this.$modal.msgSuccess("添加成功！");
+            this.cancel();
+          }
+        });
+      } else {
+        // * 编辑
+        val["addDetailList"] = this.equipmentList.filter((item) => !item.id);
+        if (this.delDetailList && this.delDetailList.length > 0)
+          val["delDetailList"] = this.delDetailList;
+        if (this.updateDetailList && this.updateDetailList.length > 0)
+          val["updateDetailList"] = this.updateDetailList;
+        updateAttachment(val).then((res) => {
+          if (res.code === 200) {
+            this.$modal.msgSuccess("更新成功！");
+            this.cancel();
+          }
+        });
+      }
     },
     // ! 查询表格数据
-    getList() {
-      this.loading = true;
-
-      this.equipmentList = [
-        {
-          id: 1,
-          item1: "配件",
-          item2: "BJ10101",
-          item3: "六角螺栓",
-          item4: "IQ18",
-          item5: "1000",
-          item6: "个",
-          item7: "2024-6-10",
-          item8: "xxxxxxxxxxX",
-        },
-      ];
-      this.total = this.equipmentList.length;
-      this.loading = false;
+    getList(queryParams) {
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      let matches = this.equipmentList.filter((item) => {
+        for (let key in search) {
+          if (item[key] != search[key]) {
+            if (search[key] == "") continue;
+            return false;
+          }
+        }
+        return true;
+      });
+      this.equipmentList2 = matches;
+      this.total = 0;
+      // getAttachmentReceiptList(queryParams).then((res) => {
+      // this.equipmentList = res.data.parts;
+      // this.total = 0;
+      // });
     },
-    // ! 查询组织数据
+    // ! 查询所有用户
     getUserList(id) {
       if (!id) id = 100;
-      this.loading = true;
       listUser({ deptId: id }).then((response) => {
         this.userList = response.rows.map((item) => ({
           label: item.nickName,
@@ -329,7 +445,7 @@ export default {
   flex-shrink: 0;
   background-color: #fff;
   text-align: center;
-  padding: 20px;
+  padding-top: 20px;
   border-top: 1px solid #ddd;
   z-index: 2;
 }

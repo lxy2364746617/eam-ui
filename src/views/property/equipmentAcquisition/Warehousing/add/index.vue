@@ -91,7 +91,6 @@ import step4 from "@/views/property/equipmentAcquisition/Warehousing/add/step4";
 import step5 from "@/views/property/equipmentAcquisition/Warehousing/add/step5";
 
 export default {
-  name: "bookadd",
   dicts: [
     "em_device_state",
     "device_run_state",
@@ -236,10 +235,17 @@ export default {
           // this.formData = this.$options.data().formData;
           this.setFormLabel(response.data);
           // 扩展数据
-          this.formData.emArchivesExtendAtt = {
-            componentContent: response.data,
+          /* this.formData.emArchivesExtendAtt = {
+          componentContent: response.data,
+          fieldValue: {},
+        } */
+          this.$set(this.formData, "emArchivesExtendAtt", {
+            componentContent: response.data.map((item) => ({
+              ...item,
+              required: false,
+            })),
             fieldValue: {},
-          };
+          });
         })
         .catch((err) => {});
     }

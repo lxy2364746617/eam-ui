@@ -266,7 +266,7 @@
               :normalizer="normalizer"
               :disabled="col.formDisabled || disabled"
               :zIndex="9999"
-              style="height: 33px; line-height: 32px"
+              style="height: 32px; line-height: 32px"
             />
             <el-input
               v-else-if="col.formType == 'textarea'"

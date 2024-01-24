@@ -24,6 +24,16 @@
               >任务转派</el-button
             >
           </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="primary"
+              icon="el-icon-download"
+              size="mini"
+              @click="handlerDerive"
+              v-hasPermi="['work:request:derive']"
+              >下载</el-button
+            >
+          </el-col>
         </template>
         <template #end_handle="scope" v-if="!isChoose">
           <el-button
@@ -142,6 +152,7 @@ import Wrapper from "@/components/wrapper";
 import { orderTemplate } from "@/api/work/template";
 import { listUser } from "@/api/system/user";
 import { findAll } from "@/api/system/group";
+import { exportWomInfo } from "@/api/work/schedule";
 
 export default {
   components: {
@@ -459,6 +470,14 @@ export default {
       }
       this.isDrawer = true;
     },
+    handlerDerive() {
+      exportWomInfo({ ids: this.ids }).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `work_${new Date().getTime()}`);
+      });
+    },
     handleAllot(row) {
       this.title = "分派";
       this.itemValue = row;
@@ -505,14 +524,6 @@ export default {
       }
     },
 
-    exportWarnLog(data) {
-      download(this.ids).then((res) => {
-        const blob = new Blob([res], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        saveAs(blob, `下载数据_${new Date().getTime()}`);
-      });
-    },
     // 导入
     beforeUpload(file) {
       let isRightSize = file.size / 1024 / 1024 < 2;
@@ -692,8 +703,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
-
+  padding-bottom: 20px;
   .icon {
     span {
       padding-left: 10px;

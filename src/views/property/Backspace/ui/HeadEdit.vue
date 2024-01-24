@@ -18,7 +18,7 @@
       v-if="isEdit"
       class="mr20"
       :columns="columns"
-      :formData="formData"
+      :formData="form"
       @submitForm="submitForm2"
       :showButton="false"
       ref="jmform"
@@ -39,7 +39,7 @@
 <script>
 import { listDept } from "@/api/system/dept";
 import { listUser } from "@/api/system/user";
-
+import request from "@/utils/request";
 export default {
   components: {},
   props: ["formData", "isEdit"],
@@ -136,6 +136,20 @@ export default {
 
   async created() {
     await this.getTreeSelect();
+    if (this.formData.id) {
+      request({
+        url: "/device/back/getDeviceBack",
+        method: "get",
+        params: { id: this.formData.id },
+      }).then((res) => {
+        if (res.code == 200) {
+          this.form = res.data;
+          this.listValue = res.data;
+        }
+      });
+    } else {
+      this.form = this.formData;
+    }
   },
   mounted() {},
   methods: {

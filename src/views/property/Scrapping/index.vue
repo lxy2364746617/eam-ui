@@ -1,5 +1,5 @@
 <template>
-  <Wrapper :title="title">
+  <Wrapper>
     <TableHome></TableHome>
   </Wrapper>
 </template>

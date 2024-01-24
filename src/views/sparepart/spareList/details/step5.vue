@@ -1,16 +1,9 @@
 <template>
   <div>
     <el-row :gutter="12">
-      <el-col :span="16">
+      <el-col :span="24">
         <p class="subtitle">
-          <i class="el-icon-magic-stick"></i> 设备位置：
-          <span> 111 </span>
-        </p>
-        <div>地图</div>
-      </el-col>
-      <el-col :span="8">
-        <p class="subtitle">
-          <i class="el-icon-magic-stick"></i> 设备图片
+          <i class="el-icon-magic-stick"></i> 备件图片
           <span v-if="disabled1" class="rightbutton">
             <el-button
               type="text"
@@ -41,25 +34,14 @@
 </template>
 
 <script>
-import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
-import Treeselect from "@riophae/vue-treeselect";
-import JmTable from "@/components/JmTable";
-import JmForm from "@/components/JmForm";
-import JmUserTree from "@/components/JmUserTree";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import { getImg } from "@/api/sparePart/sparePartList";
 
 export default {
-  name: "bookadd",
   dicts: [],
-  components: {
-    Treeselect,
-    JmUserTree,
-    JmTable,
-    JmForm,
-  },
+  components: {},
   props: {
     formData: {
       default: () => {},
@@ -134,52 +116,18 @@ export default {
         status: undefined,
         deptId: undefined,
       },
-      // 表单校验
-      rules: {
-        userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
-          {
-            min: 2,
-            max: 20,
-            message: "用户名称长度必须介于 2 和 20 之间",
-            trigger: "blur",
-          },
-        ],
-        nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" },
-        ],
-        password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
-          {
-            min: 5,
-            max: 20,
-            message: "用户密码长度必须介于 5 和 20 之间",
-            trigger: "blur",
-          },
-        ],
-        email: [
-          {
-            type: "email",
-            message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"],
-          },
-        ],
-        phonenumber: [
-          {
-            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-            message: "请输入正确的手机号码",
-            trigger: "blur",
-          },
-        ],
-      },
     };
   },
   created() {
-    this.getTreeSelect();
+    // this.getTreeSelect();
+    getImg(this.formData.partCode).then((res) => {
+      this.$set(this.formData, "imgFileResourceList", res.data);
+    });
   },
   methods: {
     uploadChange1(val) {
       this.formData.imgFileResourceList = val;
+      this.$emit("newFormData", this.formData);
     },
     async save(formref) {
       // var flag = await this.$refs['jmform'+formref].submitForm()
@@ -204,21 +152,20 @@ export default {
       this.$set(this.formData, "parentDeviceName", row.deviceName);
       this.close();
     },
+    getList(queryParams) {
+      this.loading = true;
+      listResource(queryParams).then((response) => {
+        this.equipmentList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
     getTreeSelect() {
       equipmentTree().then((response) => {
         this.categoryOptions = response.data;
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
-      });
-    },
-    /** 查询用户列表 */
-    getList(queryParams) {
-      this.loading = true;
-      listBASE(queryParams).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
-        this.loading = false;
       });
     },
   },

@@ -45,7 +45,6 @@
       </template>
       <template #end_handle="scope" v-if="!isChoose">
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="goDetails(scope.row, 'edit')"
@@ -53,7 +52,6 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -61,18 +59,16 @@
           >删除</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
-          v-hasPermi="['property:warehousing:edit']"
+          @click="handleSubmit(scope.row)"
+          v-hasPermi="['property:warehousing:submit']"
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:warehousing:edit']"
           >审批流</el-button
         >
@@ -84,25 +80,42 @@
       title="设备入库-选择需求计划"
       :visible.sync="drawer"
     >
-      <ContTable
-        :tableData="equipmentList2"
-        @getList="getList2"
-        @handleSelectionChange="handleSelectionChange2"
-        :total="total2"
-        ref="jmtable"
-        :isRadio="isChoose2"
-        :handleWidth="230"
-        :columns="columns2"
-        :isEdit="false"
-        v-if="!addEdit2"
-      >
-      </ContTable>
+      <div style="padding: 0 20px">
+        <ContTable
+          :tableData="equipmentList2"
+          @getList="getList2"
+          @handleSelectionChange="handleSelectionChange2"
+          :total="total2"
+          ref="jmtable"
+          :isRadio="isChoose2"
+          :handleWidth="230"
+          :columns="columns2"
+          :isEdit="false"
+          v-if="!addEdit2"
+          :showOperate="false"
+        >
+        </ContTable>
+      </div>
 
       <div class="submit">
         <el-button type="primary" @click="save">保存</el-button>
         <el-button @click="close">取消</el-button>
       </div>
     </el-drawer>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -116,17 +129,23 @@ import {
 } from "@/api/property/warehousing";
 import JmTable from "@/components/JmTable";
 import ContTable from "@/components/ContTable/index2";
-
+import { listDept } from "@/api/system/dept";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
     JmTable,
-
+    subprocess,
     ContTable,
   },
   dicts: ["em_device_att", "em_device_level", "apv_status"],
   props: {},
   data() {
     return {
+      subtitle: "",
+      subopen: false,
+      tableData: null,
       formData: {
         archivesOther: {}, // 步骤2 值
         emArchivesExtendAtt: {}, // 步骤2-扩展数据  模板 值
@@ -255,12 +274,12 @@ export default {
           tableVisible: true,
           width: 150,
         },
-        { label: "规格型号", prop: "smodel", tableVisible: true, width: 150 },
+        { label: "规格型号", prop: "smodel", tableVisible: true, width: 300 },
         {
           label: "技术参数",
           prop: "technologyParam",
           tableVisible: true,
-          width: 150,
+          width: 300,
         },
 
         {
@@ -288,8 +307,14 @@ export default {
           label: "购置计划编号",
           prop: "purchasePlanNo",
           tableVisible: true,
+          width: 200,
         },
-        { label: "计划名称", prop: "purchasePlanName", tableVisible: true },
+        {
+          label: "计划名称",
+          prop: "purchasePlanName",
+          tableVisible: true,
+          width: 200,
+        },
         {
           label: "计划类型",
           prop: "purchasePlanType",
@@ -305,7 +330,14 @@ export default {
             },
           ],
         },
-        { label: "申报单位", prop: "declarationDeptId", tableVisible: true },
+        {
+          label: "申报单位",
+          prop: "declarationDeptId",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          width: 150,
+        },
 
         {
           label: "申报日期",
@@ -328,11 +360,63 @@ export default {
   },
   async created() {
     // data赋值
+    this.getDeptTree();
     await this.getList();
     await this.getList2();
   },
   mounted() {},
   methods: {
+    // 跳转流程详情
+    handleFlowRecord(row) {
+      this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
+    },
+    sub(val) {
+      definitionStart2(
+        val.id,
+        this.radioRow.purchasePlanNo,
+        "device_warehousing",
+        {}
+      ).then((res) => {
+        this.subopen = false;
+        this.getList();
+      });
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "device_warehousing",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    /* 提交按钮 */
+    handleSubmit(row) {
+      this.id = row.deviceId;
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "device_warehousing",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    async getDeptTree() {
+      await listDept(this.formParams).then((response) => {
+        this.deptOptions = response.data;
+      });
+    },
     handleSet() {},
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -430,7 +514,6 @@ export default {
       this.single2 = selection.length != 1;
       this.multiple2 = !selection.length;
       this.radioRow2 = selection[0];
-      console.log("========================", selection);
       window.sessionStorage.setItem(
         "purchaseValue",
         JSON.stringify({
@@ -476,8 +559,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
-
+  padding-bottom: 20px;
   .icon {
     span {
       padding-left: 10px;

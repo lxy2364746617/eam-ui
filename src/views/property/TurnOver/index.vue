@@ -1,5 +1,5 @@
 <template>
-  <Wrapper :title="title">
+  <Wrapper>
     <!-- <HeadSearch></HeadSearch> -->
     <TableHome></TableHome>
   </Wrapper>
