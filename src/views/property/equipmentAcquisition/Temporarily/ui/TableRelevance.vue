@@ -25,7 +25,7 @@
             :show-file-list="false"
             :headers="headers"
             ref="upload"
-            ><el-button type="primary" size="mini"  icon="el-icon-upload"
+            ><el-button type="primary" size="mini" icon="el-icon-upload"
               >导入</el-button
             ></el-upload
           >
@@ -37,7 +37,7 @@
           type="text"
           icon="el-icon-view"
           :loading="btnLoading"
-          @click="handleUpdate(scope.row, 'view')"
+          @click="handleImport(scope.row, 'view')"
           v-hasPermi="['property:purchase:edit']"
           >下载</el-button
         >
@@ -65,6 +65,7 @@
 </template>
 <script>
 import { getAssociatedPlan } from "@/api/property/purchase";
+import { downloadGet } from "@/utils/request";
 import JmTable from "@/components/JmTable";
 import { getToken } from "@/utils/auth";
 import {
@@ -152,10 +153,25 @@ export default {
   async created() {
     await this.getList();
   },
-  async mounted() {},
+  mounted() {},
   methods: {
+    handleImport(row) {
+      downloadGet(
+        "/common/download?fileName=" + row.originalFileName,
+        {},
+        row.originalFileName
+      );
+    },
     handlePreview(row) {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
+    },
+    importHandler() {
+      download(this.ids).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `下载数据_${new Date().getTime()}`);
+      });
     },
     // 上传前校检格式和大小
     handleBeforeUpload(file) {
@@ -173,7 +189,7 @@ export default {
       if (res.code === 200) {
         res["createImport"] = Date.now();
         let msg = {
-          fileName: res.originalFileName,
+          fileName: res.fileName,
           originalFileName: res.originalFileName,
           newFileName: res.newFileName,
           fileSize: res.fileSize,
@@ -192,14 +208,7 @@ export default {
         this.$message.success("文件上传成功！");
       }
     },
-    importHandler() {
-      download(this.ids).then((res) => {
-        const blob = new Blob([res], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        saveAs(blob, `下载数据_${new Date().getTime()}`);
-      });
-    },
+
     handleUploadError() {
       this.$message.error("文件上传失败！");
     },
@@ -244,7 +253,6 @@ export default {
           return true;
         });
         this.equipmentList = matches;
-        this.total = matches.length;
         this.loading = false;
       });
     },

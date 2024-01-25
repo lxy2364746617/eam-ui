@@ -74,7 +74,7 @@
         <img src="@/assets/images/device.svg" style="width:80px;height:80px;margin:auto 0"> 
         <div class="card_info">
           <p>{{findName(dict.type.process_category,item.category)}}</p>
-          <p>{{item.taskId}}</p>
+          <p>{{item.businessCode}}</p>
         </div>
       </el-col>
       <el-col :span="8" class="card_col2">

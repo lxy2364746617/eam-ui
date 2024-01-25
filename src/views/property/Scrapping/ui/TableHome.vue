@@ -43,7 +43,6 @@
           >详情</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -52,7 +51,6 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -61,7 +59,6 @@
         >
 
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -69,7 +66,6 @@
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -181,7 +177,6 @@ export default {
   async created() {
     await this.getTreeSelect();
     // data赋值
-    await this.getList();
   },
   mounted() {},
   methods: {
@@ -208,6 +203,7 @@ export default {
     getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data;
+        this.getList();
       });
     },
     exportWarnLog(data) {
@@ -312,8 +308,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
-
+  padding-bottom: 20px;
   .icon {
     span {
       padding-left: 10px;

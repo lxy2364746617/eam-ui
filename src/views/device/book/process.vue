@@ -7,7 +7,11 @@
             <el-tag size="medium" >v{{ scope.row.version }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="流程分类" align="center" prop="category" />
+        <el-table-column label="流程分类" align="center" prop="category" >
+          <template slot-scope="scope">
+            {{findName(dict.type.process_category,scope.row.category)}}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <el-button
@@ -31,6 +35,7 @@
 
 <script>
 export default {
+  dicts:['process_category'],
   name:'subprocess',
     props:{
         tableData:{
@@ -54,6 +59,15 @@ export default {
 
     },
     methods:{
+      findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
         handleStartProcess(row){
             this.$emit('submit',row)
         },

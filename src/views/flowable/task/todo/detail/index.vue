@@ -2,15 +2,15 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span class="el-icon-document">待办任务</span>
-        <el-tag style="margin-left:10px">发起人:{{ startUser }}</el-tag>
-        <el-tag>任务节点:{{ taskName }}</el-tag>
+        <span class="el-icon-document"> {{readonly?'审批流程':'待办任务'}}</span>
+        <el-tag v-if="!readonly" style="margin-left:10px">发起人:{{ startUser }}</el-tag>
+        <el-tag v-if="!readonly">任务节点:{{ taskName }}</el-tag>
         <el-button style="float: right;" size="mini" type="danger" @click="goBack">关闭</el-button>
       </div>
       <div style="position:relative">
       <el-tabs tab-position="top"  v-model="activeName" @tab-click="handleClick">
         <!--表单信息-->
-        <el-tab-pane label="表单信息" name="1">
+        <el-tab-pane label="表单信息" name="1" v-if="!readonly">
           <el-col :span="24" >
             <div class="test-form">
               <parser v-if="variablesData"  :key="new Date().getTime()" :form-conf="variablesData" @submit="submitForm" ref="parser" />
@@ -95,7 +95,7 @@
           <flow :flowData="flowData" />
         </el-tab-pane>
       </el-tabs>
-      <div v-if="activeName==1" class="tab_btn">
+      <div v-if="activeName==1&&!readonly" class="tab_btn">
         <el-row v-if="nextFlow">
           <el-col :span="24">
             <el-form ref="taskForm" :model="taskForm"  label-width="120px">
@@ -109,7 +109,7 @@
             </el-form>
           </el-col>
         </el-row>
-        <el-row  :gutter="10" type="flex" justify="center" >
+        <el-row v-if="!readonly"  :gutter="10" type="flex" justify="center" >
           <el-col :span="1.5">
             <el-button icon="el-icon-circle-check" type="success" @click="handleComplete">同意</el-button>
           </el-col>
@@ -321,7 +321,8 @@ export default {
       total: "",
       path:'',
       userobj:{},
-      nextFlow:true
+      nextFlow:true,
+      readonly:false
     };
   },
   created() {
@@ -334,12 +335,13 @@ export default {
       this.taskForm.executionId = this.$route.query.executionId;
       this.taskForm.instanceId = this.$route.query.procInsId;
       this.taskForm.businessId = this.$route.query.businessId;
+      this.readonly=this.$route.query.readonly
+      if (this.readonly) this.activeName='2'
       // 流程任务获取变量信息
       if (this.taskForm.taskId) {
         this.processVariables(this.taskForm.taskId);
         this.getFlowTaskForm(this.taskForm.taskId);
-      }
-      getNextFlowNode({ taskId:this.$route.query.taskId }).then(res=>{
+        getNextFlowNode({ taskId:this.$route.query.taskId }).then(res=>{
         if(res.data){
           this.userobj = {
             flowDataType:res.data.flowDataType,
@@ -357,6 +359,8 @@ export default {
           this.nextFlow=false
         }
       })
+      }
+      
       this.getFlowRecordList(this.taskForm.procInsId, this.taskForm.deployId);
     }
   },

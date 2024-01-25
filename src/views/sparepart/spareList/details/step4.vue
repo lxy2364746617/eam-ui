@@ -30,11 +30,11 @@
           v-model="checkedValue"
           @change="handleSelectionChange"
         >
-          <el-col :span="6" v-for="item in equipmentList" :key="item.partsCode">
+          <el-col :span="6" v-for="item in equipmentList" :key="item.id">
             <el-card style="margin-bottom: 2px; font-size: 14px">
               <p>
-                <el-checkbox :label="item.id" :key="item.partsCode"
-                  >{{ item.partsName }}[{{ item.partsCode }}]</el-checkbox
+                <el-checkbox :label="item.deviceId" :key="item.deviceId"
+                  >{{ item.deviceName }}[{{ item.deviceCode }}]</el-checkbox
                 >
                 <span style="float: right">
                   <el-tag size="mini" type="success">在用</el-tag>
@@ -51,17 +51,25 @@
                 <el-col :span="10" style="margin-right: 15px">
                   <img
                     style="width: 100%; height: 100%"
-                    src="/dev-api/profile/upload/2023/12/29/给水泵_20231229133724A004.jpg"
+                    :src="item.deviceImg && processEnv+item.deviceImg.fileName"
                     alt=""
                   />
                 </el-col>
                 <el-col :span="14">
-                  <p>规格型号:{{ item.partspecs }}</p>
-                  <p>设备类型:{{ item.partsType }}</p>
+                  <p>规格型号:{{ item.deviceCode }}</p>
+                  <p>
+                    设备类型:{{
+                      findTreeName(categoryOptions, item.deviceType)
+                    }}
+                  </p>
                   <p>功能位置:{{ item.location }}</p>
-                  <p>所属子公司:{{ item.orgId }}</p>
-                  <p>所属组织:</p>
-                  <p>重要等级:{{ item.unit }}</p>
+                  <p>
+                    所属子公司:{{
+                      findTreeName(deptOptions, item.subCompanyId)
+                    }}
+                  </p>
+                  <p>所属组织: {{ findTreeName(deptOptions, item.affDept) }}</p>
+                  <p>重要等级:{{ item.grade }}</p>
                 </el-col>
               </el-row>
             </el-card>
@@ -82,7 +90,7 @@
         :isChoose="false"
         @submitRadio="submitRadio"
         @close="drawer = false"
-        :formData="form"
+        :formData="equipmentList"
         v-if="drawer"
       >
       </parentdevice>
@@ -91,8 +99,14 @@
 </template>
 
 <script>
-import { listParts } from "@/api/equipment/parts";
+import {
+  getDeviceList,
+  relateDevices,
+  secureDevices,
+} from "@/api/sparePart/sparePartList";
 import parentdevice from "@/views/device/book/device";
+import { equipmentTree } from "@/api/equipment/category";
+import { listDept } from "@/api/system/dept";
 
 export default {
   dicts: ["em_property_type"],
@@ -110,7 +124,9 @@ export default {
   data() {
     return {
       checkedValue: [],
-
+      categoryOptions: null,
+      deptOptions: null,
+      processEnv: process.env.VUE_APP_BASE_API,
       ids: [],
       partsCodes: [],
       // 非单个禁用
@@ -124,46 +140,68 @@ export default {
       total: 0,
       // 查询参数
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        deviceId: this.formData.deviceId,
+        // pageNum: 1,
+        // pageSize: 10,
       },
       // 关联设备
       drawer: false,
-      form: {},
+      form: [],
     };
   },
   created() {
+    this.getTreeSelect();
     this.getList(this.queryParams);
   },
   methods: {
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options?.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
     /** 查询用户列表 */
     getList(queryParams) {
-      queryParams.deviceId = this.queryParams.deviceId;
       this.loading = true;
-      listParts(queryParams).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
+      queryParams.partCode = this.formData.partCode;
+      getDeviceList(queryParams).then((response) => {
+        this.equipmentList = response.data;
         this.loading = false;
       });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
+      this.ids = selection.map((item) => item.deviceId);
       this.partsCodes = selection.map((item) => item.partsCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
 
-    /** 删除按钮操作 */
+    /** 解除设备 */
     handleDelete(row) {
-      const ids = row.id || this.ids;
-      const partsCodes = row.partsCode || this.partsCodes;
       this.$modal
-        .confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？')
+        .confirm("是否确认解除选中的设备？")
         .then(() => {
-          // return delParts(ids);
-          console.log("========================", ids);
+          let dataValue = {
+            deviceIdList: this.checkedValue,
+            partCode: this.formData.partCode,
+          };
+          return secureDevices(dataValue);
         })
         .then(() => {
           this.getList(this.queryParams);
@@ -173,13 +211,31 @@ export default {
     },
     // 关联设备
     handleAdd() {
-      let lineIds = this.equipmentList.map((item) => item.deviceId) || [];
-      this.$set(this.form, "disIds", lineIds);
       this.drawer = true;
+    },
+    getTreeSelect() {
+      equipmentTree().then((response) => {
+        this.categoryOptions = response.data;
+      });
+      listDept().then((response) => {
+        this.deptOptions = response.data;
+      });
     },
 
     submitRadio(val) {
-      console.log("========================", val);
+      let ids = val.map((item) => item.deviceId);
+      let dataValue = {
+        deviceIdList: ids,
+        partCode: this.formData.partCode,
+      };
+      relateDevices(dataValue).then((res) => {
+        if (res.code === 200) {
+          this.getList(this.queryParams);
+          this.$modal.msgSuccess("关联成功");
+          this.getList(this.queryParams);
+          this.drawer = false;
+        }
+      });
     },
   },
 };

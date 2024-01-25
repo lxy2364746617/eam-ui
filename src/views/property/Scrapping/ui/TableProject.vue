@@ -10,7 +10,7 @@
       ref="jmtable"
       :showOperate="!isShow"
       :isRadio="isChoose"
-      :handleWidth="230"
+      :handleWidth="150"
       :columns="columns"
     >
       <template slot="headerLeft" v-if="!isChoose">
@@ -41,7 +41,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit')"
           v-hasPermi="['property:scrapping:edit']"
@@ -50,7 +49,6 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:scrapping:remove']"
           >删除</el-button
@@ -210,9 +208,27 @@
         @close="addItem.choosedrawer = false"
       ></SelectParentDeviceDialog>
     </el-drawer>
+
+    <!-- 添加或修改设备平台_表单模板对话框 -->
+    <!-- <el-drawer
+      title="选择设备"
+      :visible.sync="addItem.choosedrawer"
+      direction="rtl"
+      size="80%"
+      :wrapperClosable="false"
+    >
+      <parentdevice
+        :isChoose="true"
+        @submitRadio="submitRadio2"
+        @close="addItem.choosedrawer = false"
+        :formData="{ ids: equipmentList.map((item) => item.deviceId) }"
+      >
+      </parentdevice>
+    </el-drawer> -->
   </div>
 </template>
 <script>
+import parentdevice from "@/views/device/book/device";
 import { getProjectList, downDetailLoad } from "@/api/property/scrapping";
 import Treeselect from "@riophae/vue-treeselect";
 import ContTable from "@/components/ContTable";
@@ -227,6 +243,7 @@ import {
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
 import { saveAs } from "file-saver";
+import { equipmentTree } from "@/api/equipment/category";
 export default {
   components: {
     ContTable,
@@ -257,6 +274,7 @@ export default {
       title: "",
       drawer: false,
       equipmentList: null,
+      categoryOptions: null,
       btnLoading: false,
       isChoose: false,
       // 遮罩层
@@ -396,7 +414,9 @@ export default {
           label: "设备类别",
           prop: "deviceType",
           tableVisible: true,
-          width: 200,
+          formType: "selectTree",
+          options: this.categoryOptions,
+          width: 280,
         },
         {
           label: "功能位置",
@@ -473,20 +493,26 @@ export default {
   },
   async created() {
     await this.getDeptTree();
-    await this.getList();
-
-    // data赋值
-    this.columns.forEach((b) => {});
-    this.deptOptions2 = await convertToTargetFormat(this.deptOptions);
+    this.getTree();
   },
   mounted() {},
 
   methods: {
+    /** 查询部门下拉树结构 */
+    getTree() {
+      equipmentTree().then((response) => {
+        this.categoryOptions = response.data;
+        this.getList();
+
+        // 方便获取父级tree
+        this.loops(this.categoryOptions);
+      });
+    },
     submitRadio2(row) {
       let flag = getStore("equipmentList").some(
         (item) =>
           item.deviceName + item.sModel + item.deviceCode ===
-          row.deviceName + row.sModel + row.deviceCode
+          row.deviceName + row.specs + row.deviceCode
       );
       if (flag) {
         this.$message.error("该设备已添加到设备清单中请重新选择");
@@ -497,7 +523,7 @@ export default {
       this.formData.deviceCode = row.deviceCode;
       this.formData.deviceName = row.deviceName;
       this.formData.sModel = row.specs;
-      this.formData.deviceType = row.categoryName;
+      this.formData.deviceType = row.categoryId;
       this.formData.location = row.location;
       this.formData.propertyType = row.propertyType;
       this.formData.price = row.price;
@@ -597,6 +623,7 @@ export default {
     async getDeptTree() {
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;
+        this.deptOptions2 = convertToTargetFormat(this.deptOptions);
       });
     },
     /** 查询计划明细列表 */
@@ -731,6 +758,18 @@ export default {
       name = this.forfn(options, value);
       return name;
     },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        });
+        node.children = this.loops(children, node);
+        return node;
+      });
+    },
   },
 };
 </script>
@@ -740,7 +779,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
+  padding-bottom: 20px;
   .from {
     position: relative;
     padding-left: 10px;

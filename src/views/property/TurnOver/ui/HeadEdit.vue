@@ -19,7 +19,7 @@
       v-if="isEdit"
       class="mr20"
       :columns="columns"
-      :formData="formData"
+      :formData="form"
       @submitForm="submitForm2"
       :showButton="false"
       ref="jmform"
@@ -29,9 +29,9 @@
       <el-col v-for="item in columns" :key="item.prop" :span="item.span">
         {{ item.label }}:
         {{
-          typeof formData[item.prop] == "number"
-            ? findTreeName(deptOptions, formData[item.prop])
-            : formData[item.prop]
+          typeof listValue[item.prop] == "number"
+            ? findTreeName(deptOptions, listValue[item.prop])
+            : listValue[item.prop]
         }}
       </el-col>
     </el-row>
@@ -40,14 +40,17 @@
 <script>
 import { listDept } from "@/api/system/dept";
 import { listUser } from "@/api/system/user";
+import request from "@/utils/request";
 export default {
   components: {},
   props: ["formData", "isEdit"],
   data() {
     return {
       deptOptions: null,
+      form: {},
       userList: [],
       userList2: [],
+      listValue: {},
     };
   },
   computed: {
@@ -135,6 +138,20 @@ export default {
 
   async created() {
     await this.getTreeSelect();
+    if (this.formData.id) {
+      request({
+        url: "/property/transfer/getTransfer",
+        method: "get",
+        params: { id: this.formData.id },
+      }).then((res) => {
+        if (res.code == 200) {
+          this.form = res.data;
+          this.listValue = res.data;
+        }
+      });
+    } else {
+      this.form = this.formData;
+    }
   },
   mounted() {},
   methods: {

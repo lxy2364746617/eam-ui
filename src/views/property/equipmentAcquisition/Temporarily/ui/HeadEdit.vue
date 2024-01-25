@@ -85,6 +85,13 @@
               start-placeholder="开始时间"
               end-placeholder="结束时间"
               clearable
+              :picker-options="{
+                disabledDate(time) {
+                  return (
+                    time.getTime() > Date.now() + 2 * 30 * 24 * 60 * 60 * 1000
+                  );
+                },
+              }"
             >
             </el-date-picker>
             <span v-else-if="!isEdit"

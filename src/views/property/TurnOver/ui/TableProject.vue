@@ -181,7 +181,7 @@ export default {
       total: 0,
       total2: 0,
       // 表格数据
-      equipmentList: null,
+      equipmentList: [],
       formData: {},
       categoryOptions: null,
       valueMap: {},
@@ -236,7 +236,7 @@ export default {
         },
         {
           label: "设备类别",
-          prop: "categoryId",
+          prop: "deviceType",
           formType: "selectTree",
           options: this.categoryOptions,
           tableVisible: true,
@@ -339,8 +339,6 @@ export default {
   },
   async created() {
     await this.getTreeSelect();
-    await this.getTree();
-    await this.getList();
   },
   mounted() {},
 
@@ -379,12 +377,14 @@ export default {
         this.categoryOptions = response.data;
         // 方便获取父级tree
         await this.loops(this.categoryOptions);
+        await this.getList();
       });
     },
     /** 查询部门下拉树结构 */
     async getTreeSelect() {
       await listDept().then((response) => {
         this.deptOptions = response.data;
+        this.getTree();
       });
     },
     // 根据设备ID查找
@@ -411,7 +411,10 @@ export default {
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {
       if (this.rowId) queryParams["transferNo"] = this.rowId;
       if (!this.rowId) queryParams["transferNo"] = 1;
-
+      let search = JSON.parse(JSON.stringify(queryParams));
+      delete search.pageNum;
+      delete search.pageSize;
+      delete search.transferNo;
       await getProjectList(queryParams).then((response) => {
         if (getStore("equipmentList")) setStore("equipmentList", response.data);
         if (getStore("addList") && getStore("addList").length > 0) {
@@ -433,7 +436,16 @@ export default {
             delList(getStore("equipmentList"), getStore("delList"))
           );
         }
-        this.equipmentList = getStore("equipmentList");
+        let matches = getStore("equipmentList").filter((item) => {
+          for (let key in search) {
+            if (item[key] != search[key]) {
+              if (search[key] == "") continue;
+              return false;
+            }
+          }
+          return true;
+        });
+        this.equipmentList = matches;
       });
     },
     /** 查询统计 */
@@ -468,17 +480,11 @@ export default {
         if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
           getStore("equipmentList").forEach((t) => {
             row = row.filter((item) => {
-              return (
-                item.specs +
-                  item.deviceCode +
-                  item.deviceName +
-                  item.batchNo !==
-                t.specs + t.deviceCode + t.deviceName + t.batchNo
-              );
+              return item.deviceId !== t.deviceId;
             });
           });
           this.equipData = row;
-          this.total2 = row.length;
+          this.total2 = response.total - getStore("equipmentList").length;
           this.loading = false;
         } else {
           this.equipData = response.rows;
@@ -524,10 +530,7 @@ export default {
       if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
         getStore("equipmentList").forEach((t) => {
           this.rowArr = this.rowArr.filter((item) => {
-            return (
-              item.sModel + item.deviceCode + item.deviceName + item.batchNo !==
-              t.sModel + t.deviceCode + t.deviceName + t.batchNo
-            );
+            return item.deviceId !== t.deviceId;
           });
         });
       }
@@ -678,7 +681,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
+
   .from {
     padding: 30px;
     padding-left: 10px;

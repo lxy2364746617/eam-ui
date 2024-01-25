@@ -10,6 +10,7 @@
       :initLoading="false"
       :handleWidth="150"
       :columns="columns"
+      :showOperate="false"
     >
       <template slot="headerLeft">
         <el-col :span="1.5">
@@ -68,9 +69,11 @@
       :visible.sync="drawer"
       direction="rtl"
       :wrapperClosable="false"
+      :before-close="closeDrawer"
+      size="60%"
     >
       <TitleForm
-        :columns="columns"
+        :columns="columnsForm"
         :formData="formDataNow"
         @submitForm="submitForm"
         ref="titleform"
@@ -78,8 +81,75 @@
         :disabled="disabledForm"
       >
         <template #footer>
+          <div v-if="title === '备件出库'">
+            <span style="padding-left: 20px">选择出入库明细</span>
+            <el-table
+              class="table"
+              v-loading="loading"
+              :data="inOutList"
+              @selection-change="handleSelectionChange2"
+              ref="multipleTable"
+            >
+              <el-table-column type="selection" width="55" align="center" />
+              <el-table-column label="序号" align="center" type="index" />
+              <el-table-column
+                label="供应商编码"
+                align="center"
+                prop="supplierCode"
+                width="200"
+              />
+              <el-table-column
+                label="供应商名称"
+                align="center"
+                prop="supplierName"
+                width="150"
+              />
+              <el-table-column
+                label="存储位置"
+                align="center"
+                prop="locationName"
+                width="150"
+              />
+              <el-table-column
+                label="库存数量"
+                align="center"
+                prop="inventory"
+              />
+              <el-table-column label="单位" align="center" prop="unit">
+                <template slot-scope="scope">
+                  <span
+                    v-html="
+                      findName(dict.type.spare_parts_unit, scope.row.unit)
+                    "
+                  ></span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="出库数量"
+                align="center"
+                prop="quantity"
+                width="300"
+              >
+                <template slot-scope="scope"
+                  ><el-input-number
+                    v-model="scope.row.quantity"
+                    placeholder="请输入"
+                    :max="scope.row.inventory"
+                    :min="0"
+                  ></el-input-number
+                ></template>
+              </el-table-column>
+            </el-table>
+          </div>
           <div class="form-footer">
-            <el-button @click="save" type="primary">提交</el-button>
+            <el-button
+              @click="save"
+              v-if="title === '备件出库'"
+              type="primary"
+              :disabled="submitTJ"
+              >提交</el-button
+            >
+            <el-button @click="save" v-else type="primary">提交</el-button>
             <el-button @click="close">取消</el-button>
           </div>
         </template>
@@ -90,7 +160,7 @@
     <el-drawer
       title="选择供应商"
       :visible.sync="drawersupplier"
-      size="60%"
+      size="70%"
       direction="rtl"
       :wrapperClosable="false"
     >
@@ -100,9 +170,52 @@
         @close="closesupplier"
       ></supplier>
     </el-drawer>
+    <!-- 选择备件 -->
+    <el-drawer
+      title="领用备件"
+      :visible.sync="drawerPartCode"
+      size="60%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <spareList
+        @submitRadio="submitPartCoder"
+        :isRadio="true"
+        @close="closePartCoder"
+      ></spareList>
+    </el-drawer>
+    <!-- 关联关联备件需求 -->
+    <el-drawer
+      title="关联备件需求"
+      :visible.sync="drawerRequirement"
+      size="70%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <requirement
+        @submitRadio="submitRequirement"
+        :isRadio="true"
+        @close="closeRequirement"
+      ></requirement>
+    </el-drawer>
+
+    <!-- 关联备件领用请求 -->
+    <el-drawer
+      title="关联备件领用"
+      :visible.sync="drawerSpareReceive"
+      size="70%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <spareReceive
+        @submitRadio="submitSpareReceive"
+        :isRadio="true"
+        @close="closeSpareReceive"
+      ></spareReceive>
+    </el-drawer>
 
     <!-- 上传文件 -->
-    <el-drawer
+    <!-- <el-drawer
       title="选择文件"
       :visible.sync="filedrawer"
       direction="rtl"
@@ -116,42 +229,65 @@
         style="padding: 0 20px"
       >
       </file-upload>
-    </el-drawer>
+    </el-drawer> -->
   </Wrapper>
 </template>
 
 <script>
 import ContTable from "@/components/ContTable";
 import Wrapper from "@/components/wrapper";
-import JmForm from "@/components/JmForm";
 import { listDept } from "@/api/system/dept";
 import supplier from "@/views/device/book/supplier";
-
+import {
+  getStockInOutList,
+  getStockInOutCondition,
+  stockOut,
+  stockIn,
+} from "@/api/sparePart/spareInAndOut";
+import spareList from "@/views/sparepart/spareList/spareList.vue";
+import requirement from "@/views/sparepart/requirement/requirement.vue";
+import spareReceive from "@/views/sparepart/spareReceive/spareReceive.vue";
 export default {
-  dicts: ["em_property_type", "spare_parts_unit"],
+  dicts: [
+    "em_property_type",
+    "spare_parts_unit",
+    "spare_out_type",
+    "spare_in_type",
+  ],
   components: {
     ContTable,
-    JmForm,
     supplier,
     Wrapper,
+    spareList,
+    requirement,
+    spareReceive,
   },
 
   mounted() {},
   data() {
     return {
-      loading: true,
+      loading: false,
       // 选中数组
       ids: [],
       partsCodes: [],
+      // 选中出入库明细数组
+      ids2: [],
+      selectionRow: [],
+      selectionRow2: [],
+      partsCodes2: [],
       // 显示搜索条件
       showSearch: true,
       // 表格数据
       equipmentList: null,
+      inOutList: [],
       // 总条数
       total: 0,
       formDataNow: {},
       drawer: false,
       drawersupplier: false,
+      drawerPartCode: false,
+      drawerRequirement: false,
+      drawerSpareReceive: false,
       // 弹出层标题
       title: "",
       // 部门树选项
@@ -164,7 +300,7 @@ export default {
       // 表单是否禁用
       disabled: false,
       disabledForm: false,
-
+      selectTab: [],
       // 文件上传
       //   filedrawer: false,
       //   fileType: [".xlsx"],
@@ -172,26 +308,72 @@ export default {
       //   btnLoading: false,
     };
   },
+  watch: {
+    "formDataNow.quantitySum": {
+      handler(val) {
+        if (val) {
+          if (!this.formDataNow.partCode)
+            return this.$message.warning("请选择备件");
+          this.selectTab = [];
+          let sum = JSON.parse(JSON.stringify(val));
+          for (let i = 0; i < this.inOutList.length; i++) {
+            if (sum - this.inOutList[i].inventory >= 0) {
+              this.selectTab.push(this.inOutList[i]);
+              this.inOutList[i].quantity = this.inOutList[i].inventory;
+              sum = sum - this.inOutList[i].inventory;
+            } else {
+              if (sum === 0) continue;
+              this.selectTab.push(this.inOutList[i]);
+              this.inOutList[i].quantity = sum;
+
+              sum = 0;
+            }
+          }
+          // 选择多选框
+          if (sum === 0) {
+            this.$refs.multipleTable.clearSelection();
+            this.selectTab.forEach((row) => {
+              this.$refs.multipleTable.toggleRowSelection(row);
+            });
+          }
+          // this.selectTab.forEach((row) => {
+          //   this.$refs.multipleTable.toggleRowSelection(row);
+          // });
+        }
+      },
+      deep: true,
+    },
+  },
   computed: {
     // 列信息
     columns() {
       return [
-        { label: "备件编码", prop: "partsCode", span: 22, required: true },
-        { label: "备件名称", prop: "partsName", span: 22, required: true },
-        { label: "备件类别", prop: "partsType", span: 22, required: true },
-        { label: "规格型号", prop: "partspecs", span: 22, width: 150 },
-
         {
-          label: "默认供应商",
-          prop: "supName",
-          readonly: true,
-          clickFn: () => {
-            this.drawersupplier = true;
-          },
+          label: "出入库编号",
+          prop: "inOutCode",
           span: 22,
+          required: true,
           width: 200,
         },
-        { label: "当前库存", prop: "stock", span: 22, formType: "number" },
+        {
+          label: "操作类型",
+          prop: "operationType",
+          span: 22,
+          required: true,
+          formType: "select",
+          options: this.dict.type.spare_out_type.concat(
+            this.dict.type.spare_in_type
+          ),
+        },
+        {
+          label: "备件编码",
+          prop: "partCode",
+          span: 22,
+          required: true,
+          width: 150,
+        },
+        { label: "备件名称", prop: "partName", span: 22, width: 150 },
+        { label: "数量", prop: "quantity", span: 22 },
         {
           label: "单位",
           prop: "unit",
@@ -200,37 +382,186 @@ export default {
           options: this.dict.type.spare_parts_unit,
           required: true,
         },
-        { label: "默认存储位置", prop: "location", span: 22, width: 150 },
+        { label: "供应商", prop: "supplierName", span: 22, width: 150 },
+        { label: "存储位置", prop: "locationName", span: 22, width: 150 },
+        { label: "规格型号", prop: "sModel", span: 22, width: 150 },
+        { label: "关联请求", prop: "relatedRequestCode", span: 22, width: 150 },
+        { label: "出入库原因", prop: "reason", span: 22, width: 150 },
+        { label: "操作人员", prop: "operatorName", span: 22, width: 150 },
         {
-          label: "所属组织",
-          prop: "orgId",
+          label: "操作时间",
+          prop: "createTime",
           span: 22,
-          formType: "selectTree",
-          options: this.deptOptions,
           width: 150,
-          required: true,
-        },
-        {
-          label: "预计使用时间",
-          prop: "sysj",
-          span: 22,
           formType: "date",
-        },
-        {
-          label: "使用场景说明",
-          prop: "remark",
-          formType: "textarea",
-          rows: 4,
-          span: 22,
         },
       ];
     },
+    columnsForm() {
+      if (this.title === "备件出库") {
+        return [
+          {
+            label: "操作类型",
+            prop: "operationType",
+            span: 13,
+            required: true,
+            formType: "select",
+            options: this.dict.type.spare_out_type,
+          },
+          {
+            label: "备件编码",
+            prop: "partCode",
+            span: 13,
+            required: true,
+            clickFn: () => {
+              this.drawerPartCode = true;
+            },
+          },
+          {
+            label: "备件名称",
+            prop: "partName",
+            span: 13,
+            required: true,
+            formDisabled: true,
+          },
+          { label: "规格型号", prop: "sModel", span: 13, formDisabled: true },
+          {
+            label: "出库数量",
+            prop: "quantitySum",
+            span: 13,
+            formType: "number",
+            required: true,
+          },
+          {
+            label: "单位",
+            prop: "unit",
+            span: 13,
+            formType: "select",
+            options: this.dict.type.spare_parts_unit,
+            required: true,
+            formDisabled: true,
+          },
+
+          {
+            label: "关联请求编码",
+            prop: "relatedRequestCode",
+            readonly: true,
+            clickFn: () => {
+              this.drawerSpareReceive = true;
+
+              // this.drawerRequirement = true;
+            },
+            span: 13,
+          },
+          {
+            label: "出库原因",
+            prop: "reason",
+            span: 13,
+            formType: "textarea",
+            rows: 4,
+          },
+        ];
+      } else {
+        return [
+          {
+            label: "操作类型",
+            prop: "operationType",
+            span: 13,
+            required: true,
+            formType: "select",
+            options: this.dict.type.spare_in_type,
+          },
+          {
+            label: "备件编码",
+            prop: "partCode",
+            span: 13,
+            required: true,
+            clickFn: () => {
+              this.drawerPartCode = true;
+            },
+          },
+          {
+            label: "备件名称",
+            prop: "partName",
+            span: 13,
+            required: true,
+            formDisabled: true,
+          },
+          { label: "规格型号", prop: "sModel", span: 13, formDisabled: true },
+          {
+            label: "入库数量",
+            prop: "quantity",
+            span: 13,
+            formType: "number",
+            required: true,
+          },
+          {
+            label: "单位",
+            prop: "unit",
+            span: 13,
+            formType: "select",
+            options: this.dict.type.spare_parts_unit,
+            required: true,
+            formDisabled: true,
+          },
+          {
+            label: "供应商",
+            prop: "supplierName",
+            span: 13,
+            clickFn: () => {
+              this.drawersupplier = true;
+            },
+          },
+          {
+            label: "存储位置",
+            prop: "locationName",
+            span: 13,
+          },
+          {
+            label: "关联请求编码",
+            prop: "relatedRequestCode",
+            readonly: true,
+            clickFn: () => {
+              this.drawerRequirement = true;
+            },
+            span: 13,
+          },
+          {
+            label: "出库原因",
+            prop: "reason",
+            span: 13,
+            formType: "textarea",
+            rows: 4,
+          },
+        ];
+      }
+    },
+    submitTJ() {
+      return !(
+        this.formDataNow.quantitySum ===
+        this.selectionRow2.reduce((v, t) => v + t.quantity, 0)
+      );
+    },
   },
   created() {
-    this.getList(this.queryParams);
     this.getTreeSelect();
+
+    this.getList(this.queryParams);
   },
   methods: {
+    closeDrawer() {
+      this.drawer = false;
+      this.inOutList = null;
+    },
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
     // 上传
     // AddFile() {
     //   this.btnLoading = true;
@@ -242,6 +573,7 @@ export default {
     //   this.btnLoading = true;
     // },
     // 下载
+
     handleDownload() {
       console.log("========================", "下载");
     },
@@ -250,47 +582,65 @@ export default {
         this.deptOptions = response.data;
       });
     },
+    // ! 选择备件
+    submitPartCoder(row) {
+      this.$set(this.formDataNow, "partCode", row.partCode);
+      this.$set(this.formDataNow, "partName", row.partName);
+      this.$set(this.formDataNow, "partType", row.partType);
+      this.$set(this.formDataNow, "sModel", row.sModel);
+      this.$set(this.formDataNow, "unit", row.unit);
+      getStockInOutCondition(row.partCode).then((res) => {
+        this.inOutList = res.data;
+      });
+      this.closePartCoder();
+    },
+    closePartCoder() {
+      this.drawerPartCode = false;
+    },
+    // ! 选择备件需求
+    submitRequirement(row) {
+      this.$set(this.formDataNow, "relatedRequestCode", row.demandCode);
+      this.closeRequirement();
+    },
+    closeRequirement() {
+      this.drawerRequirement = false;
+    },
+    // ! 选择备件领用
+    submitSpareReceive(row) {
+      this.$set(this.formDataNow, "relatedRequestCode", row.receiptCode);
+      this.closeSpareReceive();
+    },
+    closeSpareReceive() {
+      this.drawerSpareReceive = false;
+    },
+
     closesupplier() {
       this.drawersupplier = false;
     },
     submitRadio(row) {
-      this.$set(this.formDataNow, "supName", row.supplierName);
+      this.$set(this.formDataNow, "supplierName", row.supplierName);
+      this.$set(this.formDataNow, "supplierCode", row.supplierCode);
+      this.$set(this.formDataNow, "supplierId", row.id);
       this.closesupplier();
     },
     /** 查询用户列表 */
     getList(queryParams) {
-      queryParams.deviceId = this.queryParams.deviceId;
-      this.loading = true;
-      // listParts(queryParams).then((response) => {
-      this.equipmentList = [
-        {
-          createBy: "buyunxuyong",
-          createTime: "2023-12-14 16:39:39",
-          id: 35,
-          partsId: null,
-          deviceId: "fe5419e2774341c5bc2f1ce744ab6f7a",
-          partsName: "六角螺栓",
-          partsCode: "EQ000025",
-          partsModel: null,
-          partsType: "资材",
-          stock: "1000",
-          supName: "通化变压器制造有限公司",
-          unit: "个",
-          location: "设备部",
-          orgId: 140,
-          delFlag: null,
-          sysj: "2024-01-10",
-          remark: "萨达萨达",
-        },
-      ];
-      this.total = this.equipmentList.length;
-      this.loading = false;
-      // });
+      getStockInOutList(queryParams).then((response) => {
+        this.equipmentList = response.data.records;
+        this.total = response.data.total;
+      });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
       this.partsCodes = selection.map((item) => item.partsCode);
+      this.selectionRow = selection;
+    },
+    // 多选框选中数据
+    handleSelectionChange2(selection) {
+      this.ids2 = selection.map((item) => item.id);
+      this.partsCodes2 = selection.map((item) => item.partsCode);
+      this.selectionRow2 = selection;
     },
     close() {
       this.drawer = false;
@@ -332,7 +682,28 @@ export default {
     },
     /** 提交按钮 */
     submitForm(formVal) {
-      console.log("========================", formVal);
+      delete formVal.quantitySum;
+
+      if (this.title === "备件出库") {
+        let formValue = this.selectionRow2.map((item) => ({
+          ...item,
+          ...formVal,
+          inventoryId: item.id,
+        }));
+        stockOut(formValue).then((res) => {
+          if (res.code === 200) {
+            this.getList(this.queryParams);
+            this.$message.success("出库成功");
+          }
+        });
+      } else {
+        stockIn(formVal).then((res) => {
+          if (res.code === 200) {
+            this.getList(this.queryParams);
+            this.$message.success("入库成功");
+          }
+        });
+      }
       this.close();
     },
   },
@@ -347,5 +718,11 @@ export default {
   padding: 20px;
   border-top: 1px solid #ddd;
   z-index: 2;
+}
+.table {
+  padding: 20px;
+}
+::v-deep .el-table th.el-table__cell {
+  background-color: #e7f3ff;
 }
 </style>

@@ -2,12 +2,12 @@
   <div class="app-container">
     <el-card class="box-card" >
       <div slot="header" class="clearfix">
-        <span class="el-icon-document">发起任务</span>
+        <span class="el-icon-document">{{readonly?'审批流程':'已办任务'}}</span>
         <el-button style="float: right;" size="mini" type="danger" @click="goBack">关闭</el-button>
       </div>
       <el-tabs  tab-position="top" v-model="activeName"  @tab-click="handleClick">
         <!--表单信息-->
-        <el-tab-pane label="表单信息" name="1">
+        <el-tab-pane label="表单信息" name="1" v-if="!readonly">
             <!--初始化流程加载表单信息-->
             <el-col :span="16" :offset="4">
               <div class="test-form">
@@ -24,7 +24,7 @@
       <el-dialog :title="taskTitle" :visible.sync="taskOpen" width="65%" append-to-body>
         <flow-user v-if="checkSendUser" :checkType="checkType"  @handleUserSelect="handleUserSelect"/>
         <flow-role v-if="checkSendRole" @handleRoleSelect="handleRoleSelect"/>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer" class="dialog-footer" v-if="!readonly">
           <el-button @click="taskOpen = false">取 消</el-button>
           <el-button type="primary" @click="submitTask">提 交</el-button>
         </span>
@@ -77,13 +77,16 @@ export default {
       checkType: '', // 选择类型
       checkValues: null, // 选中任务接收人员数据
       formData: {}, // 填写的表单数据,
-      multiInstanceVars: '' // 会签节点
+      multiInstanceVars: '' ,// 会签节点
+      readonly:false
     };
   },
   created() {
     this.deployId = this.$route.query && this.$route.query.deployId;
     // 初始化表单
     this.procDefId  = this.$route.query && this.$route.query.procDefId;
+    this.readonly  = this.$route.query && this.$route.query.readonly;
+    if(this.readonly) this.activeName='2'
     // this.getNextFlowNodeByStart(this.deployId);
     this.getFlowFormData(this.deployId);
   },

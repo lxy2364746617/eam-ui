@@ -29,12 +29,7 @@
             :src="qrCode"
             alt=""
             srcset=""
-            style="
-              width: 100px;
-              vertical-align: top;
-              height: 100px;
-              margin-left: 50px;
-            "
+            style="width: 100px; vertical-align: top; height: 100px"
           />
         </el-col>
         <el-col
@@ -43,9 +38,9 @@
         >
           <jm-form
             class="mr20"
-            v-if="formData1"
+            v-if="spareValue"
             :columns="columns"
-            :formData="formData1"
+            :formData="formData"
             :showButton="false"
             :disabled="disabled1"
             ref="jmform1"
@@ -53,17 +48,7 @@
           </jm-form>
         </el-col>
         <el-col :span="3">
-          <span v-if="disabled1">
-            <el-progress
-              type="circle"
-              :percentage="formData.integrity"
-              :width="70"
-            ></el-progress>
-            <div style="font-size: 12px">
-              资料完整度{{ formData.integrity }}%
-            </div>
-          </span>
-          <span v-else>
+          <span v-if="!disabled1">
             <el-button type="primary" @click="save" size="mini">确认</el-button>
             <br /><br />
             <el-button size="mini" @click="close">取消</el-button>
@@ -82,9 +67,10 @@
           <br />
           <component
             :is="item.name"
-            v-if="formData1"
-            :formData="formData1"
+            v-if="spareValue"
+            :formData="spareValue"
             @submitForm="submitForm"
+            @newFormData="newFormData"
             @close="close"
           ></component>
         </el-tab-pane>
@@ -101,12 +87,12 @@
       <div id="printContent">
         <table class="qrcode" cellspacing="0">
           <tr>
-            <td style="width: 20%">设备名称</td>
-            <td colspan="2" style="width: 50%">{{ formData.deviceName }}</td>
+            <td style="width: 20%">备件名称</td>
+            <td colspan="2" style="width: 50%">{{ formData.partName }}</td>
           </tr>
           <tr>
-            <td>设备编码</td>
-            <td>{{ formData.deviceCode }}</td>
+            <td>备件编码</td>
+            <td>{{ formData.partCode }}</td>
             <td rowspan="4" style="text-align: center; width: 30%">
               <img
                 v-if="qrCode.indexOf('null') == -1"
@@ -119,15 +105,17 @@
           </tr>
           <tr>
             <td>规格型号</td>
-            <td>{{ formData.specs }}</td>
+            <td>{{ formData.sModel }}</td>
           </tr>
           <tr>
-            <td>设备类别</td>
-            <td>{{ categoryName }}</td>
+            <td>备件类别</td>
+            <td>
+              {{ findName(dict.type.spare_parts_type, formData.partType) }}
+            </td>
           </tr>
           <tr>
-            <td>功能位置</td>
-            <td>{{ formData.location }}</td>
+            <td>单位</td>
+            <td>{{ findName(dict.type.spare_parts_unit, formData.unit) }}</td>
           </tr>
         </table>
       </div>
@@ -148,85 +136,79 @@
         >
       </div>
     </el-drawer>
+
+    <!-- 添加供应商对话框 -->
+    <el-drawer
+      title="选择供应商"
+      :visible.sync="drawersupplier"
+      size="60%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <supplier
+        @submitRadio="submitRadio"
+        :isRadio="true"
+        @close="closesupplier"
+      ></supplier>
+    </el-drawer>
   </Wrapper>
 </template>
 <script>
 import Wrapper from "@/components/wrapper";
 import JmForm from "@/components/JmForm";
-import { getBASE } from "@/api/equipment/BASE";
+import {
+  getManagementDetails,
+  uploadImg,
+  uploadImgPut,
+  getImg,
+  uploadImgPost,
+  updateManagement,
+} from "@/api/sparePart/sparePartList";
 import { equipmentTree } from "@/api/equipment/category";
+import supplier from "@/views/device/book/supplier";
+
 import step1 from "./step1.vue";
 import step2 from "./step2.vue";
 import step3 from "./step3.vue";
 import step4 from "./step4.vue";
 import step5 from "./step5.vue";
 export default {
-  components: { Wrapper, JmForm, step1, step2, step3, step4, step5 },
-  dicts: ["em_device_state", "device_run_state"],
+  components: { Wrapper, JmForm, supplier, step1, step2, step3, step4, step5 },
+  dicts: ["spare_parts_type", "spare_parts_unit", "spare_parts_type"],
   data() {
     return {
       activeName: "step1",
       disabled1: true,
-      formData: {},
-      formData1: null,
+      formData: { imgFileResourceList: [] },
+      spareValue: null,
       formTitle: "编辑设备",
       drawer: false,
       // 部门树选项
       categoryOptions: [],
       categoryName: "",
+      spareValue: null,
+      drawersupplier: false,
+      fileResourceList: [],
     };
   },
   created() {
     this.getTreeSelect();
     // 编辑
-    const deviceId = this.$route.query.i;
-    getBASE(deviceId)
-      .then((response) => {
-        // 第一步  特种设备
-        if (response.data.emArchivesSpecial) {
-          response.data.emArchivesSpecial.componentContent = JSON.parse(
-            response.data.emArchivesSpecial.componentContent
-          );
-          response.data.emArchivesSpecial.fieldValue = JSON.parse(
-            response.data.emArchivesSpecial.fieldValue
-          );
-          this.setFormLabel(response.data.emArchivesSpecial.componentContent);
-        }
-        // 第二步
-        if (response.data.archivesOther == null) {
-          response.data.archivesOther = {};
-        }
-        // 第二步  扩展数据
-        if (response.data.emArchivesExtendAtt) {
-          response.data.emArchivesExtendAtt.componentContent = JSON.parse(
-            response.data.emArchivesExtendAtt.componentContent
-          );
-          response.data.emArchivesExtendAtt.fieldValue = JSON.parse(
-            response.data.emArchivesExtendAtt.fieldValue
-          );
-          this.setFormLabel(response.data.emArchivesExtendAtt.componentContent);
-        }
-        // 第三步 主要指标
-        if (response.data.emArchivesIndex) {
-          response.data.emArchivesIndex.componentContent = JSON.parse(
-            response.data.emArchivesIndex.componentContent
-          );
-          response.data.emArchivesIndex.fieldValue = JSON.parse(
-            response.data.emArchivesIndex.fieldValue
-          );
-          this.setFormLabel(response.data.emArchivesIndex.componentContent);
-        }
-
-        this.formData = response.data;
-        this.formData1 = JSON.parse(JSON.stringify(this.formData));
-      })
-      .catch((err) => {});
+    this.spareValue = this.$route.query.i;
+    getManagementDetails(this.spareValue.id).then((res) => {
+      this.formData = res.data;
+    });
+    getImg(this.spareValue.partCode).then((res) => {
+      this.fileResourceList = res.data;
+    });
   },
 
   mounted() {},
   computed: {
     mainImage() {
-      return process.env.VUE_APP_BASE_API + this.formData.mainImage;
+      return (
+        process.env.VUE_APP_BASE_API + this.formData.fileResource?.fileName
+      );
     },
     qrCode() {
       return process.env.VUE_APP_BASE_API + this.formData.qrCode;
@@ -234,22 +216,40 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: "设备名称", prop: "deviceName", span: 12, required: true },
         {
-          label: "设备状态",
-          prop: "deviceStatus",
+          label: "备件类别",
+          prop: "partType",
+          span: 8,
+          required: true,
           formType: "select",
-          options: this.dict.type.em_device_state,
-          span: 12,
+          options: this.dict.type.spare_parts_type,
+        },
+        {
+          label: "备件编码",
+          prop: "partCode",
+          span: 8,
           required: true,
         },
-        { label: "设备编码", prop: "deviceCode", span: 12, required: true },
+        { label: "备件名称", prop: "partName", span: 8, required: true },
         {
-          label: "运行状态",
-          prop: "runStatus",
-          formType: "select",
-          options: this.dict.type.device_run_state,
-          span: 12,
+          label: "规格型号",
+          prop: "sModel",
+          span: 8,
+        },
+        {
+          label: "默认存储位置",
+          prop: "locationName",
+          span: 8,
+          required: true,
+        },
+        {
+          label: "默认供应商",
+          prop: "supplierName",
+          span: 8,
+          required: true,
+          clickFn: () => {
+            this.drawersupplier = true;
+          },
         },
       ];
     },
@@ -259,7 +259,7 @@ export default {
         {
           label: "出入库记录",
           name: "step2",
-          visible: this.formData.emArchivesIndex,
+          visible: true,
         },
         { label: "备件更换记录", name: "step3", visible: true },
         { label: "关联设备", name: "step4", visible: true },
@@ -268,34 +268,26 @@ export default {
     },
   },
   methods: {
-    setFormLabel(arr) {
-      arr.forEach((b) => {
-        b.label = b.fieldName;
-        b.prop = b.fieldCode;
-        // b.required = b.required;
-        b.required = b.required == "0" ? true : false;
-        b.disabled = b.disabled;
-        b.formType = b.componentType;
-        switch (b.componentType) {
-          case "select":
-            b.options = [];
-            // 字典
-            if (b.dictionaryType) {
-              console.log(this, 222);
-              b.options = this.dict.type[b.dictionaryType];
-            }
-            break;
-          case "radio":
-            b.options = [];
-            if (b.dictionaryType) {
-              b.options = this.dict.type[b.dictionaryType];
-            }
-            break;
-
-          default:
-            break;
+    newFormData(newValue) {
+      this.formData.imgFileResourceList = newValue.imgFileResourceList;
+    },
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
         }
-      });
+      }
+      return name || value;
+    },
+    closesupplier() {
+      this.drawersupplier = false;
+    },
+    submitRadio(row) {
+      this.$set(this.spareValue, "supplierName", row.supplierName);
+      this.$set(this.spareValue, "supplierCode", row.supplierCode);
+      this.$set(this.spareValue, "supplierId", row.id);
+      this.closesupplier();
     },
     getTreeSelect() {
       equipmentTree().then((response) => {
@@ -309,26 +301,62 @@ export default {
       this.drawer = true;
     },
     close(callback) {
-      // console.log('========================',  callback());
-      this.formData1 = JSON.parse(JSON.stringify(this.formData));
+      this.spareValue = JSON.parse(JSON.stringify(this.formData));
       this.disabled1 = true;
-      // if (callback) callback();
+      this.$refs.jmform1.clearValidate();
+      if (callback) callback();
     },
     async save(fn) {
       var jmform1 = await this.$refs.jmform1.submitForm();
       if (jmform1) {
-        this.submitForm();
+        this.submitForm(fn, "bj");
       }
     },
     /** 提交按钮 */
-    submitForm(callback) {
-      var formData1 = this.getFormDataParams();
-      modifyBASE(formData1).then((response) => {
+    submitForm(callback, type) {
+      if (type === "bj") {
+        // 编辑
+        updateManagement(this.spareValue).then((res) => {
+          if (res.code === 200) {
+            this.$message.success("编辑成功！");
+            this.disabled1 = true;
+            if (callback) callback();
+          } else {
+            this.close(callback);
+          }
+        });
+        return;
+      }
+      // 修改图片
+      if (!this.formData.imgFileResourceList) {
         this.$modal.msgSuccess("修改成功");
-        this.setSuccessData();
-        this.disabled1 = true;
-        if (callback) callback(formData1);
+        if (callback) return callback(this.formData);
+      }
+      let newFile = this.formData.imgFileResourceList.map((item, index) => {
+        console.log("========================");
+        return {
+          ...item,
+          busId: this.formData.partCode,
+          id:
+            this.fileResourceList.length > 0
+              ? this.fileResourceList[index].id
+              : "",
+        };
       });
+
+      if (this.formData.fileResource) {
+        uploadImgPut(newFile).then((response) => {
+          this.$modal.msgSuccess("修改成功");
+          this.disabled1 = true;
+          if (callback) callback(this.formData);
+        });
+      } else {
+        uploadImgPost(newFile).then((response) => {
+          this.$modal.msgSuccess("修改成功");
+          this.disabled1 = true;
+          if (callback) callback(this.formData);
+        });
+      }
     },
     handlePrint() {
       this.$print({

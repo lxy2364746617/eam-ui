@@ -246,21 +246,21 @@ export default {
       if (formData.deviceId != undefined) {
         updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
-          this.$tab.closePage(obj).then(({ visitedViews }) => {
-            if (this.isActive(obj)) {
-              this.toLastView(visitedViews, obj)
-            }
-          })
+          // this.$tab.closePage(obj).then(({ visitedViews }) => {
+          //   if (this.isActive(obj)) {
+          //     this.toLastView(visitedViews, obj)
+          //   }
+          // })
           if(typeof fn == 'function') fn()
         });
       } else {
         addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
-          this.$tab.closePage(obj).then(({ visitedViews }) => {
-            if (this.isActive(obj)) {
-              this.toLastView(visitedViews, obj)
-            }
-          })
+          // this.$tab.closePage(obj).then(({ visitedViews }) => {
+          //   if (this.isActive(obj)) {
+          //     this.toLastView(visitedViews, obj)
+          //   }
+          // })
           if(typeof fn == 'function') fn()
         });
       }

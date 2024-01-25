@@ -41,15 +41,9 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-edit"
-          @click="handleUpdate(scope.row,'edit')"
-        >修改</el-button>
-        <el-button
-          size="mini"
-          type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-        >删除</el-button>
+        >解除</el-button>
       </template>
     </jm-table>
     <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -57,8 +51,9 @@
       :title="title"
       :visible.sync="drawer"
       direction="rtl"
-      :wrapperClosable="false">
-      <jm-form 
+      :wrapperClosable="false"
+      size="60%">
+      <!-- <jm-form 
         class="mr20"
         :columns="columns" 
         :showButton="false"
@@ -70,7 +65,19 @@
             <el-button size="mini" @click="save" type="primary">确定</el-button>
           </div>
         </template>
-      </jm-form>
+      </jm-form> -->
+      <jm-table v-if="drawer" :tableData="partsData" :columns='columns' @handleSelectionChange="handleSelectionChange2"
+      @getList="getList2"
+      :total="total2"
+      :initLoading="false"
+      :handleWidth="130"
+      :showOperate='false'>
+      </jm-table>
+      <div style="width:100%;height:48px"></div>
+      <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 10px;border-top: 1px solid #ddd;">
+        <el-button size="mini" @click="close">取消</el-button>
+        <el-button size="mini" @click="save" type="primary">确定</el-button>
+      </div>
     </el-drawer>
     <div v-show="radio3=='图示'">
       <div style="text-align: right;">
@@ -118,7 +125,7 @@
 </template>
 
 <script>
-import { listParts, addParts, updateParts, delParts } from "@/api/equipment/parts";
+import { listParts, addParts, updateParts, delParts,selectPage } from "@/api/equipment/parts";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -151,15 +158,15 @@ export default {
     // 列信息
     columns(){
       return [
-        { label:"备件名称", prop:"partsName", span: 24, },
-        { label:"备件编码", prop:"partsCode", span: 24, },
-        { label:"规格型号", prop:"partsModel", span: 24, },
-        { label:"备件类别", prop:"partsType", span: 24, },
+        { label:"备件名称", prop:"partName", span: 24, },
+        { label:"备件编码", prop:"partCode", span: 24, },
+        { label:"规格型号", prop:"sModel", span: 24, },
+        { label:"备件类别", prop:"partType", span: 24, },
         { label:"单位", prop:"unit", span: 24, },
-        { label:"当前库存", prop:"stock", span: 24, },
-        { label:"供应商名称", prop:"supName", readonly: true, clickFn:()=>{this.drawersupplier=true}, span: 24, },
-        { label:"存储位置", prop:"location", span: 24, },
-        { label:"所属组织", prop:"orgId", span: 24, formType: 'selectTree', options: this.deptOptions },
+        { label:"当前库存", prop:"inventory", span: 24, },
+        { label:"供应商名称", prop:"supplierName",  span: 24, },
+        { label:"存储位置", prop:"locationName", span: 24, },
+        { label:"所属组织", prop:"affDeptName", span: 24,  },
       ]
     },
   },
@@ -185,7 +192,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-      partsCodes: [],
+      partCode: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -194,8 +201,10 @@ export default {
       showSearch: true,
       // 表格数据
       equipmentList: null,
+      partsData:[],
       // 总条数
       total: 0,
+      total2: 0,
       formDataNow: {},
       drawer: false,
       drawersupplier: false,
@@ -237,6 +246,10 @@ export default {
         pageSize: 10,
         deviceId: this.formData.deviceId,
       },
+      queryParams2: {
+        pageNum: 1,
+        pageSize: 10,
+      },
       // 表单校验
       rules: {
         userName: [
@@ -264,7 +277,8 @@ export default {
             trigger: "blur"
           }
         ]
-      }
+      },
+      pushList:[],//多选框选中数据
     };
   },
   async created() {
@@ -299,35 +313,57 @@ export default {
         }
       );
     },
+    /* 添加备品备件 */
+    getList2(queryParams) {
+      this.loading = true;
+      selectPage(queryParams).then(response => {
+          let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
+          let arr= response.data.records.filter(item=>{
+            return list_id.indexOf(item.partCode) == -1;
+          })
+          this.$set(this,'partsData',arr);
+          this.total2 = response.data.total;
+          this.pushList=[]
+        }
+      );
+    },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id);
-      this.partsCodes = selection.map(item => item.partsCode);
+      this.partCode = selection.map(item => item.partsCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
+    // 多选框选中数据
+    handleSelectionChange2(selection) {
+      this.pushList = selection;
+    },
     close(){
-      this.drawer = false
+      this.drawer = false;
+      this.pushList=[]
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.drawer = true;
       this.title = "新增设备";
       this.formDataNow = {
-        deviceId: this.queryParams.deviceId
+        deviceId: this.queryParams.deviceId,
       }
+      this.getList2(this.queryParams2)
+      this.pushList = [];
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.drawer = true;
       this.title = "编辑设备";
-      this.formDataNow = row
+      this.formDataNow = row;
+      this.pushList = [];
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      const partsCodes = row.partsCode || this.partsCodes;
-      this.$modal.confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？').then(() =>{
+      const partCode = row.partCode || this.partCode;
+      this.$modal.confirm('是否确认删除备件编码为"' + partCode + '"的数据项？').then(() =>{
         return delParts(ids);
       }).then(() => {
         this.getList(this.queryParams);
@@ -335,7 +371,11 @@ export default {
       }).catch(() => {});
     },
     save(){
-      this.submitForm()
+      this.formDataNow.partCodeList=this.pushList.length>0?this.pushList.map(item=>item.partCode):[];
+      // this.total = this.formData.partCodeList.length;
+      if(this.pushList.length>0){
+        this.submitForm()
+      }
     },
     /** 提交按钮 */
     submitForm: function() {

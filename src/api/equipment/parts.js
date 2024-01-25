@@ -42,3 +42,30 @@ export function delParts(deviceId) {
     method: 'delete'
   })
 }
+
+//备品备件
+export function selectPage(data) {
+  return request({
+    url: '/attachment/selectPage',
+    method: 'post',
+    data: data
+  })
+}
+
+//查询运维计划列表
+export function list(query) {
+  return request({
+    url: '/maintain/list' ,
+    method: 'get',
+    params: query
+  })
+}
+
+//运维计划统计
+export function statistics(query) {
+  return request({
+    url: '/maintain/statistics' ,
+    method: 'get',
+    params: query
+  })
+}

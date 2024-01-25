@@ -64,40 +64,6 @@ export default {
       this.formData = JSON.parse(JSON.stringify(row));
 
       this.disabled = this.$route.query.disabled === "true" ? true : false;
-
-      // this.$set(this.formData, "orderType", row.orderType);
-      switch (row.orderType + row.orderObj) {
-        case "RCDJ1":
-        case "ZZDJ1":
-        case "JMDJ1":
-          break;
-        case "RCDJ2":
-        case "ZZDJ2":
-        case "JMDJ2":
-          break;
-        case "DZWX2":
-        case "WWWX2":
-        case "JDBWX2":
-          break;
-        case "DZWX3":
-        case "WWWX3":
-        case "JDBWX3":
-          break;
-        case "DQJY2":
-          break;
-        case "RCBY1":
-        case "YJBY1":
-        case "EJBY1":
-        case "CGRH1":
-          break;
-        case "RCBY2":
-        case "YJBY2":
-        case "EJBY2":
-        case "CGRH2":
-          break;
-        default:
-          break;
-      }
     }
   },
   mounted() {
@@ -757,10 +723,11 @@ export default {
           orderObj: this.formData.orderObj,
         };
       }
-      this.formData["maintenanceType"] = this.findParentType(
-        this.formData["orderType"],
-        this.orderOptions
-      );
+      // this.formData["maintenanceType"] = this.findParentType(
+      //   this.formData["orderType"],
+      //   this.orderOptions
+      // );
+      this.formData["maintenanceType"] = this.formData["orderType"];
     },
     // 根据二级工单类型获取一级工单类型
     findParentType(selectedChildType, data) {

@@ -25,7 +25,7 @@
             :show-file-list="false"
             :headers="headers"
             ref="upload"
-            ><el-button type="primary" size="mini"  icon="el-icon-upload"
+            ><el-button type="primary" size="mini" icon="el-icon-upload"
               >导入</el-button
             ></el-upload
           >
@@ -37,7 +37,7 @@
           type="text"
           icon="el-icon-view"
           :loading="btnLoading"
-          @click="handleUpdate(scope.row, 'view')"
+          @click="handleImport(scope.row, 'view')"
           v-hasPermi="['property:receive:edit']"
           >下载</el-button
         >
@@ -73,6 +73,7 @@ import {
   delList,
   formatDateFromTimestamp,
 } from "@/utils/property.js";
+import { downloadGet } from "@/utils/request";
 import { saveAs } from "file-saver";
 import Search from "@/components/HeaderSearch";
 export default {
@@ -154,6 +155,13 @@ export default {
   },
   mounted() {},
   methods: {
+    handleImport(row) {
+      downloadGet(
+        "/common/download?fileName=" + row.originalFileName,
+        {},
+        row.originalFileName
+      );
+    },
     handlePreview(row) {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
@@ -245,7 +253,6 @@ export default {
           return true;
         });
         this.equipmentList = matches;
-        this.total = matches.length;
         this.loading = false;
       });
     },
@@ -310,8 +317,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
-
+  padding-bottom: 20px;
   .icon {
     span {
       padding-left: 10px;

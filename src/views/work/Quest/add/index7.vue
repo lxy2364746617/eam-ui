@@ -330,7 +330,7 @@ export default {
       //     }
       //   }
       // );
-      getWomInfo({ id: this.formData.id }).then((res) => {
+      getWomInfo({ orderCode: this.formData.orderCode }).then((res) => {
         this.formData = { ...res.data, ...this.formData };
       });
       findAll({ groupType: this.formData.orderType }).then((res) => {

@@ -154,7 +154,7 @@ export default {
       userTypeOption: [
         { label: '指定人员', value: 'assignee' },
         { label: '候选人员', value: 'candidateUsers' },
-        { label: '候选角色', value: 'candidateGroups' }
+        /* { label: '候选角色', value: 'candidateGroups' } */
       ],
       dialogName: '',
       executionListenerLength: 0,
@@ -183,6 +183,10 @@ export default {
       expType: null,
       // 表单列表
       formList: [],
+      selectedUser: {
+        ids: [],
+        text: []
+      },
     }
   },
   computed: {
@@ -243,22 +247,30 @@ export default {
             // rules: [{ required: true, message: '候选人员不能为空' }],
             show: !!_this.showConfig.candidateUsers && _this.formData.userType === 'candidateUsers'
           },
-          {
+          /* {
             xType: 'slot',
             name: 'checkRole',
             label: '候选角色',
             // rules: [{ required: true, message: '候选角色不能为空' }],
             show: !!_this.showConfig.candidateGroups && _this.formData.userType === 'candidateGroups'
-          },
+          }, */
           {
             xType: 'radio',
-            name: 'radioMul',
+            name: 'multiLoopType',
             label: '多实例审批方式',
             dic:[
-              {label:'无',value:0},
-              {label:'或签(需所有审批人同意)',value:1},
-              {label:'或签(一名审批人同意即可)',value:2}
-            ]
+              {label:'无',value:'Null'},
+              {label:'会签(需所有审批人同意)',value:'SequentialMultiInstance'},
+              {label:'或签(一名审批人同意即可)',value:'ParallelMultiInstance'}
+            ],
+            //show:_this.formData.userType === 'candidateUsers'||_this.formData.userType === 'candidateGroups'
+          },
+          {
+            xType: 'switch',
+            name: 'isSequential',
+            label: '顺序审批',
+            tooltip:'顺序审批',
+            show:_this.formData.multiLoopType==='SequentialMultiInstance'||_this.formData.multiLoopType==='ParallelMultiInstance'
           },
           {
             xType: 'slot',
@@ -369,17 +381,29 @@ export default {
   },
   watch: {
     'formData.userType': function(val, oldVal) {
+      console.log(val,oldVal)
       if (StrUtil.isNotBlank(oldVal)) {
           delete this.element.businessObject.$attrs[`flowable:${oldVal}`]
           delete this.formData[oldVal]
           // 清除已选人员数据
           this.checkValues = '';
           this.selectValues = null;
+          this.formData.multiLoopType='Null'
+          this.formData.isSequential=false
           // 删除xml中已选择数据类型节点
           delete this.element.businessObject.$attrs[`flowable:dataType`]
       }
       // 写入userType节点信息到xml
       this.updateProperties({'flowable:userType': val})
+      console.log(this.modeler.get('modeling'))
+      var  completionCondition= this.modeler.get('moddle').create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances > 0}" });
+       this.modeler.get('moddle').create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: this.isSequential });
+      this.modeler.get('moddle').create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances >= nrOfInstances}" })
+      this.modeler.get('modeling').updateModdleProperties(this.bpmnElement, this.multiLoopInstance, {
+        collection: '${multiInstanceHandler.getUserIds(execution)}',
+        elementVariable: 'assignee',
+        completionCondition
+      }); 
     },
     'formData.async': function(val) {
       if (StrUtil.isNotBlank(val)) {
@@ -449,6 +473,16 @@ export default {
     'formData.resultVariable': function(val) {
       if (StrUtil.isNotBlank(val)) {
         this.updateProperties({'flowable:resultVariable': val})
+      }
+    },
+    'formData.multiLoopType': function(val) {
+      if (StrUtil.isNotBlank(val)) {
+        this.updateProperties({'flowable:multiLoopType': val})
+      }
+    },
+    'formData.isSequential': function(val) {
+      if (StrUtil.isNotBlank(val)) {
+        this.updateProperties({'flowable:isSequential': val})
       }
     }
   },
@@ -634,9 +668,52 @@ export default {
       delete this.element.businessObject.$attrs[`flowable:assignee`]
       delete this.element.businessObject.$attrs[`flowable:candidateUsers`]
       delete this.element.businessObject.$attrs[`flowable:candidateGroups`]
-    }
+    },
+    resetTaskForm() {
+      const bpmnElementObj = this.bpmnElement?.businessObject;
+      if (!bpmnElementObj) {
+        return;
+      }
+      if (this.formData.userType === 'assignee') {
+        let userIdData = bpmnElementObj['candidateUsers'] || bpmnElementObj['assignee'];
+        let userText = bpmnElementObj['text'] || [];
+        if (userIdData && userIdData.toString().length > 0 && userText && userText.length > 0) {
+          this.selectedUser.ids = userIdData?.toString().split(',');
+          this.selectedUser.text = userText?.split(',');
+        }
+      }
+      this.getElementLoop(bpmnElementObj);
+    },
+    changeMultiLoopType() {
+      this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: this.isSequential });
+      // 更新多实例配置
+      window.bpmnInstances.modeling.updateProperties(this.bpmnElement, {
+        loopCharacteristics: this.multiLoopInstance,
+        assignee: '${assignee}'
+      });
+      // 完成条件
+      let completionCondition = null;
+      // 会签
+      if (this.formData.multiLoopType === "SequentialMultiInstance") {
+        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances >= nrOfInstances}" });
+      }
+      // 或签
+      if (this.formData.multiLoopType === "ParallelMultiInstance") {
+        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances > 0}" });
+      }
+      // 更新模块属性信息
+      window.bpmnInstances.modeling.updateModdleProperties(this.bpmnElement, this.multiLoopInstance, {
+        collection: '${multiInstanceHandler.getUserIds(execution)}',
+        elementVariable: 'assignee',
+        completionCondition
+      });
+    },
   }
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+::v-deep .el-radio{
+  margin:10px 30px 0 5px !important
+}
+</style>

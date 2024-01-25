@@ -34,7 +34,11 @@
           >详情</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -43,7 +47,11 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -51,15 +59,19 @@
           >删除</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleSubmit(scope.row)"
           v-hasPermi="['property:receive:edit']"
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
+          v-if="scope.row.apvStatus == 'completed'"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -81,16 +93,34 @@
       :formData="formData"
       @back="back()"
     ></add-edit>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { getPurchaseList, delProject } from "@/api/property/receive";
 import addEdit from "@/views/device/book/add";
 import JmTable from "@/components/JmTable";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
     JmTable,
     addEdit,
+    subprocess,
   },
   dicts: ["apv_status"],
   props: {
@@ -101,6 +131,9 @@ export default {
   },
   data() {
     return {
+      subtitle: "",
+      subopen: false,
+      tableData: [],
       btnLoading: false,
       // 查询参数
       queryParams: {
@@ -170,6 +203,41 @@ export default {
   },
   mounted() {},
   methods: {
+    sub(val) {
+      definitionStart2(val.id, this.radioRow.neckNo, "device_neck", {}).then(
+        (res) => {
+          if (res.code == 200) {
+            this.$message.success(res.msg);
+            this.subopen = false;
+            this.getList();
+          }
+        }
+      );
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "device_neck",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    /* 提交按钮 */
+    handleSubmit(row) {
+      this.id = row.deviceId;
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "device_neck",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
     handlePrint(row) {
       // 打印单据跳转
       this.$router.push({
@@ -282,8 +350,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
-
+  padding-bottom: 20px;
   .icon {
     span {
       padding-left: 10px;

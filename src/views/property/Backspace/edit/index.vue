@@ -4,6 +4,7 @@
       :isEdit="isEdit"
       :formData="formData"
       @submitForm="submitValue"
+      ref="headEdit"
     ></HeadEdit>
     <TableProject :isShow="false" :rowId="formData.backNo"
       ><template

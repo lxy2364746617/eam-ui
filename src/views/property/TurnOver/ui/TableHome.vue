@@ -67,7 +67,11 @@
           >详情</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -76,7 +80,11 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -84,15 +92,19 @@
           >删除</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleSubmit(scope.row)"
           v-hasPermi="['property:turnOver:edit']"
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
+          v-if="scope.row.apvStatus == 'completed'"
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -101,6 +113,20 @@
         >
       </template>
     </jm-table>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -113,9 +139,13 @@ import {
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
 import { listDept } from "@/api/system/dept";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
     JmTable,
+    subprocess,
   },
   dicts: ["apv_status"],
   props: {
@@ -126,7 +156,10 @@ export default {
   },
   data() {
     return {
-      field101fileList: [],
+      subtitle: "",
+      subopen: false,
+      tableData: [],
+      btnLoading: false,
       btnLoading: false,
       // 查询参数
       queryParams: {
@@ -226,17 +259,54 @@ export default {
   watch: {},
   async created() {
     await this.getTreeSelect();
-    // data赋值
-    await this.getList();
   },
   mounted() {},
   methods: {
+    sub(val) {
+      definitionStart2(
+        val.id,
+        this.radioRow.transferNo,
+        "device_transfer",
+        {}
+      ).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.getList();
+        }
+      });
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "device_transfer",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    /* 提交按钮 */
+    handleSubmit(row) {
+      this.id = row.deviceId;
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "device_transfer",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
     handleSet() {},
 
     /** 查询部门下拉树结构 */
     async getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data;
+        this.getList();
       });
     },
     handleDelete(row) {
@@ -334,7 +404,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
+  padding-bottom: 20px;
 
   .icon {
     span {

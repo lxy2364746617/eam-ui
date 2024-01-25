@@ -25,7 +25,7 @@
             :show-file-list="false"
             :headers="headers"
             ref="upload"
-            ><el-button type="primary" size="mini"  icon="el-icon-upload"
+            ><el-button type="primary" size="mini" icon="el-icon-upload"
               >导入</el-button
             ></el-upload
           >
@@ -33,7 +33,6 @@
         <el-col :span="1.5" v-else>
           <el-button
             type="primary"
-            
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
@@ -49,7 +48,7 @@
           type="text"
           icon="el-icon-view"
           :loading="btnLoading"
-          @click="handleUpdate(scope.row, 'view')"
+          @click="handleImport(scope.row, 'view')"
           v-hasPermi="['property:backspace:edit']"
           >下载</el-button
         >
@@ -79,6 +78,7 @@
 import { getAssociatedPlan } from "@/api/property/receive";
 import JmTable from "@/components/JmTable";
 import { getToken } from "@/utils/auth";
+import { downloadGet } from "@/utils/request";
 import {
   setStore,
   getStore,
@@ -166,6 +166,13 @@ export default {
   },
   mounted() {},
   methods: {
+    handleImport(row) {
+      downloadGet(
+        "/common/download?fileName=" + row.originalFileName,
+        {},
+        row.originalFileName
+      );
+    },
     handlePreview(row) {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
@@ -186,7 +193,7 @@ export default {
       if (res.code === 200) {
         res["createImport"] = Date.now();
         let msg = {
-          fileName: res.originalFileName,
+          fileName: res.fileName,
           originalFileName: res.originalFileName,
           newFileName: res.newFileName,
           fileSize: res.fileSize,
@@ -256,7 +263,6 @@ export default {
           return true;
         });
         this.equipmentList = matches;
-        this.total = matches.length;
         this.loading = false;
       });
     },
@@ -321,7 +327,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
+  padding-bottom: 20px;
 
   .icon {
     span {

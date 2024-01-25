@@ -38,7 +38,7 @@
       </el-row>
     </div>
     <br />
-    <jm-table
+    <ContTable
       :tableData="equipmentList"
       @getList="getList"
       @handleSelectionChange="handleSelectionChange"
@@ -46,7 +46,9 @@
       ref="jmtable"
       :isRadio="isChoose"
       :handleWidth="230"
+      class="mb20"
       :columns="columns"
+      :isScroll="true"
     >
       <template slot="headerLeft" v-if="!isChoose">
         <slot name="headerLeft"></slot>
@@ -57,15 +59,14 @@
       <template v-slot:end_handle="scope" v-if="!isChoose">
         <slot name="end_handle" :row="scope.row" :index="scope.index"></slot>
       </template>
-    </jm-table>
+    </ContTable>
   </div>
 </template>
 <script>
 import { listDept } from "@/api/system/dept";
-import request from "@/utils/request";
-import JmTable from "@/components/JmTable";
+import ContTable from "@/components/ContTable";
 export default {
-  components: { JmTable },
+  components: { ContTable },
   props: {
     formData: { default: () => {}, type: Object },
     isShowCard: { default: false, type: Number },
@@ -89,20 +90,9 @@ export default {
   },
   async created() {
     await this.getTreeSelect();
-    if (this.formData.id) {
-      request({
-        url: "/property/neck/getNeck",
-        method: "get",
-        params: { id: this.formData.id },
-      }).then((res) => {
-        if (res.code == 200) {
-          this.form = res.data;
-          this.listValue = res.data;
-        }
-      });
-    } else {
-      this.form = this.formData;
-      console.log("========================", this.form);
+    this.form = this.formData;
+    if (this.isShowCard) {
+      this.listValue = this.formData;
     }
   },
   mounted() {},

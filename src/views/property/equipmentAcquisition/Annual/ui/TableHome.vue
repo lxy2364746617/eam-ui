@@ -24,21 +24,12 @@
           >
         </el-col>
         <el-col :span="1.5">
-          <el-upload
-            multiple
-            :before-upload="handleBeforeUpload"
-            :on-success="handleUploadSuccess"
-            :on-error="handleUploadError"
-            v-hasPermi="['property:purchase:add']"
-            name="file"
-            :show-file-list="false"
-            :headers="headers"
-            ref="upload"
-            :action="uploadFileUrl"
-            class="upload-file-uploader"
-            ><el-button type="primary" size="mini" icon="el-icon-upload"
-              >导入</el-button
-            ></el-upload
+          <el-button
+            type="primary"
+            size="mini"
+            icon="el-icon-upload"
+            @click="handlerImport"
+            >导入</el-button
           >
         </el-col>
         <el-col :span="1.5">
@@ -73,7 +64,11 @@
           >详情</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -82,7 +77,11 @@
           >编辑</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           @click="handleDelete(scope.row)"
@@ -90,23 +89,50 @@
           >删除</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 3 || scope.row.apvStatus === 1"
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
-          v-hasPermi="['property:purchase:edit']"
+          @click="handleSubmit(scope.row)"
+          v-hasPermi="['property:purchase:submit']"
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus === 1 || scope.row.apvStatus === 2"
+          v-if="scope.row.apvStatus == 'completed'"
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:purchase:edit']"
           >审批流</el-button
         >
       </template>
     </jm-table>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
+
+    <!-- 导入 -->
+    <file-import
+      @handleFileSuccess="handleFileSuccess"
+      :downloadTemplateUrl="'/property/purchase/plan/importTemplate'"
+      ref="fileImport"
+      :isUpdate="false"
+      :importUrl="'/property/purchase/plan/importPlan'"
+    ></file-import>
   </div>
 </template>
 <script>
@@ -121,9 +147,15 @@ import { findByTemplateType } from "@/api/equipment/attribute";
 import { saveAs } from "file-saver";
 import { getToken } from "@/utils/auth";
 import { listDept } from "@/api/system/dept";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
+import fileImport from "@/components/FileImport";
 export default {
   components: {
     JmTable,
+    subprocess,
+    fileImport,
   },
   dicts: ["apv_status"],
   props: {
@@ -134,7 +166,8 @@ export default {
   },
   data() {
     return {
-      field101fileList: [],
+      subtitle: "",
+      subopen: false,
       btnLoading: false,
       uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
       headers: {
@@ -166,6 +199,7 @@ export default {
       formParams: {
         prtOrg: "Y",
       },
+      tableData: [],
     };
   },
   computed: {
@@ -177,7 +211,12 @@ export default {
           tableVisible: true,
           width: 150,
         },
-        { label: "购置计划名称", prop: "purchasePlanName", tableVisible: true },
+        {
+          label: "购置计划名称",
+          prop: "purchasePlanName",
+          tableVisible: true,
+          width: 200,
+        },
         {
           label: "购置计划类型",
           prop: "purchasePlanType",
@@ -248,17 +287,74 @@ export default {
   watch: {},
   async created() {
     await this.getDeptTree();
-    // data赋值
-    this.columns.forEach((b) => {});
-    await this.getList();
   },
   mounted() {},
   methods: {
+    // 跳转流程详情
+    handleFlowRecord(row) {
+      this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
+    },
+    // ! 导入
+    /** 导入按钮操作 */
+    handlerImport() {
+      this.$refs.fileImport.upload.open = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess() {
+      this.getList();
+    },
+    // ! 提交
+    sub(val) {
+      definitionStart2(
+        val.id,
+        this.radioRow.purchasePlanNo,
+        "purchase_plan",
+        {}
+      ).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.getList();
+        }
+      });
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "purchase_plan",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    /* 提交按钮 */
+    handleSubmit(row) {
+      this.id = row.deviceId;
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "purchase_plan",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
     handleSet() {},
     /** 查询部门下拉树结构 */
     async getDeptTree() {
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;
+        this.getList();
       });
     },
     handleDelete(row) {
@@ -362,8 +458,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-  padding: 14px 15px;
-
+  padding-bottom: 20px;
   .icon {
     span {
       padding-left: 10px;

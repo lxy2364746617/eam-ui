@@ -123,9 +123,16 @@ import Wrapper from "@/components/wrapper";
 import JmForm from "@/components/JmForm";
 import { listDept } from "@/api/system/dept";
 import supplier from "@/views/device/book/supplier";
-
+import { saveAs } from "file-saver";
+import {
+  getManagementList,
+  addManagement,
+  updateManagement,
+  delManagement,
+  exportManagementList,
+} from "@/api/sparePart/sparePartList";
 export default {
-  dicts: ["em_property_type", "spare_parts_unit"],
+  dicts: ["em_property_type", "spare_parts_unit", "spare_parts_type"],
   components: {
     ContTable,
     JmForm,
@@ -150,7 +157,7 @@ export default {
       drawer: false,
       drawersupplier: false,
       // 弹出层标题
-      title: "",
+      title: "新增设备",
       // 部门树选项
       deptOptions: [],
       // 查询参数
@@ -173,22 +180,40 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: "备件编码", prop: "partsCode", span: 22, required: true },
-        { label: "备件名称", prop: "partsName", span: 22, required: true },
-        { label: "备件类别", prop: "partsType", span: 22, required: true },
-        { label: "规格型号", prop: "partspecs", span: 22, width: 150 },
+        {
+          label: "备件编码",
+          prop: "partCode",
+          span: 22,
+          required: true,
+          formDisabled: this.title === "新增设备" ? false : true,
+        },
+        { label: "备件名称", prop: "partName", span: 22, required: true },
+        {
+          label: "备件类别",
+          prop: "partType",
+          span: 22,
+          required: true,
+          formType: "select",
+          options: this.dict.type.spare_parts_type,
+        },
+        { label: "规格型号", prop: "sModel", span: 22, width: 150 },
 
         {
           label: "默认供应商",
-          prop: "supName",
+          prop: "supplierName",
           readonly: true,
           clickFn: () => {
             this.drawersupplier = true;
           },
           span: 22,
-          width: 200,
+          width: 280,
         },
-        { label: "当前库存", prop: "stock", span: 22, formType: "number" },
+        {
+          label: "当前库存",
+          prop: "inventory",
+          span: 22,
+          formType: "number",
+        },
         {
           label: "单位",
           prop: "unit",
@@ -197,10 +222,10 @@ export default {
           options: this.dict.type.spare_parts_unit,
           required: true,
         },
-        { label: "默认存储位置", prop: "location", span: 22, width: 150 },
+        { label: "默认存储位置", prop: "locationName", span: 22, width: 150 },
         {
           label: "所属组织",
-          prop: "orgId",
+          prop: "affDept",
           span: 22,
           formType: "selectTree",
           options: this.deptOptions,
@@ -209,33 +234,33 @@ export default {
         },
         {
           label: "预计使用时间",
-          prop: "sysj",
+          prop: "useDate",
           span: 22,
           formType: "date",
         },
         {
           label: "使用场景说明",
-          prop: "remark",
+          prop: "scene",
           formType: "textarea",
           rows: 4,
           span: 22,
+          width: 200,
         },
       ];
     },
   },
   created() {
-    this.getList(this.queryParams);
     this.getTreeSelect();
   },
   methods: {
     // 详情
     handleDetails(row) {
-      const deviceId = "c97fa0223ed54ba684f08fc336775e87";
+      const spareId = "1";
 
       this.$router.push({
         path: "/sparepart/spareListDetails",
         query: {
-          i: deviceId,
+          i: row,
         },
       });
     },
@@ -251,49 +276,36 @@ export default {
     },
     // 下载
     handleDownload() {
-      console.log("========================", "下载");
+      exportManagementList({ ids: this.ids }).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `sparePart_${new Date().getTime()}`);
+      });
     },
     getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data;
+        this.getList(this.queryParams);
       });
     },
     closesupplier() {
       this.drawersupplier = false;
     },
     submitRadio(row) {
-      this.$set(this.formDataNow, "supName", row.supplierName);
+      this.$set(this.formDataNow, "supplierName", row.supplierName);
+      this.$set(this.formDataNow, "supplierCode", row.supplierCode);
+      this.$set(this.formDataNow, "supplierId", row.id);
       this.closesupplier();
     },
     /** 查询用户列表 */
     getList(queryParams) {
-      queryParams.deviceId = this.queryParams.deviceId;
       this.loading = true;
-      // listParts(queryParams).then((response) => {
-      this.equipmentList = [
-        {
-          createBy: "buyunxuyong",
-          createTime: "2023-12-14 16:39:39",
-          id: 35,
-          partsId: null,
-          deviceId: "fe5419e2774341c5bc2f1ce744ab6f7a",
-          partsName: "六角螺栓",
-          partsCode: "EQ000025",
-          partsModel: null,
-          partsType: "资材",
-          stock: "1000",
-          supName: "通化变压器制造有限公司",
-          unit: "个",
-          location: "设备部",
-          orgId: 140,
-          delFlag: null,
-          sysj: "2024-01-10",
-          remark: "萨达萨达",
-        },
-      ];
-      this.total = this.equipmentList.length;
-      this.loading = false;
-      // });
+      getManagementList(queryParams).then((response) => {
+        this.equipmentList = response.data.records;
+        this.total = response.data.total;
+        this.loading = false;
+      });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -319,12 +331,11 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      const partsCodes = row.partsCode || this.partsCodes;
+      const partCode = row.partCode || this.partsCodes;
       this.$modal
-        .confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？')
+        .confirm('是否确认删除备件编码为"' + partCode + '"的数据项？')
         .then(() => {
-          // return delParts(ids);
-          console.log("========================", ids);
+          return delManagement(ids);
         })
         .then(() => {
           this.getList(this.queryParams);
@@ -340,7 +351,22 @@ export default {
     },
     /** 提交按钮 */
     submitForm(formVal) {
-      console.log("========================", formVal);
+      if (formVal.id) {
+        updateManagement(formVal).then((res) => {
+          if (res.code === 200) {
+            this.$message.success("编辑成功！");
+            this.getList(this.queryParams);
+          }
+        });
+      } else {
+        addManagement(formVal).then((res) => {
+          if (res.code === 200) {
+            this.$message.success("新增成功！");
+            this.getList(this.queryParams);
+          }
+        });
+      }
+
       this.close();
     },
   },

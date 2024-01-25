@@ -2,8 +2,9 @@
   <div>
     <el-card shadow="never" style="margin-top: 10px;">
       <jm-table
-        :tableData="formData.archivesPartsList"
+         :tableData="equipmentList"
         @handleSelectionChange="handleSelectionChange"
+        @getList="getList"
         :total="total"
         ref="jmtable"
         :initLoading="false"
@@ -28,55 +29,58 @@
               icon="el-icon-delete"
               size="mini"
               :disabled="multiple"
-              @click="handleDelete"
+              @click="handleDelete(0)"
               v-hasPermi="['equipment:base:removeParentEm']"
             >解除</el-button>
           </el-col>
         </template>
         <template #end_handle="scope">
-          <el-button
+          <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.index,scope.row,'edit')"
-          >修改</el-button>
+          >修改</el-button> -->
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-          >删除</el-button>
+            @click="handleDelete(1,scope)"
+          >解除</el-button>
         </template>
       </jm-table>
-      <!-- 添加或修改设备平台_表单模板对话框 -->
-      <el-drawer
-        :title="title"
-        :visible.sync="drawer"
-        direction="rtl"
-        :wrapperClosable="false">
-        <jm-form 
-          class="mr20"
-          :columns="columns" 
-          :showButton="false"
-          :formData="formDataNow"
-          ref="jmform1">
-          <template slot="footer">
-            <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
-              <el-button size="mini" @click="close">取消</el-button>
-              <el-button size="mini" @click="saveToTable" type="primary">确定</el-button>
-            </div>
-          </template>
-        </jm-form>
-      </el-drawer>
-      <!-- 添加供应商对话框 -->
-      <el-drawer
-        title="选择供应商"
-        :visible.sync="drawersupplier"
-        size="60%"
-        direction="rtl"
-        :wrapperClosable="false">
-        <supplier @submitRadio="submitRadio" :isRadio="true" @close="closesupplier"></supplier>
-      </el-drawer>
+       <el-drawer
+      :title="title"
+      :visible.sync="drawer"
+      direction="rtl"
+      :wrapperClosable="false">
+      <!-- <jm-form 
+        class="mr20"
+        :columns="columns" 
+        :showButton="false"
+        :formData="formDataNow"
+        ref="jmform1">
+        <template slot="footer">
+          <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
+            <el-button size="mini" @click="close">取消</el-button>
+            <el-button size="mini" @click="save" type="primary">确定</el-button>
+          </div>
+        </template>
+      </jm-form> -->
+      <jm-table v-if="drawer" :tableData="partsData" :columns='columns' @handleSelectionChange="handleSelectionChange2"
+      @getList="getList2"
+      :total="total2"
+      :initLoading="false"
+      :handleWidth="130"
+      :showOperate='false'
+      size="60%">
+      </jm-table>
+      <div style="width:100%;height:48px"></div>
+      <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 10px;border-top: 1px solid #ddd;">
+        <el-button size="mini" @click="close">取消</el-button>
+        <el-button size="mini" @click="saveToTable" type="primary">确定</el-button>
+      </div>
+    </el-drawer>
     </el-card>
     <el-card shadow="never" style="margin-top: 10px;text-align: right;">
       <el-button size="mini" @click="closeform">取消</el-button>
@@ -89,6 +93,7 @@
 
 <script>
 import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
+import { listParts, addParts, updateParts, delParts,selectPage } from "@/api/equipment/parts";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
@@ -126,15 +131,15 @@ export default {
     // 列信息
     columns(){
       return [
-        { label:"备件名称", prop:"partsName", span: 24, },
-        { label:"备件编码", prop:"partsCode", span: 24, },
-        { label:"规格型号", prop:"partsModel", span: 24, },
-        { label:"备件类别", prop:"partsType", span: 24, },
+          { label:"备件名称", prop:"partName", span: 24, },
+        { label:"备件编码", prop:"partCode", span: 24, },
+        { label:"规格型号", prop:"sModel", span: 24, },
+        { label:"备件类别", prop:"partType", span: 24, },
         { label:"单位", prop:"unit", span: 24, },
-        { label:"当前库存", prop:"stock", span: 24, },
-        { label:"供应商名称", prop:"supName", readonly: true, clickFn:()=>{this.drawersupplier=true}, span: 24, },
-        { label:"存储位置", prop:"location", span: 24, },
-        { label:"所属组织", prop:"orgId", span: 24, formType: 'selectTree', options: this.deptOptions },
+        { label:"当前库存", prop:"inventory", span: 24, },
+        { label:"供应商名称", prop:"supplierName",  span: 24, },
+        { label:"存储位置", prop:"locationName", span: 24, },
+        { label:"所属组织", prop:"affDeptName", span: 24,  },
       ]
     },
   },
@@ -154,12 +159,11 @@ export default {
       // 显示搜索条件
       showSearch: true,
       // 表格数据
-      equipmentList: null,
+      equipmentList: [],
       // 总条数
       total: 0,
       formDataNow: {},
       drawer: false,
-      drawersupplier: false,
       // 弹出层标题
       title: "",
       // 部门树选项
@@ -196,52 +200,48 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userName: undefined,
-        phonenumber: undefined,
-        status: undefined,
-        deptId: undefined
+        deviceId: this.formData.deviceId,
       },
+      partsData:[],//选择列表
+      // 总条数
+      queryParams2: {
+        pageNum: 1,
+        pageSize: 10,
+      },
+      total2: 0,
       // 表单校验
-      rules: {
-        userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
-          { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
-        ],
-        nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
-        ],
-        password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
-        ],
-        email: [
-          {
-            type: "email",
-            message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
-          }
-        ],
-        phonenumber: [
-          {
-            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-            message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
-        ]
-      }
+       pushList:[],//多选框选中数据
     };
   },
   created() {
     this.getTreeSelect()
+    this.getList(this.queryParams)
   },
   methods: {
-    closesupplier(){
-      this.drawersupplier = false
+    /** 查询用户列表 */
+    getList(queryParams) {
+      queryParams.deviceId = this.queryParams.deviceId
+      this.loading = true;
+      listParts(queryParams).then(response => {
+          this.$set(this,'equipmentList',response.rows)
+          this.total = response.total;
+          this.loading = false;
+        }
+      );
     },
-    submitRadio(row){
-      this.$set(this.formDataNow,'supName',row.supplierName)
-      // this.$set(this.formData,'parentDeviceName',row.deviceName)
-      this.closesupplier()
+    /* 添加备品备件 */
+    getList2(queryParams) {
+      this.loading = true;
+      selectPage(queryParams).then(response => {
+          let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
+          let arr= response.data.records.filter(item=>{
+            return list_id.indexOf(item.partCode) == -1;
+          })
+          this.$set(this,'partsData',arr);
+          this.total2 = response.data.total;
+          this.pushList=[]
+        }
+      );
     },
     closeform(){
       this.$emit('closeform')
@@ -258,46 +258,49 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.partsCode);
+      this.ids = selection.map(item => item.partCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
+     // 多选框选中数据
+    handleSelectionChange2(selection) {
+      this.pushList = selection;
+    },
     close(){
-      this.drawer = false
+      this.drawer = false;
+      this.pushList=[]
     },
     // form保存
     saveToTable(){
-      if(this.title == "新增设备"){
-        this.formData.archivesPartsList.push(JSON.parse(JSON.stringify(this.formDataNow)))
-        this.total = this.formData.archivesPartsList.length
-      }else{
-         this.formData.archivesPartsList[this.formDataNow.index]=this.formDataNow
-      }
+      this.equipmentList = this.equipmentList.concat(this.pushList);
       this.close()
+      // this.submitForm(()=>{
+      //   this.getList(this.queryParams)
+      // })
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.drawer = true;
       this.title = "新增设备";
+      this.getList2(this.queryParams2)
       this.formDataNow = {}
     },
     /** 修改按钮操作 */
-    handleUpdate(index,row) {
+    handleUpdate(row) {
       this.drawer = true;
       this.title = "编辑设备";
-      row.index=index
       this.formDataNow = row
     },
     /** 删除按钮操作 */
-    handleDelete(row) {
-      const partsCodes = row.partsCode || this.ids;
-      this.$modal.confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？')
+    handleDelete(type,item) {
+      const partCode = type == 1? [item.row.partCode] : this.ids;
+      this.$modal.confirm('是否确认删除备件编码为"' + partCode + '"的数据项？')
       .then(() =>{
-        console.log(this.formData.archivesPartsList,444);
-        this.formData.archivesPartsList = this.formData.archivesPartsList.filter((b)=>{
-          return partsCodes.indexOf(b.partsCode)<0
+        let arr= this.equipmentList.filter(item=>{
+          return partCode.indexOf(item.partCode) == -1;
         })
-        this.total = this.formData.archivesPartsList.length
+        this.$set(this,'equipmentList',arr);
+        this.total = this.equipmentList.length
       })
       .catch(() => {});
     },
@@ -307,6 +310,7 @@ export default {
     /** 提交按钮 */
     submitForm: function(fn) {
       var formData = this.$parent.getFormDataParams();
+      formData.archivesPartsList = this.equipmentList;
       if (formData.deviceId != undefined) {
         updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
