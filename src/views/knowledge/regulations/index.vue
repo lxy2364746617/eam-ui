@@ -102,7 +102,7 @@ import JmTable from "@/components/JmTable1";
         tablecolumns:[
           { label: "文件名称", prop: "fileName"},
           { label: "文件简述", prop: "content" },
-          { label: "规章类型", prop: "ruleType", formType: "select",options:[{label:'1',value:'1'}]},
+          { label: "规章类型", prop: "ruleType", formType: "select",options:[]},
           { label: "标准状态", prop: "status", formType: "select",options:[{label:'现行',value:1},{label:'作废',value:2},{label:'编辑',value:3}], styleFn(row){
             if(row.status == 1){
               return `color:#02B606`

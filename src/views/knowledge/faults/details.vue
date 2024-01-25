@@ -161,7 +161,7 @@ import JmForm from "@/components/JmForm";
           orderCode:this.orderCode,
         }
         getWomInfo(params).then(res=>{
-          // console.log(res,'工单基本信息')
+          console.log(res,'工单基本信息')
           this.orderType = res.data.orderType
           this.infoList.forEach(item=>{    
             let value = res.data[item.prop] || res.data.faultInfoDTO[item.prop]

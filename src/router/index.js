@@ -822,6 +822,20 @@ export const constantRoutes = [
     },
   ],
   },
+  // 功能位置详情
+  {
+    path: "/",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/LocationDetails/details",
+        component: () => import("@/views/Location/details"),
+        name: "LocationDetails",
+        meta: { title: "功能位置详情", icon: "" },
+      },
+    ],
+    },
   // ! 备件需求
   {
     path: "/sparepart",
