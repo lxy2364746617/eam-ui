@@ -3,7 +3,6 @@
     <HeadEdit
       :isEdit="isEdit"
       :formData="formData"
-      @formData2="receiveDataFromChild"
       @submitForm="submitValue"
       ref="headEdit"
     ></HeadEdit>
@@ -45,9 +44,23 @@
     >
     <div class="submit">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary">保存并提交审批</el-button>
+      <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
       <el-button @click="cancel">取消</el-button>
     </div>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
@@ -57,12 +70,16 @@ import TableProject from "../ui/TableProject.vue";
 import TableRelevance from "../ui/TableRelevance.vue";
 import { getStore, removeStore } from "@/utils/property.js";
 import { setProject } from "@/api/property/purchase";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
     Wrapper,
     HeadEdit,
     TableProject,
     TableRelevance,
+    subprocess,
   },
   data() {
     return {
@@ -76,6 +93,11 @@ export default {
         annual: "2023",
         time: [],
       },
+      // 审批流
+      reviewCode: "",
+      subtitle: "",
+      subopen: false,
+      tableData: [],
     };
   },
   created() {},
@@ -99,7 +121,10 @@ export default {
     submit() {
       this.$refs.headEdit.submitForm();
     },
-    submitValue(val) {
+    submitReview() {
+      this.$refs.headEdit.submitForm("review");
+    },
+    submitValue(val, review) {
       val["startTime"] = val.time[0];
       val["endTime"] = val.time[1];
       val["purchasePlanType"] = 2;
@@ -115,19 +140,60 @@ export default {
       } else {
         val["addFileList"] = [];
       }
-      setProject(val).then((res) => {
-        if (res.code === 200) {
-          this.$message({
-            type: "success",
-            message: "保存成功!",
-          });
+      if (review) {
+        setProject(val).then((res) => {
+          if (res.code === 200) {
+            this.reviewCode = res.msg;
+            this.handleSubmit();
+          }
+        });
+      } else {
+        setProject(val).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: "success",
+              message: "保存成功!",
+            });
+          }
+          this.clear();
+          this.cancel();
+        });
+      }
+    },
+    // ! 提交
+    sub(val) {
+      definitionStart2(val.id, this.reviewCode, "purchase_plan", {}).then(
+        (res) => {
+          if (res.code == 200) {
+            this.$message.success(res.msg);
+            this.subopen = false;
+            this.clear();
+            this.cancel();
+          }
         }
-        this.clear();
-        this.cancel();
+      );
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "purchase_plan",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
       });
     },
-    receiveDataFromChild(data) {
-      this.formData = data;
+    handleSubmit(row) {
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "purchase_plan",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
     },
   },
   watch: {},

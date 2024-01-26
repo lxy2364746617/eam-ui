@@ -44,9 +44,23 @@
     > -->
     <div class="submit">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary">保存并提交审批</el-button>
+      <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
       <el-button @click="cancel">取消</el-button>
     </div>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
@@ -56,12 +70,16 @@ import TableProject from "../ui/TableProject.vue";
 import TableRelevance from "../ui/TableRelevance.vue";
 import { getStore, removeStore } from "@/utils/property.js";
 import { setProject } from "@/api/property/scrapping";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
     Wrapper,
     HeadEdit,
     TableProject,
     TableRelevance,
+    subprocess,
   },
   data() {
     return {
@@ -70,6 +88,11 @@ export default {
       isEdit: true,
       // 头部表单
       formData: {},
+      // 审批流
+      reviewCode: "",
+      subtitle: "",
+      subopen: false,
+      tableData: [],
     };
   },
   created() {},
@@ -91,29 +114,74 @@ export default {
       this.$router.go(-1); //跳回上页
     },
 
-    submitValue() {
+    submitValue(val, review) {
       if (getStore("addList") && getStore("addList").length > 0) {
-        this.formData["addDetails"] = getStore("addList");
+        val["addDetails"] = getStore("addList");
       } else {
-        this.formData["addDetails"] = [];
+        val["addDetails"] = [];
       }
 
-      setProject(this.formData).then((res) => {
-        if (res.code === 200) {
-          this.$message({
-            type: "success",
-            message: "保存成功!",
-          });
-        }
-        this.clear();
-        this.cancel();
-      });
+      if (review) {
+        setProject(val).then((res) => {
+          if (res.code === 200) {
+            this.reviewCode = res.msg;
+            this.handleSubmit();
+          }
+        });
+      } else {
+        setProject(val).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: "success",
+              message: "保存成功!",
+            });
+          }
+          this.clear();
+          this.cancel();
+        });
+      }
     },
     submit() {
       this.$refs.headEdit.submitForm();
     },
-    receiveDataFromChild(data) {
-      this.formData = data;
+    submitReview() {
+      this.$refs.headEdit.submitForm("review");
+    },
+    // ! 提交
+    sub(val) {
+      definitionStart2(val.id, this.reviewCode, "device_scrap", {}).then(
+        (res) => {
+          if (res.code == 200) {
+            this.$message.success(res.msg);
+            this.subopen = false;
+            this.clear();
+            this.cancel();
+          }
+        }
+      );
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "device_scrap",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    /* 提交按钮 */
+    handleSubmit(row) {
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "device_scrap",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
     },
   },
   watch: {},

@@ -107,7 +107,7 @@
           v-if="scope.row.apvStatus == 'completed'"
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:backspace:edit']"
           >审批流</el-button
         >
@@ -257,6 +257,17 @@ export default {
   },
   mounted() {},
   methods: {
+    // 跳转流程详情
+    handleFlowRecord(row) {
+      this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
+    },
     sub(val) {
       definitionStart2(val.id, this.radioRow.backNo, "device_back", {}).then(
         (res) => {
@@ -280,7 +291,6 @@ export default {
     },
     /* 提交按钮 */
     handleSubmit(row) {
-      this.id = row.deviceId;
       this.subopen = true;
       this.subtitle = "提交";
       let data = {

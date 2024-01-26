@@ -21,7 +21,7 @@
           v-hasPermi="['property:scrapping:add']"
           >新增</el-button
         >
-        <el-button type="primary" icon="el-icon-upload" size="mini"
+        <el-button type="primary" icon="el-icon-upload2" size="mini"
           >导入</el-button
         >
         <el-button
@@ -61,16 +61,16 @@
         <el-button
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleSubmit(scope.row)"
           v-hasPermi="['property:scrapping:edit']"
           >提交</el-button
         >
         <el-button
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:scrapping:edit']"
-          >审批流程</el-button
+          >审批流</el-button
         >
       </template>
     </jm-table>
@@ -80,6 +80,20 @@
       :formData="formData"
       @back="back()"
     ></add-edit>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -88,10 +102,14 @@ import addEdit from "@/views/device/book/add";
 import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
 import { listDept } from "@/api/system/dept";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
     JmTable,
     addEdit,
+    subprocess,
   },
   dicts: ["apv_status", "em_scrap_way"],
   props: {
@@ -102,6 +120,9 @@ export default {
   },
   data() {
     return {
+      subtitle: "",
+      subopen: false,
+      tableData: [],
       btnLoading: false,
       // 查询参数
       queryParams: {
@@ -180,7 +201,51 @@ export default {
   },
   mounted() {},
   methods: {
-    handleSet() {},
+    // 跳转流程详情
+    handleFlowRecord(row) {
+      this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
+    },
+    sub(val) {
+      definitionStart2(val.id, this.radioRow.scrapNo, "device_scrap", {}).then(
+        (res) => {
+          if (res.code == 200) {
+            this.$message.success(res.msg);
+            this.subopen = false;
+            this.getList();
+          }
+        }
+      );
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "device_scrap",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    /* 提交按钮 */
+    handleSubmit(row) {
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "device_scrap",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
 
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {

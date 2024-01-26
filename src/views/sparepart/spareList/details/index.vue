@@ -158,10 +158,8 @@ import Wrapper from "@/components/wrapper";
 import JmForm from "@/components/JmForm";
 import {
   getManagementDetails,
-  uploadImg,
   uploadImgPut,
   getImg,
-  uploadImgPost,
   updateManagement,
 } from "@/api/sparePart/sparePartList";
 import { equipmentTree } from "@/api/equipment/category";
@@ -188,7 +186,6 @@ export default {
       categoryName: "",
       spareValue: null,
       drawersupplier: false,
-      fileResourceList: [],
     };
   },
   created() {
@@ -197,9 +194,6 @@ export default {
     this.spareValue = this.$route.query.i;
     getManagementDetails(this.spareValue.id).then((res) => {
       this.formData = res.data;
-    });
-    getImg(this.spareValue.partCode).then((res) => {
-      this.fileResourceList = res.data;
     });
   },
 
@@ -328,35 +322,16 @@ export default {
         return;
       }
       // 修改图片
-      if (!this.formData.imgFileResourceList) {
-        this.$modal.msgSuccess("修改成功");
-        if (callback) return callback(this.formData);
-      }
-      let newFile = this.formData.imgFileResourceList.map((item, index) => {
-        console.log("========================");
-        return {
-          ...item,
-          busId: this.formData.partCode,
-          id:
-            this.fileResourceList.length > 0
-              ? this.fileResourceList[index].id
-              : "",
-        };
-      });
+      let newFile = {
+        busId: this.formData.partCode,
+        fileResourceList: this.formData.imgFileResourceList,
+      };
 
-      if (this.formData.fileResource) {
-        uploadImgPut(newFile).then((response) => {
-          this.$modal.msgSuccess("修改成功");
-          this.disabled1 = true;
-          if (callback) callback(this.formData);
-        });
-      } else {
-        uploadImgPost(newFile).then((response) => {
-          this.$modal.msgSuccess("修改成功");
-          this.disabled1 = true;
-          if (callback) callback(this.formData);
-        });
-      }
+      uploadImgPut(newFile).then((response) => {
+        this.$modal.msgSuccess("修改成功");
+        this.disabled1 = true;
+        if (callback) callback(this.formData);
+      });
     },
     handlePrint() {
       this.$print({

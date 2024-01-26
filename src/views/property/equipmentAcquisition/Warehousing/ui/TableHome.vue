@@ -7,7 +7,7 @@
       :total="total"
       ref="jmtable"
       :isRadio="isChoose"
-      :handleWidth="230"
+      :handleWidth="130"
       :columns="columns"
       v-if="!addEdit"
     >
@@ -27,7 +27,7 @@
             :before-upload="beforeUpload"
             action=""
             v-hasPermi="['property:warehousing:add']"
-            ><el-button type="primary" size="mini" icon="el-icon-upload"
+            ><el-button type="primary" size="mini" icon="el-icon-upload2"
               >导入</el-button
             ></el-upload
           >
@@ -44,7 +44,7 @@
         </el-col>
       </template>
       <template #end_handle="scope" v-if="!isChoose">
-        <el-button
+        <!-- <el-button
           size="mini"
           type="text"
           @click="goDetails(scope.row, 'edit')"
@@ -71,7 +71,7 @@
           @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:warehousing:edit']"
           >审批流</el-button
-        >
+        > -->
       </template>
     </jm-table>
     <el-drawer
@@ -193,7 +193,12 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "业务编码", prop: "wareHousingNo", tableVisible: true },
+        {
+          label: "业务编码",
+          prop: "wareHousingNo",
+          tableVisible: true,
+          width: 150,
+        },
         { label: "设备编码", prop: "deviceCode", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
         { label: "规格型号", prop: "sModel", tableVisible: true },
@@ -216,7 +221,14 @@ export default {
           options: this.dict.type.em_device_level,
         },
         { label: "所属子公司", prop: "affCompany", tableVisible: true },
-        { label: "所属组织", prop: "affDept", tableVisible: true, width: 150 },
+        {
+          label: "所属组织",
+          prop: "affDept",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          width: 150,
+        },
         {
           label: "设备属性",
           prop: "deviceAtt",
@@ -224,18 +236,19 @@ export default {
           tableVisible: true,
           options: this.dict.type.em_device_att,
         },
-        {
-          label: "审批状态",
-          prop: "apvStatus",
-          tableVisible: true,
-          formType: "selectTag",
-          options: this.dict.type.apv_status,
-        },
+        // {
+        //   label: "审批状态",
+        //   prop: "apvStatus",
+        //   tableVisible: true,
+        //   formType: "selectTag",
+        //   options: this.dict.type.apv_status,
+        // },
 
         {
           label: "购置计划编号",
-          prop: "purchasePlanNo",
+          prop: "relatePurchasePlanNo",
           tableVisible: true,
+          width: 150,
         },
         {
           label: "行号",
@@ -249,11 +262,11 @@ export default {
           formType: "select",
           options: [
             {
-              label: "年度计划",
+              label: "年度采购",
               value: 1,
             },
             {
-              label: "临时计划",
+              label: "临时采购",
               value: 2,
             },
           ],
@@ -361,11 +374,17 @@ export default {
   async created() {
     // data赋值
     this.getDeptTree();
-    await this.getList();
     await this.getList2();
   },
   mounted() {},
   methods: {
+    /** 查询部门下拉树结构 */
+    async getDeptTree() {
+      await listDept(this.formParams).then((response) => {
+        this.deptOptions = response.data;
+        this.getList();
+      });
+    },
     // 跳转流程详情
     handleFlowRecord(row) {
       this.$router.push({
@@ -400,7 +419,6 @@ export default {
     },
     /* 提交按钮 */
     handleSubmit(row) {
-      this.id = row.deviceId;
       this.subopen = true;
       this.subtitle = "提交";
       let data = {
@@ -412,11 +430,7 @@ export default {
         this.tableData = res.data.records;
       });
     },
-    async getDeptTree() {
-      await listDept(this.formParams).then((response) => {
-        this.deptOptions = response.data;
-      });
-    },
+
     handleSet() {},
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {

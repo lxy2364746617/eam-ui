@@ -16,7 +16,7 @@ export function setProject(data) {
     data: data,
   });
 }
-// 新增位置状态变动
+// 删除位置状态变动
 export function delId(changeNo) {
   return request({
     url: "/property/pos_change/del/" + changeNo,
@@ -48,5 +48,13 @@ export function downDetailLoad(ids) {
     method: "post",
     data: { ids: ids },
     responseType: "blob",
+  });
+}
+// 查询新增位置状态明细
+export function updateProject(data) {
+  return request({
+    url: "/property/pos_change/update",
+    method: "post",
+    data: data,
   });
 }

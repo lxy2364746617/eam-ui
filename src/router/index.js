@@ -702,22 +702,28 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
+        path: "/work/questAdd",
+        component: () => import("@/views/work/Quest/add/index"),
+        name: "questAdd",
+        meta: { title: "工单/批量设备修理", icon: "" },
+      },
+      {
         path: "/work/questAdd2",
         component: () => import("@/views/work/Quest/add/index2"),
         name: "questAdd2",
-        meta: { title: "待办任务/设备修理", icon: "" },
+        meta: { title: "工单/设备修理", icon: "" },
       },
       {
         path: "/work/questAdd3",
         component: () => import("@/views/work/Quest/add/index3"),
         name: "questAdd3",
-        meta: { title: "待办任务/委外维修", icon: "" },
+        meta: { title: "工单/委外维修", icon: "" },
       },
       {
         path: "/work/questAdd4",
         component: () => import("@/views/work/Quest/add/index4"),
         name: "questAdd4",
-        meta: { title: "待办任务/保养检修", icon: "" },
+        meta: { title: "工单/保养检修", icon: "" },
       },
       {
         path: "/work/questUpkeep",
@@ -726,13 +732,13 @@ export const constantRoutes = [
         beforeEnter: (to, from, next) => {
           next();
         },
-        meta: { title: "待办任务/巡检点/操作", icon: "" },
+        meta: { title: "工单/巡检点", icon: "" },
       },
       {
         path: "/work/questAdd5",
         component: () => import("@/views/work/Quest/add/index5"),
         name: "questAdd5",
-        meta: { title: "待办任务/巡检点", icon: "" },
+        meta: { title: "工单/巡检点", icon: "" },
       },
       {
         path: "/work/questUpkeep2",
@@ -741,7 +747,7 @@ export const constantRoutes = [
         beforeEnter: (to, from, next) => {
           next();
         },
-        meta: { title: "待办任务/保养检修/操作", icon: "" },
+        meta: { title: "工单/保养检修", icon: "" },
       },
       {
         path: "/work/questUpkeep3",
@@ -750,25 +756,25 @@ export const constantRoutes = [
         beforeEnter: (to, from, next) => {
           next();
         },
-        meta: { title: "待办任务/定期检验/操作", icon: "" },
+        meta: { title: "工单/定期检验", icon: "" },
       },
       {
         path: "/work/questAdd6",
         component: () => import("@/views/work/Quest/add/index6"),
         name: "questAdd6",
-        meta: { title: "待办任务/保养检修", icon: "" },
+        meta: { title: "工单/保养检修", icon: "" },
       },
       {
         path: "/work/questAdd7",
         component: () => import("@/views/work/Quest/add/index7"),
         name: "questAdd7",
-        meta: { title: "待办任务/巡检点执行", icon: "" },
+        meta: { title: "工单/巡检点", icon: "" },
       },
       {
         path: "/work/questAdd8",
         component: () => import("@/views/work/Quest/add/index8"),
         name: "questAdd8",
-        meta: { title: "待办任务/定期检验执行", icon: "" },
+        meta: { title: "工单/定期检验", icon: "" },
       },
     ],
   },

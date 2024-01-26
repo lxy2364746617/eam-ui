@@ -689,7 +689,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-
+  padding-bottom: 20px;
   .from {
     padding: 30px;
     padding-left: 10px;

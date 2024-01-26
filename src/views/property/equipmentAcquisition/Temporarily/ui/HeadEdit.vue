@@ -23,7 +23,7 @@
         size="medium"
         label-width="100px"
       >
-        <el-col :span="6">
+        <el-col :span="5">
           <el-form-item label="计划名称" prop="purchasePlanName">
             <el-input
               v-if="isEdit"
@@ -36,7 +36,7 @@
             <span v-else-if="!isEdit">{{ formData2.purchasePlanName }}</span>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="5">
           <el-form-item label="计划类型" prop="purchasePlanType">
             <el-select
               v-if="isEdit"
@@ -54,11 +54,11 @@
               ></el-option>
             </el-select>
             <span v-else-if="!isEdit">{{
-              formData2.purchasePlanType == 1 ? "年度计划" : "临时计划"
+              formData2.purchasePlanType == 1 ? "年度采购" : "临时采购"
             }}</span>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="5">
           <el-form-item label="年度" prop="annual">
             <el-date-picker
               v-if="isEdit"
@@ -73,7 +73,7 @@
             <span v-else-if="!isEdit">{{ formData2.annual }}</span>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="9">
           <el-form-item label="开竣工时间" prop="time">
             <el-date-picker
               v-if="isEdit"
@@ -142,29 +142,22 @@ export default {
       },
       purchasePlanTypeOptions: [
         {
-          label: "年度计划",
-          value: 1,
+          label: "临时采购",
+          value: 2,
         },
       ],
     };
   },
   computed: {},
-  watch: {
-    formData: {
-      handler(newFormData, oldFormData) {
-        this.$emit("formData2", newFormData);
-      },
-      deep: true, // 深层监听
-    },
-  },
+  watch: {},
 
   created() {},
   mounted() {},
   methods: {
-    submitForm() {
+    submitForm(review) {
       this.$refs.elForm.validate((valid) => {
         if (valid) {
-          this.$emit("submitForm", this.formData);
+          this.$emit("submitForm", this.formData, review);
         } else {
           return false;
         }

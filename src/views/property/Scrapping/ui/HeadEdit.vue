@@ -57,6 +57,7 @@ export default {
   data() {
     return {
       deptOptions: [],
+      review: null,
     };
   },
   computed: {
@@ -104,11 +105,12 @@ export default {
       }
       return name || value;
     },
-    submitForm() {
+    submitForm(review) {
+      this.review = review;
       this.$refs.jmform.submitForm();
     },
     submitForm2(obj) {
-      this.$emit("submitForm", obj);
+      this.$emit("submitForm", obj, this.review);
     },
 
     getTreeSelect() {

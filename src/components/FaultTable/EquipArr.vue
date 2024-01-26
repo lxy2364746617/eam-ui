@@ -285,7 +285,7 @@ export default {
           }
         }
       );
-      getWomInfo({ id: this.formData.id }).then((res) => {
+      getWomInfo({ orderCode: this.formData.orderCode }).then((res) => {
         this.data = res.data;
       });
     }
@@ -352,7 +352,6 @@ export default {
     goDetails(row) {
       this.drawer = true;
       this.form = { ...this.form, ...row["faultInfoDTO"] };
-      console.log("========================", this.form);
       this.disabled = true;
       // this.$refs.titleform.resetFields();
     },
@@ -457,7 +456,8 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
   span {
     font-weight: 400;
     padding-right: 5px;

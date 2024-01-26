@@ -27,7 +27,7 @@
           <el-button
             type="primary"
             size="mini"
-            icon="el-icon-upload"
+            icon="el-icon-upload2"
             @click="handlerImport"
             >导入</el-button
           >
@@ -101,7 +101,10 @@
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus == 'completed'"
+          v-if="
+            scope.row.apvStatus == 'completed' ||
+            scope.row.apvStatus == 'running'
+          "
           size="mini"
           type="text"
           @click="handleFlowRecord(scope.row)"
@@ -224,7 +227,7 @@ export default {
           options: [
             {
               value: 1,
-              label: "年度计划",
+              label: "年度采购",
             },
             // {
             //   value: 2,
@@ -335,9 +338,7 @@ export default {
         this.tableData = res.data.records;
       });
     },
-    /* 提交按钮 */
     handleSubmit(row) {
-      this.id = row.deviceId;
       this.subopen = true;
       this.subtitle = "提交";
       let data = {

@@ -125,14 +125,14 @@ export default {
           label: "检修开始",
           span: 7,
           prop: "startTime",
-          formType: "date",
+          formType: "datetime",
           required: true,
         },
         {
           label: "检修结束",
           span: 6,
           prop: "endTime",
-          formType: "date",
+          formType: "datetime",
           required: true,
         },
         {

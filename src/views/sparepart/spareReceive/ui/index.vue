@@ -143,7 +143,7 @@ export default {
           (res) => {
             if (res.code == 200) {
               this.formData = res.data;
-              this.equipmentList = res.data.parts;
+              this.equipmentList = res.data.parts ?? [];
             }
           }
         );

@@ -12,34 +12,26 @@
     </div>
     <el-row :gutter="24" style="margin: 10px auto">
       <el-col :span="12">
-        <el-form-item label="领用单号" prop="neckNo">
+        <el-form-item label="领用单号" prop="receiptCode">
           <el-input
-            v-model="formData.neckNo"
+            v-model="formData.receiptCode"
             placeholder="请输入领用单号"
             @click.native="openSb"
           /> </el-form-item
       ></el-col>
       <el-col :span="12">
-        <el-form-item label="仓库名称" prop="executor2">
+        <el-form-item label="领用人" prop="recruiterName">
           <el-input
-            v-model="formData.executor2"
-            placeholder="请输入仓库名称"
-            disabled
-          /> </el-form-item
-      ></el-col>
-      <el-col :span="12">
-        <el-form-item label="领用人" prop="applyDeptPerson">
-          <el-input
-            v-model="formData.applyDeptPerson"
+            v-model="formData.recruiterName"
             placeholder="请输入领用人"
             disabled
           /> </el-form-item
       ></el-col>
       <el-col :span="12">
-        <el-form-item label="领用时间" prop="createTime">
+        <el-form-item label="领用时间" prop="receiptDate">
           <el-date-picker
             format="yyyy-MM-dd"
-            v-model="formData.createTime"
+            v-model="formData.receiptDate"
             type="date"
             style="width: 100%"
             placeholder="请选择领用时间"
@@ -78,13 +70,25 @@
           prop="attachmentType"
           min-width="150"
         >
+          <template slot-scope="scope">
+            <span
+              v-html="
+                findName(dict.type.spare_parts_type, scope.row.attachmentType)
+              "
+            ></span>
+          </template>
         </el-table-column>
         <el-table-column
           label="单位"
           align="center"
           prop="unit"
           min-width="150"
-        />
+        >
+          <template slot-scope="scope">
+            <span
+              v-html="findName(dict.type.spare_parts_unit, scope.row.unit)"
+            ></span> </template
+        ></el-table-column>
         <el-table-column
           label="领用数量"
           align="center"
@@ -170,25 +174,43 @@
     </el-drawer>
     <!-- 添加领用数据 -->
     <el-drawer
-      title="选择领用单号"
+      title="选择备件领用单号"
       :visible.sync="choosedrawer"
       direction="rtl"
       size="80%"
       :wrapperClosable="false"
     >
-      <SelectRecipient
-        :isChoose="true"
-        @submitRadio="submitRadio2"
-        @close="choosedrawer = false"
-      >
-      </SelectRecipient>
+      <spareReceive
+        @submitRadio="submitSpareReceive"
+        :isRadio="true"
+        @close="closeSpareReceive"
+      ></spareReceive>
+    </el-drawer>
+
+    <!-- 选择备件 -->
+    <el-drawer
+      title="选择备件"
+      :visible.sync="drawersupplier"
+      size="60%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <spareList
+        @submitRadio="submitRadio"
+        :isRadio="true"
+        @close="closesupplier"
+      ></spareList>
     </el-drawer>
   </div>
 </template>
 <script>
 import SelectRecipient from "./SelectRecipient.vue";
+import spareList from "@/views/sparepart/spareList/spareList.vue";
+import spareReceive from "@/views/sparepart/spareReceive/spareReceive.vue";
+import { getAttachmentDetail } from "@/api/sparePart/spareReceive";
 export default {
-  components: { SelectRecipient },
+  components: { SelectRecipient, spareList, spareReceive },
+  dicts: ["spare_parts_unit", "spare_parts_type"],
   data() {
     return {
       standardList: [],
@@ -197,6 +219,7 @@ export default {
       choosedrawer: false,
       drawer: false,
       form: {},
+      drawersupplier: false,
     };
   },
   props: {
@@ -224,26 +247,45 @@ export default {
     columns() {
       return [
         {
+          label: "备件编码",
+          prop: "attachmentCode",
+          required: true,
+          span: 22,
+          clickFn: () => {
+            this.drawersupplier = true;
+          },
+        },
+        {
           label: "备件名称",
           prop: "attachmentName",
           required: true,
           span: 22,
+          formDisabled: true,
         },
-        { label: "备件编码", prop: "attachmentCode", required: true, span: 22 },
+
         {
           label: "规格型号",
           prop: "specs",
           span: 22,
+          formDisabled: true,
         },
         {
           label: "备件类别",
           prop: "attachmentType",
           span: 22,
+          required: true,
+          formType: "select",
+          options: this.dict.type.spare_parts_type,
+          formDisabled: true,
         },
         {
           label: "单位",
           prop: "unit",
           span: 22,
+          formType: "select",
+          options: this.dict.type.spare_parts_unit,
+          required: true,
+          formDisabled: true,
         },
         {
           label: "领用数量",
@@ -262,6 +304,28 @@ export default {
     },
   },
   methods: {
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
+    // ! 选择备件
+    submitRadio(row) {
+      this.$set(this.form, "attachmentCode", row.partCode);
+      this.$set(this.form, "attachmentName", row.partName);
+      this.$set(this.form, "specs", row.sModel);
+      this.$set(this.form, "attachmentType", row.partType);
+      this.$set(this.form, "unit", row.unit);
+
+      this.closesupplier();
+    },
+    closesupplier() {
+      this.drawersupplier = false;
+    },
     saveHandle() {
       this.$refs.titleform.submitForm();
     },
@@ -283,28 +347,32 @@ export default {
     },
     handleSelectionChange() {},
     handleAdd() {
-      // this.standardList = this.standardList.concat([
-      //   {
-      //     attachmentName: "萨达萨达",
-      //     attachmentCode: "萨达萨达",
-      //     specs: "萨达萨达",
-      //     attachmentType: "萨达萨达",
-      //     unit: "萨达萨达",
-      //     replaceNum: "1",
-      //     remark: "萨达萨达",
-      //   },
-      // ]);
-      if (!this.formData.neckNo) {
-        this.$message.warning("请选择领用单位！");
-        return;
-      }
       this.drawer = true;
     },
-    submitRadio2(row) {
-      this.formData.neckNo = row.neckNo;
-      this.formData.applyDeptPerson = row.applyDeptPerson;
-      this.formData.createTime = row.createTime;
-
+    submitSpareReceive(row) {
+      this.formData.receiptCode = row.receiptCode;
+      this.formData.recruiterName = row.recruiterName;
+      this.formData.receiptDate = row.receiptDate;
+      getAttachmentDetail({ receiptCode: this.formData.receiptCode }).then(
+        (res) => {
+          if (res.code == 200) {
+            this.standardList = this.standardList.concat(
+              res.data.parts.map((item) => ({
+                attachmentName: item.partName,
+                attachmentCode: item.partCode,
+                attachmentType: item.partType,
+                specs: item.sModel,
+                unit: item.unit,
+                replaceNum: item.quantity,
+                remark: item.remark,
+              }))
+            );
+          }
+        }
+      );
+      this.choosedrawer = false;
+    },
+    closeSpareReceive() {
       this.choosedrawer = false;
     },
     /** 修改按钮操作 */

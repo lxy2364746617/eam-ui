@@ -104,7 +104,10 @@
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus == 'completed'"
+          v-if="
+            scope.row.apvStatus == 'completed' ||
+            scope.row.apvStatus == 'running'
+          "
           size="mini"
           type="text"
           @click="handleSet(scope.row)"
@@ -288,7 +291,6 @@ export default {
     },
     /* 提交按钮 */
     handleSubmit(row) {
-      this.id = row.deviceId;
       this.subopen = true;
       this.subtitle = "提交";
       let data = {

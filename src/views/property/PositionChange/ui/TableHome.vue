@@ -58,14 +58,14 @@
         <el-button
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleSubmit(scope.row)"
           v-hasPermi="['property:position:edit']"
           >提交</el-button
         >
         <el-button
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:position:edit']"
           >审批流</el-button
         >
@@ -77,6 +77,20 @@
       :formData="formData"
       @back="back()"
     ></add-edit>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -90,10 +104,14 @@ import JmTable from "@/components/JmTable";
 import { findByTemplateType } from "@/api/equipment/attribute";
 import { listDept } from "@/api/system/dept";
 import { saveAs } from "file-saver";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
     JmTable,
     addEdit,
+    subprocess,
   },
   dicts: ["apv_status"],
   props: {
@@ -104,6 +122,9 @@ export default {
   },
   data() {
     return {
+      subtitle: "",
+      subopen: false,
+      tableData: [],
       btnLoading: false,
       // 查询参数
       queryParams: {
@@ -183,7 +204,51 @@ export default {
   },
   mounted() {},
   methods: {
-    handleSet() {},
+    // 跳转流程详情
+    handleFlowRecord(row) {
+      this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
+    },
+    sub(val) {
+      definitionStart2(val.id, this.radioRow.scrapNo, "device_change", {}).then(
+        (res) => {
+          if (res.code == 200) {
+            this.$message.success(res.msg);
+            this.subopen = false;
+            this.getList();
+          }
+        }
+      );
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "device_change",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    /* 提交按钮 */
+    handleSubmit(row) {
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "device_change",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
 
     exportWarnLog(data) {
       download({ ids: this.ids }).then((res) => {

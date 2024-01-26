@@ -86,6 +86,7 @@ export default {
       userList: [],
       userList2: [],
       listValue: {},
+      review: null,
     };
   },
   async created() {
@@ -109,9 +110,10 @@ export default {
       return null;
     },
     submitForm2(obj) {
-      this.$emit("submitForm", obj);
+      this.$emit("submitForm", obj, this.review);
     },
-    submitForm() {
+    submitForm(review) {
+      this.review = review;
       this.$refs.titleForm.submitForm();
     },
     async getTreeSelect() {

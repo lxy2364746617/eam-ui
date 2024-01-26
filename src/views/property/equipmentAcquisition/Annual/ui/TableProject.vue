@@ -124,7 +124,6 @@
             :step="1"
             :min="1"
             controls-position="right"
-            :max="99"
           ></el-input-number>
         </el-form-item>
         <el-form-item
@@ -338,11 +337,17 @@ export default {
           width: 150,
         },
         { label: "规格型号", prop: "sModel", tableVisible: true },
-        { label: "技术参数", prop: "technologyParam", tableVisible: true },
+        {
+          label: "技术参数",
+          prop: "technologyParam",
+          tableVisible: true,
+          width: 250,
+        },
         {
           label: "必要性分析",
           prop: "necessityAnalysis",
           tableVisible: true,
+          width: 250,
         }, //(1 设备、2 部件)
         { label: "项目分类", prop: "projectCategory", tableVisible: true },
         {

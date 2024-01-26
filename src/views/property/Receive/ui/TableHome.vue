@@ -71,10 +71,13 @@
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus == 'completed'"
+          v-if="
+            scope.row.apvStatus == 'completed' ||
+            scope.row.apvStatus == 'running'
+          "
           size="mini"
           type="text"
-          @click="handleSet(scope.row)"
+          @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:receive:edit']"
           >审批流</el-button
         >
@@ -226,7 +229,6 @@ export default {
     },
     /* 提交按钮 */
     handleSubmit(row) {
-      this.id = row.deviceId;
       this.subopen = true;
       this.subtitle = "提交";
       let data = {
@@ -251,7 +253,17 @@ export default {
         },
       });
     },
-    handleSet() {},
+    // 跳转流程详情
+    handleFlowRecord(row) {
+      this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
+    },
 
     handleDelete(row) {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {

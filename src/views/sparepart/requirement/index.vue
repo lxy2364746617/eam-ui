@@ -26,7 +26,7 @@
         <el-col :span="1.5">
           <el-button
             type="primary"
-            icon="el-icon-upload"
+            icon="el-icon-upload2"
             size="mini"
             :loading="btnLoading"
             @click="AddFile"
@@ -77,7 +77,7 @@
         <el-button
           size="mini"
           type="text"
-          @click="handleSet"
+          @click="handleControls(null, 'submit')"
           v-if="
             scope.row.apvStatus == 'uncommitted' ||
             scope.row.apvStatus == 'reject' ||
@@ -89,7 +89,10 @@
           size="mini"
           type="text"
           @click="handleSet"
-          v-if="scope.row.apvStatus == 'completed'"
+          v-if="
+            scope.row.apvStatus == 'completed' ||
+            scope.row.apvStatus == 'running'
+          "
           >审批流</el-button
         >
       </template>
@@ -110,6 +113,20 @@
       >
       </file-upload>
     </el-drawer>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
@@ -121,9 +138,11 @@ import {
   exportManagementList,
 } from "@/api/sparePart/requirement";
 import { listDept } from "@/api/system/dept";
-
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
-  components: { Wrapper, ContTable },
+  components: { Wrapper, ContTable, subprocess },
   dicts: ["require_type", "apv_status"],
   data() {
     return {
@@ -142,6 +161,10 @@ export default {
       filedrawer: false,
       fileType: [".xlsx"],
       fileList: [],
+      radioRow: {},
+      tableData: [],
+      subtitle: "",
+      subopen: false,
     };
   },
   async created() {
@@ -208,6 +231,44 @@ export default {
     },
   },
   methods: {
+    // ! 提交
+    sub(val) {
+      definitionStart2(
+        val.id,
+        this.radioRow.demandCode,
+        "spare_requirement",
+        {}
+      ).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.getList();
+        }
+      });
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "spare_requirement",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    handleSubmit(row) {
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "spare_requirement",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    // ! 操作
     handleControls(row, act) {
       if (act === "add") {
         // ! 新增
@@ -257,6 +318,9 @@ export default {
           });
           saveAs(blob, `sparePart_${new Date().getTime()}`);
         });
+      } else if (act === "submit") {
+        // ! 提交审批流
+        this.handleSubmit();
       } else {
         // ! 其他
         return;
@@ -292,6 +356,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
+      this.radioRow = selection[0];
     },
   },
 };

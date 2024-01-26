@@ -3,30 +3,46 @@
     <HeadEdit
       :isEdit="isEdit"
       :formData="formData"
-      @formData2="receiveDataFromChild"
+      @submitForm="submitValue"
+      ref="headEdit"
     ></HeadEdit>
     <TableProject :isShow="false" :rowId="formData.changeNo"></TableProject>
 
-    <div class="submit">
+     <div class="submit">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary">保存并提交审批</el-button>
+      <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
       <el-button @click="cancel">取消</el-button>
     </div>
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
 import Wrapper from "@/components/wrapper";
 import HeadEdit from "../ui/HeadEdit.vue";
 import TableProject from "../ui/TableProject.vue";
-import TableRelevance from "../ui/TableRelevance.vue";
 import { getStore, removeStore } from "@/utils/property.js";
-import { updateProject } from "@/api/property/backspace";
+import { updateProject } from "@/api/property/positionchange";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
     Wrapper,
     HeadEdit,
     TableProject,
-    TableRelevance,
+    subprocess,
   },
   data() {
     return {
@@ -35,6 +51,11 @@ export default {
       isEdit: true,
       // 头部表单
       formData: {},
+      // 审批流
+      reviewCode: "",
+      subtitle: "",
+      subopen: false,
+      tableData: [],
     };
   },
   created() {
@@ -61,43 +82,85 @@ export default {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页
     },
-    submit() {
-      if (!this.formData.id) return;
-
-      delete this.formData.time;
+    submitValue(val, review) {
       if (getStore("addList") && getStore("addList").length > 0) {
-        this.formData["addList"] = getStore("addList");
+        val["addDetails"] = getStore("addList");
       } else {
-        // this.formData["addList"] = [];
+        // val["addDetails"] = [];
       }
       if (getStore("updateList") && getStore("updateList").length > 0) {
-        this.formData["updateList"] = getStore("updateList");
+        val["updateDetails"] = getStore("updateList");
+      } else {
+        // val["updateDetails"] = [];
       }
       if (getStore("delList") && getStore("delList").length > 0) {
-        this.formData["delList"] = getStore("delList");
+        val["delDetails"] = getStore("delList").map((item) => item.id);
+      } else {
+        // val["delDetails"] = [];
       }
-
-      this.formData.affOrgId = this.formData.affOrgId
-        ? this.formData.affOrgId[this.formData.affOrgId.length - 1]
-        : null;
-      this.formData.applyDeptId = this.formData.applyDeptId
-        ? this.formData.applyDeptId[this.formData.applyDeptId.length - 1]
-        : null;
-      this.formData["applyPersonId"] = this.$store.state.user.standing.userId;
-      delete this.formData["createTime"];
-      updateProject(this.formData).then((res) => {
-        if (res.code === 200) {
-          this.$message({
-            type: "success",
-            message: "保存成功!",
-          });
+      if (review) {
+        updateProject(val).then((res) => {
+          if (res.code === 200) {
+            this.handleSubmit();
+          }
+        });
+      } else {
+        updateProject(val).then((res) => {
+          if (res.code === 200) {
+            this.$message({
+              type: "success",
+              message: "保存成功!",
+            });
+          }
+          this.clear();
+          this.cancel();
+        });
+      }
+    },
+    // ! 提交
+    sub(val) {
+      definitionStart2(
+        val.id,
+        this.formData.changeNo,
+        "device_change",
+        {}
+      ).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.clear();
+          this.cancel();
         }
-        this.clear();
-        this.cancel();
       });
     },
-    receiveDataFromChild(data) {
-      this.formData = data;
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "device_change",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    /* 提交按钮 */
+    handleSubmit(row) {
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "device_change",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    submit() {
+      this.$refs.headEdit.submitForm();
+    },
+    submitReview() {
+      this.$refs.headEdit.submitForm("review");
     },
   },
   watch: {},

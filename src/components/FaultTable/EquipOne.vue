@@ -153,7 +153,7 @@ export default {
         }
       });
 
-      await getWomInfo({ id: this.formData.id }).then((res) => {
+      await getWomInfo({ orderCode: this.formData.orderCode }).then((res) => {
         if (res.code == 200) {
           this.data = { ...this.data, phoneNumber: res.data.phoneNumber };
         }

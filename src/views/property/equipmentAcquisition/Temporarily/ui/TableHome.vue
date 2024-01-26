@@ -27,7 +27,7 @@
           <el-button
             type="primary"
             size="mini"
-            icon="el-icon-upload"
+            icon="el-icon-upload2"
             @click="handlerImport"
             >导入</el-button
           >
@@ -101,7 +101,7 @@
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus == 'completed'"
+          v-if="scope.row.apvStatus == 'completed' ||  scope.row.apvStatus == 'running' "
           size="mini"
           type="text"
           @click="handleFlowRecord(scope.row)"
@@ -213,7 +213,7 @@ export default {
             // },
             {
               value: 2,
-              label: "临时计划",
+              label: "临时采购",
             },
           ],
         },
@@ -271,7 +271,6 @@ export default {
   watch: {},
   async created() {
     await this.getDeptTree();
-    
   },
   mounted() {},
   methods: {
@@ -322,7 +321,6 @@ export default {
     },
     /* 提交按钮 */
     handleSubmit(row) {
-      this.id = row.deviceId;
       this.subopen = true;
       this.subtitle = "提交";
       let data = {
@@ -339,7 +337,7 @@ export default {
     async getDeptTree() {
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;
-         this.getList();
+        this.getList();
       });
     },
     handelImport() {},

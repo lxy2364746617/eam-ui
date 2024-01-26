@@ -51,6 +51,7 @@ export default {
       userList: [],
       userList2: [],
       listValue: {},
+      review: null,
     };
   },
   computed: {
@@ -177,11 +178,12 @@ export default {
         }));
       });
     },
-    submitForm() {
+    submitForm(review) {
+      this.review = review;
       this.$refs.jmform.submitForm();
     },
     submitForm2(obj) {
-      this.$emit("submitForm", obj);
+      this.$emit("submitForm", obj, this.review);
     },
 
     findTreeName(options, value) {

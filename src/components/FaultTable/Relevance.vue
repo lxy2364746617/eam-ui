@@ -17,7 +17,6 @@
       ref="jmtable2"
       :columns="columns"
       :showSearch="false"
-      style="margin-top: 20px"
       :rightToolbarShow="false"
     >
       <template #end_handle="scope">
@@ -40,6 +39,7 @@
         >
         <el-button
           size="mini"
+          v-if="fileType.includes(scope.row.fileType)"
           type="text"
           icon="el-icon-document-add"
           @click="handlePreview(scope.row)"
@@ -61,6 +61,7 @@
         :drag="true"
         @uploadChange="uploadChange2"
         :listType="'picture-card'"
+        :fileType="fileType"
         style="padding: 0 20px"
       >
       </file-upload>
@@ -118,7 +119,7 @@ export default {
       //文档
       fileList: [],
       filedrawer: false,
-      fileType: [".xlsx"],
+      fileType: ["png", "jpg", "bmp", "jpeg", "pdf", "gif"],
       fileResourceList: [],
       delFileList: [],
     };
@@ -150,7 +151,6 @@ export default {
             that.fileResourceList.forEach((item, index) => {
               if (item.id == row.id) {
                 that.delFileList.push(row);
-                console.log("========================", this.delFileList);
                 that.fileResourceList.splice(index, 1);
               }
             });
@@ -182,6 +182,7 @@ export default {
         {
           fileName: row.fileName,
         },
+
         row.originalFileName
       );
     },
@@ -190,7 +191,7 @@ export default {
 </script>
 <style lang='scss' scoped>
 .title {
- background-color: #ebf4fc;
+  background-color: #ebf4fc;
   color: #555;
   font-weight: 700;
   text-align: left;
@@ -203,6 +204,7 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 </style>
