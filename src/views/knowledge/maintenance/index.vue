@@ -102,7 +102,7 @@ import JmTable from "@/components/JmTable1";
           { label: "计划编码", prop: "planCode" },
           { label: "计划名称", prop: "planName", },
           { label: "上传人员", prop: "createBy", },
-          { label: "上传时间", prop: "createTime", formType: "date", },
+          { label: "上传时间", prop: "createTime",formType: "date", formType: "daterange",width:200 },
         ],
         // 表格数据
         templateList: [],
@@ -181,12 +181,15 @@ import JmTable from "@/components/JmTable1";
         })
       },
       // 上传成功回调
-      onSuccess(res,file){
+      onSuccess(res,file,fileList){
         // console.log(res,'上传成功~')
-        this.ruleForm.fileResources.push({
-          name:res.originalFileName,
-          ...res,
+        let keys = Object.keys(res)
+        fileList.forEach(item=>{
+          keys.forEach(key=>{
+            item[key] = res[key]
+          })
         })
+        this.ruleForm.fileResources = fileList;
       },
       // 上次失败回调
       onError(err,file){

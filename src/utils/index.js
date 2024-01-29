@@ -464,3 +464,40 @@ export const download = (url) => {
   window.open(url, "_self");
   return true;
 };
+
+/**
+ * 扁平化树形数据
+ */
+export const flat = (data)=>{
+  return data.reduce((pre,cur)=>{
+      //此处将对象的children属性和值都解构在空数组中，将对象的其他属性和值都解构在i里面。
+      const {children=[],...i}=cur;   // 注意 ...i 只能写在解构赋值的末尾，否则报错
+      return pre.concat([{...i}],flat(children))  //利用递归回调,数组合并,注意此处 {...i}是解构
+  },[]);
+}
+
+/**
+ * 根据子节点找到所有上级(记得要把树形结构数据扁平化) 
+ * @param {*} arr 
+ * @param {*} id 
+ * @returns 
+ */
+export const parentTree = function(arr, id) {   //arr 所有的树数据 id 某个子节点的id 
+  var temp = [];
+  var callback = function (nowArr, id) {     //先定义个函数寻找子节点位置 找到后 拿父ID 再找改节点父元素位置 以此类推
+    for (var i = 0; i < nowArr.length; i++) {
+      var item = nowArr[i];
+      if (item.deptId === id) {
+        temp.push(item);
+        callback(arr, item.parentId);     //pid 父级ID  递归
+        break;
+      } else {
+        if (item.menus) {
+          callback(item.menus, id); //menus 子节点字段名称
+        }
+      }
+    }
+  };
+  callback(arr, id);
+  return temp;  //最后返回
+}

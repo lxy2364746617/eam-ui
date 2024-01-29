@@ -40,3 +40,59 @@ export function locationRemove(query) {
     data: query
   })
 }
+// 获取详情-基础信息
+export function locationDetail(query) {
+  return request({
+    url: '/system/location/detail',
+    method: 'get',
+    params: query
+  })
+}
+// 获取设备状态
+export function getDeviceStatus(query) {
+  return request({
+    url: '/system/dict/data/type/em_device_state',
+    method: 'get',
+    params: query
+  })
+}
+// 获取设备属性
+export function getDeviceAtt(query) {
+  return request({
+    url: '/system/dict/data/type/em_device_att',
+    method: 'get',
+    params: query
+  })
+}
+// 获取详情-设备列表
+export function locationDetailDevice(query) {
+  return request({
+    url: '/equipment/base/list',
+    method: 'get',
+    params: query
+  })
+}
+// 获取详情-文件列表
+export function locationDetailFile(query) {
+  return request({
+    url: '/system/resource/list',
+    method: 'get',
+    params: query
+  })
+}
+// 获取详情-文件列表-删除
+export function locationDetailFileDelete(deviceId) {
+  return request({
+    url: '/system/resource/' + deviceId,
+    method: 'delete'
+  })
+}
+// 详情-上传自动保存
+export function uploadSave(query) {
+  return request({
+    url: '/system/location/insertPic',
+    method: 'post',
+    data: query
+  })
+}
+

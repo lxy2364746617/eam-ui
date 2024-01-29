@@ -15,13 +15,13 @@
           @current-change="handleCurrentChange"
           :data="tableData2" 
           @selection-change="handleSelectionChange">
-          <el-table-column v-if="checkbox" type="selection" width="55" align="center" :selectable="(row,index)=>index!=0 || !showSearch"/>
+          <el-table-column v-if="checkbox" type="selection" width="55" align="center" fixed="left" :selectable="(row,index)=>index!=0 || !showSearch"/>
           <el-table-column v-if="isRadio" width="50">
             <template slot-scope="scope">
                 <el-radio v-model="radio" :label="scope.$index" v-if="scope.$index!=0 && showSearch" class="leftRadio">&nbsp;</el-radio>
             </template>
           </el-table-column>
-          <el-table-column label="序号" align="center" prop="noticeId" width="50" v-if="isIndex">
+          <el-table-column label="序号" align="center" prop="noticeId" width="50" fixed="left"  v-if="isIndex">
             <template slot-scope="scope">
               <div v-if="scope.$index != 0 && showSearch" v-html="scope.$index"></div>
               <div v-else-if="!showSearch">{{scope.$index +1}}</div>
@@ -34,7 +34,7 @@
               :key="col.prop" 
               :sortable="false"
               :prop="col.prop" 
-              :min-width="col.width||100" 
+              :min-width="col.width||150" 
               :show-overflow-tooltip="true" 
               v-if="tableVisible[col.prop]">
               <template slot-scope="scope">
@@ -50,6 +50,20 @@
                       @keyup.enter.native="handleQuery"
                       style="width: auto;"
                       placeholder="选择日期">
+                    </el-date-picker>
+                    <el-date-picker
+                      v-else-if="col.formType=='daterange'"
+                      v-model="queryParams[col.prop]"
+                      value-format="yyyy-MM-dd"
+                      type="daterange"
+                      clearable
+                      style="width: auto;"
+                      :placeholder="col.placeholder || '选择日期'"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      @change="daterangeChange($event,col)"
+                      >
                     </el-date-picker>
                     <el-select 
                       v-else-if="col.formType=='select' || col.formType=='radio'||col.formType=='switch'" 
@@ -155,7 +169,7 @@
               </template>
             </el-table-column>
           </template>
-          <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width" :min-width="handleWidth||120" v-if="showOperate">
+          <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width" :min-width="handleWidth||160" v-if="showOperate">
             <template slot-scope="scope">
               <div v-if="scope.$index == 0 && showSearch">
                 <el-button
@@ -293,6 +307,18 @@ export default {
         }
     },
     methods: {
+      daterangeChange(val,row){
+        this.$set(this.queryParams,'params',this.queryParams.params || {})
+        if(row?.dateKey?.length){
+          row.dateKey.forEach((key,idx)=>{
+            this.queryParams.params[key] = val[idx]
+          })
+        }else{
+          this.queryParams.params.startTime = val[0]
+          this.queryParams.params.endTime = val[1]
+        }
+        console.log(this.queryParams)
+      },
       switchchange($event,prop,row){
         this.$emit('switchchange',$event,prop,row)
       },
@@ -372,11 +398,17 @@ export default {
       },
       getList(){
         this.loading = true
-        this.$emit('getList',this.queryParams)
+        let keys = Object.keys(this.queryParams)
+        let params = {}
+        keys.forEach(key=>{
+          if(!Array.isArray(this.queryParams[key])){
+            params[key] = this.queryParams[key]
+          }
+        })
+        this.$emit('getList',params)
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        console.log(this.queryParams)
         this.queryParams.pageNum = 1;
         this.getList()
       },
@@ -413,6 +445,8 @@ export default {
   ::v-deep .el-form-item__content .el-select--small .el-input--small,
   ::v-deep .el-form-item__content .el-select--small .el-input--small .el-input__inner,
   ::v-deep .vue-treeselect,
+  ::v-deep .el-date-editor--daterange,
+  ::v-deep .el-range-editor--small.el-input__inner,
   ::v-deep .vue-treeselect .vue-treeselect__control{
     height: 100%;
     border-radius: 0;
@@ -421,6 +455,12 @@ export default {
     left: 0;
     bottom: 0;
     right: 0;
+  }
+  ::v-deep .el-range-editor--small .el-range-separator{
+    display: flex;
+    align-items: center;
+    margin-right:5px;
+    color: #C0C4CC;
   }
   ::v-deep .vue-treeselect__placeholder, 
   ::v-deep .vue-treeselect__single-value{

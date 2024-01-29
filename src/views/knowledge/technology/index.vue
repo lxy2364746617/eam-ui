@@ -3,6 +3,7 @@
       <el-card class="box-card1" shadow="never">
         <jm-table :tableData="templateList" 
         :queryParams="table_search_params"
+        :handleWidth="200"
         @getList="getList" 
         :checkbox="false"
         :total="total"        
@@ -145,7 +146,7 @@ import JmTable from "@/components/JmTable1";
           { label: "设备类别", prop: "categoryName", formType: "select",options:[{label:'1',value:'1'}]},
           { label: "规格型号", prop: "specs", },
           { label: "上传人员", prop: "createBy", },
-          { label: "上传时间", prop: "createTime", formType: "date", },
+          { label: "上传时间", prop: "createTime", formType: "date", formType: "daterange",width:200},
         ],
         // 表格数据
         templateList: [],
@@ -299,10 +300,13 @@ import JmTable from "@/components/JmTable1";
       // 上传成功回调
       onSuccess(res,file){
         // console.log(res,'上传成功~')
-        this.ruleForm.sysFileResources.push({
-          name:res.originalFileName,
-          ...res
+        let keys = Object.keys(res)
+        fileList.forEach(item=>{
+          keys.forEach(key=>{
+            item[key] = res[key]
+          })
         })
+        this.ruleForm.sysFileResources = fileList;
       },
       // 上传失败回调
       onError(err,file){

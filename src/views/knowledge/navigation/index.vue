@@ -52,7 +52,7 @@
               </div>
               <div class="content_body">
                 <div v-for="(item,index) in jszlData.list" :key="index" class="textItem" @click=jszlClick(item)>
-                  <i class="title iconfont" :class="item.icon"></i>
+                  <i class="title1 iconfont" :class="item.icon"></i>
                   <p class="text">{{item.originalFileName}}</p>
                   <span class="clickNo" :style="{color:item.color}">点击NO.{{index+1}}</span>
                 </div>
@@ -329,7 +329,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       display: flex;
       line-height: 35px;
       cursor: pointer;
-      .title{
+      .title1{
         margin-right: 20px;
         font-size: 20px;
       }

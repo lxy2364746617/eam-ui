@@ -19,10 +19,11 @@
               :filter-node-method="filterNode"
               ref="tree"
               node-key="id"
-              default-expand-all
+              :default-expand-all="true"
               highlight-current
               @node-click="handleNodeClick"
           />
+          <!-- :default-expanded-keys="['1']" -->
         </div>
     </div>
   </template>
@@ -70,11 +71,11 @@
       
     },
     methods: {
-      
       // 筛选节点
       filterNode(value, data) {
+        console.log(value,data)
         if (!value) return true;
-        return data.label.indexOf(value) !== -1;
+        return data.deptName.indexOf(value) !== -1;
       },
       // 节点单击事件
       handleNodeClick(data) {

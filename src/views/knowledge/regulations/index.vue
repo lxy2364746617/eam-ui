@@ -6,7 +6,7 @@
             :checkbox="false"
             @getList="getList" 
             :total="total" 
-            :handleWidth="150"
+            :handleWidth="250"
             :columns="tablecolumns" ref="jmTable">
             <template slot="headerLeft">
                 <el-button type="primary" icon="el-icon-plus" size="mini"  @click="uploadDialog('add')">上传</el-button>
@@ -113,10 +113,10 @@ import JmTable from "@/components/JmTable1";
             } 
           }
         },
-          { label: "发布日期", prop: "releaseDate", formType: "date", },
-          { label: "实施时间", prop: "effectiveDate", formType: "date", },
+          { label: "发布日期", prop: "releaseDate",formType: "daterange",dateKey:['beginReleaseDate','endReleaseDate'],width:200},
+          { label: "实施时间", prop: "effectiveDate",formType: "daterange",dateKey:['beginEffectiveDate','endEffectiveDate'],width:200},
           { label: "更新人员", prop: "updateBy", },
-          { label: "更新时间", prop: "updateTime", formType: "date",},
+          { label: "更新时间", prop: "updateTime",formType: "daterange",dateKey:['beginUpdateTime','endUpdateTime'],width:200},
         ],
         // 表格数据
         templateList: [],
@@ -204,12 +204,15 @@ import JmTable from "@/components/JmTable1";
         });
       },
       // 上传成功回调
-      onSuccess(res,file){
+      onSuccess(res,file,fileList){
         // console.log(res,'上传成功~')
-        this.ruleForm.fileResources.push({
-          name:res.originalFileName,
-          ...res
+        let keys = Object.keys(res)
+        fileList.forEach(item=>{
+          keys.forEach(key=>{
+            item[key] = res[key]
+          })
         })
+        this.ruleForm.fileResources = fileList;
       },
       // 上次失败回调
       onError(err,file){

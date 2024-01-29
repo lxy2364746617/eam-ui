@@ -37,16 +37,22 @@
             </jm-form>
           </div>
           <div class="content_right">
-            <el-image :src="src"></el-image>
+            <el-image :src="src" style="width: 180px;height:180px;">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline" style="font-size:30px;color:#909399"></i>
+              </div>
+            </el-image>
           </div>
         </div>
       </el-card>
       <!-- 下级信息 -->
       <el-card shadow="never" style="margin-top:10px;">
         <jm-table :tableData="templateList"
-          :checkbox="false"
+          :handleWidth="200"
+          :checkbox="true"
           @getList="getList" 
           :total="total"
+          @handleSelectionChange="handleSelectionChange"
           :columns="tablecolumns" ref="jmTable">
           <template slot="headerLeft">
               <el-button type="primary" icon="el-icon-plus" size="mini"  @click="downloadClick">下载</el-button>
@@ -61,7 +67,7 @@
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-download"
+              icon="el-icon-edit"
               @click="handleEdit(scope.row)"
             >编辑</el-button>
             <el-button
@@ -79,7 +85,8 @@
 <script>
 import JmUserTree from "@/components/JmUserTree1";
 import JmTable from "@/components/JmTable1";
-import JmForm from "@/components/JmForm";
+import JmForm from "@/components/JmForm1";
+import { flat,parentTree } from "@/utils/index.js"
 import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemove } from '@/api/Location'
   export default {
     name:'Location',
@@ -98,10 +105,11 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           { label: '所属组织', prop: 'orgName',required: true, formDisabled: true,span:24, },
           { label: '功能位置名称', prop: 'deptName',required: true, formDisabled: true, span:24,  },
           { label: '功能位置编码', prop: 'deptCode',required: true, formDisabled: true,  span:24, },
-          { label: '功能位置属性', prop: 'funAttr',formType: 'select', options:[{label:'其他',value:'qt'}], span:24,formDisabled: true, },
-          { label: '上级功能位置', prop: 'parentDeptName',span:24,formDisabled: true,formVisible:true },
+          { label: '功能位置属性', prop: 'funAttr',formType: 'select', options:[], span:24,formDisabled: true, },
+          { label: '上级功能位置', prop: 'parentDeptName',span:24,formDisabled: true,formVisible: false},
           { label: '备注', prop: 'remark',formType: 'textarea',span:24,formDisabled: true, },
         ],
+        checkBoxData:[], // 多选数据
         formData: {
           deptName:'',
           orgName:'',
@@ -110,7 +118,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           parentDeptName:'',
           remark:''
         },
-        src:'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+        src:'', // 二维码路径
         isBaseData: true, // 是否为基本信息
         // 表格数据
         templateList: [],
@@ -121,17 +129,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         tablecolumns:[
           { label: "功能位置名称", prop: "deptName" },
           { label: "功能位置编码", prop: "deptCode" },
-          { label: "功能位置属性", prop: "funAttr", formType: "selectF",options:[],type:'template',template(row,item){
-            // let text = ''
-            // item.options.forEach(items=>{
-            //   items.options.forEach(itemss=>{
-            //     if(row[item.prop] == itemss.value){
-            //       text = itemss.label
-            //     }
-            //   })
-            // })
-            // return `<span>${text}</span>`
-          }},
+          { label: "功能位置属性", prop: "funAttr", formType: "select",options:[],type:'template'},
           { label: "所属组织", prop: "orgName", },
           { label: "上级功能位置", prop: "parentDeptName", },
           { label: "备注", prop: "remark", },
@@ -145,6 +143,20 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       this.getAttr()
     },
     methods:{
+      // 扁平化树结构为数组，根据ID获取所有上级
+      flatFn(id){
+        let arr = flat(this.deptOptions)
+        console.log(arr)
+        return parentTree(arr,id)
+      },
+      // 设置是否显示上级功能位置
+      setShowParentLocation(Boolean){
+        this.columns.forEach(item=>{
+          if(['parentDeptName'].includes(item.prop)){
+            item.formVisible = Boolean
+          }
+        })
+      },
       // 获取功能位置属性
       getAttr(){
         getLocationAttr().then(res=>{
@@ -159,6 +171,11 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
                 item.options = res.data
               }
             })
+            this.tablecolumns.forEach(item=>{
+              if(item.prop =='funAttr'){
+                item.options = res.data
+              }
+            })
           }
         })
       },
@@ -166,7 +183,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       handleNodeClick(row){
         console.log(row)
         if(!this.isBaseData){
-          this.$message('请退出当前编辑')
+          this.$message('请保存或退出当前编辑')
         }else{
           this.nowClickTreeItem = row
           this.getBaseInfo()
@@ -175,7 +192,12 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       // 获取基本信息
       getBaseInfo(){
         console.log(this.nowClickTreeItem)
-        locationInfo({id:this.nowClickTreeItem.id}).then(res=>{
+        let params = {
+          id:this.nowClickTreeItem.id,
+          pageNum:1,
+          pageSize:10,
+        }
+        locationInfo(params).then(res=>{
           console.log(res,'基本信息')
           this.columns.forEach(item=>{
             if(res.data.baseInfo[item.prop]){
@@ -184,19 +206,29 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
               this.formData[item.prop] = ''
             }
           })
-          console.log(this.formData)
-          this.templateList = res.data.nextList
-
+          this.templateList = res.data.nextList.records || []
+          this.total = res.data.nextList.total
+          this.src = `${process.env.VUE_APP_BASE_API}${res.data.baseInfo.qrCode}`
         })
       },
       // 获取表格数据
       getList(queryParams) {
         this.loading = true;
-        maintainList(queryParams).then(response => {
-          this.templateList = response.rows;
-          this.total = response.total;
+        let params = {
+          ...queryParams,
+          id:this.nowClickTreeItem.id
+        }
+        locationInfo(params).then(response => {
+          console.log(response)
+          this.templateList = response.data.nextList.records || []
+          this.total = response.data.nextList.total;
           this.loading = false;
         });
+      },
+      // 多选表格回调
+      handleSelectionChange(data){
+        console.log(data)
+        this.checkBoxData = data
       },
       // 获取树数据
       getTreeData(){
@@ -209,33 +241,28 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       addTreeItem(){
         this.rightTitle = '新增下级功能位置'
         this.isBaseData = false;
-        let arr = ['deptName','funAttr','remark']
+        let editShowArr = ['deptName','funAttr','remark'] 
+        this.setShowParentLocation(true)
         this.columns.forEach(item=>{
-          if(arr.includes(item.prop)){
+          if(editShowArr.includes(item.prop)){
             item.formDisabled = false
+            this.formData[item.prop]= ''
           }
         })
-        arr.forEach(item=>{
-          this.formData[item]= ''
-        })
+        this.$refs['form'].clearValidate();
       },
-
       // 树节点编辑
       editTreeItem(){
-        this.rightTitle = '编辑基本细腻'
+        this.rightTitle = '编辑基本信息'
         this.isBaseData=false
         let arr = ['deptName','funAttr','remark']
+        this.setShowParentLocation(false)
         this.columns.forEach(item=>{
           if(arr.includes(item.prop)){
             item.formDisabled = false
           }
-          if(['parentDeptName'].includes(item.prop)){
-            item.formVisible = false
-          }
         })
-        arr.forEach(item=>{
-          this.formData[item]= ''
-        })
+        this.$refs['form'].clearValidate();
       },
       // 树节点删除
       deleteTreeItem(row) {
@@ -254,35 +281,34 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       /** 提交按钮 */
       submitForm: function(formdata) {
         console.log(formdata,'提交表单')
-        // this.isBaseData=true
-        // this. this.rightTitle = '基本信息'
-        // this.$refs["form"].validate(valid => {
-        //   if (valid) {
-        //     let params = {
-        //       ancestors: "0,100",
-        //       deptName: this.this.nowClickTreeItem.name,
-        //       flag: "Y",
-        //       funAttr: this.nowClickTreeItem.code,
-        //       funAttrName: this.nowClickTreeItem.key,
-        //       parentDeptCode: "11501",
-        //       parentDeptId: 129,
-        //       remark: "备注"
-        //     }
-        //     // 新增或编辑
-        //     saveOrUpdate().then(res=>{
-        //       console.log(res,'新增成功')
-        //       this.$message({
-        //         message: '操作成功！',
-        //         type: 'success'
-        //       })
-        //     })
-        //   }
-        // });
+        console.log(this.nowClickTreeItem,'当前节点数据')
+        let id = this.rightTitle == '编辑基本信息'?this.nowClickTreeItem.id:''
+        let params = {
+          ancestors: this.nowClickTreeItem.ancestors,
+          deptName: formdata.deptName,
+          flag: "Y",
+          funAttr: formdata.funAttr,
+          parentDeptCode: this.nowClickTreeItem.deptCode,
+          parentDeptId: this.nowClickTreeItem.deptId,
+          remark: formdata.remark,
+          id:id
+        }
+        // 新增或编辑
+        saveOrUpdate(params).then(res=>{
+          this.cancel()
+          this.$message({
+            message: '操作成功！',
+            type: 'success'
+          })
+          this.getTreeData( )
+        })
+      
       },
-      // 表单关闭回调
+      // 点击表单取消
       cancel(){
         this.rightTitle = '基本信息'
         this.isBaseData=true
+        this.setShowParentLocation(false)
         this.columns.forEach(item=>{
           item.formDisabled = true
         })
@@ -294,40 +320,34 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       },
       // 点击详情
       detailsClick(){
-        this.$router.push({})
+        let BreadcrumbArr = this.flatFn(this.nowClickTreeItem.deptId)
+        console.log(BreadcrumbArr)
+        this.$router.push({name:'LocationDetails',query:{BreadcrumbArr:JSON.stringify(BreadcrumbArr)}})
       },
       // 点击表格删除
       handleDelete(row){
-        console.log(row)
-        // maintainListDel({id:row.id,fileId:row.fileId}).then(res=>{
-        //   this.getList()
-        //   this.$message({
-        //     message: '操作成功！',
-        //     type: 'success'
-        //   })
-        // })
+        this.deleteTreeItem(row)
       },
       // 点击表格编辑
       handleEdit(row){
         console.log(row)
-        // maintainListDel({id:row.id,fileId:row.fileId}).then(res=>{
-        //   this.getList()
-        //   // this.$message({
-        //   //   message: '操作成功！',
-        //   //   type: 'success'
-        //   // })
-        // })
+        this.handleNodeClick(row)
+        this.editTreeItem()
       },
       // 点击表格详情
       handleDetails(row){
         console.log(row)
-        this.$router.push({name:'LocationDetails'})
+        // this.$router.push({name:'LocationDetails'})
       },
       // 点击下载
       downloadClick(row){
         // console.log(row)
-        let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
-        download(url)
+        let id = []
+        this.checkBoxData.forEach(item=>{
+          id.push(item.id)
+        })
+        // let url = `${process.env.VUE_APP_BASE_API}${row.id}`
+        // download(url)
       },
     }
   }
@@ -364,5 +384,10 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
 ::v-deep .el-card__body{
   height: 100%;
 }
-  
+::v-deep .el-image{
+  background-color: #F5F7FA;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>

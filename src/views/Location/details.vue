@@ -3,13 +3,21 @@
     <el-card shadow="never" style="height:100%">
       <!-- 面包线 -->
       <el-breadcrumb separator-class="el-icon-arrow-right" style="margin-bottom:20px;">
-        <el-breadcrumb-item v-for="(item,index) in breadcrumbArr" :key="index">{{item.name}}</el-breadcrumb-item>
+        <el-breadcrumb-item v-for="(item,index) in breadcrumbArr" :key="index">{{item.deptName}}</el-breadcrumb-item>
       </el-breadcrumb>
       <!-- 基本信息 -->
       <div class="details_baseData">
         <div class="details_baseData_img">
-          <el-image :src="src" style="width: 120px;height:100px;"></el-image>
-          <el-image :src="src"  style="width: 120px;height:100px;"></el-image>
+          <el-image :src="src" style="width: 120px;height:100px;">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" style="font-size:30px;color:#909399"></i>
+            </div>
+          </el-image>
+          <el-image :src="src1"  style="width: 120px;height:100px;">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" style="font-size:30px;color:#909399"></i>
+            </div>
+          </el-image>
         </div>
         <div class="details_baseData_form">
           <jm-form 
@@ -26,7 +34,7 @@
         <el-tab-pane label="设备" name="first">
           <jm-table :tableData="templateList"
           :checkbox="true"
-          @getList="getList" 
+          @getList="getDevice" 
           :total="total"
           :columns="tablecolumns" ref="jmTable">
           <template slot="headerLeft">
@@ -35,11 +43,11 @@
           </jm-table>
         </el-tab-pane>
         <el-tab-pane label="文件" name="second">
-          <jm-table :tableData="templateList"
+          <jm-table :tableData="templateList1"
           :checkbox="false"
-          @getList="getList" 
-          :total="total"
-          :columns="tablecolumns" ref="jmTable">
+          @getList="getFile" 
+          :total="total1"
+          :columns="tablecolumns1" ref="jmTable1">
           <template slot="headerLeft">
               <el-button type="primary" icon="el-icon-plus" size="mini"  @click="addClick">上传</el-button>
             </template>
@@ -61,50 +69,76 @@
               type="text"
               icon="el-icon-view"
               @click="handlePreview (scope.row)"
-            >详情</el-button>
+            >预览</el-button>
           </template>
           </jm-table>
         </el-tab-pane>
         <el-tab-pane label="位置图片" name="third">
           <el-upload
-  action="#"
-  list-type="picture-card"
-  :auto-upload="false">
-    <i slot="default" class="el-icon-plus"></i>
-    <div slot="file" slot-scope="{file}">
-      <img
-        class="el-upload-list__item-thumbnail"
-        :src="file.url" alt=""
-      >
-      <span class="el-upload-list__item-actions">
-        <span
-          class="el-upload-list__item-preview"
-          @click="handlePictureCardPreview(file)"
-        >
-          <i class="el-icon-zoom-in"></i>
-        </span>
-        <span
-          v-if="!disabled"
-          class="el-upload-list__item-delete"
-          @click="handleRemove(file)"
-        >
-          <i class="el-icon-delete"></i>
-        </span>
-      </span>
-    </div>
-</el-upload>
-<el-dialog :visible.sync="dialogVisible">
-  <img width="100%" :src="dialogImageUrl" alt="">
-</el-dialog>
+            :action="action"
+            :headers="headers"
+            list-type="picture-card"
+            :on-success="onSuccess"
+            :file-list="sysFileResources"
+            accept="image/png,image/jpeg"
+            >
+            <i slot="default" class="el-icon-plus"></i>
+            <div slot="file" slot-scope="{file}">
+              <img
+                class="el-upload-list__item-thumbnail"
+                :src="file.url" alt=""
+              >
+              <span class="el-upload-list__item-actions">
+                <span
+                  class="el-upload-list__item-preview"
+                  @click="handlePictureCardPreview(file)"
+                >
+                  <i class="el-icon-zoom-in"></i>
+                </span>
+                <span
+                  v-if="!disabled"
+                  class="el-upload-list__item-delete"
+                  @click="handleRemove(file)"
+                >
+                  <i class="el-icon-delete"></i>
+                </span>
+              </span>
+            </div>
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt="">
+        </el-dialog>
         </el-tab-pane>
       </el-tabs>
     </el-card>
+    <el-dialog
+      title="上传"
+      :visible.sync="uploadDialogVisible"
+      width="500px">
+      <div class="upload_box">
+        <el-upload
+          class="upload-demo"
+          :action="action"
+          :headers="headers"
+          :on-success="onSuccessFile"
+          :on-error="onErrorFile"
+          :file-list="fileList">
+          <el-button type="primary">点击上传<i class="el-icon-upload el-icon--right"></i></el-button>
+        </el-upload>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="uploadDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="filePrimary">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import JmTable from "@/components/JmTable1";
-import JmForm from "@/components/JmForm";
+import JmForm from "@/components/JmForm1";
+import { getToken } from "@/utils/auth";
+import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,getDeviceStatus,getDeviceAtt,uploadSave,locationDetailFileDelete } from '@/api/Location'
   export default {
     name:'locationDetails',
     components: {
@@ -113,56 +147,220 @@ import JmForm from "@/components/JmForm";
     },
     data(){
       return {
-        breadcrumbArr:[
-          {name:'山西焦煤功能位置'},
-          {name:'山焦西山'},
-          {name:'白矿'},
-          {name:'六采区'},
-        ],
-        src:'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+        breadcrumbArr:[],
+        src:'',
+        src1:'',
         columns:[
-          { label: '所属组织', prop: 'categoryName',required: true, formDisabled: true,span:8, },
-          { label: '功能位置名称', prop: 'categoryCode',required: true, formDisabled: true, span:8,  },
-          { label: '功能位置编码', prop: 'parentCode',required: true, formDisabled: true,  span:8, },
-          { label: '设备位置属性', prop: 'special',required: true, formDisabled: true,formType: 'select', options:[{label:'其他',value:'qt'}], span:8, },
-          { label: '备注', prop: 'special', required: true,formType: 'textarea',formDisabled: true,span:16,},
+          { label: '所属组织', prop: 'orgName',required: true, formDisabled: true,span:8, },
+          { label: '功能位置名称', prop: 'deptName',required: true, formDisabled: true, span:8,placeholder:' '},
+          { label: '功能位置编码', prop: 'deptCode',required: true, formDisabled: true,  span:8, },
+          { label: '设备位置属性', prop: 'funAttr',required: true, formDisabled: true,formType: 'select', options:[], span:8, },
+          { label: '备注', prop: 'remark', required: true,formType: 'textarea',formDisabled: true,span:16,},
         ],
-        formData: {},
-        activeName: 'second', // 默认选中tabs
+        formData: {
+          orgName:'',
+          deptName:'',
+          deptCode:'',
+          funAttr:'',
+          remark:''
+        },
+        activeName: 'first', // 默认选中tabs
         // 表格数据
         templateList: [],
+        templateList1: [],
         loading: true,
         // 总条数
         total: 0,
+        total1: 0,
         // 表格头部
         tablecolumns:[
-          { label: "功能位置名称", prop: "fileName" },
-          { label: "功能位置编码", prop: "planCode" },
-          { label: "功能位置属性", prop: "kdbType", formType: "selectF",options:[],type:'template',template(row,item){
-            // let text = ''
-            // item.options.forEach(items=>{
-            //   items.options.forEach(itemss=>{
-            //     if(row[item.prop] == itemss.value){
-            //       text = itemss.label
-            //     }
-            //   })
-            // })
-            // return `<span>${text}</span>`
+          { label: "设备编码", prop: "deviceCode" },
+          { label: "设备名称", prop: "deviceName" },
+          { label: "规格型号", prop: "specs" },
+          { label: "设备类别", prop: "categoryName", },
+          { label: "设备状态", prop: "deviceStatus",formType: "select",options:[], styleFn(row){
+            if(row.deviceStatus == '再用'){
+              return `color:#FFF;background-color:#0EB912;padding:5px;border-radius: 5px;`
+            }else if(row.deviceStatus == '修理'){
+              return `color:#FFF;background-color:#EE3232;padding:5px;border-radius: 5px;`
+            }else if(row.deviceStatus == '备用'){
+              return `color:#FFF;background-color:#4A92FC;padding:5px;border-radius: 5px;`
+            }else if(row.deviceStatus == '闲置'){
+              return `color:#FFF;background-color:#1F77FC;padding:5px;border-radius: 5px;`
+            } 
+            else if(row.deviceStatus == '待处置'){
+              return `color:#FFF;background-color:#6802B6;padding:5px;border-radius: 5px;`
+            } 
+            else if(row.deviceStatus == '待报废'){
+              return `color:#FFF;background-color:#F88221;padding:5px;border-radius: 5px;`
+            } 
+            else if(row.deviceStatus == '已报废'){
+              return `color:#FFF;background-color:#848484;padding:5px;border-radius: 5px;`
+            } 
           }},
-          { label: "所属组织", prop: "planName", },
-          { label: "上级功能位置", prop: "createBy", },
-          { label: "备注", prop: "createTime", },
+          { label: "财务资产编码", prop: "propertyCode", },
+          // { label: "功能位置", prop: "b", },
+          { label: "重要等级", prop: "level", },
+          { label: "所属子公司", prop: "subCompanyName", },
+          { label: "所属组织", prop: "affDeptName", },
+          { label: "当前使用组织", prop: "currDeptName", },
+          { label: "购置日期", prop: "createTime",},
+          { label: "设备属性", prop: "deviceAtt",formType: "select",options:[] },
+          { label: "上级设备", prop: "parentDeviceName", },
+        ],
+        tablecolumns1:[
+          { label: "文件名称", prop: "originalFileName" },
+          { label: "上传时间", prop: "createTime" },
+          { label: "上传人员", prop: "createBy" },
+          { label: "文件大小", prop: "fileSize", },
         ],
         // 位置图片
+        action:process.env.VUE_APP_BASE_API + "/common/upload", // 上传地址
+        headers: {
+          Authorization: "Bearer " + getToken(),
+        },
+        sysFileResources:[], // 图片集合
         dialogImageUrl: '',
         dialogVisible: false,
-        disabled: false
+        disabled: false,
+        busId:'',
+        uploadDialogVisible:false, // 是否显示上传弹窗
+        fileList:[], // 上传弹窗，文件列表
       }
     },
+    mounted(){
+      this.getRouteData()
+      this.getAttr()
+      this.getStatus()
+      this.getAtt()
+    },
     methods:{
+      // 获取路由参数
+      getRouteData(){   
+        let BreadcrumbArr = JSON.parse(this.$route.query.BreadcrumbArr)
+        console.log(BreadcrumbArr,'路由参数')
+        if(BreadcrumbArr){
+          this.breadcrumbArr = BreadcrumbArr.reverse()
+          let id = this.breadcrumbArr[this.breadcrumbArr.length-1].id
+          this.busId = id
+          this.getBaseInfo()
+          this.getDevice()
+          this.getFile()
+          this.getImg()
+        }
+      },
+      // 获取设备状态
+      getStatus(){
+        getDeviceStatus().then(res=>{
+          console.log(res,'设备状态')
+          if(res.data){
+            res.data.forEach(item=>{
+              item.label= item.dictLabel
+              item.value = item.dictValue
+            })
+            this.tablecolumns.forEach(item=>{
+              if(item.prop =='deviceStatus'){
+                item.options = res.data
+              }
+            })
+          }
+        })
+      },
+      // 获取设备属性
+      getAtt(){
+        getDeviceAtt().then(res=>{
+          console.log(res,'设备属性')
+          if(res.data){
+            res.data.forEach(item=>{
+              item.label= item.dictLabel
+              item.value = item.dictValue
+            })
+            this.tablecolumns.forEach(item=>{
+              if(item.prop =='deviceAtt'){
+                item.options = res.data
+              }
+            })
+          }
+        })
+      },
+      // 获取设备列表
+      getDevice(){
+        let params = {
+          location:this.busId
+        }
+        locationDetailDevice(params).then(res=>{
+          console.log(res,'设备列表')
+          res.rows.forEach(item=>{
+            if(item?.archivesOther?.propertyCode){
+              item.propertyCode = item.archivesOther.propertyCode
+            }
+          })
+          this.templateList = res.rows
+          this.total = res.total
+        })
+      },
+      // 获取位置图片列表
+      getImg(){
+        let params = {
+          busId:this.busId,
+          origin:'FLP',
+        }
+        locationDetailFile(params).then(res=>{
+          console.log(res,'图片列表')
+          res.rows.forEach(item=>{
+            this.sysFileResources.push({
+              name:item.originalFileName,
+              url:`${process.env.VUE_APP_BASE_API}${item.fileName}`,
+              id:item.id
+            })
+          })
+        })
+      },
+      // 获取文件列表
+      getFile(){
+        let params = {
+          busId:this.busId,
+          origin:'FLF',
+        }
+        locationDetailFile(params).then(res=>{
+          console.log(res,'文件列表')
+          this.templateList1 = res.rows
+          this.total1 = res.total
+        })
+      },
+      // 获取功能位置属性
+      getAttr(){
+        getLocationAttr().then(res=>{
+          console.log(res,'功能位置属性')
+          if(res.data){
+            res.data.forEach(item=>{
+              item.label= item.dictLabel
+              item.value = item.dictValue
+            })
+            this.columns.forEach(item=>{
+              if(item.prop =='funAttr'){
+                item.options = res.data
+              }
+            })
+          }
+        })
+      },
       // 点击切换tabs
       handleClick(tab, event) {
-        console.log(tab, event);
+        // console.log(tab, event);
+      },
+      // 获取基本信息
+      getBaseInfo(){
+        locationDetail({id:this.busId}).then(res=>{
+          console.log(res,'基本信息')
+          this.columns.forEach(item=>{
+            if(res.data[item.prop]){
+              this.formData[item.prop] = res.data[item.prop]
+            }
+          })
+          this.src = `${process.env.VUE_APP_BASE_API}${res.data.bannerUrl}`
+          this.src1 = `${process.env.VUE_APP_BASE_API}${res.data.qrCode}`
+        })
       },
       // 获取表格数据
       getList(queryParams) {
@@ -173,28 +371,25 @@ import JmForm from "@/components/JmForm";
           this.loading = false;
         });
       },
-       // 文件-点击新增
-       addClick(){     
-        let keys = Object.keys(this.ruleForm)
-        keys.forEach(item=>{
-          if(item == 'fileResources'){
-            this.ruleForm[item] = []
-          }else{
-            this.ruleForm[item] = ''
-          }
-        })
-        this.dialogTableVisible = true
+      // 文件-点击新增
+      addClick(){     
+        this.uploadDialogVisible = true
+        this.fileList = []
       },
-      // 文件-点击删除
-      handleDelete(row){
-        // console.log(row)
-        maintainListDel({id:row.id,fileId:row.fileId}).then(res=>{
-          this.getList()
+      // 统一删除文件和图片
+      deleteFile(id){
+        locationDetailFileDelete(id).then(res=>{
           this.$message({
             message: '操作成功！',
             type: 'success'
           })
+          this.getFile()
+          this.getBaseInfo()
         })
+      },
+      // 文件-点击删除
+      handleDelete(row){
+        this.deleteFile(row.id)
       },
       // 文件-点击下载
       handleDownload(row){
@@ -214,10 +409,15 @@ import JmForm from "@/components/JmForm";
         let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
         download(url)
       },
-
-      // 位置图片-上传
+      // 位置图片-删除
       handleRemove(file) {
         console.log(file);
+        this.sysFileResources.forEach((item,idx)=>{
+          if(item.name == file.name){
+            this.sysFileResources.splice(idx,1)
+          }
+        })
+        this.deleteFile(file.id)
       },
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
@@ -225,6 +425,55 @@ import JmForm from "@/components/JmForm";
       },
       handleDownload(file) {
         console.log(file);
+      },
+      // 上传成功回调
+      onSuccess(res,file,fileList){
+        console.log(res)
+        let keys = Object.keys(res)
+        fileList.forEach(item=>{
+          item.busId = this.busId,
+          item.origin = 'FLP'
+          keys.forEach(key=>{
+            item[key] = res[key]
+          })
+        })
+        this.sysFileResources = fileList;
+
+        // 自动保存
+        uploadSave(this.sysFileResources).then(res=>{
+          console.log(res,'图片保存成功')
+          this.$message({
+            message: '操作成功！',
+            type: 'success'
+          })
+        })
+        this.getBaseInfo()
+      },
+      // 上传弹窗，文件上传成功回调
+      onSuccessFile(res,file){
+        this.fileList.push({
+          name:res.originalFileName,
+          busId:this.busId,
+          origin:'FLF',
+          ...res,
+        })
+      },
+      // 上传弹窗，文件上传失败回调
+      onErrorFile(err,file){
+        this.$message.error('上传失败');
+      },
+      // 上传弹窗，点击确认按钮
+      filePrimary(){
+        this.uploadDialogVisible = false
+        // 自动保存
+        uploadSave(this.fileList).then(res=>{
+          console.log(res,'文件保存成功')
+          this.$message({
+            message: '操作成功！',
+            type: 'success'
+          })
+          this.getFile()
+        })
       }
     }
   }
@@ -264,5 +513,14 @@ import JmForm from "@/components/JmForm";
     width: 178px;
     height: 178px;
     display: block;
+  }
+  ::v-deep .el-image{
+    background-color: #F5F7FA;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .upload_box{
+    min-height: 400px;
   }
 </style>

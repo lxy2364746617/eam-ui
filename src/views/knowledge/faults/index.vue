@@ -86,10 +86,10 @@ import * as echarts from "echarts";
           { label: "维修措施", prop: "repairInfo", },
           { label: "预防对策", prop: "prevention", },
           { label: "补充说明", prop: "footNote", },
-          { label: "添加日期", prop: "createTime", formType: "date", },
+          { label: "添加日期", prop: "createTime", formType: "daterange",dateKey:['beginCreateTime','endCreateTime'],width:200},
           { label: "添加人", prop: "createBy", },  
-          { label: "更新时间", prop: "updateBy", },
-          { label: "更新人", prop: "updateTime", },
+          { label: "更新时间", prop: "updateTime", formType: "daterange",dateKey:['beginUpdateTime','endUpdateTime'],width:200},
+          { label: "更新人", prop: "updateBy", },
         ],
         // 表格数据
         templateList: [],

@@ -10,7 +10,7 @@
         </div>
       <div class="search_text">
         <span>历史搜索：</span>
-        <el-tag v-for="(item,index) in tags" :key="index" type="info" @close="handleClose(item)">{{item.searchContent}}</el-tag>
+        <el-tag v-for="(item,index) in tags" :key="index" type="info" @close="handleClose(item)" @click="handleClick(item)">{{item.searchContent}}</el-tag>
       </div>
       <div class="content_box">
         <el-row :gutter="20">
@@ -81,13 +81,21 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
         }
       }
     },
-    mounted(){
-      this.getRouteData()
+    watch: {
+    // 监听路由参数的变化
+    '$route.query.searchText': {
+        immediate: true,
+        handler(newVal, oldVal) {
+          console.log('参数变化了');
+          this.getRouteData()
+        }
+      }
     },
     methods:{
       // 获取路由参数
       getRouteData(){
         let text = this.$route.query.searchText
+        console.log(text)
         if(text){
           this.search_text = text
           this.getSearchList(text)
@@ -96,8 +104,10 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
       // 获取历史搜索列表
       getSSLSList(){
         searchHistoryList().then(res=>{
-          // console.log(res,'搜素历史')
-          res.rows.length = 5
+          console.log(res,'搜素历史')
+          // if(res.rows.length > 6){
+          //   res.rows.length = 6
+          // }
           this.tags = res.rows
         })
       },
@@ -117,6 +127,7 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
           this.jszl.list = res.data.kdbEquSearchVos
           this.ywwd.list = res.data.kdbMaintainSearchVos
           if(this.gzal.list.length){
+            this.activeNames = []
             this.activeNames.push(res.data.kdbFaultSearchVos[0].id)
           }
         })
@@ -127,7 +138,8 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
       },
       // 点击tag
       handleClick(row){
-        this.search_text = row
+        console.log(row)
+        this.search_text = row.searchContent
         this.getSearchList()
       },
       // 点击搜索

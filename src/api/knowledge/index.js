@@ -43,7 +43,7 @@ export function ruleListDel(data) {
 // 新增规章制度-列表-修改
 export function ruleListEdit(data) {
   return request({
-    url: `/kdb/rule`,
+    url: `/kdb/rule/edit`,
     method: 'post',
     data: data
   })
