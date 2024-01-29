@@ -256,7 +256,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       // 点击故障案例的每一行触发
       rowClick(row = {}){
         // console.log(row)
-        this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
+        this.$router.push({name:'faults',query:{data:JSON.stringify({code:row.code})}})
       },
       // 点击技术资料每一行
       jszlClick(row = {}){

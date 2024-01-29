@@ -67,9 +67,9 @@ import * as echarts from "echarts";
     data(){
       return {
         // 月添加案例数
-        monthNum:'8',
+        monthNum:'0',
         // 年添加案例数
-        yearNum:'32',
+        yearNum:'0',
         // 表单头部
         tablecolumns:[
           { label: "案例编码", prop: "caseNo" },
@@ -193,12 +193,24 @@ import * as echarts from "echarts";
       }
     },
     mounted(){
+      this.getRouteData()
       this.initChart();
-      this.getList()
       this.getInfoAll()
       this.getFaultsType()
     },
     methods:{
+      // 获取路由参数
+      getRouteData(){
+        let routeData = this.$route.query?.data?JSON.parse(this.$route.query.data):null
+        if(routeData){
+          let params = {
+            ...routeData
+          }
+          this.getList(params)
+        }else{
+          this.getList()
+        }
+      },
       initChart() {
         this.myChart = echarts.init(this.$refs.chart);
         this.myChart1 = echarts.init(this.$refs.chart1);
@@ -291,7 +303,7 @@ import * as echarts from "echarts";
         if(item.label == "故障设备编码"){
           this.$router.push({name:'bookDetails',query:{i:row.deviceId}})
         }else if(item.label == '工单编码'){
-          this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
+          // this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
         }
       }
     },

@@ -87,7 +87,7 @@ import JmUserTree from "@/components/JmUserTree1";
 import JmTable from "@/components/JmTable1";
 import JmForm from "@/components/JmForm1";
 import { flat,parentTree } from "@/utils/index.js"
-import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemove } from '@/api/Location'
+import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemove} from '@/api/Location'
   export default {
     name:'Location',
     components: {
@@ -321,7 +321,6 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       // 点击详情
       detailsClick(){
         let BreadcrumbArr = this.flatFn(this.nowClickTreeItem.deptId)
-        console.log(BreadcrumbArr)
         this.$router.push({name:'LocationDetails',query:{BreadcrumbArr:JSON.stringify(BreadcrumbArr)}})
       },
       // 点击表格删除
@@ -337,17 +336,24 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       // 点击表格详情
       handleDetails(row){
         console.log(row)
-        // this.$router.push({name:'LocationDetails'})
+        let BreadcrumbArr = this.flatFn(this.nowClickTreeItem.deptId)
+        this.$router.push({name:'LocationDetails',query:{BreadcrumbArr:JSON.stringify(BreadcrumbArr)}})
       },
       // 点击下载
       downloadClick(row){
-        // console.log(row)
-        let id = []
+        let ids = []
         this.checkBoxData.forEach(item=>{
-          id.push(item.id)
+          ids.push(item.id)
         })
-        // let url = `${process.env.VUE_APP_BASE_API}${row.id}`
-        // download(url)
+        let params = {}
+        if(this.checkBoxData.length){
+          params.ids = ids
+        }else{
+          params.id = this.nowClickTreeItem.id
+        }
+        this.download('/system/location/export',{
+          ...params
+        },`device_${new Date().getTime()}.xlsx`)
       },
     }
   }

@@ -95,4 +95,3 @@ export function uploadSave(query) {
     data: query
   })
 }
-

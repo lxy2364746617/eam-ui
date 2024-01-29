@@ -38,7 +38,7 @@
           :total="total"
           :columns="tablecolumns" ref="jmTable">
           <template slot="headerLeft">
-              <el-button type="primary" icon="el-icon-plus" size="mini"  @click="downloadClick">下载</el-button>
+              <el-button type="primary" icon="el-icon-download" size="mini"  @click="downloadClick">下载</el-button>
             </template>
           </jm-table>
         </el-tab-pane>
@@ -179,7 +179,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
           { label: "规格型号", prop: "specs" },
           { label: "设备类别", prop: "categoryName", },
           { label: "设备状态", prop: "deviceStatus",formType: "select",options:[], styleFn(row){
-            if(row.deviceStatus == '再用'){
+            if(row.deviceStatus == '在用'){
               return `color:#FFF;background-color:#0EB912;padding:5px;border-radius: 5px;`
             }else if(row.deviceStatus == '修理'){
               return `color:#FFF;background-color:#EE3232;padding:5px;border-radius: 5px;`
@@ -406,8 +406,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       // 设备-点击下载
       downloadClick(row){
         // console.log(row)
-        let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
-        download(url)
+        this.download('equipment/base/export',{},`device_${new Date().getTime()}.xlsx`)
       },
       // 位置图片-删除
       handleRemove(file) {
@@ -450,13 +449,16 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         this.getBaseInfo()
       },
       // 上传弹窗，文件上传成功回调
-      onSuccessFile(res,file){
-        this.fileList.push({
-          name:res.originalFileName,
-          busId:this.busId,
-          origin:'FLF',
-          ...res,
+      onSuccessFile(res,file,fileList){
+        let keys = Object.keys(res)
+        fileList.forEach(item=>{
+          item.busId = this.busId,
+          item.origin = 'FLF'
+          keys.forEach(key=>{
+            item[key] = res[key]
+          })
         })
+        this.fileList = fileList
       },
       // 上传弹窗，文件上传失败回调
       onErrorFile(err,file){
