@@ -20,21 +20,22 @@
           </el-image>
         </div>
         <div class="details_baseData_form">
-          <jm-form 
+          <jm-form
               :showButton= "false"
-              :columns="columns" 
-              :formData="formData" 
-              :labelWidth="'150px'" 
+              :columns="columns"
+              :formData="formData"
+              :labelWidth="'150px'"
               >
             </jm-form>
         </div>
       </div>
       <!-- 详情 -->
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="设备" name="first">
+        <el-tab-pane label="设备" name="first"  v-hasPermi="['equipment:base:list']"
+        >
           <jm-table :tableData="templateList"
           :checkbox="true"
-          @getList="getDevice" 
+          @getList="getDevice"
           :total="total"
           :columns="tablecolumns" ref="jmTable">
           <template slot="headerLeft">
@@ -45,11 +46,13 @@
         <el-tab-pane label="文件" name="second">
           <jm-table :tableData="templateList1"
           :checkbox="false"
-          @getList="getFile" 
+          @getList="getFile"
           :total="total1"
           :columns="tablecolumns1" ref="jmTable1">
           <template slot="headerLeft">
-              <el-button type="primary" icon="el-icon-plus" size="mini"  @click="addClick">上传</el-button>
+              <el-button type="primary" icon="el-icon-plus" size="mini"  @click="addClick"
+                         v-hasPermi="['system:location:insertPic']"
+              >上传</el-button>
             </template>
           <template #end_handle="scope">
             <el-button
@@ -187,16 +190,16 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
               return `color:#FFF;background-color:#4A92FC;padding:5px;border-radius: 5px;`
             }else if(row.deviceStatus == '闲置'){
               return `color:#FFF;background-color:#1F77FC;padding:5px;border-radius: 5px;`
-            } 
+            }
             else if(row.deviceStatus == '待处置'){
               return `color:#FFF;background-color:#6802B6;padding:5px;border-radius: 5px;`
-            } 
+            }
             else if(row.deviceStatus == '待报废'){
               return `color:#FFF;background-color:#F88221;padding:5px;border-radius: 5px;`
-            } 
+            }
             else if(row.deviceStatus == '已报废'){
               return `color:#FFF;background-color:#848484;padding:5px;border-radius: 5px;`
-            } 
+            }
           }},
           { label: "财务资产编码", prop: "propertyCode", },
           // { label: "功能位置", prop: "b", },
@@ -236,7 +239,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
     },
     methods:{
       // 获取路由参数
-      getRouteData(){   
+      getRouteData(){
         let BreadcrumbArr = JSON.parse(this.$route.query.BreadcrumbArr)
         console.log(BreadcrumbArr,'路由参数')
         if(BreadcrumbArr){
@@ -372,7 +375,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         });
       },
       // 文件-点击新增
-      addClick(){     
+      addClick(){
         this.uploadDialogVisible = true
         this.fileList = []
       },
@@ -492,7 +495,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
 }
 .details_baseData_form{
   width: calc(100% - 240px);
-} 
+}
 .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
     border-radius: 6px;

@@ -5,9 +5,15 @@
       <el-card shadow="never" style="margin-right:10px;height:100%">
         <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick">
           <template slot="middle-pos">
-            <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"></el-button>
-            <el-button type="text" icon="el-icon-edit-outline" @click="editTreeItem"></el-button>
-            <el-button type="text" icon="el-icon-delete" @click="deleteTreeItem(nowClickTreeItem)"></el-button>
+            <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"
+                       v-hasPermi="['system:location:add']"
+            ></el-button>
+            <el-button type="text" icon="el-icon-edit-outline" @click="editTreeItem"
+                       v-hasPermi="['system:location:add']"
+            ></el-button>
+            <el-button type="text" icon="el-icon-delete" @click="deleteTreeItem(nowClickTreeItem)"
+                       v-hasPermi="['system:location:remove']"
+            ></el-button>
           </template>
         </jm-user-tree>
       </el-card>
@@ -21,17 +27,18 @@
           <div>
             <el-button size="mini" v-show="!isBaseData" @click="cancel">取消</el-button>
             <el-button size="mini" v-show="!isBaseData" @click="saveClick" type="primary">保存</el-button>
-            <el-button size="mini" v-show="isBaseData" @click="detailsClick" type="primary">查看详情</el-button>
+            <el-button size="mini" v-show="isBaseData" @click="detailsClick" type="primary"
+            >查看详情</el-button>
           </div>
         </div>
         <div class="content">
           <div class="content_left">
-            <jm-form 
+            <jm-form
               :showButton= "false"
-              :columns="columns" 
-              :formData="formData" 
+              :columns="columns"
+              :formData="formData"
               :labelWidth="'150px'"
-              @submitForm="submitForm"  
+              @submitForm="submitForm"
               ref='form'
               >
             </jm-form>
@@ -50,12 +57,14 @@
         <jm-table :tableData="templateList"
           :handleWidth="200"
           :checkbox="true"
-          @getList="getList" 
+          @getList="getList"
           :total="total"
           @handleSelectionChange="handleSelectionChange"
           :columns="tablecolumns" ref="jmTable">
           <template slot="headerLeft">
-              <el-button type="primary" icon="el-icon-plus" size="mini"  @click="downloadClick">下载</el-button>
+              <el-button type="primary" icon="el-icon-plus" size="mini"  @click="downloadClick"
+                         v-hasPermi="['system:location:export']"
+              >下载</el-button>
             </template>
           <template #end_handle="scope">
             <el-button
@@ -135,7 +144,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           { label: "备注", prop: "remark", },
         ],
         // 是否有下级信息
-        isChildren: true, 
+        isChildren: true,
       }
     },
     mounted(){
@@ -241,7 +250,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       addTreeItem(){
         this.rightTitle = '新增下级功能位置'
         this.isBaseData = false;
-        let editShowArr = ['deptName','funAttr','remark'] 
+        let editShowArr = ['deptName','funAttr','remark']
         this.setShowParentLocation(true)
         this.columns.forEach(item=>{
           if(editShowArr.includes(item.prop)){
@@ -268,7 +277,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       deleteTreeItem(row) {
         console.log(row)
         let params = {
-          deptId:[]
+          deptId:[],
         }
         params.deptId.push(row.deptId)
         this.$modal.confirm('是否确认删除？').then(function() {
@@ -302,7 +311,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           })
           this.getTreeData( )
         })
-      
+
       },
       // 点击表单取消
       cancel(){
@@ -353,7 +362,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         }
         this.download('/system/location/export',{
           ...params
-        },`device_${new Date().getTime()}.xlsx`)
+        },`location_${new Date().getTime()}.xlsx`)
       },
     }
   }
