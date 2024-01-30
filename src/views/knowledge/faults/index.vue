@@ -1,6 +1,6 @@
 <template>
   <div class="pageStyle">
-    <el-card class="box-card1" shadow="never">
+    <el-card class="box-card1" shadow="never" v-hasPermi="['kdb:faultCase:indexInfo']">
       <div class="header">
         <div class="chart_month">
           <p class="title">月添加案</p>
@@ -29,25 +29,26 @@
         </div>
       </div>
       <jm-table :tableData="templateList"
+                v-hasPermi="['kdb:faultCase:list']"
           @getList="getList"
           @linkClick="linkClick"
-          :total="total" 
+          :total="total"
           :handleWidth="150"
           :columns="tablecolumns" ref="jmTable">
           <template #end_handle="scope">
-            <el-button 
-              size="mini" 
-              type="text" 
-              icon="el-icon-edit" 
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
               @click="handleUpdate(scope.row, 'edit')"
-              v-hasPermi="['equipment:lbase:edit']"
+              v-hasPermi="['kdb:faultCase:edit']"
             >编辑</el-button>
             <el-button
               size="mini"
               type="text"
               icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['equipment:lbase:remove']"
+              v-hasPermi="['kdb:faultCase:remove']"
             >删除</el-button>
           </template>
       </jm-table>
@@ -61,7 +62,7 @@ import JmTable from "@/components/JmTable1";
 import * as echarts from "echarts";
   export default {
     name:'faults',
-    components: { 
+    components: {
       JmTable
     },
     data(){
@@ -87,7 +88,7 @@ import * as echarts from "echarts";
           { label: "预防对策", prop: "prevention", },
           { label: "补充说明", prop: "footNote", },
           { label: "添加日期", prop: "createTime", formType: "daterange",dateKey:['beginCreateTime','endCreateTime'],width:200},
-          { label: "添加人", prop: "createBy", },  
+          { label: "添加人", prop: "createBy", },
           { label: "更新时间", prop: "updateTime", formType: "daterange",dateKey:['beginUpdateTime','endUpdateTime'],width:200},
           { label: "更新人", prop: "updateBy", },
         ],

@@ -4,7 +4,7 @@
       <div class="top">
         <div class="search">
           <div class="search_center">
-            <el-input placeholder="知识搜索" v-model="search_text"></el-input>
+            <el-input placeholder="知识搜索" v-model="search_text" v-hasPermi="['kdb:indexSearch:search']"></el-input>
             <el-button type="primary" icon="el-icon-search" style="margin-left:20px" @click="searchClick">搜 索</el-button>
           </div>
         </div>
@@ -22,7 +22,7 @@
     <div class="bottom_box">
       <div class="bottom_left">
           <div class="left_top">
-            <el-card class="box-card left" shadow="never">
+            <el-card class="box-card left" shadow="never" v-hasPermi="['kdb:indexFault:list']">
               <div slot="header" class="clearfix">
                 <span class="clearfix_text">故障案例 <i class="clearfix_new">NEW</i></span>
                 <el-button style="float: right; padding: 3px 0" type="text" @click="ClickMore('gzal')">查看更多</el-button>
@@ -37,15 +37,15 @@
                   :header-cell-style="{
                     backgroundColor:'#E8F3FF'
                   }">
-                  <el-table-column v-for="(item,index) in tableData.headerList" :key="index" 
-                  :prop="item.prop" 
-                  :label="item.label" 
+                  <el-table-column v-for="(item,index) in tableData.headerList" :key="index"
+                  :prop="item.prop"
+                  :label="item.label"
                   :show-overflow-tooltip="true"
                   :minWidth="item.minWidth"></el-table-column>
                 </el-table>
               </div>
             </el-card>
-            <el-card class="box-card right" shadow="never">
+            <el-card class="box-card right" shadow="never" v-hasPermi="['kdb:indexTech:list']">
               <div slot="header" class="clearfix">
                 <span class="clearfix_text">技术资料 <i class="clearfix_new">HOT</i></span>
                 <el-button style="float: right; padding: 3px 0" type="text" @click="ClickMore('jszl')">查看更多</el-button>
@@ -60,7 +60,7 @@
             </el-card>
           </div>
           <div class="left_bottom">
-            <el-card class="box-card" shadow="never">
+            <el-card class="box-card" shadow="never" v-hasPermi="['kdb:indexMaintain:list']">
               <div slot="header" class="clearfix">
                 <span>运维文档</span>
               </div>
@@ -82,7 +82,7 @@
       </div>
       <div class="bottom_right">
         <div class="gzzd">
-          <el-card class="box-card" shadow="never">
+          <el-card class="box-card" shadow="never" v-hasPermi="['kdb:indexRule:list']">
             <div slot="header" class="clearfix">
               <span class="clearfix_text">规章制度 <i class="clearfix_new">NEW</i></span>
             </div>
@@ -154,7 +154,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
         }else if(type == 'jszl'){
           this.getJszlList(20)
         }
-        
+
       },
       // 获取故障案例列表
       getGzglList(pageSize = 10){
@@ -204,7 +204,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       // 获取运维文档
       getYwwdList(){
         navMaintainList().then(res=>{
-          // 获取运维文档类型 
+          // 获取运维文档类型
           maintainType().then(ress=>{
             if(res.rows && ress.data){
               res.rows.forEach(item=>{
@@ -238,15 +238,15 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
           case '技术资料':{
             this.jszlClick()
             break
-          } 
+          }
           case '运维文档':{
             this.ywwdClick()
             break
-          } 
+          }
           case '规章制度':{
             this.gzzdClick()
             break
-          } 
+          }
         }
       },
       // 点击img故障案例跳转

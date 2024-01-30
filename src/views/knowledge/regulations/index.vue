@@ -2,27 +2,30 @@
   <div>
     <div class="pageStyle">
       <el-card class="box-card1" shadow="never">
-        <jm-table :tableData="templateList" 
+        <jm-table :tableData="templateList"
             :checkbox="false"
-            @getList="getList" 
-            :total="total" 
+            @getList="getList"
+             v-hasPermi="['kdb:rule:list']"
+            :total="total"
             :handleWidth="250"
             :columns="tablecolumns" ref="jmTable">
             <template slot="headerLeft">
-                <el-button type="primary" icon="el-icon-plus" size="mini"  @click="uploadDialog('add')">上传</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="mini"  v-hasPermi="['kdb:rule:add']" @click="uploadDialog('add')">上传</el-button>
               </template>
             <template #end_handle="scope">
-              <el-button 
-                size="mini" 
-                type="text" 
-                icon="el-icon-edit" 
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-edit"
                 @click="handleUpdate(scope.row, 'edit')"
+                v-hasPermi="['kdb:rule:edit']"
               >编辑</el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-delete"
                 @click="handleDelete(scope.row)"
+                v-hasPermi="['kdb:rule:remove']"
               >删除</el-button>
               <el-button
                 size="mini"
@@ -93,7 +96,7 @@ import { getToken } from "@/utils/auth";
 import JmTable from "@/components/JmTable1";
   export default {
     name:'regulations',
-    components: { 
+    components: {
       JmTable
     },
     data(){
@@ -110,7 +113,7 @@ import JmTable from "@/components/JmTable1";
               return `color:#F77408`
             }else if(row.status == 3){
               return `color:#1F77FC`
-            } 
+            }
           }
         },
           { label: "发布日期", prop: "releaseDate",formType: "daterange",dateKey:['beginReleaseDate','endReleaseDate'],width:200},
@@ -133,6 +136,7 @@ import JmTable from "@/components/JmTable1";
           Authorization: "Bearer " + getToken(),
         },
         ruleForm: {
+          id:'',
           ruleType: '',
           status: 1,
           releaseDate:'',
@@ -167,7 +171,7 @@ import JmTable from "@/components/JmTable1";
     },
     methods:{
       // 获取路由参数
-      getRouteData(){   
+      getRouteData(){
         let id = this.$route.query.id
         if(id){
           // this.$refs['jmTable'].name = name
@@ -177,7 +181,7 @@ import JmTable from "@/components/JmTable1";
           this.getList()
         }
       },
-      // 获取规章制度类型 
+      // 获取规章制度类型
       getType(){
         ruleType().then(res=>{
           this.options = res.data
@@ -244,7 +248,7 @@ import JmTable from "@/components/JmTable1";
                   message: '操作成功！',
                   type: 'success'
                 })
-              }) 
+              })
             }
           } else {
             console.log('error submit!!');
@@ -254,7 +258,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击编辑
       handleUpdate(row,text){
-        // console.log(row)
+        console.log(row)
         this.typeText = text
         let keys = Object.keys(this.ruleForm)
         keys.forEach(item=>{

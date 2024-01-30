@@ -1,16 +1,20 @@
 <template>
   <div class="pageStyle">
       <el-card class="box-card1" shadow="never">
-        <jm-table :tableData="templateList" 
+        <jm-table :tableData="templateList"
         :queryParams="table_search_params"
         :handleWidth="200"
-        @getList="getList" 
+        @getList="getList"
         :checkbox="false"
-        :total="total"        
-        :columns="tablecolumns" 
-        ref="jmTable">
+        :total="total"
+        :columns="tablecolumns"
+        ref="jmTable"
+        v-hasPermi="['kdb:tech:list']"
+        >
             <template slot="headerLeft">
-              <el-button type="primary" icon="el-icon-plus" size="mini"  @click="addClick">上传</el-button>
+              <el-button type="primary"
+                         v-hasPermi="['kdb:tech:add']"
+                         icon="el-icon-plus" size="mini"  @click="addClick">上传</el-button>
             </template>
             <template #end_handle="scope">
               <el-button
@@ -42,11 +46,11 @@
             <el-button type="primary" size="mini"  @click="sbDialog">点击选择设备</el-button>
             <span class="num">已选{{deviceCheckboxData.length}}台设备</span>
           </div>
-          <jm-table :tableData="templateList1" 
+          <jm-table :tableData="templateList1"
             :checkbox="false"
             :showSearch="false"
             :showPage="false"
-            :columns="tablecolumns1" 
+            :columns="tablecolumns1"
             @getList="getListUpload">
             <template #end_handle="scope">
               <el-button
@@ -54,6 +58,7 @@
                 type="text"
                 icon="el-icon-delete"
                 @click="uploadDelete(scope.row)"
+                v-hasPermi="['kdb:tech:remove']"
               >删除</el-button>
             </template>
           </jm-table>
@@ -80,7 +85,7 @@
         </div>
       </el-dialog>
       <!-- 选择设备弹窗 -->
-      <el-dialog title="选择设备" :visible.sync="dialogSbVisible" :fullscreen="true">
+      <el-dialog title="选择设备" :visible.sync="dialogSbVisible" :fullscreen="true" v-hasPermi="['equipment:base:listBySearch']">
         <div class="dialog_left1" ref="left_box">
           <el-input
             v-show="!isHide"
@@ -105,10 +110,10 @@
           <el-input placeholder="设备名称/设备编码/设备批次号" v-model="searchText" style="width:500px;margin-bottom:20px;">
             <el-button slot="append" icon="el-icon-search" @click="searchClick"></el-button>
             </el-input>
-            <jm-table :tableData="templateList2" 
+            <jm-table :tableData="templateList2"
               :showSearch="false"
               :showOperate="false"
-              :columns="tablecolumns2" 
+              :columns="tablecolumns2"
               @handleSelectionChange="handleSelectionChange"
               :total="total2"
               @getList="getListDevice">
@@ -128,9 +133,10 @@ import { techList,equipmentTree,equipmentTreeList,techAdd,techListDel,addClickNu
 import { download } from '@/utils'
 import { getToken } from "@/utils/auth";
 import JmTable from "@/components/JmTable1";
+import log from "../../monitor/job/log";
   export default {
     name:'technology',
-    components: { 
+    components: {
       JmTable
     },
     data(){
@@ -180,7 +186,7 @@ import JmTable from "@/components/JmTable1";
             { type: 'array',required: true, message: '请上传技术资料', trigger: 'change' }
           ],
         },
-        
+
 
 
         // 设备表格
@@ -221,7 +227,7 @@ import JmTable from "@/components/JmTable1";
     },
     methods:{
       // 获取路由参数
-      getRouteData(){   
+      getRouteData(){
         let id = this.$route.query.id
         if(id){
           this.getList({id:id})
@@ -298,8 +304,8 @@ import JmTable from "@/components/JmTable1";
         this.getEquipmentTree()
       },
       // 上传成功回调
-      onSuccess(res,file){
-        // console.log(res,'上传成功~')
+      onSuccess(res,file,fileList){
+        console.log(res,'上传成功~')
         let keys = Object.keys(res)
         fileList.forEach(item=>{
           keys.forEach(key=>{
@@ -323,7 +329,7 @@ import JmTable from "@/components/JmTable1";
                 ids.push(item.deviceId)
               })
             }
-            
+
             let params = {
               busId:ids,
               ...this.ruleForm
@@ -336,7 +342,7 @@ import JmTable from "@/components/JmTable1";
                 message: '操作成功！',
                 type: 'success'
               })
-            }) 
+            })
           } else {
             console.log('error submit!!');
             return false;

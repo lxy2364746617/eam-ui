@@ -4,8 +4,9 @@
       <el-card class="box-card1" shadow="never">
         <jm-table :tableData="templateList"
           :checkbox="false"
-          @getList="getList" 
+          @getList="getList"
           :total="total"
+           v-hasPermi="['kdb:maintain:list']"
           :columns="tablecolumns" ref="jmTable">
           <template slot="headerLeft">
               <el-button type="primary" icon="el-icon-plus" size="mini"  @click="addClick">上传</el-button>
@@ -22,6 +23,7 @@
               type="text"
               icon="el-icon-download"
               @click="handleDownload(scope.row)"
+              v-hasPermi="['kdb:maintain:remove']"
             >下载</el-button>
             <el-button
               size="mini"
@@ -33,7 +35,9 @@
         </jm-table>
       </el-card>
       <!-- 上传弹窗 -->
-      <el-dialog title="上传" v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="500px">
+      <el-dialog title="上传" v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="500px"
+                 v-hasPermi="['kdb:maintain:add']"
+      >
         <div class="body_box">
           <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
             <el-form-item label="类型" prop="kdbType">
@@ -80,7 +84,7 @@ import { getToken } from "@/utils/auth";
 import JmTable from "@/components/JmTable1";
   export default {
     name:'maintenance',
-    components: { 
+    components: {
       JmTable
     },
     data(){
@@ -137,7 +141,7 @@ import JmTable from "@/components/JmTable1";
     },
     methods:{
       // 获取路由参数
-      getRouteData(){   
+      getRouteData(){
         let id = this.$route.query.id
         if(id){
           this.getList({id:id})
@@ -148,7 +152,7 @@ import JmTable from "@/components/JmTable1";
         }
       },
       // 点击新增
-      addClick(){     
+      addClick(){
         let keys = Object.keys(this.ruleForm)
         keys.forEach(item=>{
           if(item == 'fileResources'){
@@ -168,7 +172,7 @@ import JmTable from "@/components/JmTable1";
           this.loading = false;
         });
       },
-      // 获取运维文档类型 
+      // 获取运维文档类型
       getType(){
         maintainType().then(res=>{
           // console.log(res.data)
@@ -211,7 +215,7 @@ import JmTable from "@/components/JmTable1";
                 message: '操作成功！',
                 type: 'success'
               })
-            }) 
+            })
           } else {
             console.log('error submit!!');
             return false;
