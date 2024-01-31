@@ -43,7 +43,7 @@
             icon="el-icon-view"
             :loading="btnLoading"
             @click="goDetails(scope.row, 'view')"
-            v-hasPermi="['work:request:edit']"
+            v-hasPermi="['work:request:view']"
             >详情</el-button
           >
 
@@ -180,7 +180,7 @@ export default {
         },
         {
           label: "执行人员",
-          prop: "director",
+          prop: "executor",
           formType: "selectTree",
           options: this.userList,
           tableVisible: true,
@@ -234,7 +234,7 @@ export default {
       this.$refs["elForm2"].resetFields();
     },
     getUserList() {
-      listUser({ deptId: 100 }).then((res) => {
+      listUser({ deptId: 100, pageSize: 10000 }).then((res) => {
         this.userList = res.rows.map((item) => {
           return {
             id: item.userId,

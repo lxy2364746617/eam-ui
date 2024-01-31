@@ -209,7 +209,7 @@ export default {
     ContTable,
     Treeselect,
   },
-  dicts: ["em_device_state", "em_device_att", "apv_status", "em_device_level"],
+  dicts: ["em_device_state", "em_device_att", "em_device_level"],
   props: ["rowId", "isShow"],
   data() {
     return {

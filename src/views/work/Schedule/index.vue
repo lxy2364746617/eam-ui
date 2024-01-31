@@ -30,6 +30,14 @@
             ><el-button
               size="mini"
               type="text"
+              icon="el-icon-view"
+              :loading="btnLoading"
+              @click="goDetails(scope.row, 'view')"
+              v-hasPermi="['work:request:view']"
+              >详情</el-button
+            ><el-button
+              size="mini"
+              type="text"
               icon="el-icon-edit"
               :loading="btnLoading"
               @click="goDetails(scope.row, 'edit')"
@@ -302,7 +310,7 @@ export default {
         },
         {
           label: "执行人员",
-          prop: "director",
+          prop: "executor",
           formType: "selectTree",
           options: this.userList,
           tableVisible: true,
@@ -393,6 +401,99 @@ export default {
     const uniqueId = uuidv4();
   },
   methods: {
+    goDetails(row) {
+      // this.$router.push({
+      //   path: "/work/requestAdd",
+      //   query: { item: row, disabled: true },
+      // });
+      switch (row.orderType + row.orderObj) {
+        // ! 巡点捡
+        case "RCDJ1":
+        case "ZZDJ1":
+        case "JMDJ1":
+          this.$router.push({
+            path: "/work/questAdd7",
+          });
+          localStorage.setItem(
+            "item",
+            JSON.stringify({ item: row, disabled: true })
+          );
+          break;
+        case "RCDJ2":
+        case "ZZDJ2":
+        case "JMDJ2":
+          this.$router.push({
+            path: "/work/questAdd5",
+          });
+
+          localStorage.setItem(
+            "item",
+            JSON.stringify({ item: row, disabled: true })
+          );
+          break;
+        // ! 设备维修
+        case "DZWX2":
+        case "JDBWX2":
+          this.$router.push({
+            path: "/work/questAdd2",
+            query: { item: row, disabled: true },
+          });
+          break;
+        case "WWWX2":
+          this.$router.push({
+            path: "/work/questAdd3",
+            query: { item: row, disabled: true },
+          });
+          break;
+        case "DZWX3":
+        case "WWWX3":
+        case "JDBWX3":
+          this.$router.push({
+            path: "/work/questAdd",
+            query: { item: row, disabled: true },
+          });
+          break;
+        // ! 定期检验
+        case "DQJY2":
+          this.$router.push({
+            path: "/work/questAdd8",
+          });
+          localStorage.setItem(
+            "item",
+            JSON.stringify({ item: row, disabled: true })
+          );
+          break;
+        // ! 保养
+        case "RCBY1":
+        case "YJBY1":
+        case "EJBY1":
+        case "CGRH1":
+          this.$router.push({
+            path: "/work/questAdd6",
+          });
+
+          localStorage.setItem(
+            "item",
+            JSON.stringify({ item: row, disabled: true })
+          );
+          break;
+        case "RCBY2":
+        case "YJBY2":
+        case "EJBY2":
+        case "CGRH2":
+          this.$router.push({
+            path: "/work/questAdd4",
+          });
+
+          localStorage.setItem(
+            "item",
+            JSON.stringify({ item: row, disabled: true })
+          );
+          break;
+        default:
+          break;
+      }
+    },
     getTypeList() {
       findAll().then((res) => {
         this.typeAll = res.data.map((item) => {
@@ -650,7 +751,7 @@ export default {
   margin-top: 20px;
   width: 100%;
   height: auto;
-
+  padding-bottom: 20px;
   .icon {
     span {
       padding-left: 10px;

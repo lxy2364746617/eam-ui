@@ -349,7 +349,7 @@ export default {
     },
     viewFun(itemType, deviceId, num) {
       if (num == 0) {
-        this.$modal.msgSuccess("浏览量为0");
+        this.$modal.msgWarning("浏览量为0");
       } else {
         switch (itemType) {
           case "RCDJ":
@@ -411,7 +411,7 @@ export default {
     allDelete() {
       var that = this;
       if (this.selectArr.length == 0) {
-        this.$modal.msgSuccess("请至少选择一项");
+        this.$modal.msgWarning("请至少选择一项");
       } else {
         this.$modal
           .confirm("是否确认删除？")

@@ -187,7 +187,7 @@
           :total="total3"
           @handleSelectionChange="handleSelectionChange3"
           :isRadio="true"
-          :handleWidth="230"
+          :handleWidth="150"
           :columns="columns3"
           :showSearch="false"
           ><template slot="headerLeft" v-if="!disabled">
@@ -446,9 +446,12 @@ export default {
     form: {
       handler(val) {
         this.$emit("maintenanceRecord", val);
+        if (!val) return;
         if (val.endTime && val.startTime) {
-          this.form.workHours =
-            this.dateDiffInHours(val.endTime, val.startTime) / 60;
+          this.form.workHours = this.dateDiffInHours(
+            val.endTime,
+            val.startTime
+          );
         }
       },
       deep: true,
@@ -647,7 +650,9 @@ export default {
       const secondDate = new Date(date2);
       const oneMinute = 60 * 1000;
 
-      return Math.round(Math.abs((firstDate - secondDate) / oneMinute));
+      return (
+        Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
+      ).toFixed(1);
     },
     async getOrderTree() {
       await orderTemplate().then((response) => {
@@ -1125,5 +1130,8 @@ export default {
   ::v-deep .el-step__line {
     background-color: #0c7de0;
   }
+}
+::v-deep .el-table th.el-table__cell {
+  background-color: #f9f9f9;
 }
 </style>

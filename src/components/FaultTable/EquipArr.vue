@@ -3,8 +3,13 @@
     <div class="subtitle">
       工单信息
       <div>
-        <span class="mr20">请求时间:{{ `2022-05-17 09:57:32` }}</span
-        ><span class="pack" @click="openUp">收起</span>
+        <span class="mr20">请求时间：{{ formData.createTime }}</span
+        ><span
+          v-if="formData.orderType !== 'WWWX'"
+          class="pack"
+          @click="gzalClick"
+          >案例详情</span
+        >&nbsp;<span class="pack" @click="openUp">收起</span>
       </div>
     </div>
     <br />
@@ -106,6 +111,21 @@
         </template>
       </TitleForm>
     </el-drawer>
+
+    <!-- 选择故障类型 -->
+    <el-drawer
+      title="故障类型"
+      :visible.sync="drawerFaultManage"
+      size="70%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <faultManage
+        @submitRadio="submitFaultManage"
+        :isRadio="true"
+        @close="closeFaultManage"
+      ></faultManage>
+    </el-drawer>
   </div>
 </template>
 <script>
@@ -115,13 +135,19 @@ import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
 
 import { saveAs } from "file-saver";
 import { orderTemplate } from "@/api/work/template";
-import { getWomDevice, getWomInfo } from "@/api/work/schedule";
+import {
+  getWomDevice,
+  getWomInfo,
+  getWomFaultInfo2,
+} from "@/api/work/schedule";
+import faultManage from "@/views/work/Request/ui/faultManage.vue";
 export default {
   components: {
     ContTable,
     SelectParentDeviceDialog,
+    faultManage,
   },
-  dicts: ["em_device_state", "em_is_special", "order_obj"],
+  dicts: ["em_device_state", "em_is_special", "order_obj",'fault_grade'],
   props: {
     formData: {
       default: {},
@@ -135,6 +161,7 @@ export default {
   },
   data() {
     return {
+      drawerFaultManage: false,
       form: {},
       disabled: true,
       data: {},
@@ -206,7 +233,7 @@ export default {
         },
         {
           label: "是否特种设备",
-          prop: "isSpecial",
+          prop: "specialFlag",
           formType: "select",
           options: this.dict.type.em_is_special,
         },
@@ -230,8 +257,9 @@ export default {
         {
           label: "故障类型",
           prop: "faultType",
-          formType: "select",
-          options: this.dict.type.fault_type,
+          clickFn: () => {
+            this.drawerFaultManage = true;
+          },
           span: 12,
           required: true,
         },
@@ -239,7 +267,7 @@ export default {
           label: "故障等级",
           prop: "faultGrade",
           formType: "select",
-          options: this.dict.type.fault_level,
+          options: this.dict.type.fault_grade,
           span: 12,
           required: true,
         },
@@ -293,6 +321,18 @@ export default {
   mounted() {},
 
   methods: {
+    submitFaultManage(row) {
+      this.$set(
+        this.formData,
+        "faultType",
+        row.faultCode + " " + row.faultName
+      );
+      this.$set(this.formData, "faultCode", row.faultCode);
+      this.closeFaultManage();
+    },
+    closeFaultManage() {
+      this.drawerFaultManage = false;
+    },
     async getOrderTree() {
       await orderTemplate().then((response) => {
         this.orderOptions = response.data.map((item) => {
@@ -313,6 +353,9 @@ export default {
     },
     openUp() {
       this.flag = !this.flag;
+    },
+    gzalClick() {
+      this.$router.push({ name: "faults" });
     },
     findTreeName(options, value) {
       for (let item of options) {
@@ -351,7 +394,15 @@ export default {
     },
     goDetails(row) {
       this.drawer = true;
-      this.form = { ...this.form, ...row["faultInfoDTO"] };
+      getWomFaultInfo2({
+        deviceCode: row.deviceCode,
+        orderCode: this.formData.orderCode,
+      }).then((res) => {
+        if (res.code == 200) {
+          this.form = { ...this.form, ...res.data.faultInfoDTO };
+        }
+      });
+
       this.disabled = true;
       // this.$refs.titleform.resetFields();
     },
@@ -440,6 +491,8 @@ export default {
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
+    margin-top: 20px;
+    padding-left: 20px;
   }
 }
 .subtitle {

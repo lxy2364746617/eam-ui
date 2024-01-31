@@ -21,7 +21,11 @@
           v-hasPermi="['property:scrapping:add']"
           >新增</el-button
         >
-        <el-button type="primary" icon="el-icon-upload2" size="mini"
+        <el-button
+          type="primary"
+          size="mini"
+          icon="el-icon-upload2"
+          @click="handlerImport"
           >导入</el-button
         >
         <el-button
@@ -37,40 +41,73 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:scrapping:edit']"
           >详情</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
+          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:scrapping:edit']"
           >编辑</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
+          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:scrapping:remove']"
           >删除</el-button
         >
 
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
+          icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
           v-hasPermi="['property:scrapping:edit']"
           >提交</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'completed' ||
+            scope.row.apvStatus == 'running'
+          "
           size="mini"
           type="text"
+          icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:scrapping:edit']"
           >审批流</el-button
+        >
+        <el-button
+          v-if="scope.row.apvStatus == 'completed'"
+          size="mini"
+          type="text"
+          icon="el-icon-printer"
+          @click="handlePrint(scope.row)"
+          v-hasPermi="['property:scrapping:print']"
+          >打印单据</el-button
         >
       </template>
     </jm-table>
@@ -94,6 +131,15 @@
         @getTableData="getTableData"
       ></subprocess>
     </el-dialog>
+
+    <!-- 导入 -->
+    <file-import
+      @handleFileSuccess="handleFileSuccess"
+      :downloadTemplateUrl="'/property/scrapped/importTemplate'"
+      ref="fileImport"
+      :isUpdate="false"
+      :importUrl="'/property/scrapped/importPlan'"
+    ></file-import>
   </div>
 </template>
 <script>
@@ -105,13 +151,15 @@ import { listDept } from "@/api/system/dept";
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
+import fileImport from "@/components/FileImport";
 export default {
   components: {
     JmTable,
     addEdit,
     subprocess,
+    fileImport,
   },
-  dicts: ["apv_status", "em_scrap_way"],
+  dicts: ["wf_process_status", "em_scrap_way"],
   props: {
     // isChoose: {
     //     default: false,
@@ -184,7 +232,7 @@ export default {
           prop: "apvStatus",
           tableVisible: true,
           formType: "selectTag",
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         },
         {
           label: "备注",
@@ -201,6 +249,39 @@ export default {
   },
   mounted() {},
   methods: {
+    // 打印单据
+    handlePrint(row) {
+      // 打印单据跳转
+      // /device/back/printDocument
+      this.$router.push({
+        path: "/property/print",
+        query: {
+          title: "设备领用/打印单据",
+          routeMethod: "post",
+          id: row.id,
+          scrapForm: row,
+          flag: "BF",
+          titleHeader: row.scrapUnit + "领用单",
+          thead: [
+            "设备编码",
+            "设备名称",
+            "规格型号",
+            "设备类别",
+            "功能位置",
+            "设备状态",
+          ],
+        },
+      });
+    },
+    // ! 导入
+    /** 导入按钮操作 */
+    handlerImport() {
+      this.$refs.fileImport.upload.open = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess() {
+      this.getList();
+    },
     // 跳转流程详情
     handleFlowRecord(row) {
       this.$router.push({
@@ -213,21 +294,24 @@ export default {
       });
     },
     sub(val) {
-      definitionStart2(val.id, this.radioRow.scrapNo, "device_scrap", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
-            this.getList();
-          }
+      definitionStart2(
+        val.id,
+        this.radioRow.scrapNo,
+        "device_scrapped",
+        {}
+      ).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.getList();
         }
-      );
+      });
     },
     getTableData(val) {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "device_scrap",
+        category: "device_scrapped",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -240,7 +324,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "device_scrap",
+        category: "device_scrapped",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;

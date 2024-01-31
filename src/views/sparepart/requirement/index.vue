@@ -143,7 +143,7 @@ import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: { Wrapper, ContTable, subprocess },
-  dicts: ["require_type", "apv_status"],
+  dicts: ["require_type", "wf_process_status"],
   data() {
     return {
       equipmentList: [],
@@ -225,7 +225,7 @@ export default {
           prop: "apvStatus",
           tableVisible: true,
           formType: "selectTag",
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         },
       ];
     },
@@ -343,7 +343,14 @@ export default {
       this.filedrawer = false;
     },
     handleSet(row) {
-      console.log("========================", row);
+       this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
     },
     async getList(queryParams) {
       this.loading = true;

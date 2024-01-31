@@ -40,7 +40,7 @@
     </SparePartsOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary">保存并提交审批</el-button>
+      <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
       <el-button @click="cancel">取消</el-button>
     </div>
     <!-- 对表格的操作 -->
@@ -82,6 +82,20 @@
         @close="closesupplier"
       ></spareList>
     </el-drawer>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
@@ -90,6 +104,9 @@ import SparePartsOperation from "@/views/sparepart/SparePartsOperation/index.vue
 import { listUser } from "@/api/system/user";
 import { v4 as uuidv4 } from "uuid";
 import spareList from "@/views/sparepart/spareList/spareList.vue";
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 import {
   getAttachmentReceiptList,
   getAttachmentDetail,
@@ -101,6 +118,7 @@ export default {
     SparePartsOperation,
     Wrapper,
     spareList,
+    subprocess,
   },
   dicts: ["spare_parts_unit", "spare_parts_type"],
 
@@ -128,6 +146,11 @@ export default {
 
       // 选择备件
       drawersupplier: false,
+      // 审批流
+      reviewCode: "",
+      subtitle: "",
+      subopen: false,
+      tableData: [],
     };
   },
   created() {
@@ -147,6 +170,7 @@ export default {
             }
           }
         );
+        this.reviewCode = this.formData.demandCode;
       }
     } else {
       this.formData = {
@@ -279,6 +303,41 @@ export default {
     },
   },
   methods: {
+    // ! 提交审批流
+    sub(val) {
+      definitionStart2(val.id, this.reviewCode, "spare_receive", {}).then(
+        (res) => {
+          if (res.code == 200) {
+            this.$message.success(res.msg);
+            this.subopen = false;
+            this.clear();
+            this.cancel();
+          }
+        }
+      );
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "spare_receive",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    handleSubmit(row) {
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "spare_receive",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
     // ! 选择备件
     submitRadio(row) {
       this.formDataNow = row;
@@ -366,30 +425,54 @@ export default {
       }
     },
     // ! 信息提交
-    spareSubmitForm(val) {
+    spareSubmitForm(val, review) {
       delete val.parts;
       // * 新增
-      if (!this.formData.id) {
-        val["addParts"] = this.equipmentList;
-        addAttachment(val).then((res) => {
-          if (res.code === 200) {
-            this.$modal.msgSuccess("添加成功！");
-            this.cancel();
-          }
-        });
+      if (review) {
+        if (!this.formData.id) {
+          val["addParts"] = this.equipmentList;
+          addAttachment(val).then((res) => {
+            if (res.code === 200) {
+              this.reviewCode = res.msg;
+              this.handleSubmit();
+            }
+          });
+        } else {
+          // * 编辑
+          val["addParts"] = this.equipmentList.filter((item) => !item.id);
+          if (this.delParts && this.delParts.length > 0)
+            val["delParts"] = this.delParts;
+          if (this.updateParts && this.updateParts.length > 0)
+            val["updateParts"] = this.updateParts;
+          updateAttachment(val).then((res) => {
+            if (res.code === 200) {
+              this.handleSubmit();
+            }
+          });
+        }
       } else {
-        // * 编辑
-        val["addParts"] = this.equipmentList.filter((item) => !item.id);
-        if (this.delParts && this.delParts.length > 0)
-          val["delParts"] = this.delParts;
-        if (this.updateParts && this.updateParts.length > 0)
-          val["updateParts"] = this.updateParts;
-        updateAttachment(val).then((res) => {
-          if (res.code === 200) {
-            this.$modal.msgSuccess("更新成功！");
-            this.cancel();
-          }
-        });
+        if (!this.formData.id) {
+          val["addParts"] = this.equipmentList;
+          addAttachment(val).then((res) => {
+            if (res.code === 200) {
+              this.$modal.msgSuccess("添加成功！");
+              this.cancel();
+            }
+          });
+        } else {
+          // * 编辑
+          val["addParts"] = this.equipmentList.filter((item) => !item.id);
+          if (this.delParts && this.delParts.length > 0)
+            val["delParts"] = this.delParts;
+          if (this.updateParts && this.updateParts.length > 0)
+            val["updateParts"] = this.updateParts;
+          updateAttachment(val).then((res) => {
+            if (res.code === 200) {
+              this.$modal.msgSuccess("更新成功！");
+              this.cancel();
+            }
+          });
+        }
       }
     },
     // ! 查询表格数据

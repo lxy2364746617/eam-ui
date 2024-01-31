@@ -387,7 +387,22 @@ export default {
     lineList: {
       handler(val) {
         if (val) {
-          this.$emit("lineDTOListMaintenance", val);
+          // this.$emit("lineDTOListMaintenance", val);
+          let arr = [];
+
+          val.forEach((item) => {
+            larchivesList({ lineId: item.lineId })
+              .then((res) => {
+                arr.push({
+                  ...res.data,
+                  lineCode: item.lineCode,
+                  lineName: item.lineName,
+                });
+              })
+              .catch(() => {});
+          });
+          this.womDevices = arr;
+          console.log("========================", this.womDevices);
         }
       },
       deep: true,
@@ -436,6 +451,8 @@ export default {
       currentCode: "",
       maintainItems: [],
       mlineList: [],
+
+      womDevices: [],
     };
   },
   created() {
@@ -481,7 +498,7 @@ export default {
         (item) => item.deviceCode == deviceCode
       );
       if (this.mlineList.length == 0) {
-        this.$modal.msgSuccess("浏览量为0");
+        this.$modal.msgWarning("浏览量为0");
       } else {
         switch (itemType) {
           case "RCBY":
@@ -573,7 +590,7 @@ export default {
     allDelete() {
       var that = this;
       if (this.selectArr.length == 0) {
-        this.$modal.msgSuccess("请至少选择一项");
+        this.$modal.msgWarning("请至少选择一项");
       } else {
         this.$modal
           .confirm("是否确认删除？")
@@ -667,7 +684,8 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 .viewSpan {
   color: #007bfe;

@@ -105,8 +105,8 @@
         <template slot-scope="scope">
           <span
             class="viewSpan"
-            @click="viewFun('RCBY', scope.row.deviceId, scope.row.dayNum)"
-            >{{ scope.row.dayNum }} 浏览</span
+            @click="viewFun('RCBY', scope.row.deviceCode, scope.row.dayNum)"
+            >浏览</span
           >
         </template>
       </el-table-column>
@@ -120,8 +120,8 @@
         <template slot-scope="scope">
           <span
             class="viewSpan"
-            @click="viewFun('YJBY', scope.row.deviceId, scope.row.oNum)"
-            >{{ scope.row.oNum }} 浏览</span
+            @click="viewFun('YJBY', scope.row.deviceCode, scope.row.oNum)"
+            >浏览</span
           >
         </template>
       </el-table-column>
@@ -135,8 +135,9 @@
         <template slot-scope="scope">
           <span
             class="viewSpan"
-            @click="viewFun('EJBY', scope.row.deviceId, scope.row.tNum)"
-            >{{ scope.row.tNum }} 浏览</span
+            @click="viewFun('EJBY', scope.row.deviceCode, scope.row.tNum)"
+          >
+            浏览</span
           >
         </template>
       </el-table-column>
@@ -150,8 +151,9 @@
         <template slot-scope="scope">
           <span
             class="viewSpan"
-            @click="viewFun('CGRH', scope.row.deviceId, scope.row.cNum)"
-            >{{ scope.row.cNum }} 浏览</span
+            @click="viewFun('CGRH', scope.row.deviceCode, scope.row.cNum)"
+          >
+            浏览</span
           >
         </template>
       </el-table-column>
@@ -207,7 +209,14 @@
       size="60%"
       :wrapperClosable="false"
     >
-      <jm-table :tableData="lineList" ref="jmtable" :columns="columns">
+      <jm-table
+        style="padding: 0 20px 20px"
+        :tableData="lineList"
+        ref="jmtable"
+        :rightToolbarShow="false"
+        :showSearch="false"
+        :columns="columns"
+      >
       </jm-table>
     </el-drawer>
 
@@ -471,9 +480,12 @@ export default {
         );
       });
     },
-    viewFun(itemType, deviceId, num) {
-      if (num == 0) {
-        this.$modal.msgSuccess("浏览量为0");
+    viewFun(itemType, deviceCode, num) {
+      this.lineList = this.maintainItems.filter(
+        (item) => item.deviceCode == deviceCode
+      );
+      if (this.lineList.length == 0) {
+        this.$modal.msgWarning("浏览量为0");
       } else {
         switch (itemType) {
           case "RCBY":
@@ -491,14 +503,11 @@ export default {
           default:
             break;
         }
-        let data = {
-          itemType,
-          deviceId,
-        };
-        findByDeviceIdAndItemType(data).then((res) => {
-          this.lineList = res.data;
-          this.drawer = true;
-        });
+        this.drawer = true;
+        // findByDeviceIdAndItemType(data).then((res) => {
+        //   this.lineList = res.data;
+        //   this.drawer = true;
+        // });
       }
     },
     findName(options, value) {
@@ -545,7 +554,7 @@ export default {
     allDelete() {
       var that = this;
       if (this.selectArr.length == 0) {
-        this.$modal.msgSuccess("请至少选择一项");
+        this.$modal.msgWarning("请至少选择一项");
       } else {
         this.$modal
           .confirm("是否确认删除？")
@@ -618,7 +627,8 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 .viewSpan {
   color: #007bfe;

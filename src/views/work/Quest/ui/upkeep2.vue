@@ -22,12 +22,8 @@
             class="qrcodeimg"
             :src="qrCode"
             alt=""
-            srcset="" style="
-              width: 100px;
-              vertical-align: top;
-              height: 100px;
-              
-            "
+            srcset=""
+            style="width: 100px; vertical-align: top; height: 100px"
           />
         </el-col>
         <el-col
@@ -291,7 +287,11 @@ import CarryForm from "@/components/CarryForm";
 import Wrapper from "@/components/wrapper";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
-import { getRelevanceInfo, upkeepCarryPhoto } from "@/api/work/schedule";
+import {
+  getRelevanceInfo,
+  upkeepCarryPhoto,
+  exportPatrolItem,
+} from "@/api/work/schedule";
 import { removeStore } from "@/utils/property.js";
 import {
   upkeepSubmitItem,
@@ -457,7 +457,15 @@ export default {
       this.$router.go(-1); //跳回上页
     },
     handlerDownload() {
-      console.log("========================", "维保下载");
+      exportPatrolItem({
+        deviceCode: this.form.deviceCode,
+        orderCode: this.routerForm.orderCode,
+      }).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `order_${new Date().getTime()}`);
+      });
     },
     handlerImgSubmit() {
       upkeepCarryPhoto({

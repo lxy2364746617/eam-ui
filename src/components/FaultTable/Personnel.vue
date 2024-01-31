@@ -22,7 +22,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="10">
-        <el-form-item label="执行人" prop="executor">
+        <el-form-item label="执行人" prop="executor" :required="!disabled">
           <el-select v-model="formData.executor" clearable :disabled="disabled">
             <el-option
               v-for="item in groupMembers"
@@ -64,8 +64,7 @@ export default {
     // if (this.formData.maintenanceType == "设备维修") newGroupType = "SBWX";
     // if (this.formData.maintenanceType == "定期检验") newGroupType = "DQJY";
     // if (this.formData.maintenanceType == "巡点检类型") newGroupType = "XDJ";
-
-    findAll({ groupType: this.formData.orderType }).then((res) => {
+    findAll({ groupType: this.formData.orderTypeFather }).then((res) => {
       this.groupOptions = res.data;
       if (this.formData.groupId) {
         this.changeGroupId(this.formData.groupId, 2);
@@ -109,7 +108,7 @@ export default {
 </script>
 <style lang='scss' scoped>
 .title {
- background-color: #ebf4fc;
+  background-color: #ebf4fc;
   color: #555;
   font-weight: 700;
   text-align: left;
@@ -122,6 +121,7 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 </style>

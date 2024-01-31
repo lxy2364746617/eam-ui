@@ -117,7 +117,7 @@ export default {
     },
     // ! 提交
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "device_change", {}).then(
+      definitionStart2(val.id, this.reviewCode, "position_change", {}).then(
         (res) => {
           if (res.code == 200) {
             this.$message.success(res.msg);
@@ -132,7 +132,7 @@ export default {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "device_change",
+        category: "position_change",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -145,7 +145,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "device_change",
+        category: "position_change",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;

@@ -51,6 +51,11 @@
           >详情</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           :loading="btnLoading"
@@ -58,13 +63,33 @@
           >编辑</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
           @click="handleControls(scope.row, 'delete')"
           >删除</el-button
         >
-        <el-button size="mini" type="text" @click="handleSet">提交</el-button>
-        <el-button size="mini" type="text" @click="handleSet">审批流</el-button>
+        <el-button
+         
+          size="mini"
+          type="text"
+          @click="handleControls(null, 'submit')"
+          >提交</el-button
+        >
+        <el-button
+          v-if="
+            scope.row.apvStatus == 'completed' ||
+            scope.row.apvStatus == 'running'
+          "
+          size="mini"
+          type="text"
+          @click="handleSet"
+          >审批流</el-button
+        >
       </template>
     </ContTable>
     <!-- 上传文件 -->
@@ -83,6 +108,20 @@
       >
       </file-upload>
     </el-drawer> -->
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
@@ -90,10 +129,12 @@ import Wrapper from "@/components/wrapper";
 import ContTable from "@/components/ContTable";
 import { getAttachmentList, delAttachment } from "@/api/sparePart/spareReceive";
 import { listDept } from "@/api/system/dept";
-
+import { listDefinition1 } from "@/api/flowable/definition";
+import subprocess from "@/views/device/book/process";
+import { definitionStart2 } from "@/api/flowable/definition";
 export default {
-  components: { Wrapper, ContTable },
-  dicts: ["apv_status"],
+  components: { Wrapper, ContTable, subprocess },
+  dicts: ["wf_process_status"],
   data() {
     return {
       equipmentList: [],
@@ -110,6 +151,10 @@ export default {
       filedrawer: false,
       fileType: [".xlsx"],
       fileList: [],
+      radioRow: {},
+      tableData: [],
+      subtitle: "",
+      subopen: false,
     };
   },
   async created() {
@@ -156,12 +201,50 @@ export default {
           prop: "approvalStatus",
           tableVisible: true,
           formType: "selectTag",
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         },
       ];
     },
   },
   methods: {
+    // ! 提交
+    sub(val) {
+      definitionStart2(
+        val.id,
+        this.radioRow.receiptCode,
+        "spare_receive",
+        {}
+      ).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.getList();
+        }
+      });
+    },
+    getTableData(val) {
+      let data = {
+        pageNum: val.page,
+        pageSize: val.limit,
+        category: "spare_receive",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    handleSubmit(row) {
+      this.subopen = true;
+      this.subtitle = "提交";
+      let data = {
+        pageNum: 1,
+        pageSize: 10,
+        category: "spare_receive",
+      };
+      listDefinition1(data).then((res) => {
+        this.tableData = res.data.records;
+      });
+    },
+    // !操作
     handleControls(row, act) {
       if (act === "add") {
         // ! 新增
@@ -204,6 +287,9 @@ export default {
           })
           .catch(() => {});
         return;
+      } else if (act === "submit") {
+        // ! 提交审批流
+        this.handleSubmit();
       } else {
         // ! 其他
         return;
@@ -224,7 +310,14 @@ export default {
     //   this.filedrawer = false;
     // },
     handleSet(row) {
-      console.log("========================", row);
+      this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
     },
     async getList(queryParams) {
       this.loading = true;
@@ -234,7 +327,9 @@ export default {
         this.loading = false;
       });
     },
-    handleSelectionChange() {},
+    handleSelectionChange(selection) {
+      this.radioRow = selection[0];
+    },
   },
 };
 </script>

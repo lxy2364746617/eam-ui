@@ -1,6 +1,14 @@
 <template>
   <Wrapper :title="wrapperTitle">
     <div class="box">
+      <el-button
+        type="primary"
+        size="small"
+        style="position: absolute; right: 0; top: -2.5%"
+        v-if="disabled"
+        @click="addFaultCase"
+        >加入故障案例库</el-button
+      >
       <div class="box-header" v-if="disabled">
         <div class="title">工单进度</div>
         <!-- 进度条 -->
@@ -52,7 +60,8 @@ import JmTable from "@/components/JmTable";
 import CarryForm from "@/components/CarryForm";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import { goWorkOrder } from "@/api/work/schedule";
+import { goWorkOrder, addFaultCase } from "@/api/work/schedule";
+import { listFaultcode } from "@/api/monitor/faultcode";
 
 export default {
   components: { Wrapper, JmTable, CarryForm, Treeselect },
@@ -115,6 +124,26 @@ export default {
   },
   watch: {},
   methods: {
+    // ! 加入故障案例库
+    addFaultCase() {
+      listFaultcode({
+        faultCode: this.formData?.faultInfoDTO?.faultCode,
+      }).then((res) => {
+        if (res.code == 200) {
+          addFaultCase({
+            busId: this.formData?.orderCode,
+            code: res?.rows?.faultCode,
+            faultName: res?.rows?.faultName,
+            level: this.formData?.faultInfoDTO?.faultGrade,
+            type: res?.rows?.faultType,
+          }).then((res) => {
+            if (res.code === 200) {
+              this.$message.success("加入故障案例库成功！");
+            }
+          });
+        }
+      });
+    },
     handleCancel() {
       this.formData = { supplierName: "" };
 
@@ -153,10 +182,10 @@ export default {
 <style lang='scss' scoped>
 .box {
   background-color: #fff;
-  overflow: hidden;
   margin-top: 20px;
   width: 100%;
   height: auto;
+  position: relative;
 }
 .footer {
   padding-top: 20px;

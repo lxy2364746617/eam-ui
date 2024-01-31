@@ -257,6 +257,7 @@ export default {
     },
     form: {
       handler(val) {
+        if (!val) return;
         if (val.endTime && val.startTime) {
           this.form.workHours = this.dateDiffInHours(
             val.endTime,
@@ -380,11 +381,13 @@ export default {
   },
   methods: {
     dateDiffInHours(date1, date2) {
-      const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
       const firstDate = new Date(date1);
       const secondDate = new Date(date2);
+      const oneMinute = 60 * 1000;
 
-      return Math.round(Math.abs((firstDate - secondDate) / oneDay)) * 24;
+      return (
+        Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
+      ).toFixed(1);
     },
     drawerClose() {
       this.isDrawer = false;

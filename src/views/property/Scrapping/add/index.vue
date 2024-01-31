@@ -87,7 +87,7 @@ export default {
       title: "",
       isEdit: true,
       // 头部表单
-      formData: {},
+      formData: { scrapUnit: this.$store.state.user.standing.deptId },
       // 审批流
       reviewCode: "",
       subtitle: "",
@@ -149,7 +149,7 @@ export default {
     },
     // ! 提交
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "device_scrap", {}).then(
+      definitionStart2(val.id, this.reviewCode, "device_scrapped", {}).then(
         (res) => {
           if (res.code == 200) {
             this.$message.success(res.msg);
@@ -164,7 +164,7 @@ export default {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "device_scrap",
+        category: "device_scrapped",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -177,7 +177,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "device_scrap",
+        category: "device_scrapped",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;

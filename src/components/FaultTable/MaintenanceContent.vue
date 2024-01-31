@@ -21,7 +21,7 @@ import request from "@/utils/request";
 
 export default {
   components: {},
-  dicts: ["fault_type", "em_device_result", "em_device_check"],
+  dicts: ["em_device_result", "em_device_check"],
   props: {
     disabled: {
       default: false,
@@ -57,12 +57,11 @@ export default {
     },
   },
   async created() {
-    findAll({ groupType: this.formData.orderType }).then((res) => {
-      res.data.forEach((item) => {
-        item.label = item.groupName;
-        item.value = item.id;
-      });
-      this.groupOptions = res.data;
+    findAll({ groupType: this.formData.orderTypeFather }).then((res) => {
+      this.groupOptions = res.data.map((item) => ({
+        label: item.groupName,
+        value: item.id,
+      }));
       if (this.formData.groupId) {
         // this.$set(this.form, "unit", this.formData.groupId);
         this.form.unit = this.formData.groupId;

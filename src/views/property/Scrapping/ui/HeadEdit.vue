@@ -79,6 +79,7 @@ export default {
           required: true,
           formType: "selectTree",
           options: this.deptOptions,
+          formDisabled: true,
         },
         {
           label: "报废日期",

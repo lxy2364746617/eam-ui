@@ -42,7 +42,7 @@
             <el-radio
               v-model="radio"
               :label="scope.$index"
-              v-if="scope.$index != 0 && showSearch"
+              v-if="showSearch ? scope.$index !== 0 : true"
               class="leftRadio"
               >&nbsp;</el-radio
             >
@@ -176,6 +176,22 @@
               <span v-else-if="col.formType == 'date'">{{
                 parseTime(scope.row[col.prop], "{y}-{m}-{d}")
               }}</span>
+              <el-rate
+                v-else-if="col.formType == 'rate'"
+                v-model="scope.row[col.prop]"
+                :max="5"
+                disabled
+                :colors="[
+                  '#02b606',
+                  '#02b606',
+                  '#02b606',
+                  '#02b606',
+                  '#02b606',
+                ]"
+                void-icon-class="el-icon-star-off"
+                :icon-classes="iconClasses"
+                disabled-void-color="#C6D1DE"
+              ></el-rate>
               <span
                 v-else-if="col.formType == 'select' || col.formType == 'radio'"
                 v-html="findName(col.options, scope.row[col.prop])"
@@ -358,6 +374,7 @@ export default {
   },
   data() {
     return {
+      iconClasses: ["el-icon-star-off", "el-icon-star-off", "el-icon-star-off"], //星级图标
       radio: "",
       // 遮罩层
       loading: this.initLoading,

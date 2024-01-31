@@ -28,6 +28,7 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:receive:edit']"
@@ -41,6 +42,7 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:receive:edit']"
@@ -54,6 +56,7 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:receive:remove']"
           >删除</el-button
@@ -66,6 +69,7 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
           v-hasPermi="['property:receive:edit']"
           >提交</el-button
@@ -77,17 +81,20 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:receive:edit']"
           >审批流</el-button
         >
-        <!-- <el-button
+        <el-button
+          v-if="scope.row.apvStatus == 'completed'"
           size="mini"
           type="text"
+          icon="el-icon-printer"
           @click="handlePrint(scope.row)"
           v-hasPermi="['property:receive:print']"
           >打印单据</el-button
-        > -->
+        >
       </template>
     </jm-table>
     <add-edit
@@ -125,7 +132,7 @@ export default {
     addEdit,
     subprocess,
   },
-  dicts: ["apv_status"],
+  dicts: ["wf_process_status"],
   props: {
     // isChoose: {
     //     default: false,
@@ -194,7 +201,7 @@ export default {
           prop: "apvStatus",
           tableVisible: true,
           formType: "selectTag",
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         },
       ];
     },
@@ -240,8 +247,10 @@ export default {
         this.tableData = res.data.records;
       });
     },
+    // 打印单据
     handlePrint(row) {
       // 打印单据跳转
+      // /device/back/printDocument
       this.$router.push({
         path: "/property/print",
         query: {
@@ -249,6 +258,8 @@ export default {
           routeMethod: "post",
           routeUrl: "/property/neck/printDocument",
           id: row.id,
+          flag: "LY",
+          titleHeader: row.affDeptName + "领用单",
           thead: ["名称", "型号", "单位", "数量", "安装地点", "备注"],
         },
       });

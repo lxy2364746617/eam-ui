@@ -70,6 +70,21 @@
         </template>
       </TitleForm>
     </el-drawer>
+
+    <!-- 选择备件 -->
+    <el-drawer
+      title="选择备件"
+      :visible.sync="drawersupplier"
+      size="60%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <spareList
+        @submitRadio="submitRadio"
+        :isRadio="true"
+        @close="closesupplier"
+      ></spareList>
+    </el-drawer>
   </div>
 </template>
 <script>
@@ -77,8 +92,10 @@ import ContTable from "@/components/ContTable/index3";
 import { listDept } from "@/api/system/dept";
 import request from "@/utils/request";
 import { v4 as uuidv4 } from "uuid";
+import spareList from "@/views/sparepart/spareList/spareList.vue";
 export default {
-  components: { ContTable },
+  components: { ContTable, spareList },
+  dicts: ["spare_parts_unit", "spare_parts_type"],
   props: {
     disabled: {
       default: false,
@@ -91,6 +108,7 @@ export default {
   },
   data() {
     return {
+      drawersupplier: false,
       standardList: [],
       loading: false,
       btnLoading: false,
@@ -173,10 +191,29 @@ export default {
   computed: {
     columns() {
       return [
-        { label: "备件编码", prop: "attachmentCode", required: true, span: 22 },
-        { label: "备件名称", prop: "attachmentName", required: true, span: 22 },
-        { label: "备件类别", prop: "attachmentType", span: 22 },
-        { label: "规格型号", prop: "specs", span: 22 },
+        {
+          label: "备件编码",
+          prop: "attachmentCode",
+          required: true,
+          span: 22,
+          clickFn: () => {
+            this.drawersupplier = true;
+          },
+        },
+        {
+          label: "备件名称",
+          prop: "attachmentName",
+          required: true,
+          span: 22,
+          formDisabled: true,
+        },
+        {
+          label: "备件类别",
+          prop: "attachmentType",
+          span: 22,
+          formDisabled: true,
+        },
+        { label: "规格型号", prop: "specs", span: 22, formDisabled: true },
         { label: "供应商名称", prop: "supplierName", span: 22 },
         { label: "使用部位", prop: "location", required: true, span: 22 },
         {
@@ -193,6 +230,7 @@ export default {
           span: 22,
           formType: "selectTree",
           options: this.deptOptions,
+          formDisabled: true,
         },
         { label: "原件编码", prop: "scriptCode", required: true, span: 22 },
         {
@@ -206,10 +244,38 @@ export default {
     },
     columns2() {
       return [
-        { label: "备件编码", prop: "attachmentCode", required: true, span: 22 },
-        { label: "备件名称", prop: "attachmentName", required: true, span: 22 },
-        { label: "备件类别", prop: "attachmentType", span: 22 },
-        { label: "规格型号", prop: "specs", span: 22 },
+        {
+          label: "备件编码",
+          prop: "attachmentCode",
+          required: true,
+          span: 22,
+          clickFn: () => {
+            this.drawersupplier = true;
+          },
+        },
+        {
+          label: "备件名称",
+          prop: "attachmentName",
+          required: true,
+          span: 22,
+          formDisabled: true,
+        },
+
+        {
+          label: "规格型号",
+          prop: "specs",
+          span: 22,
+          formDisabled: true,
+        },
+        {
+          label: "备件类别",
+          prop: "attachmentType",
+          span: 22,
+          required: true,
+          formType: "select",
+          options: this.dict.type.spare_parts_type,
+          formDisabled: true,
+        },
         { label: "供应商名称", prop: "supplierName", span: 22 },
         { label: "使用部位", prop: "location", required: true, span: 22 },
         {
@@ -222,10 +288,11 @@ export default {
         {
           label: "单位",
           prop: "unit",
-          required: true,
           span: 22,
-          formType: "selectTree",
-          options: this.deptOptions,
+          formType: "select",
+          options: this.dict.type.spare_parts_unit,
+          required: true,
+          formDisabled: true,
         },
         { label: "原件编码", prop: "scriptCode", required: true, span: 22 },
         {
@@ -239,6 +306,19 @@ export default {
     },
   },
   methods: {
+    // ! 选择备件
+    submitRadio(row) {
+      this.$set(this.form, "attachmentCode", row.partCode);
+      this.$set(this.form, "attachmentName", row.partName);
+      this.$set(this.form, "specs", row.sModel);
+      this.$set(this.form, "attachmentType", row.partType);
+      this.$set(this.form, "unit", row.unit);
+
+      this.closesupplier();
+    },
+    closesupplier() {
+      this.drawersupplier = false;
+    },
     getList(id) {},
     /** 查询部门下拉树结构 */
     async getDeptTree() {
@@ -363,7 +443,7 @@ export default {
 }
 
 .title {
- background-color: #ebf4fc;
+  background-color: #ebf4fc;
   color: #555;
   font-weight: 700;
   text-align: left;
@@ -376,6 +456,7 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 </style>

@@ -138,22 +138,25 @@ export default {
     },
     // ! 提交
     sub(val) {
-      definitionStart2(val.id, this.formData.scrapNo, "device_scrap", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
-            this.clear();
-            this.cancel();
-          }
+      definitionStart2(
+        val.id,
+        this.formData.scrapNo,
+        "device_scrapped",
+        {}
+      ).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.clear();
+          this.cancel();
         }
-      );
+      });
     },
     getTableData(val) {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "device_scrap",
+        category: "device_scrapped",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -166,7 +169,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "device_scrap",
+        category: "device_scrapped",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;

@@ -122,7 +122,7 @@ export default {
       definitionStart2(
         val.id,
         this.formData.changeNo,
-        "device_change",
+        "position_change",
         {}
       ).then((res) => {
         if (res.code == 200) {
@@ -137,7 +137,7 @@ export default {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "device_change",
+        category: "position_change",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -150,7 +150,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "device_change",
+        category: "position_change",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;

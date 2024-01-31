@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="app-container">
     <div class="top">
       <span>{{ title }}</span>
       <div class="controls" @mouseenter="mouseenterHandler">
@@ -14,46 +14,100 @@
       </div>
     </div>
     <!-- 打印 -->
-    <div v-if="dataSource && dataSource.applyDeptPerson" class="print">
+    <div v-if="form && form.titleHeader" class="print">
       <!-- 上面 -->
       <div :class="'card bgc'">
-        <strong class="receipt">{{ dataSource.applyDeptPerson }}</strong>
+        <strong class="receipt">{{ form.titleHeader }}</strong>
 
-        <div class="basic">
-          <span>领用单位：{{ dataSource.neckDeptName }}</span>
-          <span>日期：{{ dataSource.neckDate }}</span>
-          <span>领用单编号：{{ dataSource.neckNo }}</span>
+        <div v-if="form.flag === 'LY' || form.flag === 'HT'" class="basic">
+          <span
+            >{{ form.flag === "LY" ? "领用" : "回退" }}单位：{{
+              dataSource.deptName
+            }}</span
+          >
+          <span>日期：{{ dataSource.date }}</span>
+          <span
+            >{{ form.flag === "LY" ? "领用" : "回退" }}单编号：{{
+              dataSource.No
+            }}</span
+          >
+        </div>
+        <div v-else-if="form.flag === 'YJ'" class="basic">
+          <span>移交调出单位：{{ dataSource.outDeptName }}</span>
+          <span>移交调入单位：{{ dataSource.inDeptName }}</span>
+          <span>日期：{{ dataSource.transferDate }}</span>
+          <span>移交单编号：{{ dataSource.transferNo }}</span>
+        </div>
+        <div v-else-if="form.flag === 'BF'" class="basic">
+          <span>报废单位：{{ dataSource.scrapUnit }}</span>
+          <span>日期：{{ dataSource.scrapDate }}</span>
+          <span>报废单编号：{{ dataSource.scrapNo }}</span>
         </div>
       </div>
       <!-- 下面 -->
       <!-- 表格 -->
       <table>
-        <tr>
-          <th v-for="item in thead" :key="item">{{ item }}</th>
-        </tr>
-        <tr v-for="item in dataSource.detailList" :key="item.id">
-          <td>{{ item.deviceName }}</td>
-          <td>{{ item.sModel }}</td>
-          <td>{{ "台" }}</td>
-          <td>{{ item.deviceNum }}</td>
-          <td>{{ "安装地点暂未返回" }}</td>
-          <td>{{ item.remark }}</td>
-        </tr>
+        <thead>
+          <tr>
+            <th v-for="item in thead" :key="item">{{ item }}</th>
+          </tr>
+        </thead>
+        <tbody v-if="form.flag === 'LY' || form.flag === 'HT'">
+          <tr v-for="item in dataSource.detailList" :key="item.id">
+            <td>{{ item.deviceName }}</td>
+            <td>{{ item.sModel }}</td>
+            <td>{{ "台" }}</td>
+            <td>{{ item.deviceNum }}</td>
+            <td>{{ item.location ? item.location : "-" }}</td>
+            <td>{{ item.remark ? item.remark : "-" }}</td>
+          </tr>
+        </tbody>
+        <tbody v-else-if="form.flag === 'YJ'">
+          <tr v-for="item in dataSource.record" :key="item.id">
+            <td>{{ item.deviceName }}</td>
+            <td>{{ item.sModel }}</td>
+            <td>{{ "台" }}</td>
+            <td>{{ item.deviceNum }}</td>
+            <td>{{ item.targetLocation ? item.targetLocation : "-" }}</td>
+            <td>{{ item.location ? item.location : "-" }}</td>
+            <td>{{ item.remark ? item.remark : "-" }}</td>
+          </tr>
+        </tbody>
+        <tbody v-else-if="form.flag === 'BF'">
+          <tr v-for="item in dataSource.detailList" :key="item.id">
+            <td>{{ item.deviceCode ? item.deviceCode : "-" }}</td>
+            <td>{{ item.deviceName ? item.deviceName : "-" }}</td>
+            <td>{{ item.sModel ? item.sModel : "-" }}</td>
+            <td>{{ findTreeName(categoryOptions, item.deviceType) }}</td>
+            <td>{{ item.location ? item.location : "-" }}</td>
+            <td>
+              {{ findName(dict.type.em_device_state, item.deviceStatus) }}
+            </td>
+          </tr>
+        </tbody>
       </table>
       <!-- 底部 -->
-      <div class="basic">
-        <span>部门主管：张三</span>
-        <span>设备管理员：王亚桥</span>
-        <span>树料员：张国平</span>
-        <span>保管员：李四</span>
+      <div v-if="form.flag !== 'BF'" class="basic">
+        <span>部门主管：-</span>
+        <span>设备管理员：-</span>
+        <span>树料员：-</span>
+        <span>保管员：-</span>
+      </div>
+      <div v-else class="basic">
+        <span>报废人：{{ dataSource.scrapPerson }}</span>
+        <span>设备管理员：-</span>
       </div>
     </div>
   </div>
 </template>
 <script>
 import request from "@/utils/request";
+// 报废
+import { getProjectList } from "@/api/property/scrapping";
+import { equipmentTree } from "@/api/equipment/category";
 export default {
   components: {},
+  dicts: ["em_device_state"],
   data() {
     return {
       title: "",
@@ -62,6 +116,8 @@ export default {
       routeMethod: null,
       dataSource: null,
       thead: [],
+      form: {},
+      categoryOptions: [],
     };
   },
   created() {
@@ -69,14 +125,36 @@ export default {
     this.routeUrl = this.$route.query.routeUrl;
     this.routeMethod = this.$route.query.routeMethod;
     this.thead = this.$route.query.thead;
+    this.form = this.$route.query;
     if (this.routeUrl && this.routeMethod) {
       request({
         url: `${this.routeUrl}?id=${this.$route.query.id}`,
         method: this.routeMethod,
       }).then((res) => {
         if (res.code === 200) {
-          this.dataSource = res.data;
+          let value = res.data;
+          if (this.form.flag === "LY" || this.form.flag === "HT") {
+            this.dataSource = {
+              ...res.data,
+              deptName: value.neckDeptName || value.applyDept,
+              date: value.neckDate || value.createDate,
+              No: value.neckNo || value.backNo,
+            };
+          } else {
+            this.dataSource = res.data;
+          }
         }
+      });
+    } else if (this.$route.query.scrapForm.scrapNo) {
+      this.dataSource = this.form.scrapForm;
+      this.getTree();
+      getProjectList({
+        pageNum: 1,
+        pageSize: 10000,
+        scrapNo: this.$route.query.scrapForm.scrapNo,
+      }).then((res) => {
+        this.dataSource = { ...this.dataSource, detailList: res.data };
+        console.log("========================", this.dataSource);
       });
     }
   },
@@ -84,11 +162,61 @@ export default {
   mounted() {},
   computed: {},
   methods: {
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        });
+        node.children = this.loops(children, node);
+        return node;
+      });
+    },
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
+    getTree() {
+      equipmentTree().then(async (response) => {
+        this.categoryOptions = response.data;
+        // 方便获取父级tree
+        this.loops(this.categoryOptions);
+      });
+    },
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
     mouseenterHandler() {
       // 关闭左侧导航栏
-      this.$store.dispatch("app/closeSideBar", {
-        withoutAnimation: false,
-      });
+      // this.$store.dispatch("app/closeSideBar", {
+      //   withoutAnimation: false,
+      // });
     },
 
     handlePrint() {

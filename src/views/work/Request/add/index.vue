@@ -20,6 +20,21 @@
       </title-form>
       <div class="overlay" v-if="!formData.orderType"></div>
     </div>
+
+    <!-- 选择故障类型 -->
+    <el-drawer
+      title="故障类型"
+      :visible.sync="drawerFaultManage"
+      size="70%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <faultManage
+        @submitRadio="submitFaultManage"
+        :isRadio="true"
+        @close="closeFaultManage"
+      ></faultManage>
+    </el-drawer>
   </Wrapper>
 </template>
 <script>
@@ -39,10 +54,11 @@ import {
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { removeStore } from "@/utils/property.js";
 import { getGroup } from "@/api/system/group";
+import faultManage from "@/views/work/Request/ui/faultManage.vue";
 
 export default {
-  components: { Wrapper, JmTable, TitleForm, Treeselect },
-  dicts: ["order_obj", "fault_level", "fault_type"],
+  components: { Wrapper, JmTable, TitleForm, Treeselect, faultManage },
+  dicts: ["order_obj", "fault_grade", "fault_type"],
   data() {
     return {
       wrapperTitle: "",
@@ -53,6 +69,7 @@ export default {
       columns2: [],
       orderOptions: [],
       routePoint: [],
+      drawerFaultManage: false,
     };
   },
   async created() {
@@ -323,8 +340,9 @@ export default {
                   {
                     label: "故障类型",
                     prop: "faultType",
-                    formType: "select",
-                    options: this.dict.type.fault_type,
+                    clickFn: () => {
+                      this.drawerFaultManage = true;
+                    },
                     span: 12,
                     required: true,
                   },
@@ -332,7 +350,7 @@ export default {
                     label: "故障等级",
                     prop: "faultGrade",
                     formType: "select",
-                    options: this.dict.type.fault_level,
+                    options: this.dict.type.fault_grade,
                     span: 12,
                     required: true,
                   },
@@ -642,6 +660,18 @@ export default {
     },
   },
   methods: {
+    submitFaultManage(row) {
+      this.$set(
+        this.formData,
+        "faultType",
+        row.faultCode + " " + row.faultName
+      );
+      this.$set(this.formData, "faultCode", row.faultCode);
+      this.closeFaultManage();
+    },
+    closeFaultManage() {
+      this.drawerFaultManage = false;
+    },
     resetColumns() {
       if (this.formData.orderType && this.formData.orderType === "DQJY") {
         this.columns2 = [
@@ -723,10 +753,10 @@ export default {
           orderObj: this.formData.orderObj,
         };
       }
-      // this.formData["maintenanceType"] = this.findParentType(
-      //   this.formData["orderType"],
-      //   this.orderOptions
-      // );
+      this.formData["orderTypeFather"] = this.findParentType(
+        this.formData["orderType"],
+        this.orderOptions
+      );
       this.formData["maintenanceType"] = this.formData["orderType"];
     },
     // 根据二级工单类型获取一级工单类型
@@ -735,7 +765,7 @@ export default {
         if (
           item.children.some((dataItem) => dataItem.id === selectedChildType)
         ) {
-          return item.label;
+          return item.id;
         }
       }
 
@@ -843,6 +873,7 @@ export default {
                 haltFlag: formdata.haltFlag,
                 faultInfo: formdata.faultInfo,
                 fileList: formdata.fileList,
+                faultCode: formdata.faultCode,
               };
               delete formdata.faultDate;
               delete formdata.faultLocation;
@@ -851,9 +882,9 @@ export default {
               delete formdata.haltFlag;
               delete formdata.faultInfo;
               delete formdata.fileList;
+              delete formdata.faultCode;
             }
           }
-
           addEquip(formdata).then((res) => {
             if ((res.code = 200)) {
               this.$message.success("添加成功");

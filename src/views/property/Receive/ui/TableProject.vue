@@ -163,7 +163,7 @@ export default {
     Treeselect,
     parentdevice,
   },
-  dicts: ["apv_status"],
+  dicts: [],
   props: ["rowId", "isShow"],
   data() {
     return {

@@ -139,7 +139,7 @@ export default {
     subprocess,
     ContTable,
   },
-  dicts: ["em_device_att", "em_device_level", "apv_status"],
+  dicts: ["em_device_att", "em_device_level", "wf_process_status"],
   props: {},
   data() {
     return {
@@ -241,7 +241,7 @@ export default {
         //   prop: "apvStatus",
         //   tableVisible: true,
         //   formType: "selectTag",
-        //   options: this.dict.type.apv_status,
+        //   options: this.dict.type.wf_process_status,
         // },
 
         {

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" style="padding-top: 0">
+  <div class="app-container">
     <el-row :gutter="20">
       <!--部门数据-->
       <el-col :span="6" :xs="24">
@@ -78,8 +78,14 @@ export default {
       return [
         { label: "设备编码", prop: "deviceCode", width: 200 },
         { label: "设备名称", prop: "deviceName", width: 200 },
-        { label: "规格型号", prop: "specas", width: 200 },
-        { label: "设备类别", prop: "categoryId", width: 200 },
+        { label: "规格型号", prop: "specs", width: 200 },
+        {
+          label: "设备类别",
+          prop: "categoryId",
+          width: 250,
+          formType: "selectTree",
+          options: this.categoryOptions,
+        },
         {
           label: "设备属性",
           prop: "deviceAtt",
@@ -126,6 +132,7 @@ export default {
       title: "",
       // 部门树选项
       deptOptions: undefined,
+      categoryOptions: [],
       radioRow: {},
       // 查询参数
       queryParams: {
@@ -136,6 +143,7 @@ export default {
   },
   created() {
     this.getTree();
+    this.getListTree();
   },
   methods: {
     close() {
@@ -193,6 +201,28 @@ export default {
     getTree() {
       equipmentTree().then((response) => {
         this.deptOptions = response.data;
+      });
+    },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        });
+        node.children = this.loops(children, node);
+        return node;
+      });
+    },
+    /** 查询部门下拉树结构 */
+    getListTree() {
+      equipmentTree().then((response) => {
+        this.categoryOptions = response.data;
+        this.getList();
+
+        // 方便获取父级tree
+        this.loops(this.categoryOptions);
       });
     },
     // 节点单击事件

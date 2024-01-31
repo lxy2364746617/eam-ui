@@ -135,7 +135,7 @@ import BarChartBar from "./ui/BarChartBar.vue";
 
 export default {
   name: "devicebook",
-  dicts: ["em_device_state", "em_device_att", "apv_status", "em_device_level"],
+  dicts: ["em_device_state", "em_device_att", "wf_process_status", "em_device_level"],
   components: {
     Treeselect,
     JmUserTree,
@@ -205,8 +205,8 @@ export default {
         //   label: "审批状态",
         //   prop: "apvStatus",
         //   formType: "selectTag",
-        //   options: this.dict.type.apv_status,
-        // }, //apv_status
+        //   options: this.dict.type.wf_process_status,
+        // }, //wf_process_status
       ];
     },
   },

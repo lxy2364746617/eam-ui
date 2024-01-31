@@ -723,4 +723,7 @@ export default {
     background-color: #0c7de0;
   }
 }
+::v-deep .el-table th.el-table__cell {
+  background-color: #f9f9f9;
+}
 </style>

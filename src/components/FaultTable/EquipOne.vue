@@ -3,8 +3,13 @@
     <div class="subtitle">
       工单信息
       <div>
-        <span class="mr20">请求时间:{{ `2022-05-17 09:57:32` }}</span
-        ><span class="pack" @click="openUp">收起</span>
+        <span class="mr20">请求时间：{{ formData.createTime }}</span
+        ><span
+          v-if="formData.orderType !== 'WWWX'"
+          class="pack"
+          @click="gzalClick"
+          >案例详情</span
+        >&nbsp;<span class="pack" @click="openUp">收起</span>
       </div>
     </div>
     <br />
@@ -74,7 +79,8 @@
           >{{ faultInfoDTO.faultDate }}</el-col
         >
         <el-col :span="6" class="mb8"
-          ><span class="show">是否特征设备:</span>{{ 123123213 }}</el-col
+          ><span class="show"> 是否特种设备:</span
+          >{{ data.specialFlag === "Y" ? "是" : "否" }}</el-col
         >
         <el-col :span="6" class="mb8"
           ><span class="show">故障类型:</span
@@ -111,7 +117,11 @@
   </div>
 </template>
 <script>
-import { getWomDevice, getWomInfo } from "@/api/work/schedule";
+import {
+  getWomDevice,
+  getWomInfo,
+  getWomFaultInfo2,
+} from "@/api/work/schedule";
 import { orderTemplate } from "@/api/work/template";
 import { listDept } from "@/api/system/dept";
 export default {
@@ -149,7 +159,15 @@ export default {
         if (res.code == 200) {
           this.data = JSON.parse(JSON.stringify(res.data))[0];
 
-          this.faultInfoDTO = this.data.faultInfoDTO;
+          getWomFaultInfo2({
+            deviceCode: this.data.deviceCode,
+            orderCode: this.formData.orderCode,
+          }).then((res) => {
+            if (res.code == 200) {
+              this.faultInfoDTO = res.data.faultInfoDTO;
+              this.formData.faultInfoDTO = res.data.faultInfoDTO
+            }
+          });
         }
       });
 
@@ -165,6 +183,12 @@ export default {
   methods: {
     openUp() {
       this.flag = !this.flag;
+    },
+    gzalClick() {
+      this.$router.push({
+        name: "faults",
+        query: { data: JSON.stringify({ code: this.faultInfoDTO.faultCode }) },
+      });
     },
     findName(options, value) {
       var name = "";

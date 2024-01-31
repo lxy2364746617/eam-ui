@@ -58,6 +58,7 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:purchase:edit']"
@@ -71,6 +72,7 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:purchase:edit']"
@@ -84,6 +86,7 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:purchase:remove']"
           >删除</el-button
@@ -96,14 +99,19 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
           v-hasPermi="['property:purchase:submit']"
           >提交</el-button
         >
         <el-button
-          v-if="scope.row.apvStatus == 'completed' ||  scope.row.apvStatus == 'running' "
+          v-if="
+            scope.row.apvStatus == 'completed' ||
+            scope.row.apvStatus == 'running'
+          "
           size="mini"
           type="text"
+          icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:purchase:edit']"
           >审批流</el-button
@@ -155,7 +163,7 @@ export default {
     subprocess,
     fileImport,
   },
-  dicts: ["apv_status"],
+  dicts: ["wf_process_status"],
 
   props: {},
   data() {
@@ -263,7 +271,7 @@ export default {
           prop: "apvStatus",
           tableVisible: true,
           formType: "selectTag",
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         },
       ];
     },

@@ -440,7 +440,6 @@ export default {
     },
     // ! 信息提交
     spareSubmitForm(val, review) {
-      console.log("========================", val);
       delete val.parts;
       // * 新增
       if (review) {

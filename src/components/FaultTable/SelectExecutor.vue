@@ -45,8 +45,9 @@
 <script>
 import ContTable from "@/components/ContTable";
 import { getExecutorList } from "@/api/work/schedule";
+import TitleForm from "@/components/TitleForm";
 export default {
-  dicts: ["apv_status"],
+  dicts: [],
   components: { ContTable },
   props: {
     isChoose: {
@@ -154,7 +155,7 @@ export default {
       // 总条数
       total: 0,
       // 表格数据
-      equipmentList: null,
+      equipmentList: [],
       // 弹出层标题
       title: "",
       // 部门树选项
@@ -199,7 +200,6 @@ export default {
         // 不展示自身
 
         response.data = response.data.filter((item) => {
-          
           return item.userId !== this.formData.executor;
         });
         if (this.formData.maintainExecutors) {

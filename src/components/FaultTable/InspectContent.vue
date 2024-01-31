@@ -23,7 +23,7 @@ export default {
   components: {
     "title-form": TitleForm,
   },
-  dicts: ["fault_type", "em_device_result", "em_device_check"],
+  dicts: [ "em_device_result", "em_device_check"],
   props: {
     disabled: {
       default: false,
@@ -78,12 +78,12 @@ export default {
       return [
         // ! 批量维修记录
         {
-          label: "检测内容记录",
+          label: "维修内容记录",
           span: 24,
           subTitle: true,
         },
         {
-          label: "检测单位",
+          label: "维修单位",
           span: 8,
           prop: "checkUnit",
           formType: "select",
@@ -91,7 +91,7 @@ export default {
           required: true,
         },
         {
-          label: "检测单位负责人",
+          label: "维修单位负责人",
           span: 8,
           prop: "checkUnitHead",
           required: true,
@@ -153,11 +153,13 @@ export default {
   },
   methods: {
     dateDiffInHours(date1, date2) {
-      const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
       const firstDate = new Date(date1);
       const secondDate = new Date(date2);
+      const oneMinute = 60 * 1000;
 
-      return Math.round(Math.abs((firstDate - secondDate) / oneDay)) * 24;
+      return (
+        Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
+      ).toFixed(1);
     },
     //选择班组
     changeGroupId(val, flag) {
@@ -251,6 +253,7 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 </style>

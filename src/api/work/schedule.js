@@ -151,6 +151,14 @@ export const getWomInfo = (query) => {
     params: query,
   });
 };
+// * 工单管理-获取工单基本信息
+export const getWomFaultInfo2 = (query) => {
+  return request({
+    url: "/workorder/getWomFaultInfo",
+    method: "get",
+    params: query,
+  });
+};
 // ! 保养
 // 保养人员
 export const getOrderExecutor = (data) => {
@@ -317,6 +325,7 @@ export const exportPatrolItem = (data) => {
     url: "/wom/patrol/item/exportPatrolItem",
     method: "post",
     data: data,
+    responseType: "blob",
   });
 };
 
@@ -347,6 +356,13 @@ export const getOrderDetailDay = (query) => {
 export const getWorkOrderCount = (data) => {
   return request({
     url: "/wom/calendar/getWorkOrderCount",
+    method: "post",
+    data: data,
+  });
+};
+export const addFaultCase = (data) => {
+  return request({
+    url: "/kdb/faultCase/add",
     method: "post",
     data: data,
   });

@@ -23,12 +23,7 @@
             :src="qrCode"
             alt=""
             srcset=""
-            style="
-              width: 100px;
-              vertical-align: top;
-              height: 100px;
-              
-            "
+            style="width: 100px; vertical-align: top; height: 100px"
           />
         </el-col>
         <el-col
@@ -53,12 +48,6 @@
     <div class="title" v-else>
       <span>巡点捡项目</span>
       <span style="font-size: 20px">
-        <el-button
-          type="primary"
-          size="small"
-          style="transform: translateY(-3px)"
-          >获取实时值</el-button
-        >
         <i class="el-icon-camera-solid controls" @click="AddFile"></i
         >&nbsp;&nbsp;<i
           class="el-icon-download controls"
@@ -717,24 +706,24 @@ export default {
 
       // format.append("deviceCode", this.form.deviceCode);
       // format.append("orderCode", this.routerForm.orderCode);
-      // exportPatrolItem({
-      //   deviceCode: this.form.deviceCode,
-      //   orderCode: this.routerForm.orderCode,
-      // }).then((res) => {
-      //   const blob = new Blob([res], {
-      //     type: "application/vnd.ms-excel;charset=utf-8",
-      //   });
-      //   saveAs(blob, `下载数据_${new Date().getTime()}`);
-      // });
+      exportPatrolItem({
+        deviceCode: this.form.deviceCode,
+        orderCode: this.routerForm.orderCode,
+      }).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `order_${new Date().getTime()}`);
+      });
 
-      this.download(
-        "/wom/patrol/item/exportPatrolItem",
-        {
-          deviceCode: this.form.deviceCode,
-          orderCode: this.routerForm.orderCode,
-        },
-        `下载数据_${new Date().getTime()}.xlsx`
-      );
+      // this.download(
+      //   "/wom/patrol/item/exportPatrolItem",
+      //   {
+      //     deviceCode: this.form.deviceCode,
+      //     orderCode: this.routerForm.orderCode,
+      //   },
+      //   `下载数据_${new Date().getTime()}.xlsx`
+      // );
     },
     // ! 异常处理
     // 自行处理

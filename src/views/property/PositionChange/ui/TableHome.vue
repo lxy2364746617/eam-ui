@@ -34,37 +34,61 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:position:edit']"
           >详情</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
+          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:position:edit']"
           >编辑</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
+          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:position:remove']"
           >删除</el-button
         >
 
         <el-button
+          v-if="
+            scope.row.apvStatus == 'uncommitted' ||
+            scope.row.apvStatus == 'reject' ||
+            scope.row.apvStatus == 'canceled'
+          "
           size="mini"
           type="text"
+          icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
           v-hasPermi="['property:position:edit']"
           >提交</el-button
         >
         <el-button
+          v-if="
+            scope.row.apvStatus == 'completed' ||
+            scope.row.apvStatus == 'running'
+          "
           size="mini"
           type="text"
+          icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:position:edit']"
           >审批流</el-button
@@ -113,7 +137,7 @@ export default {
     addEdit,
     subprocess,
   },
-  dicts: ["apv_status"],
+  dicts: ["wf_process_status"],
   props: {
     // isChoose: {
     //     default: false,
@@ -193,7 +217,7 @@ export default {
           prop: "apvStatus",
           tableVisible: true,
           formType: "selectTag",
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         },
       ];
     },
@@ -216,21 +240,24 @@ export default {
       });
     },
     sub(val) {
-      definitionStart2(val.id, this.radioRow.scrapNo, "device_change", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
-            this.getList();
-          }
+      definitionStart2(
+        val.id,
+        this.radioRow.changeNo,
+        "position_change",
+        {}
+      ).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.getList();
         }
-      );
+      });
     },
     getTableData(val) {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "device_change",
+        category: "position_change",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -243,7 +270,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "device_change",
+        category: "position_change",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;

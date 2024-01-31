@@ -46,7 +46,7 @@ import JmTable from "@/components/JmTable";
 
 export default {
   name: "devicebook1",
-  dicts: ["apv_status"],
+  dicts: ["wf_process_status"],
   components: { JmTable },
   props: {
     isChoose: {
@@ -93,7 +93,7 @@ export default {
           prop: "apvStatus",
           tableVisible: true,
           formType: "selectTag",
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         },
       ];
     },

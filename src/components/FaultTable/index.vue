@@ -18,6 +18,7 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       ref="jmtable"
+      class="mt20"
       :isShow="isShow"
       :isRadio="isChoose"
       :handleWidth="230"
@@ -132,6 +133,21 @@
         </template>
       </carry-form>
     </el-drawer>
+
+    <!-- 选择故障类型 -->
+    <el-drawer
+      title="故障类型"
+      :visible.sync="drawerFaultManage"
+      size="70%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <faultManage
+        @submitRadio="submitFaultManage"
+        :isRadio="true"
+        @close="closeFaultManage"
+      ></faultManage>
+    </el-drawer>
   </div>
 </template>
 <script>
@@ -151,13 +167,15 @@ import { listDept } from "@/api/system/dept";
 import { saveAs } from "file-saver";
 import CarryForm from "@/components/CarryForm/index";
 import { getWomDevice } from "@/api/work/schedule";
+import faultManage from "@/views/work/Request/ui/faultManage.vue";
+import { equipmentTree } from "@/api/equipment/category";
 export default {
   components: {
     ContTable,
     SelectParentDeviceDialog,
-    "carry-form": CarryForm,
+    faultManage,
   },
-  dicts: ["em_is_special", "em_device_state", "fault_level", "fault_type"],
+  dicts: ["em_is_special", "em_device_state", "fault_grade"],
   props: {
     orderCode: {
       default: "",
@@ -183,6 +201,7 @@ export default {
           },
         ],
       },
+      drawerFaultManage: false,
       disabled: false,
       showButton: true,
       addItem: {
@@ -238,9 +257,8 @@ export default {
         { label: "规格型号", prop: "specs", tableVisible: true, width: 200 },
         {
           label: "设备类别",
-          prop: "deviceType",
+          prop: "categoryName",
           tableVisible: true,
-          width: 200,
         },
         {
           label: "功能位置",
@@ -290,8 +308,9 @@ export default {
         {
           label: "故障类型",
           prop: "faultType",
-          formType: "select",
-          options: this.dict.type.fault_type,
+          clickFn: () => {
+            this.drawerFaultManage = true;
+          },
           span: 12,
           required: true,
         },
@@ -299,7 +318,7 @@ export default {
           label: "故障等级",
           prop: "faultGrade",
           formType: "select",
-          options: this.dict.type.fault_level,
+          options: this.dict.type.fault_grade,
           span: 12,
           required: true,
         },
@@ -352,6 +371,18 @@ export default {
   mounted() {},
 
   methods: {
+    submitFaultManage(row) {
+      this.$set(
+        this.formData,
+        "faultType",
+        row.faultCode + " " + row.faultName
+      );
+      this.$set(this.formData, "faultCode", row.faultCode);
+      this.closeFaultManage();
+    },
+    closeFaultManage() {
+      this.drawerFaultManage = false;
+    },
     uploadChange1(val) {
       this.formData.fileList = val;
     },
@@ -414,9 +445,7 @@ export default {
 
     async submitRadio2(row) {
       let flag = getStore("equipmentList").some(
-        (item) =>
-          item.deviceName + item.sModel + item.deviceCode ===
-          row.deviceName + row.sModel + row.deviceCode
+        (item) => item.deviceId === row.deviceId
       );
       if (flag) {
         this.$message.error("该设备已添加到设备清单中请重新选择");
@@ -654,7 +683,8 @@ export default {
     justify-content: space-between;
     -webkit-box-align: center;
     -ms-flex-align: center;
-    align-items: center;padding: 0 18px;
+    align-items: center;
+    padding: 0 18px;
   }
   .icon {
     span {

@@ -51,6 +51,7 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit', 1)"
           v-hasPermi="['property:position:edit']"
@@ -59,6 +60,7 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:position:remove']"
           >删除</el-button
@@ -149,7 +151,12 @@ export default {
     Treeselect,
     JmTable,
   },
-  dicts: ["em_device_state", "em_device_att", "apv_status", "em_device_level"],
+  dicts: [
+    "em_device_state",
+    "em_device_att",
+    "wf_process_status",
+    "em_device_level",
+  ],
   props: ["rowId", "isShow"],
   data() {
     return {
@@ -330,8 +337,8 @@ export default {
           label: "审批状态",
           prop: "apvStatus",
           formType: "selectTag",
-          options: this.dict.type.apv_status,
-        }, //apv_status
+          options: this.dict.type.wf_process_status,
+        }, //wf_process_status
       ];
     },
   },

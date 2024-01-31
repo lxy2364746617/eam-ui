@@ -61,6 +61,7 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
           v-hasPermi="['property:turnOver:edit']"
@@ -74,6 +75,7 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-edit"
           :loading="btnLoading"
           @click="goEdit(scope.row, 'edit')"
           v-hasPermi="['property:turnOver:edit']"
@@ -87,6 +89,7 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:turnOver:remove']"
           >删除</el-button
@@ -99,6 +102,7 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
           v-hasPermi="['property:turnOver:edit']"
           >提交</el-button
@@ -110,9 +114,19 @@
           "
           size="mini"
           type="text"
+          icon="el-icon-view"
           @click="handleSet(scope.row)"
-          v-hasPermi="['property:turnOver:edit']"
+          v-hasPermi="['property:turnOver:view']"
           >审批流</el-button
+        >
+        <el-button
+          v-if="scope.row.apvStatus == 'completed'"
+          size="mini"
+          type="text"
+          icon="el-icon-printer"
+          @click="handlePrint(scope.row)"
+          v-hasPermi="['property:turnOver:print']"
+          >打印单据</el-button
         >
       </template>
     </jm-table>
@@ -150,7 +164,7 @@ export default {
     JmTable,
     subprocess,
   },
-  dicts: ["apv_status"],
+  dicts: ["wf_process_status"],
   props: {
     // isChoose: {
     //     default: false,
@@ -254,7 +268,7 @@ export default {
           prop: "apvStatus",
           tableVisible: true,
           formType: "selectTag",
-          options: this.dict.type.apv_status,
+          options: this.dict.type.wf_process_status,
         },
       ];
     },
@@ -265,6 +279,42 @@ export default {
   },
   mounted() {},
   methods: {
+    findTreeName(options, value) {
+      for (let item of options) {
+        if (item.id === value) return item.label;
+        if (item.children && item.children.length > 0) {
+          let result = this.findTreeName(item.children, value);
+          if (result !== null) return result;
+        }
+      }
+      return null;
+    },
+    // 打印单据
+    handlePrint(row) {
+      // 打印单据跳转
+    
+      this.$router.push({
+        path: "/property/print",
+        query: {
+          title: "设备移交/打印单据",
+          routeMethod: "get",
+          routeUrl: "/property/transfer/printDocument",
+          id: row.id,
+          titleHeader:
+            this.findTreeName(this.deptOptions, row.affDeptId) + "移交单",
+          flag: "YJ",
+          thead: [
+            "名称",
+            "型号",
+            "单位",
+            "数量",
+            "调出地点",
+            "调入地点",
+            "备注",
+          ],
+        },
+      });
+    },
     sub(val) {
       definitionStart2(
         val.id,
@@ -302,7 +352,16 @@ export default {
         this.tableData = res.data.records;
       });
     },
-    handleSet() {},
+    handleSet(row) {
+      this.$router.push({
+        path: "/flowable/task/finished/detail/index",
+        query: {
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
+          taskId: row.taskId,
+        },
+      });
+    },
 
     /** 查询部门下拉树结构 */
     async getTreeSelect() {

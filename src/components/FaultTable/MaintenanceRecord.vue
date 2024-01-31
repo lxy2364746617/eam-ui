@@ -19,7 +19,7 @@ import { findAll, getGroup } from "@/api/system/group";
 import request from "@/utils/request";
 export default {
   components: {},
-  dicts: ["fault_type"],
+  dicts: ["fault_grade"],
   props: {
     disabled: {
       default: false,
@@ -46,6 +46,7 @@ export default {
     form: {
       handler(val) {
         this.$emit("maintenanceRecord", val);
+        if (!val) return;
         if (val.endTime && val.startTime) {
           this.form.workHours = this.dateDiffInHours(
             val.endTime,
@@ -59,14 +60,15 @@ export default {
   },
   async created() {
     this.form.unit = this.formData.groupId;
-    this.form.executor = this.formData.executor;
+    this.$set(this.form, "executor", this.formData.executor);
+
     findAll({ groupType: "" }).then((res) => {
       res.data.forEach((item) => {
         item.label = item.groupName;
         item.value = item.id;
       });
       this.groupOptions = res.data;
-      if (this.formData.groupId && this.disabled) {
+      if (this.formData.groupId) {
         this.changeGroupId(this.formData.groupId, 2);
         request({
           url: "/wom/repair/getWomRepairInfo",
@@ -74,7 +76,7 @@ export default {
           params: { orderCode: this.formData.orderCode },
         }).then((res) => {
           if (res.code === 200) {
-            this.form = res.data;
+            this.form = { ...this.form, ...res.data };
           }
         });
       }
@@ -86,7 +88,7 @@ export default {
       return [
         // ! 维修内容记录
         {
-          label: "检修内容记录",
+          label: "维修内容记录",
           span: 24,
           subTitle: true,
         },
@@ -95,11 +97,11 @@ export default {
         //   span: 7,
         //   prop: "faultType",
         //   formType: "select",
-        //   options: this.dict.type.fault_type,
+        //   options: this.dict.type.fault_grade,
         //   required: true,
         // },
         {
-          label: "检修单位",
+          label: "维修单位",
           span: 6,
           prop: "unit",
           formType: "select",
@@ -122,27 +124,27 @@ export default {
           formType: "blank",
         },
         {
-          label: "检修开始",
+          label: "维修开始",
           span: 7,
           prop: "startTime",
           formType: "datetime",
           required: true,
         },
         {
-          label: "检修结束",
+          label: "维修结束",
           span: 6,
           prop: "endTime",
           formType: "datetime",
           required: true,
         },
         {
-          label: "检修工时",
+          label: "维修工时",
           span: 6,
           prop: "workHours",
           formType: "number",
         },
         {
-          label: "检修结果",
+          label: "维修结果",
           span: 24,
           prop: "faultInfo",
           formType: "textarea",
@@ -163,7 +165,7 @@ export default {
         //   required: true,
         // },
         {
-          label: "是否检修完成",
+          label: "是否维修完成",
           span: 12,
           prop: "finishFlag",
           formType: "radio",
@@ -197,11 +199,13 @@ export default {
   },
   methods: {
     dateDiffInHours(date1, date2) {
-      const oneDay = 24 * 60 * 60 * 1000;
       const firstDate = new Date(date1);
       const secondDate = new Date(date2);
+      const oneMinute = 60 * 1000;
 
-      return Math.round(Math.abs((firstDate - secondDate) / oneDay)) * 24;
+      return (
+        Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
+      ).toFixed(1);
     },
     //选择班组
     changeGroupId(val, flag) {
@@ -209,11 +213,11 @@ export default {
       getGroup(val).then((response) => {
         this.form.directorName = response.data.leaderName;
         this.form.director = response.data.leaderId;
-        response.data.sysUserGroupList.forEach((item) => {
-          item.label = item.nickName;
-          item.value = item.userId;
-        });
-        this.groupMembers = response.data.sysUserGroupList;
+        this.groupMembers = response.data.sysUserGroupList.map((item) => ({
+          label: item.nickName,
+          value: item.userId,
+        }));
+        // this.groupMembers = response.data.sysUserGroupList;
       });
     },
     getList() {},

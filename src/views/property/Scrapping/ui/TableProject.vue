@@ -41,6 +41,7 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit')"
           v-hasPermi="['property:scrapping:edit']"
@@ -49,6 +50,7 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-delete"
           @click="handleDelete(scope.row)"
           v-hasPermi="['property:scrapping:remove']"
           >删除</el-button
@@ -88,18 +90,29 @@
               ></el-input>
             </el-form-item>
             <el-form-item label="设备类别" prop="deviceType" required>
+              <treeselect
+                size="small"
+                v-model="formData.deviceType"
+                :options="categoryOptions"
+                clear-value-text="清除"
+                no-options-text="暂无数据"
+                clearValueText="清除"
+                noOptionsText="暂无数据"
+                placeholder="请选择"
+                :default-expand-level="4"
+                :appendToBody="true"
+                :normalizer="normalizer"
+                :disabled="true"
+                :zIndex="9999"
+                style="height: 32px; line-height: 32px"
+              />
+            </el-form-item>
+            <el-form-item label="功能位置" prop="location" required>
               <el-input
                 disabled
                 style="width: 100%"
-                v-model="formData.deviceType"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="功能位置" prop="location" required>
-              <el-select
-                disabled
-                style="width: 100%"
                 v-model="formData.location"
-              ></el-select>
+              ></el-input>
             </el-form-item>
             <el-form-item label="设备状态" prop="deviceStatus" required>
               <el-cascader
@@ -291,7 +304,6 @@ export default {
         deviceCode: "",
         deviceName: "",
         sModel: " ",
-        deviceType: "",
         location: "",
       },
       formParams: {
@@ -321,7 +333,7 @@ export default {
         ],
         deviceType: [
           {
-            required: true,
+            // required: true,
             trigger: "change",
           },
         ],
@@ -498,6 +510,17 @@ export default {
   mounted() {},
 
   methods: {
+    /** 转换部门数据结构 */
+    normalizer(node) {
+      if (JSON.stringify(node.children) == "[]") {
+        delete node.children;
+      }
+      return {
+        id: node.id,
+        label: node.label,
+        children: node.children,
+      };
+    },
     /** 查询部门下拉树结构 */
     getTree() {
       equipmentTree().then((response) => {
@@ -520,17 +543,25 @@ export default {
       }
       this.addItem.copyInputName = row.deviceName;
       this.addItem.copyInputId = row.deviceId;
-      this.formData.deviceCode = row.deviceCode;
-      this.formData.deviceName = row.deviceName;
-      this.formData.sModel = row.specs;
-      this.formData.deviceType = row.categoryId;
-      this.formData.location = row.location;
-      this.formData.propertyType = row.propertyType;
-      this.formData.price = row.price;
-      this.formData.depreciation = row.depreciation;
-      this.formData.lossAmount = row.lossAmount;
-      this.formData.depreciationLife = row.depreciationLife;
-      this.formData.usedLife = row.usedLife;
+      // this.formData.deviceCode = row.deviceCode;
+      // this.formData.deviceName = row.deviceName;
+      // this.formData.sModel = row.specs;
+      // this.formData.deviceType = row.categoryId;
+      // this.formData.location = row.location;
+      // this.formData.propertyType = row.propertyType;
+      // this.formData.price = row.price;
+      // this.formData.depreciation = row.depreciation;
+      // this.formData.lossAmount = row.lossAmount;
+      // this.formData.depreciationLife = row.depreciationLife;
+      // this.formData.usedLife = row.usedLife;
+      this.formData = {
+        ...this.formData,
+        deviceCode: row.deviceCode,
+        deviceName: row.deviceName,
+        sModel: row.specs,
+        deviceType: row.categoryId,
+        location: row.location,
+      };
 
       this.addItem.choosedrawer = false;
     },
@@ -744,6 +775,7 @@ export default {
       });
     },
     handleUpdate(row, index) {
+      console.log("========================", row);
       this.title = "编辑";
       this.formData = JSON.parse(JSON.stringify(row));
       this.drawer = true;

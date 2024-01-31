@@ -43,7 +43,7 @@
             :disabled="true"
           /> </el-form-item
       ></el-col>
-      <el-col :span="8">
+      <!-- <el-col :span="8">
         <el-form-item label="其他执行人" prop="otherExecutor">
           <el-input
             v-model="formData.otherExecutor"
@@ -51,6 +51,24 @@
             @click.native="openSb"
             :disabled="disabled"
           /> </el-form-item
+      ></el-col> -->
+      <el-col :span="8">
+        <el-form-item label="其他执行人" prop="otherExecutors">
+          <el-select
+            ref="multiSelect"
+            v-model="formData.otherExecutor"
+            multiple=""
+            @click.native="openSb"
+            @change="changeOtherExecutor"
+          >
+            <el-option
+              v-for="item in groupMembers"
+              :key="item.userId"
+              :label="item.nickName"
+              :value="item.userId"
+            >
+            </el-option>
+          </el-select> </el-form-item
       ></el-col>
     </el-row>
 
@@ -90,7 +108,7 @@ export default {
     },
   },
   created() {
-    findAll({ groupType: this.formData.orderType }).then((res) => {
+    findAll({ groupType: "BYJX" }).then((res) => {
       this.groupOptions = res.data;
       if (this.formData.groupId) {
         this.changeGroupId(this.formData.groupId, 2);
@@ -100,29 +118,17 @@ export default {
       getOrderExecutor({ workOrderCode: this.formData.orderCode }).then(
         (res) => {
           if (res.code == 200) {
-            this.formData.otherExecutor = res.data
+            this.formData.otherExecutors = res.data
               .filter((item) => item.type == 2)
               .map((item) => {
-                return item.nickName;
-              })
-              .join("、");
+                return item.userId;
+              });
           }
         }
       );
     }
   },
-  watch: {
-    "formData.orderType": {
-      handler(val) {
-        findAll({ groupType: val }).then((res) => {
-          this.groupOptions = res.data;
-          if (this.formData.groupId) {
-            this.changeGroupId(this.formData.groupId, 2);
-          }
-        });
-      },
-    },
-  },
+
   data() {
     return {
       //班组选项
@@ -143,10 +149,29 @@ export default {
       immediate: true,
       deep: true,
     },
+    "formData.orderType": {
+      handler(val) {
+        findAll({ groupType: val }).then((res) => {
+          this.groupOptions = res.data;
+          if (this.formData.groupId) {
+            this.changeGroupId(this.formData.groupId, 2);
+          }
+        });
+      },
+    },
   },
   mounted() {},
   computed: {},
   methods: {
+    changeOtherExecutor() {
+      this.formData["maintainExecutors"] = this.formData[
+        "maintainExecutors"
+      ].filter((item) => {
+        return this.formData.otherExecutor.some(
+          (otherItem) => otherItem.userId === item.userId
+        );
+      });
+    },
     submitRadio2(row) {
       row.forEach((item) => {
         item["executor"] = this.formData.executor;
@@ -161,12 +186,14 @@ export default {
       } else {
         this.formData["maintainExecutors"] = row;
       }
-      this.formData.otherExecutor = this.formData["maintainExecutors"]
-        .map((item) => item.nickName)
-        .join("、");
+      this.formData.otherExecutor = this.formData["maintainExecutors"].map(
+        (item) => item.userId
+      );
+
       this.choosedrawer = false;
     },
     openSb() {
+      this.$refs.multiSelect.blur();
       if (!this.formData.executor) {
         this.$message.error("请选择主要执行人！");
         return;
@@ -203,6 +230,7 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 </style>

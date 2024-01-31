@@ -320,7 +320,7 @@ export default {
       this.$set(this.form, "specs", row.sModel);
       this.$set(this.form, "attachmentType", row.partType);
       this.$set(this.form, "unit", row.unit);
-
+      this.$set(this.form, "supplierName", row.supplierName);
       this.closesupplier();
     },
     closesupplier() {

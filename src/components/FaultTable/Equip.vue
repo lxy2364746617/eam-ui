@@ -239,7 +239,7 @@ export default {
     allDelete() {
       var that = this;
       if (this.selectArr.length == 0) {
-        this.$modal.msgSuccess("请至少选择一项");
+        this.$modal.msgWarning("请至少选择一项");
       } else {
         console.log(
           that.selectArr[0],

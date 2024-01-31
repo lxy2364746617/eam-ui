@@ -57,7 +57,7 @@ import { goWorkOrder } from "@/api/work/schedule";
 import { getGroup, findAll } from "@/api/system/group";
 export default {
   components: { Wrapper, JmTable, CarryForm, Treeselect },
-  dicts: ["fault_type"],
+  dicts: [],
   data() {
     return {
       wrapperTitle: "",

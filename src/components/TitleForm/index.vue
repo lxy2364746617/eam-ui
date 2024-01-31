@@ -55,6 +55,7 @@
             v-else-if="col.formType == 'maintenanceRoute'"
             @lineDTOListMaintenance="lineDTOListMaintenance"
             @lineDTOListMaintainItems="lineDTOListMaintainItems"
+            @lineDTOListWomDevices="lineDTOListWomDevices"
             :formData="formData"
             :disabled="disabled"
           ></MaintenanceRoute>
@@ -461,6 +462,10 @@ export default {
     lineDTOListMaintainItems(val) {
       this.formData["maintainItems"] = val;
     },
+    // 保养路线 下的设备
+    lineDTOListWomDevices(val) {
+      this.formData["womDevices"] = val;
+    },
     // 保养路线
     lineDTOListMaintenance(val) {
       this.formData["lineDTOList"] = val;
@@ -471,7 +476,7 @@ export default {
     },
     // 保养设备
     deviceDTOListMaintenance(val) {
-      this.formData["deviceDTOList"] = val;
+      this.formData["womDevices"] = val;
     },
     // 巡点捡路线
     lineDTOList(val) {

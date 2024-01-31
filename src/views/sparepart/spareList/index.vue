@@ -185,7 +185,7 @@ export default {
           prop: "partCode",
           span: 22,
           required: true,
-          formDisabled: this.title === "新增设备" ? false : true,
+          // formDisabled: this.title === "新增设备" ? false : true,
         },
         { label: "备件名称", prop: "partName", span: 22, required: true },
         {
@@ -351,6 +351,12 @@ export default {
     },
     /** 提交按钮 */
     submitForm(formVal) {
+      if (
+        this.equipmentList.some((item) => item.partCode === formVal.partCode)
+      ) {
+        this.$modal.msgWarning("备件编码已存在，请重新输入！");
+        return;
+      }
       if (formVal.id) {
         updateManagement(formVal).then((res) => {
           if (res.code === 200) {
