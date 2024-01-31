@@ -117,3 +117,18 @@ export function deptTreeSelect(roleId) {
     method: 'get'
   })
 }
+
+// 左侧树结构
+export function orgTree() {
+  return request({
+    url: '/system/role/orgTree',
+    method: 'get'
+  })
+}
+// 判断是否为管理员
+export function isAdmin() {
+  return request({
+    url: '/system/role/isAdmin',
+    method: 'get'
+  })
+}

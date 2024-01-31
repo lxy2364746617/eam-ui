@@ -153,8 +153,8 @@ export default {
     return {
       userTypeOption: [
         { label: '指定人员', value: 'assignee' },
-        { label: '候选人员', value: 'candidateUsers' },
-        /* { label: '候选角色', value: 'candidateGroups' } */
+/*         { label: '候选人员', value: 'candidateUsers' },
+ */        { label: '候选角色', value: 'candidateGroups' }
       ],
       dialogName: '',
       executionListenerLength: 0,
@@ -240,20 +240,20 @@ export default {
             // rules: [{ required: true, message: '指定人员不能为空' }],
             show: !!_this.showConfig.assignee && _this.formData.userType === 'assignee'
           },
-          {
+           {
             xType: 'slot',
             name: 'checkMultipleUser',
             label: '候选人员',
             // rules: [{ required: true, message: '候选人员不能为空' }],
             show: !!_this.showConfig.candidateUsers && _this.formData.userType === 'candidateUsers'
-          },
-          /* {
+          }, 
+          {
             xType: 'slot',
             name: 'checkRole',
             label: '候选角色',
             // rules: [{ required: true, message: '候选角色不能为空' }],
             show: !!_this.showConfig.candidateGroups && _this.formData.userType === 'candidateGroups'
-          }, */
+          },
           {
             xType: 'radio',
             name: 'multiLoopType',
@@ -395,15 +395,6 @@ export default {
       }
       // 写入userType节点信息到xml
       this.updateProperties({'flowable:userType': val})
-      console.log(this.modeler.get('modeling'))
-      var  completionCondition= this.modeler.get('moddle').create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances > 0}" });
-       this.modeler.get('moddle').create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: this.isSequential });
-      this.modeler.get('moddle').create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances >= nrOfInstances}" })
-      this.modeler.get('modeling').updateModdleProperties(this.bpmnElement, this.multiLoopInstance, {
-        collection: '${multiInstanceHandler.getUserIds(execution)}',
-        elementVariable: 'assignee',
-        completionCondition
-      }); 
     },
     'formData.async': function(val) {
       if (StrUtil.isNotBlank(val)) {
@@ -670,6 +661,7 @@ export default {
       delete this.element.businessObject.$attrs[`flowable:candidateGroups`]
     },
     resetTaskForm() {
+      console.log('resetTaskFormresetTaskFormresetTaskForm')
       const bpmnElementObj = this.bpmnElement?.businessObject;
       if (!bpmnElementObj) {
         return;

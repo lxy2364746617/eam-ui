@@ -146,3 +146,12 @@ export function userList(data) {
     data: data
   })
 }
+
+// 发起流程时查询下一步
+export function nextFlowNodeByStart(data) {
+  return request({
+    url: '/flowable/task/nextFlowNodeByStart',
+    method: 'post',
+    data: data
+  })
+}

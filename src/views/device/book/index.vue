@@ -168,7 +168,7 @@
               icon="el-icon-document-add"
               @click="handleSet(scope.row)"
               v-hasPermi="['equipment:book:edit']"
-              v-if="scope.row.processStatus=='uncommitted'||scope.row.processStatus=='reject'||scope.row.processStatus=='canceled'"
+              v-if="scope.row.processStatus=='uncommitted'||scope.row.processStatus=='reject'||scope.row.processStatus=='canceled'||scope.row.processStatus=='terminated'"
             >提交</el-button>
           </template>
         </jm-table>
@@ -206,7 +206,7 @@
           <el-col :span="10" style="line-height: 40px;">
             <el-radio :label="1">复制设备</el-radio>
           </el-col>
-          <el-col :span="14" v-if="addItem.addRadio==1">
+          <el-col :span="14" v-if="addItem.addRadio==1" >
             <el-input
               readonly
               @click.native="addItem.choosedrawer=true"
@@ -241,8 +241,19 @@
       ></parentdevice>
     </el-drawer>
     <!-- 提交 -->
-    <el-dialog :title="subtitle" :visible.sync="subopen" width="60%" append-to-body>
+    <el-drawer  direction="ltr" :title="subtitle" :visible.sync="subopen"  size='600px' >
       <subprocess :tableData='tableData' @submit="sub" @getTableData='getTableData'></subprocess>
+    </el-drawer>
+    <el-dialog :visible="copyCodeOpen" top="15vh" append-to-body :show-close='false'>
+      <el-form ref="copyCode" :model="addItem"  label-width="120px" >
+              <el-form-item label="设备编码" prop="copyInputCode" :rules="[{required:true,message:'请输入设备编码'}]">
+                <el-input v-model="addItem.copyInputCode"></el-input>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" style="width:100%;text-align:center;display: inline-block;">
+          <el-button @click="copyCodeOpen = false">取 消</el-button>
+          <el-button type="primary" @click="handleAdd">确 定</el-button>
+        </span>
     </el-dialog>
   </div>
 </template>
@@ -363,11 +374,13 @@ export default {
       processLoading: true,
       addItem: {
         choosedrawer: false,
+        copyInputCode:'',
         copyInputName: '',
         copyInputId: '',
         addDrawer: false,
         addRadio: 1,
       },
+      copyCodeOpen:false,
       btnLoading: false,
       formData: {
         archivesOther: {}, // 步骤2 值
@@ -533,6 +546,7 @@ export default {
       this.addItem.copyInputName = row.deviceName
       this.addItem.copyInputId = row.deviceId
       this.addItem.choosedrawer = false
+      this.copyCodeOpen=true
     },
     back() {
       this.addEdit = false
@@ -671,10 +685,15 @@ export default {
         // 复制
         if (this.addItem.copyInputName == '') {
           this.$modal.msgError('复制设备不能为空')
-        } else {
-          copyBASE({ deviceId: this.addItem.copyInputId }).then((response) => {
+        }else if(this.addItem.copyInputCode == ''){
+           this.$modal.msgError('设备编码不能为空')
+        }
+        else {
+          copyBASE({ deviceId: this.addItem.copyInputId,deviceCode:this.addItem.copyInputCode }).then((response) => {
             // this.btnLoading = false
             this.getList()
+            this.copyCodeOpen=false
+            this.addItem=this.$options.data().addItem
           })
         }
       } else if (this.addItem.addRadio == 2) {
@@ -822,8 +841,8 @@ export default {
         this.tableData=res.data.records
       })
     },
-    sub(val){
-        definitionStart(val.id,this.id,'EA',this.deviceCode,{path:'/device/book/details'}).then(res=>{
+    sub(val,userIds){
+         definitionStart(val.id,this.id,'EA',this.deviceCode,{path:'/device/book/details',nextUserIds:userIds}).then(res=>{
           this.subopen=false
           this.getList()
       })  
@@ -892,4 +911,6 @@ export default {
   text-align: center;
   border-top: 1px solid #ddd;
 }
+
+
 </style>

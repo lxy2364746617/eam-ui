@@ -57,8 +57,12 @@ export default {
   computed:{
     
   },
+  created(){
+    console.log(this.formData,22222);
+  },
   mounted(){
     console.log(this.formData,33333);
+    this.$forceUpdate()
   },
   data() {
     return {

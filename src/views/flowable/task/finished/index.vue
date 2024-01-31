@@ -2,8 +2,8 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item>
-         <el-button class="btn_status" style="background:#92E182;color:#02B606;">已同意</el-button>
-         <el-button class="btn_status" style="background:#F7CCCC;color:#EA0000;">已删除</el-button>
+         <!-- <el-button class="btn_status" style="background:#92E182;color:#02B606;">已同意</el-button>
+         <el-button class="btn_status" style="background:#F7CCCC;color:#EA0000;">已删除</el-button> -->
       </el-form-item>
       <el-form-item label="名称" prop="name">
         <el-input

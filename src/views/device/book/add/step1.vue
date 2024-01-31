@@ -48,7 +48,7 @@ import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import parentdevice from "@/views/device/book/device";
-
+import { getLocationTree} from '@/api/Location'
 export default {
   name: "bookadd",
   dicts: [
@@ -123,7 +123,7 @@ export default {
         { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, span: 8, },
         { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 8, required: true, },
         { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, formDisabled:true, required: true, }, //(Y 是、N 否)
-        { label:"功能位置", prop:"location", span: 8, required: true, },
+        { label:"功能位置", prop:"location", span: 8, required: true,options:this.locationOptions,formType: 'selectTree', },
         { label:"规格型号", prop:"specs", span: 8, },
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 8, required: true, },  //(1 设备、2 部件)
         { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
@@ -176,6 +176,7 @@ export default {
       // 部门树选项
       categoryOptions: [],
       deptOptions: [],
+      locationOptions:[],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -314,6 +315,20 @@ export default {
       listDept().then(response => {
         this.deptOptions = response.data;
       });
+      getLocationTree().then(res=>{
+        this.locationOptions=this.getTree(res.data)
+      })
+    },
+    getTree(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTree(item.children)
+          }
+        })
+        return arr
     },
     /** 查询用户列表 */
     getList(queryParams) {

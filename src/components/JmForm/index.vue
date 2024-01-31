@@ -7,6 +7,7 @@
     <el-form
       ref="formform"
       size="small"
+      v-if="formData"
       :model="formData"
       :rules="rules"
       :label-position="labelPosition"
@@ -88,7 +89,7 @@
               type="date"
               clearable
               :disabled="col.formDisabled || disabled"
-              style="width: auto;"
+              style="width: 100%;"
               placeholder="选择日期"
             ></el-date-picker>
             <treeselect
@@ -107,6 +108,7 @@
               :disabled="col.formDisabled || disabled"
               :zIndex="9999"
               style="height: 32px;line-height: 32px;"
+              :flat="true"
             />
             <el-input
               v-else-if="col.formType=='textarea'"
@@ -265,7 +267,7 @@ export default {
   .vue-treeselect__control,
   .el-input__inner,
   .el-textarea__inner {
-    border: none !important;
+/*     border: none !important; */
     background-color: #fff !important;
     cursor: default !important;
   }

@@ -87,12 +87,12 @@
     </p>
     <jm-form 
       class="mr20"
-      :columns="formData.emArchivesExtendAtt.componentContent" 
+      :columns="formData.emArchivesExtendAtt?formData.emArchivesExtendAtt.componentContent:[]" 
       :hideBorder="disabled5"
       :labelPosition="'left'"
       :disabled="disabled5"
       :showButton="false"
-      :formData="formData.emArchivesExtendAtt.fieldValue"
+      :formData="formData.emArchivesExtendAtt?formData.emArchivesExtendAtt.fieldValue:{}"
       ref="jmform5">
     </jm-form>
     <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -339,6 +339,7 @@ export default {
   },
   created() {
     this.getTreeSelect()
+    console.log(this.formData)
   },
   methods: {
     setFormLabel(arr){

@@ -88,7 +88,6 @@
                     type="date"
                     clearable
                     @keyup.enter.native="handleQuery"
-                    style="width: auto"
                     placeholder="选择日期"
                   >
                   </el-date-picker>
@@ -519,5 +518,10 @@ export default {
 }
 ::v-deep .el-table__row:nth-child(odd) {
   background-color: #f7fbff;
+}
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+    height: 12px;
+    opacity: 0.5;
 }
 </style>

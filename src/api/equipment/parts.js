@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { json } from 'vkbeautify'
 
 // 查询关联备件_表单模板列表
 export function listParts(query) {
@@ -67,5 +68,23 @@ export function statistics(query) {
     url: '/maintain/statistics' ,
     method: 'get',
     params: query
+  })
+}
+
+//周转履历
+export function getDeviceResume(data) {
+  return request({
+    url: 'equipment/base/getDeviceResume' ,
+    method: 'post',
+    data: data 
+  })
+}
+
+//运维履历
+export function getMaintenanceList(data) {
+  return request({
+    url: 'workorder/getMaintenanceList' ,
+    method: 'post',
+    data: data
   })
 }

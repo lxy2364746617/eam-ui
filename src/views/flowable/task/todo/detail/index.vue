@@ -79,7 +79,7 @@
               <ul>
                 <li class="linetime" v-for="(item,index ) in flowRecordList" :key="index">
                  <el-card :body-style="{ padding: '10px' }">
-                    <p>{{item.assigneeName?item.assigneeName:''+(item.duration? ('('+item.duration+')'):'')}}</p>
+                    <p><span v-if="item.activityType=='startEvent'">发起人:</span>{{item.assigneeName?item.assigneeName:''+(item.duration? ('('+item.duration+')'):'')}}</p>
                     <p style="color:#02B606" v-if="item.comment&&item.comment.type==1">同意</p>
                     <p style="color:#EA0000" v-if="item.comment&&item.comment.type==3">驳回</p>
                     <p>{{item.comment?item.comment.comment:''}}</p>
@@ -130,7 +130,7 @@
             <flow-user v-if="checkSendUser" :checkType="checkType" @handleUserSelect="handleUserSelect"></flow-user>
             <flow-role v-if="checkSendRole" @handleRoleSelect="handleRoleSelect"></flow-role>
           </el-form-item> -->
-          <el-form-item label="处理意见" label-width="80px" prop="comment" :rules="[{ required: true, message: '请输入处理意见', trigger: 'blur' }]">
+          <el-form-item  label="处理意见" label-width="80px" prop="comment">
             <el-input type="textarea" v-model="taskForm.comment" placeholder="请输入处理意见"  rows="5" />
           </el-form-item>
         </el-form>
@@ -175,7 +175,7 @@
             <flow-user v-if="checkSendUser" :checkType="checkType" @handleUserSelect="handleUserSelect"></flow-user>
             <flow-role v-if="checkSendRole" @handleRoleSelect="handleRoleSelect"></flow-role>
           </el-form-item> -->
-          <el-form-item label="处理意见" label-width="80px" prop="comment" :rules="[{ required: true, message: '请输入处理意见', trigger: 'blur' }]">
+          <el-form-item label="处理意见" label-width="80px" prop="comment" >
             <el-input type="textarea" v-model="taskForm.comment" placeholder="请输入处理意见"  rows="5" />
           </el-form-item>
         </el-form>
@@ -185,7 +185,7 @@
         </span>
       </el-dialog>
     </el-card>
-    <el-drawer :title="userData.title" :visible.sync="userData.open" size="40%" append-to-body>
+    <el-drawer :title="userData.title" :visible.sync="userData.open" size="50%" append-to-body>
       <el-row type="flex" :gutter="20">
         <el-col :span="20" :offset="2">
           <el-table ref="userTable" height="500" :data="userList" highlight-current-row @selection-change="handleSelectionChange">
@@ -481,10 +481,6 @@ export default {
         this.$modal.msgError("请选择流程接收角色组!");
         return;
       }
-      if (!this.taskForm.comment) {
-        this.$modal.msgError("请输入审批意见!");
-        return;
-      }
       if (this.taskForm && this.formKeyExist) {
         // 表单是否禁用
         this.taskForm.formData.formData.disabled = true;
@@ -645,6 +641,7 @@ export default {
     },
     /** 查询用户列表 */
     getUserList() {
+      console.log(this.userobj)
       const formData = new FormData();  
             Object.entries(this.userobj).forEach(([key, value]) => {  
             formData.append(key, value);

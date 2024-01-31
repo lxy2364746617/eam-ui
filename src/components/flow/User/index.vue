@@ -177,6 +177,8 @@ export default {
           } else {
             this.selectUserList = newVal;
           }
+        }else{
+          this.$refs.dataTable.clearSelection();
         }
       },
       immediate: true

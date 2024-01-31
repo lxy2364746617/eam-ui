@@ -1,6 +1,16 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+    <el-row :gutter="20">
+      <el-col v-if="isAdmin" :span="4">
+        <jm-user-tree
+          :treeData="treeData"
+          @handleNodeClick="handleNodeClick"
+          style="height:80vh"
+        >
+        </jm-user-tree>
+      </el-col>
+      <el-col :span="isAdmin?20:24">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item label="角色名称" prop="roleName">
         <el-input
           v-model="queryParams.roleName"
@@ -154,6 +164,9 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+      </el-col>
+    </el-row>
+    
 
     <!-- 添加或修改角色配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -252,14 +265,19 @@
 </template>
 
 <script>
-import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
+import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect,orgTree,isAdmin } from "@/api/system/role";
 import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
-
+import JmUserTree from "@/components/JmUserTree";
 export default {
+  components:{ JmUserTree},
   name: "Role",
   dicts: ['sys_normal_disable'],
   data() {
     return {
+      //是否为管理员
+      isAdmin:false,
+      //左侧树
+      treeData:[],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -338,13 +356,33 @@ export default {
         roleSort: [
           { required: true, message: "角色顺序不能为空", trigger: "blur" }
         ]
-      }
+      },
+      deptId:'',
     };
   },
   created() {
     this.getList();
+    isAdmin().then(res=>{
+      this.isAdmin=res.data
+    })
+    orgTree().then(res=>{
+      this.treeData=this.getTree(res.data)
+    })
   },
   methods: {
+    getTree(arr){
+      arr.forEach(item=>{
+          item.id=item.deptId
+          item.label=item.name
+          if(item.children&&item.children.length>0){
+            this.getTree(item.children)
+          }
+        })
+        return arr
+    },
+    handleNodeClick(e){
+      this.deptId=e.deptId
+    },
     /** 查询角色列表 */
     getList() {
       this.loading = true;
@@ -424,6 +462,7 @@ export default {
       this.deptExpand = true,
       this.deptNodeAll = false,
       this.form = {
+        deptId:this.deptId,
         roleId: undefined,
         roleName: undefined,
         roleKey: undefined,
@@ -553,6 +592,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function() {
+      console.log(this.form)
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.roleId != undefined) {

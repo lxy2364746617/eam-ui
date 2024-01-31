@@ -52,7 +52,7 @@
       :visible.sync="drawer"
       direction="rtl"
       :wrapperClosable="false"
-      size="60%">
+      size="66%">
       <!-- <jm-form 
         class="mr20"
         :columns="columns" 
