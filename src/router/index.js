@@ -863,6 +863,27 @@ export const constantRoutes = [
       },
     ],
   },
+  // ! 备件领用
+  {
+    path: "/sparepart",
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/sparepart/spareReceiveControls",
+        component: () => import("@/views/sparepart/spareReceive/ui/index.vue"),
+        name: "spareReceiveControls",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "备件领用/详情"
+            : "备件领用/新增";
+          to.query.d == "true" ? (to.meta.title = "备件领用/编辑") : "";
+          next();
+        },
+        meta: { title: "备件领用", icon: "" },
+      },
+    ],
+  },
   // ! 备件详情
   {
     path: "/sparepart",

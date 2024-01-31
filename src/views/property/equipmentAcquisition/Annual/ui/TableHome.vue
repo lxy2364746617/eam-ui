@@ -45,7 +45,7 @@
         <!-- <el-col :span="1.5">
               <el-button
                 type="primary"
-                
+
                 icon="el-icon-delete"
                 size="mini"
                 :disabled="multiple"
@@ -79,11 +79,7 @@
           >编辑</el-button
         >
         <el-button
-          v-if="
-            scope.row.apvStatus == 'uncommitted' ||
-            scope.row.apvStatus == 'reject' ||
-            scope.row.apvStatus == 'canceled'
-          "
+
           size="mini"
           type="text"
           icon="el-icon-delete"
@@ -415,8 +411,8 @@ export default {
       this.loading = true;
       form["purchasePlanType"] = 1;
       getPurchaseList(form).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
+        this.equipmentList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
