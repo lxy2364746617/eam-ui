@@ -8,7 +8,7 @@
             <el-button type="info" icon="el-icon-arrow-left" style="margin-left:20px" @click="backClick">返 回</el-button>
           </div>
         </div>
-      <div class="search_text">
+      <div class="search_text" v-hasPermi="['kdb:history:list']">
         <span>历史搜索：</span>
         <el-tag v-for="(item,index) in tags" :key="index" type="info" @close="handleClose(item)" @click="handleClick(item)">{{item.searchContent}}</el-tag>
       </div>
@@ -56,7 +56,7 @@
           </el-col>
         </el-row>
       </div>
-      
+
     </el-card>
   </div>
 </template>
@@ -237,7 +237,7 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
         margin: 0;
         height: 25px;
         line-height: 25px;
-        
+
       }
       .text{
         font-size: 13px;
@@ -253,7 +253,7 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
           color: #1F77FC;
         }
         .icon_right{
-          color: #1F77FC; 
+          color: #1F77FC;
           position: absolute;
           right: 10px;
           cursor: pointer;
@@ -277,7 +277,7 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
   // background-color: #E0EAFF;
   padding: 0 15px;
   position: relative;
-  
+
 }
 ::v-deep .el-collapse-item__arrow{
   position: absolute;
