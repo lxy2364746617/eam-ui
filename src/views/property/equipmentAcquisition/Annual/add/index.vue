@@ -143,7 +143,7 @@ export default {
       if (review) {
         setProject(val).then((res) => {
           if (res.code === 200) {
-            this.reviewCode = res.msg;
+            this.reviewCode = res.data;
             this.handleSubmit();
           }
         });

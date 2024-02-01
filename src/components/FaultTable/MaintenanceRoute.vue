@@ -389,20 +389,22 @@ export default {
         if (val) {
           // this.$emit("lineDTOListMaintenance", val);
           let arr = [];
-
           val.forEach((item) => {
             larchivesList({ lineId: item.lineId })
               .then((res) => {
-                arr.push({
-                  ...res.data,
-                  lineCode: item.lineCode,
-                  lineName: item.lineName,
-                });
+                arr.push(...res.data.map(val=>({
+                    ...val,
+                    lineCode: item.lineCode,
+                    lineName: item.lineName,
+                })));
               })
               .catch(() => {});
           });
+
           this.womDevices = arr;
-          console.log("========================", this.womDevices);
+          console.log(this.womDevices)
+
+          this.$emit("lineDTOListWomDevices", this.womDevices);
         }
       },
       deep: true,
