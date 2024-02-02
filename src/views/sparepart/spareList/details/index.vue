@@ -14,14 +14,15 @@
         </el-col>
       </el-row>
       <el-row :gutter="12" :style="{ 'margin-top': disabled1 ? 0 : 36 + 'px' }">
-        <el-col :span="6">
+        <el-col :span="4" style="display: flex">
           <img
-            v-if="mainImage.indexOf('null') == -1"
+            v-if="formData.fileResource"
             :src="mainImage"
             alt=""
             srcset=""
-            style="width: 50%; vertical-align: top; height: 100px"
+            style="width: 140px; vertical-align: top; height: 100px"
           />
+          <div v-else class="noImg"></div>
           <img
             v-if="qrCode.indexOf('null') == -1"
             @click="opendrawer"
@@ -29,11 +30,16 @@
             :src="qrCode"
             alt=""
             srcset=""
-            style="width: 100px; vertical-align: top; height: 100px"
+            style="
+              width: 100px;
+              vertical-align: top;
+              height: 100px;
+              margin-left: 20px;
+            "
           />
         </el-col>
         <el-col
-          :span="15"
+          :span="17"
           style="font-size: 12px; color: #888; padding-top: 4px"
         >
           <jm-form
@@ -170,6 +176,7 @@ import step2 from "./step2.vue";
 import step3 from "./step3.vue";
 import step4 from "./step4.vue";
 import step5 from "./step5.vue";
+import { getLocationTree } from "@/api/Location";
 export default {
   components: { Wrapper, JmForm, supplier, step1, step2, step3, step4, step5 },
   dicts: ["spare_parts_type", "spare_parts_unit", "spare_parts_type"],
@@ -186,6 +193,7 @@ export default {
       categoryName: "",
       spareValue: null,
       drawersupplier: false,
+      locationOptions: [],
     };
   },
   created() {
@@ -194,6 +202,7 @@ export default {
     this.spareValue = this.$route.query.i;
     getManagementDetails(this.spareValue.id).then((res) => {
       this.formData = res.data;
+      this.$refs.jmform1.clearValidate();
     });
   },
 
@@ -232,9 +241,11 @@ export default {
         },
         {
           label: "默认存储位置",
-          prop: "locationName",
+          prop: "location",
           span: 8,
           required: true,
+          options: this.locationOptions,
+          formType: "selectTree",
         },
         {
           label: "默认供应商",
@@ -262,6 +273,17 @@ export default {
     },
   },
   methods: {
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptCode;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     newFormData(newValue) {
       this.formData.imgFileResourceList = newValue.imgFileResourceList;
     },
@@ -284,6 +306,9 @@ export default {
       this.closesupplier();
     },
     getTreeSelect() {
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTree(res.data);
+      });
       equipmentTree().then((response) => {
         this.categoryOptions = response.data;
       });
@@ -312,6 +337,10 @@ export default {
         // 编辑
         updateManagement(this.spareValue).then((res) => {
           if (res.code === 200) {
+            getManagementDetails(this.spareValue.id).then((res) => {
+              this.formData = res.data;
+              this.$refs.jmform1.clearValidate();
+            });
             this.$message.success("编辑成功！");
             this.disabled1 = true;
             if (callback) callback();
@@ -328,9 +357,15 @@ export default {
       };
 
       uploadImgPut(newFile).then((response) => {
-        this.$modal.msgSuccess("修改成功");
-        this.disabled1 = true;
-        if (callback) callback(this.formData);
+        if (response.code === 200) {
+          getManagementDetails(this.spareValue.id).then((res) => {
+            this.formData = res.data;
+            this.$refs.jmform1.clearValidate();
+          });
+          this.$modal.msgSuccess("修改成功");
+          this.disabled1 = true;
+          if (callback) callback(this.formData);
+        }
       });
     },
     handlePrint() {
@@ -387,6 +422,12 @@ export default {
 }
 ::v-deep .el-card__body {
   padding-top: 0;
+}
+.noImg {
+  width: 140px;
+  vertical-align: top;
+  height: 100px;
+  background: url("../../../../assets/images/noImg.png") no-repeat;
 }
 </style>
 

@@ -31,7 +31,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['property:receive:edit']"
+          v-hasPermi="['property:receive:view']"
           >详情</el-button
         >
         <el-button
@@ -71,7 +71,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
-          v-hasPermi="['property:receive:edit']"
+          v-hasPermi="['property:receive:submit']"
           >提交</el-button
         >
         <el-button
@@ -83,7 +83,7 @@
           type="text"
           icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
-          v-hasPermi="['property:receive:edit']"
+          v-hasPermi="['property:receive:review']"
           >审批流</el-button
         >
         <el-button
@@ -177,7 +177,12 @@ export default {
         },
         { label: "领用单号", prop: "neckNo", tableVisible: true, width: 200 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
-        { label: "业务日期", prop: "neckDate", tableVisible: true },
+        {
+          label: "业务日期",
+          prop: "neckDate",
+          tableVisible: true,
+          formType: "date",
+        },
         {
           label: "所属组织",
           prop: "affDeptName",
@@ -320,8 +325,8 @@ export default {
     ) {
       this.loading = true;
       getPurchaseList(queryParams).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
+        this.equipmentList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },

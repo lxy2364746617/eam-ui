@@ -96,7 +96,7 @@
                 icon="el-icon-download"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['property:prescription:add']"
+                v-hasPermi="['property:prescription:download']"
                 >下载</el-button
               >
             </el-col>
@@ -135,7 +135,12 @@ import BarChartBar from "./ui/BarChartBar.vue";
 
 export default {
   name: "devicebook",
-  dicts: ["em_device_state", "em_device_att", "wf_process_status", "em_device_level"],
+  dicts: [
+    "em_device_state",
+    "em_device_att",
+    "wf_process_status",
+    "em_device_level",
+  ],
   components: {
     Treeselect,
     JmUserTree,

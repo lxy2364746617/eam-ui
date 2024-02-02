@@ -71,7 +71,7 @@
             :sortable="false"
             :prop="col.prop"
             :min-width="col.width || 100"
-            :show-overflow-tooltip="col.showOverflowTooltip"
+            :show-overflow-tooltip="true"
             v-if="tableVisible[col.prop]"
           >
             <template slot-scope="scope">
@@ -232,6 +232,11 @@
                 v-else-if="col.formType == 'selectTree'"
                 v-html="findTreeName(col.options, scope.row[col.prop])"
               ></span>
+              <div v-else-if="col.type == 'template'">
+                <template>
+                  <div v-html="col.template(scope.row, col)"></div>
+                </template>
+              </div>
               <span
                 v-else
                 v-html="scope.row[col.prop]"
@@ -533,7 +538,16 @@ export default {
 ::v-deep .leftRadio .el-radio__label {
   display: none;
 }
-
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 12px;
+  opacity: 0.5;
+}
+// ::v-deep .el-link.el-link--primary {
+//   white-space: nowrap; /* 不换行 */
+//   overflow: hidden; /* 超出部分隐藏 */
+//   text-overflow: ellipsis; /* 显示省略号 */
+// }
 .active {
   color: #007bfe;
   cursor: pointer;

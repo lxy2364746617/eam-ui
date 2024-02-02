@@ -10,7 +10,7 @@
         >新增备件</el-button
       >
     </div>
-    <el-row :gutter="24" style="margin: 10px auto">
+    <el-row :gutter="24" style="margin: 10px 0px">
       <el-col :span="12">
         <el-form-item label="领用单号" prop="receiptCode">
           <el-input

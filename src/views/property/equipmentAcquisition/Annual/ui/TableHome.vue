@@ -29,6 +29,7 @@
             size="mini"
             icon="el-icon-upload2"
             @click="handlerImport"
+            v-hasPermi="['property:purchase:export']"
             >导入</el-button
           >
         </el-col>
@@ -38,7 +39,7 @@
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"
-            v-hasPermi="['property:purchase:add']"
+            v-hasPermi="['property:purchase:download']"
             >下载</el-button
           >
         </el-col>
@@ -61,7 +62,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['property:purchase:edit']"
+          v-hasPermi="['property:purchase:view']"
           >详情</el-button
         >
         <el-button
@@ -79,7 +80,6 @@
           >编辑</el-button
         >
         <el-button
-
           size="mini"
           type="text"
           icon="el-icon-delete"
@@ -109,7 +109,7 @@
           type="text"
           icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
-          v-hasPermi="['property:purchase:edit']"
+          v-hasPermi="['property:purchase:review']"
           >审批流</el-button
         >
       </template>

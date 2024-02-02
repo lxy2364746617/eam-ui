@@ -20,7 +20,7 @@
               size="mini"
               :loading="btnLoading"
               @click="handlerAdd"
-              v-hasPermi="['equipment:book:add']"
+              v-hasPermi="['work:schedule:quest']"
               >手动分派</el-button
             >
           </el-col>
@@ -33,7 +33,7 @@
               icon="el-icon-view"
               :loading="btnLoading"
               @click="goDetails(scope.row, 'view')"
-              v-hasPermi="['work:request:view']"
+              v-hasPermi="['work:schedule:view']"
               >详情</el-button
             ><el-button
               size="mini"
@@ -41,7 +41,7 @@
               icon="el-icon-edit"
               :loading="btnLoading"
               @click="goDetails(scope.row, 'edit')"
-              v-hasPermi="['equipment:book:edit']"
+              v-hasPermi="['work:schedule:edit']"
               >编辑</el-button
             >
             <el-button
@@ -49,7 +49,7 @@
               type="text"
               icon="el-icon-delete"
               @click="handleAllot(scope.row)"
-              v-hasPermi="['equipment:book:remove']"
+              v-hasPermi="['work:schedule:allot']"
               >分派</el-button
             >
             <el-button
@@ -57,7 +57,7 @@
               type="text"
               icon="el-icon-document-add"
               @click="handleSet(scope.row)"
-              v-hasPermi="['equipment:book:edit']"
+              v-hasPermi="['work:schedule:edit']"
               >关闭</el-button
             ></span
           >

@@ -197,6 +197,7 @@ import {
   deleteProjectId,
 } from "@/api/property/purchase";
 import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import ContTable from "@/components/ContTable";
 import {
   setStore,

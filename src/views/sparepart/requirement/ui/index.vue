@@ -212,12 +212,12 @@ export default {
           label: "备件需求名称",
           prop: "demandName",
           span: 5,
+          required: true,
         },
         {
           label: "需求类型",
           prop: "demandType",
           span: 5,
-          required: true,
           formType: "select",
           options: this.dict.type.require_type,
         },
@@ -234,6 +234,7 @@ export default {
           prop: "applyDept",
           span: 5,
           formType: "selectTree",
+          required: true,
           options: this.deptOptions,
         },
       ];
@@ -351,7 +352,7 @@ export default {
       // this.$set(this.formDataNow, "sModel", row.sModel);
       // this.$set(this.formDataNow, "unit", row.unit);
       // this.$set(this.formDataNow, "supplierId", row.supplierId);
-      this.formDataNow = row;
+      this.formDataNow = { ...row, ...this.formDataNow };
       this.closesupplier();
     },
     closesupplier() {

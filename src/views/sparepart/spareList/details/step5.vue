@@ -142,6 +142,9 @@ export default {
     closeEdit(formref) {
       this.$emit("close", (val) => {
         this["disabled" + formref] = true;
+        getImg(this.formData.partCode).then((res) => {
+          this.$set(this.formData, "imgFileResourceList", res.data);
+        });
       });
     },
     close() {

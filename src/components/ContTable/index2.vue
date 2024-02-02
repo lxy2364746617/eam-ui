@@ -71,7 +71,7 @@
             :sortable="false"
             :prop="col.prop"
             :min-width="col.width || 100"
-            :show-overflow-tooltip="col.showOverflowTooltip"
+            :show-overflow-tooltip="true"
             v-if="tableVisible[col.prop]"
           >
             <template slot-scope="scope">
@@ -524,5 +524,10 @@ export default {
 .content-body {
   max-height: 550px;
   overflow-y: scroll;
+}
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 12px;
+  opacity: 0.5;
 }
 </style>

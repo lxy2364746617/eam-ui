@@ -18,6 +18,7 @@
             type="primary"
             icon="el-icon-minus"
             size="mini"
+            v-hasPermi="['sparepart:spareInAndOut:out']"
             @click="handleAdd('备件出库')"
             >出库</el-button
           >
@@ -27,6 +28,7 @@
             type="primary"
             icon="el-icon-plus"
             size="mini"
+            v-hasPermi="['sparepart:spareInAndOut:in']"
             @click="handleAdd('备件入库')"
             >入库</el-button
           >
@@ -47,6 +49,7 @@
             icon="el-icon-download"
             size="mini"
             @click="handleDownload"
+            v-hasPermi="['sparepart:spareInAndOut:download']"
             >下载</el-button
           >
         </el-col>
@@ -243,10 +246,12 @@ import {
   getStockInOutCondition,
   stockOut,
   stockIn,
+  stockInOutDownload,
 } from "@/api/sparePart/spareInAndOut";
 import spareList from "@/views/sparepart/spareList/spareList.vue";
 import requirement from "@/views/sparepart/requirement/requirement.vue";
 import spareReceive from "@/views/sparepart/spareReceive/spareReceive.vue";
+import { getLocationTree } from "@/api/Location";
 export default {
   dicts: [
     "em_property_type",
@@ -306,6 +311,7 @@ export default {
       //   fileType: [".xlsx"],
       //   fileList: [],
       //   btnLoading: false,
+      locationOptions: [],
     };
   },
   watch: {
@@ -339,6 +345,12 @@ export default {
           // this.selectTab.forEach((row) => {
           //   this.$refs.multipleTable.toggleRowSelection(row);
           // });
+        } else {
+          this.$refs.multipleTable.clearSelection();
+          this.inOutList = this.inOutList.map((item) => ({
+            ...item,
+            quantity: null,
+          }));
         }
       },
       deep: true,
@@ -383,7 +395,14 @@ export default {
           required: true,
         },
         { label: "供应商", prop: "supplierName", span: 22, width: 150 },
-        { label: "存储位置", prop: "locationName", span: 22, width: 150 },
+        {
+          label: "存储位置",
+          prop: "location",
+          span: 22,
+          width: 150,
+          options: this.locationOptions,
+          formType: "selectTree",
+        },
         { label: "规格型号", prop: "sModel", span: 22, width: 150 },
         { label: "关联请求", prop: "relatedRequestCode", span: 22, width: 150 },
         { label: "出入库原因", prop: "reason", span: 22, width: 150 },
@@ -514,8 +533,10 @@ export default {
           },
           {
             label: "存储位置",
-            prop: "locationName",
+            prop: "location",
             span: 13,
+            options: this.locationOptions,
+            formType: "selectTree",
           },
           {
             label: "关联请求编码",
@@ -538,15 +559,14 @@ export default {
     },
     submitTJ() {
       return !(
+        this.formDataNow.quantitySum !== 0 &&
         this.formDataNow.quantitySum ===
-        this.selectionRow2.reduce((v, t) => v + t.quantity, 0)
+          this.selectionRow2.reduce((v, t) => v + t.quantity, 0)
       );
     },
   },
   created() {
     this.getTreeSelect();
-
-    this.getList(this.queryParams);
   },
   methods: {
     closeDrawer() {
@@ -575,12 +595,32 @@ export default {
     // 下载
 
     handleDownload() {
-      console.log("========================", "下载");
+      stockInOutDownload({ ids: this.ids }).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.ms-excel;charset=utf-8",
+        });
+        saveAs(blob, `sparePart_${new Date().getTime()}`);
+      });
     },
     getTreeSelect() {
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTree(res.data);
+      });
       listDept().then((response) => {
         this.deptOptions = response.data;
+        this.getList(this.queryParams);
       });
+    },
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
     },
     // ! 选择备件
     submitPartCoder(row) {

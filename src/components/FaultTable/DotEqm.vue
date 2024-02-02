@@ -52,7 +52,11 @@
         align="center"
         prop="location"
         min-width="150"
-      ></el-table-column>
+      >
+        <!-- <template slot-scope="scope">
+          <span>{{ findTreeName(locationOptions, scope.row.location) }}</span>
+        </template> -->
+      </el-table-column>
       <el-table-column
         label="所属子公司"
         align="center"
@@ -186,6 +190,7 @@ import JmTable from "@/components/JmTable";
 import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
 import pline from "./ui/pline";
 import { getWomDevice } from "@/api/work/schedule";
+import { getLocationTree, locationInfo } from "@/api/Location";
 import {
   findByDeviceIdAndItemType,
   findByDeviceId,
@@ -290,9 +295,14 @@ export default {
       leftData: [],
       selectionLeft: [],
       selectionRight: [],
+      locationOptions: [],
     };
   },
   created() {
+    getLocationTree().then((res) => {
+      this.locationOptions = this.getTree(res.data);
+    });
+
     if (this.formData.orderCode) {
       getWomDevice({ orderCode: this.formData.orderCode, lineCode: "" }).then(
         (res) => {
@@ -303,6 +313,39 @@ export default {
   },
   mounted() {},
   methods: {
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     handleDelete(row) {
       var that = this;
       this.$modal

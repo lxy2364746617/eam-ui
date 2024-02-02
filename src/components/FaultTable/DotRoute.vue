@@ -104,7 +104,11 @@
           align="center"
           prop="location"
           min-width="150"
-        ></el-table-column>
+        >
+          <!-- <template slot-scope="scope">
+            <span>{{ findTreeName(locationOptions, scope.row.location) }}</span>
+          </template> -->
+        </el-table-column>
         <el-table-column
           label="所属子公司"
           align="center"
@@ -197,6 +201,7 @@ import { listResource, addResource, delResource } from "@/api/system/resource";
 import JmTable from "@/components/JmTable";
 import pline from "@/views/maintain/pplan/pline";
 import { getWomLine } from "@/api/work/schedule";
+import { getLocationTree } from "@/api/Location";
 export default {
   name: "Template",
   dicts: ["mro_s_check_status", "mro_is_photo", "em_device_state"],
@@ -327,57 +332,7 @@ export default {
       filedrawer: false,
       fileType: [".xlsx"],
       fileResourceList: [],
-      // 表单校验
-      rules: {
-        planName: [
-          {
-            required: true,
-            message: "巡点检计划名称不能为空",
-            trigger: "blur",
-          },
-        ],
-        lineStatus: [
-          { required: true, message: "计划状态不能为空", trigger: "blur" },
-        ],
-        itemType: [
-          { required: true, message: "巡点检类型不能为空", trigger: "blur" },
-        ],
-        planCycle: [
-          { required: true, message: "巡点检周期不能为空", trigger: "blur" },
-        ],
-        planCycleType: [
-          {
-            required: true,
-            message: "巡点检周期类别不能为空",
-            trigger: "blur",
-          },
-        ],
-        planBeginTime: [
-          { required: true, message: "计划开始时间不能为空", trigger: "blur" },
-        ],
-        planEndTime: [
-          { required: true, message: "计划结束时间不能为空", trigger: "blur" },
-        ],
-        thisExecuteTime: [
-          { required: true, message: "本次执行日期不能为空", trigger: "blur" },
-        ],
-        nextExecuteTime: [
-          { required: true, message: "下次执行日期不能为空", trigger: "blur" },
-        ],
-        groupId: [
-          { required: true, message: "巡点检班组不能为空", trigger: "blur" },
-        ],
-        executor: [
-          {
-            required: true,
-            message: "巡点检执行人日期不能为空",
-            trigger: "blur",
-          },
-        ],
-        director: [
-          { required: true, message: "巡点检负责人不能为空", trigger: "blur" },
-        ],
-      },
+      locationOptions: [],
     };
   },
   watch: {
@@ -392,14 +347,9 @@ export default {
     },
   },
   created() {
-    // this.disabled = this.$route.query.d == "true";
-    // if (this.$route.query.l) {
-    //   this.planId = this.$route.query.l;
-    //   this.getDetails(this.$route.query.l);
-    // } else {
-    //   this.planId = "";
-    //   this.loading = false;
-    // }
+    getLocationTree().then((res) => {
+      this.locationOptions = this.getTree(res.data);
+    });
     if (this.formData.orderCode) {
       getWomLine({ orderCode: this.formData.orderCode }).then((res) => {
         let data1 = res.data;
@@ -414,6 +364,39 @@ export default {
     }
   },
   methods: {
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     submitRadio2(row) {
       let row1 = row.map((item) => {
         item.photoFlag = "Y";
@@ -611,7 +594,8 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 
 .viewSpan {

@@ -9,7 +9,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px">
-        <el-col :span="5">
+        <el-col :span="4" style="display: flex">
           <img
             v-if="mainImage.indexOf('null') == -1"
             :src="mainImage"
@@ -17,13 +17,14 @@
             srcset=""
             style="width: 50%; vertical-align: top; height: 100px"
           />
+          <div v-else class="noImg"></div>
           <img
             v-if="qrCode.indexOf('null') == -1"
             class="qrcodeimg"
             :src="qrCode"
             alt=""
             srcset=""
-            style="width: 100px; vertical-align: top; height: 100px"
+            style="width: 100px; vertical-align: top; height: 100px margin-left:15px;"
           />
         </el-col>
         <el-col
@@ -722,5 +723,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.noImg {
+  width: 140px;
+  vertical-align: top;
+  height: 100px;
+  background: url("../../../../assets/images/noImg.png") no-repeat;
 }
 </style>

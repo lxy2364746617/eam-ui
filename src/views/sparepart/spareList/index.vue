@@ -18,6 +18,7 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
+            v-hasPermi="['sparepart:spareList:add']"
             >添加</el-button
           >
         </el-col>
@@ -27,7 +28,8 @@
             icon="el-icon-upload2"
             size="mini"
             :loading="btnLoading"
-            @click="AddFile"
+            @click="handleImport"
+            v-hasPermi="['sparepart:spareList:export']"
             >导入</el-button
           >
         </el-col>
@@ -37,6 +39,7 @@
             icon="el-icon-download"
             size="mini"
             @click="handleDownload"
+            v-hasPermi="['sparepart:spareList:download']"
             >下载</el-button
           >
         </el-col>
@@ -46,15 +49,21 @@
           size="mini"
           type="text"
           @click="handleDetails(scope.row, 'details')"
+          v-hasPermi="['sparepart:spareList:details']"
           >详情</el-button
         >
         <el-button
           size="mini"
           type="text"
           @click="handleUpdate(scope.row, 'edit')"
+          v-hasPermi="['sparepart:spareList:edit']"
           >编辑</el-button
         >
-        <el-button size="mini" type="text" @click="handleDelete(scope.row)"
+        <el-button
+          v-hasPermi="['sparepart:spareList:delete']"
+          size="mini"
+          type="text"
+          @click="handleDelete(scope.row)"
           >删除</el-button
         >
       </template>
@@ -98,22 +107,14 @@
       ></supplier>
     </el-drawer>
 
-    <!-- 上传文件 -->
-    <el-drawer
-      title="选择文件"
-      :visible.sync="filedrawer"
-      direction="rtl"
-      :destroy-on-close="true"
-      :wrapperClosable="false"
-    >
-      <file-upload
-        :drag="true"
-        @uploadChange="uploadChange"
-        :listType="'picture-card'"
-        style="padding: 0 20px"
-      >
-      </file-upload>
-    </el-drawer>
+    <!-- 导入 -->
+    <file-import
+      @handleFileSuccess="handleFileSuccess"
+      :downloadTemplateUrl="'/attachment/importTemplate'"
+      ref="fileImport"
+      :isUpdate="false"
+      :importUrl="'/attachment/import'"
+    ></file-import>
   </Wrapper>
 </template>
 
@@ -131,6 +132,8 @@ import {
   delManagement,
   exportManagementList,
 } from "@/api/sparePart/sparePartList";
+import fileImport from "@/components/FileImport";
+import { getLocationTree } from "@/api/Location";
 export default {
   dicts: ["em_property_type", "spare_parts_unit", "spare_parts_type"],
   components: {
@@ -138,6 +141,7 @@ export default {
     JmForm,
     supplier,
     Wrapper,
+    fileImport,
   },
 
   mounted() {},
@@ -174,6 +178,8 @@ export default {
       fileType: [".xlsx"],
       fileList: [],
       btnLoading: false,
+      locationOptions: [],
+      editValue: null,
     };
   },
   computed: {
@@ -185,7 +191,7 @@ export default {
           prop: "partCode",
           span: 22,
           required: true,
-          // formDisabled: this.title === "新增设备" ? false : true,
+          formDisabled: this.title === "新增设备" ? false : true,
         },
         { label: "备件名称", prop: "partName", span: 22, required: true },
         {
@@ -213,6 +219,7 @@ export default {
           prop: "inventory",
           span: 22,
           formType: "number",
+          formDisabled: this.title === "新增设备" ? false : true,
         },
         {
           label: "单位",
@@ -222,7 +229,14 @@ export default {
           options: this.dict.type.spare_parts_unit,
           required: true,
         },
-        { label: "默认存储位置", prop: "locationName", span: 22, width: 150 },
+        {
+          label: "默认存储位置",
+          prop: "location",
+          span: 22,
+          width: 150,
+          options: this.locationOptions,
+          formType: "selectTree",
+        },
         {
           label: "所属组织",
           prop: "affDept",
@@ -264,15 +278,13 @@ export default {
         },
       });
     },
-    // 导入
-    AddFile() {
-      this.btnLoading = true;
-      this.filedrawer = true;
+    /** 导入按钮操作 */
+    handleImport() {
+      this.$refs.fileImport.upload.open = true;
     },
-    uploadChange() {
-      this.$message.success("文件上传成功！");
-      this.filedrawer = false;
-      this.btnLoading = true;
+    // 文件上传成功处理
+    handleFileSuccess() {
+      this.getList();
     },
     // 下载
     handleDownload() {
@@ -284,10 +296,46 @@ export default {
       });
     },
     getTreeSelect() {
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTree(res.data);
+      });
       listDept().then((response) => {
         this.deptOptions = response.data;
         this.getList(this.queryParams);
       });
+    },
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptCode;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
     },
     closesupplier() {
       this.drawersupplier = false;
@@ -327,6 +375,7 @@ export default {
       this.drawer = true;
       this.title = "编辑设备";
       this.formDataNow = JSON.parse(JSON.stringify(row));
+      this.editValue = JSON.parse(JSON.stringify(row));
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -351,29 +400,35 @@ export default {
     },
     /** 提交按钮 */
     submitForm(formVal) {
-      if (
-        this.equipmentList.some((item) => item.partCode === formVal.partCode)
-      ) {
-        this.$modal.msgWarning("备件编码已存在，请重新输入！");
-        return;
-      }
+      // formVal["locationName"] = this.findTreeName(
+      //   this.locationOptions,
+      //   formVal.location
+      // );
       if (formVal.id) {
+        if (this.editValue.unit !== formVal.unit)
+          this.$modal.msgWarning("该备件有库存，请谨慎修改单位！");
         updateManagement(formVal).then((res) => {
           if (res.code === 200) {
             this.$message.success("编辑成功！");
             this.getList(this.queryParams);
+            this.close();
           }
         });
       } else {
+        if (
+          this.equipmentList.some((item) => item.partCode === formVal.partCode)
+        ) {
+          this.$modal.msgWarning("备件编码已存在，请重新输入！");
+          return;
+        }
         addManagement(formVal).then((res) => {
           if (res.code === 200) {
             this.$message.success("新增成功！");
             this.getList(this.queryParams);
+            this.close();
           }
         });
       }
-
-      this.close();
     },
   },
 };

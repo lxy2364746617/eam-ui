@@ -377,7 +377,6 @@ import ContTable from "@/components/ContTable";
 import JmTable from "@/components/JmTable";
 import TitleForm from "@/components/TitleForm";
 import Wrapper from "@/components/wrapper";
-import { getWarehousingList } from "@/api/property/warehousing";
 import { equipmentTree } from "@/api/equipment/category";
 import {
   getWomDevice,
@@ -466,8 +465,10 @@ export default {
       handler(val) {
         if (!val) return;
         if (val.endTime && val.startTime) {
-          this.form.workHours =
-            this.dateDiffInHours(val.endTime, val.startTime);
+          this.form.workHours = this.dateDiffInHours(
+            val.endTime,
+            val.startTime
+          );
         }
       },
       deep: true,

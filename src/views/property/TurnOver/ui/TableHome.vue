@@ -64,7 +64,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['property:turnOver:edit']"
+          v-hasPermi="['property:turnOver:view']"
           >详情</el-button
         >
         <el-button
@@ -104,7 +104,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
-          v-hasPermi="['property:turnOver:edit']"
+          v-hasPermi="['property:turnOver:submit']"
           >提交</el-button
         >
         <el-button
@@ -116,7 +116,7 @@
           type="text"
           icon="el-icon-view"
           @click="handleSet(scope.row)"
-          v-hasPermi="['property:turnOver:view']"
+          v-hasPermi="['property:turnOver:review']"
           >审批流</el-button
         >
         <el-button
@@ -224,7 +224,7 @@ export default {
           label: "业务日期",
           prop: "transferDate",
           tableVisible: true,
-          formType: "data",
+          formType: "date",
         },
         {
           label: "所属组织",
@@ -292,7 +292,7 @@ export default {
     // 打印单据
     handlePrint(row) {
       // 打印单据跳转
-    
+
       this.$router.push({
         path: "/property/print",
         query: {
@@ -416,8 +416,8 @@ export default {
     ) {
       this.loading = true;
       getPurchaseList(form).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
+        this.equipmentList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },

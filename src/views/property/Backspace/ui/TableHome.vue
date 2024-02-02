@@ -64,7 +64,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['property:backspace:edit']"
+          v-hasPermi="['property:backspace:view']"
           >详情</el-button
         >
         <el-button
@@ -104,7 +104,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
-          v-hasPermi="['property:backspace:edit']"
+          v-hasPermi="['property:backspace:submit']"
           >提交</el-button
         >
         <el-button
@@ -113,7 +113,7 @@
           type="text"
           icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
-          v-hasPermi="['property:backspace:edit']"
+          v-hasPermi="['property:backspace:review']"
           >审批流</el-button
         >
         <el-button
@@ -215,7 +215,7 @@ export default {
           label: "业务日期",
           prop: "createDate",
           tableVisible: true,
-          formType: "data",
+          formType: "date",
         },
         {
           label: "所属组织",
@@ -386,8 +386,8 @@ export default {
     ) {
       this.loading = true;
       getPurchaseList(form).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
+        this.equipmentList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },

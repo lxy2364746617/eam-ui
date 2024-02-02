@@ -20,6 +20,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleControls(null, 'add')"
+            v-hasPermi="['sparepart:requirement:add']"
             >新增</el-button
           >
         </el-col>
@@ -29,7 +30,8 @@
             icon="el-icon-upload2"
             size="mini"
             :loading="btnLoading"
-            @click="AddFile"
+            @click="handleImport"
+            v-hasPermi="['sparepart:requirement:export']"
             >导入</el-button
           >
         </el-col>
@@ -40,6 +42,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleControls(null, 'download')"
+            v-hasPermi="['sparepart:requirement:download']"
             >下载</el-button
           >
         </el-col>
@@ -49,6 +52,7 @@
           size="mini"
           type="text"
           @click="handleControls(scope.row, 'view')"
+          v-hasPermi="['sparepart:requirement:view']"
           >详情</el-button
         >
         <el-button
@@ -61,6 +65,7 @@
           type="text"
           :loading="btnLoading"
           @click="handleControls(scope.row, 'edit')"
+          v-hasPermi="['sparepart:requirement:edit']"
           >编辑</el-button
         >
         <el-button
@@ -72,12 +77,14 @@
           size="mini"
           type="text"
           @click="handleControls(scope.row, 'delete')"
+          v-hasPermi="['sparepart:requirement:delete']"
           >删除</el-button
         >
         <el-button
           size="mini"
           type="text"
           @click="handleControls(null, 'submit')"
+          v-hasPermi="['sparepart:requirement:submit']"
           v-if="
             scope.row.apvStatus == 'uncommitted' ||
             scope.row.apvStatus == 'reject' ||
@@ -93,6 +100,7 @@
             scope.row.apvStatus == 'completed' ||
             scope.row.apvStatus == 'running'
           "
+          v-hasPermi="['sparepart:requirement:review']"
           >审批流</el-button
         >
       </template>
@@ -127,6 +135,15 @@
         @getTableData="getTableData"
       ></subprocess>
     </el-dialog>
+
+    <!-- 导入 -->
+    <file-import
+      @handleFileSuccess="handleFileSuccess"
+      :downloadTemplateUrl="'/attachment/demand/importTemplate'"
+      ref="fileImport"
+      :isUpdate="false"
+      :importUrl="'/attachment/demand/import'"
+    ></file-import>
   </Wrapper>
 </template>
 <script>
@@ -141,8 +158,9 @@ import { listDept } from "@/api/system/dept";
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
+import fileImport from "@/components/FileImport";
 export default {
-  components: { Wrapper, ContTable, subprocess },
+  components: { Wrapper, ContTable, subprocess, fileImport },
   dicts: ["require_type", "wf_process_status"],
   data() {
     return {
@@ -242,7 +260,7 @@ export default {
         if (res.code == 200) {
           this.$message.success(res.msg);
           this.subopen = false;
-          this.getList();
+          this.getList(this.queryParams);
         }
       });
     },
@@ -303,7 +321,7 @@ export default {
           )
           .then(() => {
             // return delParts(ids);
-            return delAttachment, exportManagementList(row.id);
+            return delAttachment(row.id);
           })
           .then(() => {
             this.getList(this.queryParams);
@@ -343,7 +361,7 @@ export default {
       this.filedrawer = false;
     },
     handleSet(row) {
-       this.$router.push({
+      this.$router.push({
         path: "/flowable/task/finished/detail/index",
         query: {
           procInsId: row.processInstanceId,
@@ -364,6 +382,13 @@ export default {
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
       this.radioRow = selection[0];
+    },
+    handleImport() {
+      this.$refs.fileImport.upload.open = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess() {
+      this.getList();
     },
   },
 };

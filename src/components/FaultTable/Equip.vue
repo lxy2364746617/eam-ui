@@ -60,7 +60,11 @@
         align="center"
         prop="location"
         min-width="150"
-      ></el-table-column>
+      >
+        <!-- <template slot-scope="scope">
+            <span>{{ findTreeName(locationOptions, scope.row.location) }}</span>
+          </template> -->
+      </el-table-column>
       <el-table-column
         label="所属子公司"
         align="center"
@@ -151,6 +155,7 @@ export default {
         lineStatus: "0",
         lineId: 1,
       },
+      locationOptions: [],
     };
   },
 
@@ -166,6 +171,9 @@ export default {
     },
   },
   created() {
+    getLocationTree().then((res) => {
+      this.locationOptions = this.getTree(res.data);
+    });
     if (this.formData.orderCode) {
       getWomDevice({ orderCode: this.formData.orderCode, lineCode: "" }).then(
         (res) => {
@@ -203,6 +211,39 @@ export default {
   },
   computed: {},
   methods: {
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     /** 删除按钮操作 */
     handleDelete(scope) {
       var that = this;
@@ -277,7 +318,7 @@ export default {
 </script>
 <style lang='scss' scoped>
 .title {
-   background-color: #ebf4fc;
+  background-color: #ebf4fc;
   color: #555;
   font-weight: 700;
   text-align: left;
@@ -290,6 +331,7 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 </style>

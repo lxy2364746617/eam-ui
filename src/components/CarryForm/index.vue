@@ -268,6 +268,7 @@
               v-model="formData[col.prop]"
               placeholder="请输入"
               :step="1"
+              :min="0"
               style="width: 100%"
               controls-position="right"
               :disabled="col.formDisabled || disabled"

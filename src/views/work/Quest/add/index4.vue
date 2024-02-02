@@ -362,7 +362,6 @@ import ContTable from "@/components/ContTable";
 import JmTable from "@/components/JmTable";
 import TitleForm from "@/components/TitleForm";
 import Wrapper from "@/components/wrapper";
-import { getWarehousingList } from "@/api/property/warehousing";
 import { equipmentTree } from "@/api/equipment/category";
 import {
   getWomDevice,

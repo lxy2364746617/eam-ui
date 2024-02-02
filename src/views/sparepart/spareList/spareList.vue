@@ -39,6 +39,7 @@
 import ContTable from "@/components/ContTable";
 import { listDept } from "@/api/system/dept";
 import { getManagementList } from "@/api/sparePart/sparePartList";
+import { getLocationTree } from "@/api/Location";
 export default {
   dicts: ["spare_parts_unit", "spare_parts_type"],
   components: {
@@ -80,6 +81,7 @@ export default {
       multiple: true,
       radioRow: {},
       checkBoxRows: [],
+      locationOptions: [],
     };
   },
   computed: {
@@ -117,7 +119,14 @@ export default {
           options: this.dict.type.spare_parts_unit,
           required: true,
         },
-        { label: "默认存储位置", prop: "locationCode", span: 22, width: 150 },
+        {
+          label: "默认存储位置",
+          prop: "location",
+          span: 22,
+          width: 150,
+          options: this.locationOptions,
+          formType: "selectTree",
+        },
         {
           label: "所属组织",
           prop: "affDept",
@@ -146,8 +155,6 @@ export default {
   },
   created() {
     this.getTreeSelect();
-
-    this.getList(this.queryParams);
   },
   methods: {
     close() {
@@ -163,11 +170,25 @@ export default {
       }
     },
     getTreeSelect() {
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTree(res.data);
+      });
       listDept().then((response) => {
         this.deptOptions = response.data;
+        this.getList(this.queryParams);
       });
     },
-
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptCode;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;

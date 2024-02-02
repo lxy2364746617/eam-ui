@@ -31,7 +31,7 @@
               icon="el-icon-download"
               size="mini"
               @click="handlerDerive"
-              v-hasPermi="['work:request:derive']"
+              v-hasPermi="['work:request:download']"
               >导出</el-button
             >
           </el-col>
@@ -53,7 +53,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['work:request:remove']"
+            v-hasPermi="['work:request:off']"
             >关闭</el-button
           >
         </template>

@@ -26,7 +26,7 @@
           icon="el-icon-download"
           size="mini"
           @click="exportWarnLog"
-          v-hasPermi="['property:position:add']"
+          v-hasPermi="['property:position:download']"
           >下载</el-button
         >
       </template>
@@ -37,7 +37,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['property:position:edit']"
+          v-hasPermi="['property:position:view']"
           >详情</el-button
         >
         <el-button
@@ -78,7 +78,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
-          v-hasPermi="['property:position:edit']"
+          v-hasPermi="['property:position:submit']"
           >提交</el-button
         >
         <el-button
@@ -90,7 +90,7 @@
           type="text"
           icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
-          v-hasPermi="['property:position:edit']"
+          v-hasPermi="['property:position:review']"
           >审批流</el-button
         >
       </template>
@@ -367,7 +367,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.deviceId);
+      this.ids = selection.map((item) => item.id);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.radioRow = selection[0];

@@ -32,13 +32,26 @@
         >
           <el-col :span="6" v-for="item in equipmentList" :key="item.id">
             <el-card style="margin-bottom: 2px; font-size: 14px">
-              <p>
-                <el-checkbox :label="item.deviceId" :key="item.deviceId"
-                  >{{ item.deviceName }}[{{ item.deviceCode }}]</el-checkbox
+              <p class="title-p">
+                <el-checkbox :label="item.deviceId" :key="item.deviceId">
+                  <el-tooltip
+                    :content="`${item.deviceName}[${item.deviceCode}]`"
+                    placement="top"
+                  >
+                    <div class="tooltip">
+                      {{ item.deviceName }}[{{ item.deviceCode }}]
+                    </div>
+                  </el-tooltip>
+                </el-checkbox>
+                <el-tag
+                  class="selectTag"
+                  effect="light"
+                  :type="
+                    findClass(dict.type.em_device_state, item.deviceStatus)
+                  "
                 >
-                <span style="float: right">
-                  <el-tag size="mini" type="success">在用</el-tag>
-                </span>
+                  {{ findName(dict.type.em_device_state, item.deviceStatus) }}
+                </el-tag>
               </p>
               <el-row
                 :gutter="2"
@@ -51,7 +64,9 @@
                 <el-col :span="10" style="margin-right: 15px">
                   <img
                     style="width: 100%; height: 100%"
-                    :src="item.deviceImg && processEnv+item.deviceImg.fileName"
+                    :src="
+                      item.deviceImg && processEnv + item.deviceImg.fileName
+                    "
                     alt=""
                   />
                 </el-col>
@@ -109,7 +124,7 @@ import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 
 export default {
-  dicts: ["em_property_type"],
+  dicts: ["em_device_state"],
   components: {
     parentdevice,
   },
@@ -153,6 +168,24 @@ export default {
     this.getList(this.queryParams);
   },
   methods: {
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
+    findClass(options, value) {
+      var name = "primary";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].raw.listClass;
+        }
+      }
+      return name;
+    },
     findTreeName(options, value) {
       var name = "";
       function Name(name) {
@@ -240,3 +273,23 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+.title-p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tooltip {
+  font-weight: 700;
+  display: inline-block;
+  // vertical-align: middle;
+  width: 208px;
+  white-space: nowrap; /* 不换行 */
+  overflow: hidden; /* 超出部分隐藏 */
+  text-overflow: ellipsis; /* 显示省略号 */
+}
+::v-deep .el-checkbox__input {
+  transform: translateY(-23%);
+}
+</style>

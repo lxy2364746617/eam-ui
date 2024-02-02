@@ -18,6 +18,7 @@
             icon="el-icon-plus"
             size="mini"
             :loading="btnLoading"
+            v-hasPermi="['sparepart:receive:add']"
             @click="handleControls(null, 'add')"
             >领用</el-button
           >
@@ -38,7 +39,8 @@
             icon="el-icon-download"
             size="mini"
             :loading="btnLoading"
-            @click="handleSet"
+            v-hasPermi="['sparepart:receive:download']"
+            @click="handleControls(null, 'download')"
             >下载</el-button
           >
         </el-col>
@@ -47,47 +49,56 @@
         <el-button
           size="mini"
           type="text"
+          v-hasPermi="['sparepart:receive:view']"
           @click="handleControls(scope.row, 'view')"
           >详情</el-button
         >
         <el-button
           v-if="
-            scope.row.apvStatus == 'uncommitted' ||
-            scope.row.apvStatus == 'reject' ||
-            scope.row.apvStatus == 'canceled'
+            scope.row.approvalStatus == 'uncommitted' ||
+            scope.row.approvalStatus == 'reject' ||
+            scope.row.approvalStatus == 'canceled'
           "
           size="mini"
           type="text"
           :loading="btnLoading"
+          v-hasPermi="['sparepart:receive:edit']"
           @click="handleControls(scope.row, 'edit')"
           >编辑</el-button
         >
         <el-button
           v-if="
-            scope.row.apvStatus == 'uncommitted' ||
-            scope.row.apvStatus == 'reject' ||
-            scope.row.apvStatus == 'canceled'
+            scope.row.approvalStatus == 'uncommitted' ||
+            scope.row.approvalStatus == 'reject' ||
+            scope.row.approvalStatus == 'canceled'
           "
           size="mini"
           type="text"
+          v-hasPermi="['sparepart:receive:delete']"
           @click="handleControls(scope.row, 'delete')"
           >删除</el-button
         >
         <el-button
-         
+          v-if="
+            scope.row.approvalStatus == 'uncommitted' ||
+            scope.row.approvalStatus == 'reject' ||
+            scope.row.approvalStatus == 'canceled'
+          "
           size="mini"
           type="text"
+          v-hasPermi="['sparepart:receive:submit']"
           @click="handleControls(null, 'submit')"
           >提交</el-button
         >
         <el-button
           v-if="
-            scope.row.apvStatus == 'completed' ||
-            scope.row.apvStatus == 'running'
+            scope.row.approvalStatus == 'running' ||
+            scope.row.approvalStatus == 'completed'
           "
           size="mini"
           type="text"
-          @click="handleSet"
+          v-hasPermi="['sparepart:receive:review']"
+          @click="handleGoView(scope.row)"
           >审批流</el-button
         >
       </template>
@@ -127,7 +138,11 @@
 <script>
 import Wrapper from "@/components/wrapper";
 import ContTable from "@/components/ContTable";
-import { getAttachmentList, delAttachment } from "@/api/sparePart/spareReceive";
+import {
+  getAttachmentList,
+  delAttachment,
+  exportManagementList,
+} from "@/api/sparePart/spareReceive";
 import { listDept } from "@/api/system/dept";
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
@@ -155,6 +170,7 @@ export default {
       tableData: [],
       subtitle: "",
       subopen: false,
+      ids: [],
     };
   },
   async created() {
@@ -218,7 +234,7 @@ export default {
         if (res.code == 200) {
           this.$message.success(res.msg);
           this.subopen = false;
-          this.getList();
+          this.getList(this.queryParams);
         }
       });
     },
@@ -287,6 +303,13 @@ export default {
           })
           .catch(() => {});
         return;
+      } else if (act === "download") {
+        exportManagementList({ ids: this.ids }).then((res) => {
+          const blob = new Blob([res], {
+            type: "application/vnd.ms-excel;charset=utf-8",
+          });
+          saveAs(blob, `sparePart_${new Date().getTime()}`);
+        });
       } else if (act === "submit") {
         // ! 提交审批流
         this.handleSubmit();
@@ -309,7 +332,7 @@ export default {
     //   this.$message.success("文件上传成功！");
     //   this.filedrawer = false;
     // },
-    handleSet(row) {
+    handleGoView(row) {
       this.$router.push({
         path: "/flowable/task/finished/detail/index",
         query: {
@@ -328,6 +351,7 @@ export default {
       });
     },
     handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.id);
       this.radioRow = selection[0];
     },
   },

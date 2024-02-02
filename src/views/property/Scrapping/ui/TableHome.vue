@@ -26,6 +26,7 @@
           size="mini"
           icon="el-icon-upload2"
           @click="handlerImport"
+          v-hasPermi="['property:scrapping:export']"
           >导入</el-button
         >
         <el-button
@@ -33,7 +34,7 @@
           icon="el-icon-download"
           size="mini"
           @click="exportWarnLog"
-          v-hasPermi="['property:scrapping:add']"
+          v-hasPermi="['property:scrapping:download']"
           >下载</el-button
         >
       </template>
@@ -44,7 +45,7 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['property:scrapping:edit']"
+          v-hasPermi="['property:scrapping:view']"
           >详情</el-button
         >
         <el-button
@@ -85,7 +86,7 @@
           type="text"
           icon="el-icon-document-add"
           @click="handleSubmit(scope.row)"
-          v-hasPermi="['property:scrapping:edit']"
+          v-hasPermi="['property:scrapping:submit']"
           >提交</el-button
         >
         <el-button
@@ -97,7 +98,7 @@
           type="text"
           icon="el-icon-view"
           @click="handleFlowRecord(scope.row)"
-          v-hasPermi="['property:scrapping:edit']"
+          v-hasPermi="['property:scrapping:review']"
           >审批流</el-button
         >
         <el-button
@@ -395,7 +396,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.deviceId);
+      this.ids = selection.map((item) => item.id);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.radioRow = selection[0];

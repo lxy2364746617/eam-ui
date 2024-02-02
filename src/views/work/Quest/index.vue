@@ -20,7 +20,7 @@
               size="mini"
               :loading="btnLoading"
               @click="handlerAdd"
-              v-hasPermi="['work:quest:add']"
+              v-hasPermi="['work:quest:quest']"
               >任务转派</el-button
             >
           </el-col>
@@ -30,7 +30,7 @@
               icon="el-icon-download"
               size="mini"
               @click="handlerDerive"
-              v-hasPermi="['work:request:derive']"
+              v-hasPermi="['work:request:download']"
               >下载</el-button
             >
           </el-col>
@@ -46,7 +46,7 @@
             icon="el-icon-edit"
             :loading="btnLoading"
             @click="goCarryOut(scope.row, 'edit')"
-            v-hasPermi="['work:quest:edit']"
+            v-hasPermi="['work:quest:carry']"
             >执行</el-button
           >
           <el-button
@@ -67,7 +67,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleAllot(scope.row)"
-            v-hasPermi="['work:quest:edit']"
+            v-hasPermi="['work:quest:allot']"
             >分派</el-button
           >
           <el-button
@@ -76,7 +76,7 @@
             type="text"
             icon="el-icon-document-add"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['work:quest:remove']"
+            v-hasPermi="['work:quest:off']"
             >关闭</el-button
           >
         </template>

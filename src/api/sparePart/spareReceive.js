@@ -50,3 +50,11 @@ export function delAttachment(data) {
     data: data,
   });
 }
+export const exportManagementList = (data) => {
+  return request({
+    url: "/attachment/receipt/download",
+    method: "post",
+    data: data,
+    responseType: "blob",
+  });
+};

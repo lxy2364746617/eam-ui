@@ -103,13 +103,21 @@
         class="from"
       >
         <el-form-item label="目标功能位置" prop="targetLocation">
-          <el-input
+          <treeselect
+            size="small"
             v-model="formData.targetLocation"
-            placeholder="请输入设备名称"
-            clearable
-            :style="{ width: '100%' }"
-          >
-          </el-input>
+            :options="locationOptions"
+            clear-value-text="清除"
+            no-options-text="暂无数据"
+            clearValueText="清除"
+            noOptionsText="暂无数据"
+            placeholder="请选择"
+            :default-expand-level="4"
+            :appendToBody="true"
+            :normalizer="normalizer"
+            :zIndex="9999"
+            style="height: 32px; line-height: 32px"
+          />
         </el-form-item>
         <el-form-item label="模板设备状态" prop="targetDeviceStatus">
           <el-cascader
@@ -133,6 +141,7 @@ import { getProjectList, downDetailLoad } from "@/api/property/positionchange";
 import Treeselect from "@riophae/vue-treeselect";
 import ContTable from "@/components/ContTable";
 import JmTable from "@/components/JmTable";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {
   setStore,
   getStore,
@@ -143,8 +152,9 @@ import {
 } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
-import { listBASE, countBASE } from "@/api/equipment/BASE";
-import { formatDate } from "../../../../utils";
+import { getLocationTree } from "@/api/Location";
+import { countBASE, listBASE } from "@/api/equipment/BASE";
+
 export default {
   components: {
     ContTable,
@@ -226,6 +236,7 @@ export default {
           },
         ],
       },
+      locationOptions: [],
     };
   },
   computed: {
@@ -361,10 +372,21 @@ export default {
         delete node.children;
       }
       return {
-        id: node.id,
+        id: node.label,
         label: node.label,
         children: node.children,
       };
+    },
+    locationTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.locationTree(item.children);
+        }
+      });
+      return arr;
     },
     // 递归获取treeselect父节点
     loops(list, parent) {
@@ -380,6 +402,9 @@ export default {
     },
     /** 查询设备档案下拉树结构 */
     getTree() {
+      getLocationTree().then((res) => {
+        this.locationOptions = this.locationTree(res.data);
+      });
       equipmentTree().then(async (response) => {
         this.categoryOptions = response.data;
         // 方便获取父级tree

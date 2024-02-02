@@ -31,6 +31,7 @@ export function stockInOutDownload(data) {
     url: "/attachment/stockInOut/download",
     method: "post",
     data: data,
+    responseType: "blob",
   });
 }
 // 根据备件编码获取库存信息

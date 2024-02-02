@@ -340,7 +340,7 @@ export default {
     },
     // ! 选择备件
     submitRadio(row) {
-      this.formDataNow = row;
+      this.formDataNow = { ...row, ...this.formDataNow };
       this.closesupplier();
     },
     closesupplier() {
@@ -364,6 +364,9 @@ export default {
     // ! 对话框
     save() {
       this.$refs.titleform.submitForm();
+    },
+    submitReview() {
+      this.$refs.spareForm.submitForm("review");
     },
     close() {
       this.drawer = false;

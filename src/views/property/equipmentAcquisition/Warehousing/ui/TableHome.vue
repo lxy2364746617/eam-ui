@@ -23,13 +23,13 @@
           >
         </el-col>
         <el-col :span="1.5">
-          <el-upload
-            :before-upload="beforeUpload"
-            action=""
-            v-hasPermi="['property:warehousing:add']"
-            ><el-button type="primary" size="mini" icon="el-icon-upload2"
-              >导入</el-button
-            ></el-upload
+          <el-button
+            type="primary"
+            size="mini"
+            icon="el-icon-upload2"
+            @click="handlerImport"
+            v-hasPermi="['property:warehousing:export']"
+            >导入</el-button
           >
         </el-col>
         <el-col :span="1.5">
@@ -38,7 +38,7 @@
             icon="el-icon-download"
             size="mini"
             @click="exportWarnLog"
-            v-hasPermi="['property:warehousing:add']"
+            v-hasPermi="['property:warehousing:download']"
             >下载</el-button
           >
         </el-col>
@@ -71,6 +71,13 @@
           @click="handleFlowRecord(scope.row)"
           v-hasPermi="['property:warehousing:edit']"
           >审批流</el-button
+        > -->
+        <!-- <el-button
+          size="mini"
+          type="text"
+          @click="handleDelete(scope.row)"
+          v-hasPermi="['property:warehousing:remove']"
+          >删除</el-button
         > -->
       </template>
     </jm-table>
@@ -116,6 +123,15 @@
         @getTableData="getTableData"
       ></subprocess>
     </el-dialog>
+
+    <!-- 导入 -->
+    <file-import
+      @handleFileSuccess="handleFileSuccess"
+      :downloadTemplateUrl="'/device/warehousing/importTemplate'"
+      ref="fileImport"
+      :isUpdate="false"
+      :importUrl="'/device/warehousing/import'"
+    ></file-import>
   </div>
 </template>
 <script>
@@ -378,6 +394,15 @@ export default {
   },
   mounted() {},
   methods: {
+    // ! 导入
+    /** 导入按钮操作 */
+    handlerImport() {
+      this.$refs.fileImport.upload.open = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess() {
+      this.getList();
+    },
     /** 查询部门下拉树结构 */
     async getDeptTree() {
       await listDept(this.formParams).then((response) => {
@@ -495,8 +520,8 @@ export default {
     ) {
       this.loading = true;
       getPurchaseList(form).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
+        this.equipmentList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
@@ -509,8 +534,8 @@ export default {
     ) {
       this.loading = true;
       getWarehousingList(form).then((response) => {
-        this.equipmentList2 = response.rows;
-        this.total2 = response.total;
+        this.equipmentList2 = response.data.records;
+        this.total2 = response.data.total;
         this.loading2 = false;
       });
     },
