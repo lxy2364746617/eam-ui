@@ -40,16 +40,18 @@ export function conditionExpressionParse(obj) {
 }
 
 export function userTaskParse(obj) {
-  for (const key in obj) {
-    if (key === 'candidateUsers') {
-      obj.userType = 'candidateUsers'
+  console.log(obj.userType)
+
+  /* for (const key in obj) {
+    if (key === 'assignee') {
+      obj.userType = 'assignee'
       obj[key] = obj[key]?.split(',') || []
     } else if (key === 'candidateGroups') {
       obj.userType = 'candidateGroups'
       obj[key] = obj[key]?.split(',') || []
-    } else if (key === 'assignee') {
-      obj.userType = 'assignee'
+    } else if (key === 'candidateUsers') {
+      obj.userType = 'candidateUsers'
     }
-  }
+  } */
   return obj
 }

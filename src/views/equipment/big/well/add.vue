@@ -27,8 +27,8 @@
                       @click="handleUpdate(scope.row,'view')"
                       v-hasPermi="['equipment:template:edit']"
                     >查看</el-button> -->
-                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row, 'edit')"
-                        v-hasPermi="['equipment:template:edit']">编辑</el-button>
+                    <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row, 'edit')"
+                        v-hasPermi="['equipment:template:edit']">编辑</el-button> -->
                     <!-- <el-button
                       size="mini"
                       type="text"
@@ -54,7 +54,7 @@
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择上级设备" :visible.sync="drawer" direction="rtl" :destroy-on-close="true" size="80%"
                 :wrapperClosable="false">
-                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false"></parentdevice>
+                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false" :formData='deviceData'></parentdevice>
             </el-drawer>
 
             <!-- 导入 -->
@@ -74,36 +74,41 @@ import fileImport from "@/components/FileImport";
 import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
-
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
-    dicts: ['equipment_well_remote'],
-    components: { JmTable, JmForm, child, fileImport, parentdevice },
+    dicts: ['equipment_common_sf','em_device_state','em_device_level'],
+    components: { JmTable, JmForm, child, fileImport, parentdevice, },
     computed: {
         // 列信息
         columns() {
             return [
                 { label:"矿井名称", prop:"mineName", span: 8,  required: true, },
-                { label:"使用地点", prop:"useAddress", span: 8, },
-                { label:"煤安标志证号", prop:"signCode", span: 8, },
-                { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-                { label:"投运时间", prop:"putTime", span: 8, formType: "date",  },
-                { label:"电压等级", prop:"vcc", span: 8, },
-                { label:"皮带机长度", prop:"length", span: 8, },   
-                { label:"皮带宽度", prop:"width", span: 8, },
-                { label:"平均坡度", prop:"slope", span: 8, },
-                { label:"提升设备功率", prop:"upPower", span: 8, },
-                { label:"提升设备速度", prop:"upSpeed", span: 8, },
-                { label:"逆止器型号", prop:"backstopModel", span: 8, },
-                { label:"制动器型号", prop:"brakesModel", span: 8, },
-                { label:"制动器台数", prop:"brakesSum", span: 8, },
-                { label:"生产日期", prop:"produceTime", span: 8, formType: "date",  },
-                { label:"设备型号", prop:"deviceModel", span: 8, },
-                { label:"控制方式", prop:"controlMode", span: 8, },
-                { label:"最大坡度", prop:"maxSlope", span: 8, },
-                { label:"提升设备能力", prop:"upDevicePower", span: 8, },
-                { label:"逆止器台数", prop:"backstop", span: 8, },
-                { label:"地面远程集控", prop:"isRemote", span: 8, formType: "select", options: this.dict.type.equipment_well_remote, },
+                { label:"使用地点", prop:"useAddress", span: 8,required: true, },
+                { label:"设备型号", prop:"deviceModel", span: 8, required: true,},
+                { label:"设备厂家", prop:"equipmentManufacturer", span: 8,required: true, },
+                { label:"煤安标志证号", prop:"signCode", span: 8,required: true, },
+                { label:"生产日期", prop:"produceTime", span: 8, formType: "date", required: true, },
+
+                { label:"投运日期", prop:"putTime", span: 8, formType: "date", required: true, },
+                { label:"电压等级", prop:"vcc", span: 8,required: true, },
+                { label:"控制方式", prop:"controlMode", span: 8, required: true,},
+
+                { label:"皮带机长度", prop:"length", span: 8,required: true, },   
+                { label:"皮带宽度", prop:"width", span: 8,required: true, },
+                { label:"最大坡度", prop:"maxSlope", span: 8, required: true,},
+
+                { label:"平均坡度", prop:"slope", span: 8,required: true, },
+                { label:"提升设备功率", prop:"upPower", span: 8,required: true, },
+                { label:"提升设备能力", prop:"upDevicePower", span: 8, required: true,},
+
+                { label:"提升设备速度", prop:"upSpeed", span: 8,required: true, },
+                { label:"逆止器型号", prop:"backstopModel", span: 8, required: true,},
+                { label:"逆止器台数", prop:"backstop", span: 8,required: true, },
+
+                { label:"制动器型号", prop:"brakesModel", span: 8,required: true, },
+                { label:"制动器台数", prop:"brakesSum", span: 8, required: true,},
+                { label:"地面远程集控", prop:"isRemote", span: 8, formType: "select", options: this.dict.type.equipment_common_sf,required: true, },
 
             ]
         },
@@ -115,7 +120,7 @@ export default {
                 { label: "规格型号", prop: "specs", },
                 { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, },
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
-                { label: "功能位置", prop: "location", },
+                { label: "功能位置", prop: "location", formType: 'selectTree', options: this.locationOptions,width:180},
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
                 { label: "所属子公司", prop: "111", },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
@@ -154,8 +159,6 @@ export default {
             direction: 'rtl',
             // 设备平台_表单模板表格数据
             templateList: [],
-            // 弹出层标题
-            title: "新增表单",
             // 是否显示弹出层
             open: false,
             importData: [],
@@ -170,16 +173,28 @@ export default {
             // 表单校验
             rules: {
             },
+            deviceData:{
+                disIds:[]
+            }
         };
     },
-    created() {
+    watch:{
+        'formData.emArchivesParts':{
+            handler(val){
+                this.deviceData.disIds=val.map(item=>item.deviceId)
+            } 
+        },
+        immediate:true,
+        deep:true
+    },
+    async created() {
         this.queryParams.largeId = this.$route.query.l;
         this.disabled = this.$route.query.d == 'true';
+        await this.getTree();
+        await this.getTreeSelect();
         if(this.$route.query.l){
             this.getDetails(this.$route.query.l);
         }
-        this.getTree();
-        this.getTreeSelect();
     },
     methods: {
         close() {
@@ -198,19 +213,33 @@ export default {
             this.close()
         },
         /** 查询设备档案下拉树结构 */
-        getTree() {
-            equipmentTree().then(response => {
+        async getTree() {
+            await equipmentTree().then(response => {
                 this.categoryOptions = response.data;
                 // 方便获取父级tree
                 this.loops(this.categoryOptions)
             });
+            await getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
         },
         /** 查询部门下拉树结构 */
-        getTreeSelect() {
-            listDept().then(response => {
+        async getTreeSelect() {
+            await listDept().then(response => {
                 this.deptOptions = response.data;
             });
         },
+        getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
         // 递归获取treeselect父节点
         loops(list, parent) {
             return (list || []).map(({ children, id, label }) => {
@@ -255,7 +284,9 @@ export default {
             done()
         },
         getList(queryParams) {
-
+            if(this.$route.query.l){
+            this.getDetails(this.$route.query.l);
+        }
         },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
@@ -308,7 +339,6 @@ export default {
         handleAdd() {
             this.reset();
             this.drawer = true;
-            this.title = "新增表单模板";
         },
         /** 修改按钮操作 */
         handleUpdate(row, state) {
@@ -316,7 +346,6 @@ export default {
             // const id = row.id
             // getlbase(id).then(response => {
             this.formData = JSON.parse(JSON.stringify(row));
-            this.title = state == 'view' ? "查看表单模板" : "修改表单模板";
             this.drawer = true;
             // });
         },

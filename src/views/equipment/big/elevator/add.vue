@@ -3,11 +3,11 @@
         <div>
             <div class="mb20" style="background-color: #fff;">基本信息</div>
             <jm-form class="mr20" :showButton="false" :columns="columns" :formData="formData" @submitForm="submitForm"
-                ref="jmform" :disabled="disabled">
+                ref="jmform" :disabled="disabled" :labelWidth='"220px"'>
             </jm-form>
             <div class="mb20" style="background-color: #fff;">详细设备信息</div>
             <jm-table :tableData="formData.emArchivesParts" @getList="getList"
-                @handleSelectionChange="handleSelectionChange" @switchchange="switchchange" :total="total"
+                @handleSelectionChange="handleSelectionChange" @switchchange="switchchange" :total="total" 
                 :handleWidth="120" :columns="tablecolumns" ref="jmTable">
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
@@ -49,10 +49,11 @@ import fileImport from "@/components/FileImport";
 import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
+import { getLocationTree} from '@/api/Location'
 
 export default {
     name: "Template",
-    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_elevator_coroll','equipment_elevator_people','equipment_elvator_automatic','equipment_elevator_install','equipment_elevator_have'],
+    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_elevator_coroll','equipment_common_sf','equipment_elvator_automatic','equipment_elevator_install','equipment_common_yw'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
@@ -60,29 +61,32 @@ export default {
             return [
                 { label: "矿井名称", prop: "mineName", required: true, span: 8, },
                 { label: "使用地点", prop: "useAddress", span: 8, },
+                { label: "设备类型", prop: "deviceType", span: 8, },
                 { label: "设备用途", prop: "deviceUseTo", span: 8, },
                 { label: "设备型号", prop: "deviceModel", span: 8, },
+                { label: "煤安标志证号", prop: "signCode", span: 8, },
                 { label: "生产日期", prop: "produceTime", formType: 'date', span: 8, },
                 { label: "投运时间", prop: "putTime", formType: 'date', span: 8, },
+                { label: "电压", prop: "voltage", span: 8, },
                 { label: "控制方式", prop: "controlMode", span: 8, },
                 { label: "滚筒个数", prop: "rollerSum", span: 8, },
-                { label: "滚筒宽度", prop: "rollerWidth", span: 8, },
-                { label: "最大静张力", prop: "maxTension", span: 8, },
-                { label: "最大提升速度", prop: "maxSpeed", span: 8, },
-                { label: "是否有专用备用信号", prop: "hava", formType: 'select', options: this.dict.type.equipment_elevator_have, span: 8, },//0-有,1-没有
-                { label: "并联冗余回油通路是否安装", prop: "isInstall", formType: 'select', options: this.dict.type.equipment_elevator_install, span: 8, }, //0-是,1-否.
+                { label: "滚筒直径(m)", prop: "rollerDiameter", span: 8, },
+                { label: "滚筒宽度(m)", prop: "rollerWidth", span: 8, },
+                { label: "最大静张力(KN)", prop: "maxTension", span: 8, },
+                { label: "最大静张力差(KN)", prop: "maxTension", span: 8, },
+                { label: "最大提升速度(m/s)", prop: "maxSpeed", span: 8, },
+                { label: "是否有专用备用信号", prop: "hava", formType: 'select', options: this.dict.type.equipment_common_yw, span: 8, },//0-有,1-没有
+                { label: "闸间隙保护是否闭锁下次开车是否闭锁", prop: "isLock", formType: 'select', options: this.dict.type.equipment_common_sf, span: 8, }, //0=是,1=否
+                { label: "并联冗余回油通路是否安装", prop: "isInstall", formType: 'select', options: this.dict.type.equipment_common_sf, span: 8, }, //0-是,1-否.
                 { label: "并联冗余回油通路手动还是自动", prop: "isAutomatic", formType: 'select', options: this.dict.type.equipment_elvator_automatic, span: 8, },//0-自动,1-手动
-                { label: "电机功率", prop: "elevatorPower", span: 8, },
-                { label: "电机电压等级", prop: "voltageLevel", span: 8, },
-                { label: "钢丝绳直径", prop: "wireRopeWidth", span: 8, },
-                { label: "立井深度/斜井长度", prop: "wellDepth", span: 8, },
-                { label: "具备无人值守条件", prop: "unmanned", formType: 'select', options: this.dict.type.equipment_elevator_people, span: 8, }, //0=是,1=否
-                { label: "煤安标志证号", prop: "signCode", span: 8, },
-                { label: "设备类型", prop: "deviceType", span: 8, },
-                { label: "电压", prop: "voltage", span: 8, },
+                { label: "并联冗杂回油通路是否厂家改造", prop: "isFty", formType: 'select', options: this.dict.type.equipment_common_sf, span: 8, }, //0=是,1=否
+                { label: "电机功率(KW)", prop: "elevatorPower", span: 8, },
+                { label: "电机电压等级(V)", prop: "voltageLevel", span: 8, },
                 { label: "钢丝绳型号", prop: "wireRopeModel", span: 8, },
-                { label: "滚筒直径", prop: "rollerDiameter", span: 8, },
-                { label: "共卷情况", prop: "coRoll", span: 8, formType: "select", options: this.dict.type.equipment_elevator_coroll, },//(皮带/皮车)
+                { label: "钢丝绳直径(mm)", prop: "wireRopeWidth", span: 8, },
+                { label: "立井深度/斜井长度", prop: "wellDepth", span: 8, },
+                { label: "共巷情况", prop: "coRoll", span: 8, formType: "select", options: this.dict.type.equipment_elevator_coroll, },//(皮带/皮车)
+                { label: "具备无人值守条件", prop: "unmanned", formType: 'select', options: this.dict.type.equipment_common_sf, span: 8, }, //0=是,1=否    
             ]
         },
         // 列信息
@@ -91,13 +95,13 @@ export default {
                 { label: "设备编码", prop: "deviceCode", },
                 { label: "设备名称", prop: "deviceName", },
                 { label: "规格型号", prop: "specs", },
-                { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, },
+                { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions,width:160 },
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
-                { label: "功能位置", prop: "location", },
+                { label: "功能位置", prop: "location",formType: 'selectTree', options: this.locationOptions,width:180 },
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
                 { label: "所属子公司", prop: "111", },
-                { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
-                { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, },
+                { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions,width:160 },
+                { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions,width:160 },
                 { label: "购置日期", prop: "makerAoTime", formType: 'date', },
 
             ]
@@ -121,6 +125,7 @@ export default {
             // 部门树选项
             deptOptions: [],
             categoryOptions: [],
+            locationOptions:[],
             valueMap: {},
             disabled: false,
             // 显示搜索条件
@@ -150,14 +155,14 @@ export default {
             },
         };
     },
-    created() {
+    async created() {
         this.queryParams.largeId = this.$route.query.l;
         this.disabled = this.$route.query.d == 'true';
+        await this.getTree();
+        await this.getTreeSelect();
         if(this.$route.query.l){
             this.getDetails(this.$route.query.l);
         }
-        this.getTree();
-        this.getTreeSelect();
     },
     methods: {
         close() {
@@ -176,19 +181,33 @@ export default {
             this.close()
         },
         /** 查询设备档案下拉树结构 */
-        getTree() {
-            equipmentTree().then(response => {
+        async getTree() {
+            await equipmentTree().then(response => {
                 this.categoryOptions = response.data;
                 // 方便获取父级tree
                 this.loops(this.categoryOptions)
             });
+            await getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
         },
         /** 查询部门下拉树结构 */
-        getTreeSelect() {
-            listDept().then(response => {
+        async getTreeSelect() {
+            await listDept().then(response => {
                 this.deptOptions = response.data;
             });
         },
+        getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
         // 递归获取treeselect父节点
         loops(list, parent) {
             return (list || []).map(({ children, id, label }) => {
@@ -233,7 +252,10 @@ export default {
             done()
         },
         getList(queryParams) {
-
+            if(this.$route.query.l){
+            this.getDetails(this.$route.query.l);
+        }else{
+        }
         },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {

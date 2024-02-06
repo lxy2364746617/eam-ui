@@ -158,6 +158,7 @@
                     :normalizer="normalizer"
                     :append-to-body="true"
                     :zIndex="9999"
+                    :flat='true'
                   />
                   <el-input
                     v-else
@@ -260,7 +261,7 @@
     </el-form>
 
     <pagination
-      v-show="total > 0"
+      v-show="total > 0&&paginationShow"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -324,7 +325,11 @@ export default {
     rightToolbarShow: {
       default: true,
       type: Boolean,
-    },
+    },//显示分页
+    paginationShow:{
+      default: true,
+      type: Boolean,
+    }
   },
   watch: {
     tableData: {
@@ -439,7 +444,6 @@ export default {
       this.getList();
     },
     getList() {
-      this.loading = true;
       this.$emit("getList", this.queryParams);
     },
     /** 搜索按钮操作 */

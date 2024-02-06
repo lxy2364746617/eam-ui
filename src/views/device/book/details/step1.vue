@@ -117,6 +117,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import parentdevice from "@/views/device/book/device";
+import { getLocationTree} from '@/api/Location'
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
@@ -191,7 +192,7 @@ export default {
       return [
         { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 12, required: true, },
         { label:"规格型号", prop:"specs", span: 12, },
-        { label:"功能位置", prop:"location", span: 12, required: true, },
+        { label:"功能位置", prop:"location", span: 12, required: true,options:this.locationOptions,formType: 'selectTree', },
         { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },
         { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },
         { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 12, required: true, },
@@ -296,7 +297,8 @@ export default {
         // 设置上传的请求头部
         headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/system/user/importData"
+        url: process.env.VUE_APP_BASE_API + "/system/user/importData",
+        locationOptions:[],
       },
       // 查询参数
       queryParams: {
@@ -339,9 +341,20 @@ export default {
   },
   created() {
     this.getTreeSelect()
-    console.log(this.formData)
+    
   },
   methods: {
+    getTree(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTree(item.children)
+          }
+        })
+        return arr
+    },
     setFormLabel(arr){
       arr.forEach(b => {
         b.label=b.fieldName;
@@ -389,6 +402,9 @@ export default {
       });
       listDept().then(response => {
         this.deptOptions = response.data;
+      });
+      getLocationTree().then(res=>{
+        this.locationOptions=this.getTree(res.data)
       });
     },
     /** 查询用户列表 */

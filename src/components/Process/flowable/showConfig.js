@@ -7,7 +7,7 @@ export default {
   'bpmn:UserTask': {
     userType: true,
     assignee: true,
-    candidateUsers: true,
+    candidateUsers: false,
     candidateGroups: true,
     async: true,
     priority: true,

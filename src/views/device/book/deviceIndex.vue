@@ -18,6 +18,7 @@
                     <el-col :span="1.5">
                         <el-button v-if="deptList.length > 0" type="primary" icon="el-icon-download" size="mini"
                             @click="handleExport" v-hasPermi="['equipment:index:export']">下载</el-button>
+                            <span v-if="total" style="display:inline-block;color:#AAAAAA;font-size:16px;margin-left:10px">{{findName(radioColumn,radioColumn[radio].categoryId)}}共{{total}}条</span> 
                     </el-col>
                 </template>
             </jm-table>
@@ -65,6 +66,15 @@ export default {
         this.isSmEmCategoryRadio()
     },
     methods: {
+        findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].categoryId == value) {
+          name = options[i].categoryName;
+        }
+      }
+      return name || value;
+    },
         radioInput(val){
             this.queryParams.categoryId = this.radioColumn[val].categoryId
             this.getList({
@@ -91,9 +101,9 @@ export default {
             this.$emit('back')
         },
         /** 查询部门列表 */
-        getList(queryParams) {
+        getList() {
             this.loading = true;
-            listIndexBASE(queryParams).then(response => {
+            listIndexBASE(this.queryParams).then(response => {
                 response.rows.forEach(b => {
                     Object.assign(
                         b,

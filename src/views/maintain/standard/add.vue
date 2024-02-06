@@ -168,9 +168,9 @@
                 </parentdevice>
             </el-drawer>
 
-            <el-drawer :title="title" :visible.sync="pointItemForm.drawer" direction="rtl" size="40%"
+            <el-drawer :title="title" :visible.sync="pointItemForm.drawer" direction="rtl" size="60%"
                 :wrapperClosable="false">
-                <pointItem :isChoose="false" :formData="pointItemForm" @submitRadio="submitRadio1"
+                <pointItem :isChoose="false" :itemType='itemType' :formData="pointItemForm" @submitRadio="submitRadio1"
                     @close="pointItemForm.drawer = false" ref="itemForm" v-if="pointItemForm.drawer">
                 </pointItem>
             </el-drawer>
@@ -248,6 +248,7 @@ export default {
     },
     data() {
         return {
+            itemType:'RCDJ',
             // 遮罩层
             standardId: '',
             loading: true,
@@ -422,12 +423,15 @@ export default {
         handleClick(tab, event) {
             switch (tab.name) {
                 case "first":
+                    this.itemType='RCDJ'
                     this.standardList = [...this.standardList1];
                     break;
                 case "second":
+                    this.itemType='JMDJ'
                     this.standardList = [...this.standardList2];
                     break;
                 case "third":
+                    this.itemType='ZZDJ'
                     this.standardList = [...this.standardList3];
                     break;
                 default:

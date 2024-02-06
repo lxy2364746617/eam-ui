@@ -123,6 +123,7 @@
               placeholder="请输入"
               :readonly="col.readonly"
               :disabled="col.formDisabled || disabled"
+              @input.native="forceUpdate?$forceUpdate():(()=>{})()"
               @click.native="col.clickFn?col.clickFn():(()=>{})()"
               :type= "col.number?'number':'text'"
             />
@@ -176,6 +177,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    forceUpdate:{
+      default:false,
+      type:Boolean
+    }
   },
   // watch:{
   //     formData: {

@@ -15,7 +15,7 @@
       </el-steps>
     </el-card>
     
-    <step1 v-if="stepActive==0" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step1>
+    <step1 v-if="stepActive==0" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent" :isEdit='isEdit'></step1>
     <step2 v-if="stepActive==1" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step2>
     <step3 v-if="elstep[2].visible?stepActive==2:false" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step3>
     <step4 v-if="elstep[2].visible?stepActive==3:stepActive==2" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step4>
@@ -86,12 +86,14 @@ export default {
       stepActive: 0,
       formTitle: '',
       formData: {},
+      isEdit:false
     };
   },
   created() {
     if(this.$route.query.i){
       // 编辑
       const deviceId = this.$route.query.i
+      this.isEdit = this.$route.query.f=='edit'
       this.formTitle = "编辑设备"
       getBASE(deviceId).then(response => {
         

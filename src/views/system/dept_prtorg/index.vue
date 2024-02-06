@@ -3,11 +3,11 @@
     <el-row :gutter="20">
       <!--部门数据-->
       <el-col :span="4" :xs="24">
-        <p style="color: transparent">1</p>
+        <div style="width:100%"></div>
         <jm-user-tree
           :treeData="deptOptions"
           @handleNodeClick="handleNodeClick"
-          style="position: fixed; top: 121px; height: calc(100vh - 141px)"
+          style=" height:78vh;width:100%"
         >
           <!-- <template slot="middle-pos">
             <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"></el-button>
@@ -17,7 +17,7 @@
         </jm-user-tree>
       </el-col>
       <!--用户数据-->
-      <el-col :span="20" :xs="24">
+      <el-col :span="20" :xs="24" style="max-height:78vh;overflow:auto">
         <el-card shadow="never" style="margin-bottom: 20px">
           <div slot="header">
             <span>{{ rightTitle }}</span>
@@ -28,6 +28,7 @@
             @submitForm="submitForm"
             @close="close"
             :disabled="disabled"
+            ref="jmForm"
           >
           </jm-form>
         </el-card>
@@ -38,7 +39,6 @@
           <jm-table
             :tableData="deptList"
             @getList="getList"
-            @handleSelectionChange="handleSelectionChange"
             @handleExport="handleExport"
             :total="total"
             :columns="columns"
@@ -314,6 +314,7 @@ export default {
         getDept(row.id, this.formParams).then((response) => {
           this.formDataInit = JSON.stringify(response.data);
           this.formData = response.data;
+          this.$refs.jmForm.clearValidate()
         });
         var obj = {
           parentId: row.id,

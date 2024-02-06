@@ -3,15 +3,15 @@
     <el-row :gutter="20">
       <!--部门数据-->
       <el-col :span="4" :xs="24">
-        <p style="color: transparent">1</p>
+        <div style="width:100%"></div>
         <jm-user-tree
           :treeData="deptOptions"
           @handleNodeClick="handleNodeClick"
-          style="position: fixed; top: 121px; height: calc(100vh - 141px)"
+          style="width:100%; height: 78vh"
         ></jm-user-tree>
       </el-col>
       <!--用户数据-->
-      <el-col :span="20" :xs="24">
+      <el-col :span="20" :xs="24" style="height:78vh;overflow:auto">
         <el-form
           :model="queryParams"
           ref="queryForm"
@@ -920,3 +920,7 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+// 滚动条样式
+
+</style>

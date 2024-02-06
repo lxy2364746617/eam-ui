@@ -40,6 +40,7 @@
               :labelWidth="'150px'"
               @submitForm="submitForm"
               ref='form'
+              :labelPosition="'left'"
               >
             </jm-form>
           </div>
@@ -62,7 +63,7 @@
           @handleSelectionChange="handleSelectionChange"
           :columns="tablecolumns" ref="jmTable">
           <template slot="headerLeft">
-              <el-button type="primary" icon="el-icon-plus" size="mini"  @click="downloadClick"
+              <el-button type="primary" plain icon="el-icon-plus" size="mini"  @click="downloadClick"
                          v-hasPermi="['system:location:export']"
               >下载</el-button>
             </template>
@@ -70,9 +71,9 @@
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-            >删除</el-button>
+              icon="el-icon-view"
+              @click="handleDetails(scope.row)"
+            >详情</el-button>
             <el-button
               size="mini"
               type="text"
@@ -82,9 +83,9 @@
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-view"
-              @click="handleDetails(scope.row)"
-            >详情</el-button>
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)"
+            >删除</el-button>
           </template>
         </jm-table>
       </el-card>
@@ -346,7 +347,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       handleDetails(row){
         console.log(row)
         let BreadcrumbArr = this.flatFn(this.nowClickTreeItem.deptId)
-        this.$router.push({name:'LocationDetails',query:{BreadcrumbArr:JSON.stringify(BreadcrumbArr)}})
+        this.$router.push({name:'LocationDetails',query:{BreadcrumbArr:JSON.stringify(BreadcrumbArr),i:row.id}})
       },
       // 点击下载
       downloadClick(row){

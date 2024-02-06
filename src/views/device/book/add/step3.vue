@@ -4,6 +4,7 @@
       <div v-if="formData.emArchivesIndex!=null">
         <p><i class="el-icon-magic-stick"></i> 主要指标</p>
         <jm-form 
+          :forceUpdate="true"
           class="mr20"
           :columns="formData.emArchivesIndex.componentContent" 
           :showButton="false"
@@ -56,13 +57,6 @@ export default {
   },
   computed:{
     
-  },
-  created(){
-    console.log(this.formData,22222);
-  },
-  mounted(){
-    console.log(this.formData,33333);
-    this.$forceUpdate()
   },
   data() {
     return {
@@ -149,11 +143,16 @@ export default {
             trigger: "blur"
           }
         ]
-      }
+      },
     };
   },
   created() {
     this.getTreeSelect()
+    console.log('step3-formData:"',this.formData)
+  },
+  mounted(){
+    this.$refs.jmform1.$forceUpdate()
+    console.log(this.formData,33333);
   },
   methods: {
     closeform(){

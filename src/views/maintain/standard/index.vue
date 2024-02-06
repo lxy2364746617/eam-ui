@@ -42,6 +42,8 @@ import JmTable from '@/components/JmTable';
 import JmForm from "@/components/JmForm";
 import { equipmentTree } from '@/api/equipment/category';
 import { listDept } from '@/api/system/dept';
+import { getLocationTree} from '@/api/Location'
+
 export default {
   name: "Template",
   dicts: ['em_is_special', 'sys_normal_disable'],
@@ -62,7 +64,7 @@ export default {
           options: this.categoryOptions,
           width: 280,
         },
-        { label: '功能位置', prop: 'location' },
+        { label: '功能位置', prop: 'location',options:this.locationOptions,formType: 'selectTree',width: 180,},
         { label: '是否特种设备', prop: 'isSpecial', formType: 'select', options: this.dict.type.em_is_special, },
         {
           label: '当前使用组织', prop: 'currDeptId', formType: 'selectTree',
@@ -137,6 +139,7 @@ export default {
       // 部门树选项
       deptOptions: [],
       categoryOptions: [],
+      locationOptions:[],
       showstate: true
     }
   },
@@ -148,7 +151,6 @@ export default {
   methods: {
     /** 查询设备档案下拉树结构 */
     getTree() {
-      console.log(123)
       this.showstate = false;
       equipmentTree().then((response) => {
         this.categoryOptions = response.data
@@ -157,6 +159,20 @@ export default {
       }).then(() => {
         this.showstate = true;
       })
+      getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeName(res.data)
+      })
+    },
+    getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
     },
     /** 查询部门下拉树结构 */
     getTreeSelect() {

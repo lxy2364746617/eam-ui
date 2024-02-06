@@ -244,7 +244,7 @@
     <el-drawer  direction="ltr" :title="subtitle" :visible.sync="subopen"  size='600px' >
       <subprocess :tableData='tableData' @submit="sub" @getTableData='getTableData'></subprocess>
     </el-drawer>
-    <el-dialog :visible="copyCodeOpen" top="15vh" append-to-body :show-close='false'>
+    <el-dialog :visible="copyCodeOpen" top="20vh" append-to-body :show-close='false'>
       <el-form ref="copyCode" :model="addItem"  label-width="120px" >
               <el-form-item label="设备编码" prop="copyInputCode" :rules="[{required:true,message:'请输入设备编码'}]">
                 <el-input v-model="addItem.copyInputCode"></el-input>
@@ -285,6 +285,7 @@ import fileImport from '@/components/FileImport'
 import parentdevice from '@/views/device/book/device'
 import  subprocess  from '@/views/device/book/process'
 import {definitionStart} from "@/api/flowable/definition";
+import { getLocationTree} from '@/api/Location'
 export default {
   name: 'devicebook',
   dicts: ['em_device_state', 'em_device_att', 'wf_process_status', 'em_device_level','process_category'],
@@ -326,7 +327,7 @@ export default {
           options: this.dict.type.em_device_state,
         },
         { label: '财务资产编码', prop: 'propertyCode' },
-        { label: '功能位置', prop: 'location' },
+        { label: '功能位置', prop: 'location',options:this.locationOptions,formType: 'selectTree',width: 180, },
         {
           label: '重要等级',
           prop: 'level',
@@ -462,6 +463,7 @@ export default {
         categoryId: undefined,
       },
       deviceIndexVisible: false,
+      locationOptions:[],
       // 表单校验
       rules: {
         userName: [
@@ -505,9 +507,9 @@ export default {
   created() {
     this.getTree()
     this.getTreeSelect()
-    console.log(this.dict.type.process_category)
   },
   methods: {
+    
     /** 导入按钮操作 */
     handleImport() {
       this.$refs.fileImport.upload.open = true
@@ -519,6 +521,20 @@ export default {
         // 方便获取父级tree
         this.loops(this.categoryOptions)
       })
+      getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeName(res.data)
+      })
+    },
+    getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
     },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
@@ -680,7 +696,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       // this.btnLoading = true
-      this.addItem.addDrawer = false
+      
       if (this.addItem.addRadio == 1) {
         // 复制
         if (this.addItem.copyInputName == '') {
@@ -693,6 +709,7 @@ export default {
             // this.btnLoading = false
             this.getList()
             this.copyCodeOpen=false
+            this.addItem.addDrawer = false
             this.addItem=this.$options.data().addItem
           })
         }
@@ -723,7 +740,7 @@ export default {
       const deviceId = row.deviceId
       if (f == 'edit') {
         // this.addEdit = true;
-        this.$router.push({ path: '/device/book/add?i=' + deviceId })
+        this.$router.push({ path: '/device/book/add?i=' + deviceId+'&f=edit' })
       } else if (f == 'view') {
         this.title =
           this.getTreeParent(row.categoryId).join(' > ') +
@@ -911,6 +928,12 @@ export default {
   text-align: center;
   border-top: 1px solid #ddd;
 }
-
+::v-deep .el-dialog:not(.is-fullscreen) {
+    margin-top: 30vh !important;
+}
+::v-deep .el-dialog{
+  width: 40%;
+  padding: 20px 15px 0 0;
+}
 
 </style>

@@ -75,7 +75,7 @@
           </tr>
           <tr>
             <td>功能位置</td>
-            <td>{{ formData.location }}</td>
+            <td>{{findTreeName(locationOptions,formData.location)  }}</td>
           </tr>
         </table>
       </div>
@@ -106,6 +106,7 @@ import step7 from "@/views/device/book/details/step7";
 import step8 from "@/views/device/book/details/step8";
 import step9 from "@/views/device/book/details/step9";
 import step10 from "@/views/device/book/details/step10";
+import { getLocationTree} from '@/api/Location'
 export default {
   name: "bookadddetails",
   dicts: [
@@ -128,7 +129,7 @@ export default {
       return [
         { label:"设备名称", prop:"deviceName", span: 12, required: true, },
         { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, span: 12, required: true, },
-        { label:"设备编码", prop:"deviceCode", span: 12, required: true, },
+        { label:"设备编码", prop:"deviceCode", span: 12, required: true, formDisabled:true },
         { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, span: 12, },
       ]
     },
@@ -190,6 +191,7 @@ export default {
       categoryOptions: [],
       categoryName: '',
       isReadonly:false,
+      locationOptions:[]
     };
   },
   created() {
@@ -237,6 +239,39 @@ export default {
     });
   },
   methods: {
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
+    getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
     opendrawer(){
       // 查categoryId对应的名字
       this.loops(this.categoryOptions,this.formData.categoryId)
@@ -246,6 +281,9 @@ export default {
       equipmentTree().then(response => {
         this.categoryOptions = response.data;
       });
+      getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeName(res.data)
+      })
     },
     // 递归获取treeselect父节点
     loops(arr,id) {

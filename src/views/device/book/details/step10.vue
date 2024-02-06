@@ -202,14 +202,13 @@ export default {
       searchForm: {
         pageNum: 1,
         pageSize: 10,
-        busTypeList: [],
+        busTypeList: ['device_warehousing','device_neck','device_back','device_transfer','em_position_change','device_scrapped'],
         deviceId: this.formData.deviceId,
         deviceCode: this.formData.deviceCode,
         startTime: "2023-02-11",
         endTime: "2024-02-11",
       },
-      lineArr: [1, 2, 3],
-      selectAll: false,
+      selectAll: true,
       zzType: [
         { label: "设备入库", value: "device_warehousing" },
         { label: "设备领用", value: "device_neck" },

@@ -31,7 +31,10 @@ export default {
       default: () => { },
       type: Object,
     },
-
+    itemType:{
+      default:'',
+      type:String
+    }
   },
   computed: {
     // 列信息
@@ -70,12 +73,16 @@ export default {
         itemCode: null,
         itemContent: null,
         itemMethod: null,
-        itemType: null,
+        itemType: this.itemType,
         itemStatus: null,
       },
     };
   },
   created() {
+    setTimeout(() => {
+          console.log(this.itemType,this.queryParams)
+
+    }, 0);
     this.getList(this.queryParams)
   },
   methods: {

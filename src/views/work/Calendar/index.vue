@@ -159,10 +159,12 @@ export default {
         editable: false, // 在日历上是否可拖拽
         selectable: false, // 在日历上是否可以拉长
         navLinks: false, // 点击日期跳转到当天
-        slotDuration: "24:00:00", //一格时间槽代表多长时间，默认00:30:00（30分钟）
+        slotLabelFormat: 'H(:mm)',
+        slotMinutes: 30,
         // displayEventEnd: true,//所有视图显示结束时间
         initialView: "dayGridMonth", // 设置默认显示月，可选周、日
         dateClick: this.handleDateClick,
+        allDaySlot: true,
         eventMouseEnter: this.handleEventMouseEnter,
         eventMouseLeave: this.handleEventMouseLeave,
         // eventsSet: this.handleEvents,

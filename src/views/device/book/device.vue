@@ -4,7 +4,7 @@
       <!--部门数据-->
       <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
-        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" style="height: calc(100vh - 201px);">
+        <jm-user-tree :treeData="categoryOptions" @handleNodeClick="handleNodeClick" style="height: calc(100vh - 201px);">
         </jm-user-tree>
       </el-col>
       <!--用户数据-->
@@ -31,7 +31,8 @@ import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-
+import { getLocationTree} from '@/api/Location'
+import { listDept } from '@/api/system/dept'
 export default {
   name: "devicebook1",
   dicts: ['em_device_att', 'em_device_level'],
@@ -53,14 +54,14 @@ export default {
         { label: "设备编码", prop: "deviceCode", class: true},
         { label: "设备名称", prop: "deviceName", },
         { label: "规格型号", prop: "specs", },
-        { label: "设备类别", prop: "categoryId", },
+        { label: "设备类别", prop: "categoryId",options:this.categoryOptions,formType: 'selectTree',width: 180, },
         { label: "设备属性", prop: "deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
         { label: "财务资产编码", prop: "propertyCode", },
-        { label: "功能位置", prop: "location", },
+        { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180, },
         { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
         { label: "上级设备", prop: "parentId", formType: 'select', options: [], }, //(0 父级)
-        { label: "所属组织", prop: "affDeptId", },
-        { label: "当前使用组织", prop: "currDeptId", },
+        { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, width: 180, },
+        { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree',  options: this.deptOptions,  width: 180, },
       ]
     },
   },
@@ -84,6 +85,8 @@ export default {
       // 弹出层标题
       title: "",
       // 部门树选项
+      categoryOptions: undefined,
+      locationOptions:[],
       deptOptions: undefined,
       radioRow: {},
       // 查询参数
@@ -97,6 +100,43 @@ export default {
     this.getTree();
   },
   methods: {
+     /** 查询设备档案下拉树结构 */
+    getTree() {
+      equipmentTree().then((response) => {
+        this.categoryOptions = response.data
+        // 方便获取父级tree
+        this.loops(this.categoryOptions)
+      })
+      getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeName(res.data)
+      })
+      listDept().then((response) => {
+        this.deptOptions = response.data
+      })
+    },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        })
+        node.children = this.loops(children, node)
+        return node
+      })
+    },
+    getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
     close() {
       this.$emit('close')
     },
@@ -139,12 +179,6 @@ export default {
         this.loading = false;
       }
       );
-    },
-    /** 查询部门下拉树结构 */
-    getTree() {
-      equipmentTree().then(response => {
-        this.deptOptions = response.data;
-      });
     },
     // 节点单击事件
     handleNodeClick(data) {

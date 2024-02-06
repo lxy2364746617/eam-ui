@@ -19,14 +19,38 @@
             </div>
           </el-image>
         </div>
-        <div class="details_baseData_form">
-          <jm-form
+        <div class="details_baseData_form" >
+          <!-- <jm-form
               :showButton= "false"
               :columns="columns"
               :formData="formData"
               :labelWidth="'150px'"
               >
-            </jm-form>
+            </jm-form> -->
+            <el-form :model="formData" inline >
+              <el-row>
+                <el-col :span="16">
+                  <el-form-item label="功能位置名称:" label-width="120px" prop="deptName" :rules="[{required:true}]">
+                <el-input v-model="formData.deptName" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="所属组织:" label-width="120px" prop="orgName" :rules="[{required:true}]">
+                <el-input v-model="formData.orgName" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="功能位置编码:" label-width="120px" prop="deptCode" :rules="[{required:true}]">
+                <el-input v-model="formData.deptCode" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="设备位置属性:" label-width="120px" prop="funAttr" :rules="[{required:true}]">
+                <el-input v-model="formData.funAttr" disabled></el-input>
+              </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="备注:" label-width="80px" prop="remark" :rules="[{required:true}]">
+                <el-input   type="textarea" :rows="4" v-model="formData.remark" disabled></el-input>
+              </el-form-item>
+                </el-col>
+              </el-row>
+              
+            </el-form>
         </div>
       </div>
       <!-- 详情 -->
@@ -71,7 +95,7 @@
               size="mini"
               type="text"
               icon="el-icon-view"
-              @click="handlePreview (scope.row)"
+              @click="handlePreview(scope.row)"
             >预览</el-button>
           </template>
           </jm-table>
@@ -119,15 +143,19 @@
       :visible.sync="uploadDialogVisible"
       width="500px">
       <div class="upload_box">
-        <el-upload
+         <el-upload
           class="upload-demo"
           :action="action"
           :headers="headers"
           :on-success="onSuccessFile"
           :on-error="onErrorFile"
-          :file-list="fileList">
-          <el-button type="primary">点击上传<i class="el-icon-upload el-icon--right"></i></el-button>
-        </el-upload>
+          :file-list="fileList"
+           drag
+          >
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+<!--           <el-button type="primary">点击上传<i class="el-icon-upload el-icon--right"></i></el-button>
+ -->        </el-upload> 
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="uploadDialogVisible = false">取 消</el-button>
@@ -154,8 +182,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         src:'',
         src1:'',
         columns:[
-          { label: '所属组织', prop: 'orgName',required: true, formDisabled: true,span:8, },
           { label: '功能位置名称', prop: 'deptName',required: true, formDisabled: true, span:8,placeholder:' '},
+          { label: '所属组织', prop: 'orgName',required: true, formDisabled: true,span:8, },
           { label: '功能位置编码', prop: 'deptCode',required: true, formDisabled: true,  span:8, },
           { label: '设备位置属性', prop: 'funAttr',required: true, formDisabled: true,formType: 'select', options:[], span:8, },
           { label: '备注', prop: 'remark', required: true,formType: 'textarea',formDisabled: true,span:16,},
@@ -241,11 +269,11 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       // 获取路由参数
       getRouteData(){
         let BreadcrumbArr = JSON.parse(this.$route.query.BreadcrumbArr)
-        console.log(BreadcrumbArr,'路由参数')
+         console.log(this.$route.query,'路由参数')
         if(BreadcrumbArr){
           this.breadcrumbArr = BreadcrumbArr.reverse()
           let id = this.breadcrumbArr[this.breadcrumbArr.length-1].id
-          this.busId = id
+          this.busId = this.$route.query.i
           this.getBaseInfo()
           this.getDevice()
           this.getFile()
@@ -255,7 +283,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       // 获取设备状态
       getStatus(){
         getDeviceStatus().then(res=>{
-          console.log(res,'设备状态')
+          /* console.log(res,'设备状态') */
           if(res.data){
             res.data.forEach(item=>{
               item.label= item.dictLabel
@@ -272,7 +300,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       // 获取设备属性
       getAtt(){
         getDeviceAtt().then(res=>{
-          console.log(res,'设备属性')
+          /* console.log(res,'设备属性') */
           if(res.data){
             res.data.forEach(item=>{
               item.label= item.dictLabel
@@ -292,7 +320,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
           location:this.busId
         }
         locationDetailDevice(params).then(res=>{
-          console.log(res,'设备列表')
+          /* console.log(res,'设备列表') */
           res.rows.forEach(item=>{
             if(item?.archivesOther?.propertyCode){
               item.propertyCode = item.archivesOther.propertyCode
@@ -309,7 +337,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
           origin:'FLP',
         }
         locationDetailFile(params).then(res=>{
-          console.log(res,'图片列表')
+          /* console.log(res,'图片列表') */
+          this.sysFileResources=[]
           res.rows.forEach(item=>{
             this.sysFileResources.push({
               name:item.originalFileName,
@@ -326,7 +355,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
           origin:'FLF',
         }
         locationDetailFile(params).then(res=>{
-          console.log(res,'文件列表')
+          /* console.log(res,'文件列表') */
           this.templateList1 = res.rows
           this.total1 = res.total
         })
@@ -334,7 +363,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       // 获取功能位置属性
       getAttr(){
         getLocationAttr().then(res=>{
-          console.log(res,'功能位置属性')
+          /* console.log(res,'功能位置属性') */
           if(res.data){
             res.data.forEach(item=>{
               item.label= item.dictLabel
@@ -355,7 +384,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       // 获取基本信息
       getBaseInfo(){
         locationDetail({id:this.busId}).then(res=>{
-          console.log(res,'基本信息')
+          /* console.log(res,'基本信息') */
           this.columns.forEach(item=>{
             if(res.data[item.prop]){
               this.formData[item.prop] = res.data[item.prop]
@@ -397,59 +426,64 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       // 文件-点击下载
       handleDownload(row){
         // console.log(row)
-        let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
-        download(url)
+        let url = `${process.env.VUE_APP_BASE_API}${row.fileName}`
+        this.$download.resource(row.fileName)
+       // this.download('common/download', {}, row.originalFileName)
       },
       // 文件-点击预览
       handlePreview(row){
         // console.log(row)
-        let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
+        let url = `${process.env.VUE_APP_BASE_API}${row.fileName}`
         window.open(url)
       },
       // 设备-点击下载
       downloadClick(row){
         // console.log(row)
-        this.download('equipment/base/export',{},`device_${new Date().getTime()}.xlsx`)
+        this.download('equipment/base/export',{location:this.busId},`device_${new Date().getTime()}.xlsx`)
       },
       // 位置图片-删除
       handleRemove(file) {
-        console.log(file);
+        console.log('deleteImage',file);
         this.sysFileResources.forEach((item,idx)=>{
-          if(item.name == file.name){
+          if(item.uid == file.uid){
             this.sysFileResources.splice(idx,1)
           }
         })
         this.deleteFile(file.id)
+        setTimeout(() => {
+          this.getBaseInfo()
+        }, 0); 
       },
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
         this.dialogVisible = true;
       },
-      handleDownload(file) {
+      /* handleDownload(file) {
         console.log(file);
-      },
+      }, */
       // 上传成功回调
       onSuccess(res,file,fileList){
-        console.log(res)
+          console.log(fileList)
         let keys = Object.keys(res)
         fileList.forEach(item=>{
           item.busId = this.busId,
           item.origin = 'FLP'
-          keys.forEach(key=>{
+           /* keys.forEach(key=>{
             item[key] = res[key]
-          })
+          }) */ 
         })
+        fileList[fileList.length?fileList.length-1:0]=Object.assign(res,{busId:this.busId,origin:'FLP'})
         this.sysFileResources = fileList;
 
         // 自动保存
-        uploadSave(this.sysFileResources).then(res=>{
-          console.log(res,'图片保存成功')
+        uploadSave([this.sysFileResources[this.sysFileResources.length-1]]).then(res=>{
           this.$message({
             message: '操作成功！',
             type: 'success'
           })
+          this.getImg()
+          this.getBaseInfo()
         })
-        this.getBaseInfo()
       },
       // 上传弹窗，文件上传成功回调
       onSuccessFile(res,file,fileList){
@@ -472,7 +506,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         this.uploadDialogVisible = false
         // 自动保存
         uploadSave(this.fileList).then(res=>{
-          console.log(res,'文件保存成功')
+          /* console.log(res,'文件保存成功') */
           this.$message({
             message: '操作成功！',
             type: 'success'

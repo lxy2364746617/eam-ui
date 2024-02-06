@@ -660,46 +660,6 @@ export default {
       delete this.element.businessObject.$attrs[`flowable:candidateUsers`]
       delete this.element.businessObject.$attrs[`flowable:candidateGroups`]
     },
-    resetTaskForm() {
-      console.log('resetTaskFormresetTaskFormresetTaskForm')
-      const bpmnElementObj = this.bpmnElement?.businessObject;
-      if (!bpmnElementObj) {
-        return;
-      }
-      if (this.formData.userType === 'assignee') {
-        let userIdData = bpmnElementObj['candidateUsers'] || bpmnElementObj['assignee'];
-        let userText = bpmnElementObj['text'] || [];
-        if (userIdData && userIdData.toString().length > 0 && userText && userText.length > 0) {
-          this.selectedUser.ids = userIdData?.toString().split(',');
-          this.selectedUser.text = userText?.split(',');
-        }
-      }
-      this.getElementLoop(bpmnElementObj);
-    },
-    changeMultiLoopType() {
-      this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", { isSequential: this.isSequential });
-      // 更新多实例配置
-      window.bpmnInstances.modeling.updateProperties(this.bpmnElement, {
-        loopCharacteristics: this.multiLoopInstance,
-        assignee: '${assignee}'
-      });
-      // 完成条件
-      let completionCondition = null;
-      // 会签
-      if (this.formData.multiLoopType === "SequentialMultiInstance") {
-        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances >= nrOfInstances}" });
-      }
-      // 或签
-      if (this.formData.multiLoopType === "ParallelMultiInstance") {
-        completionCondition = window.bpmnInstances.moddle.create("bpmn:FormalExpression", { body: "${nrOfCompletedInstances > 0}" });
-      }
-      // 更新模块属性信息
-      window.bpmnInstances.modeling.updateModdleProperties(this.bpmnElement, this.multiLoopInstance, {
-        collection: '${multiInstanceHandler.getUserIds(execution)}',
-        elementVariable: 'assignee',
-        completionCondition
-      });
-    },
   }
 }
 </script>

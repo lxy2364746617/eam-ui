@@ -10,6 +10,7 @@
         :initLoading="false"
         :handleWidth="130"
         :showSearch="false"
+        :paginationShow='false'
         :columns="columns">
         <template slot="headerLeft">
           <el-col :span="1.5">

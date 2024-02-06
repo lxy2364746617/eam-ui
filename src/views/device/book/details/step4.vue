@@ -27,19 +27,20 @@
           @click="downloadFile(scope.row)"
         >下载</el-button>
         <el-button
-         v-if="!isReadonly"
-          size="mini"
-          type="text"
-          icon="el-icon-delete"
-          @click="handleDelete(scope.row)"
-        >删除</el-button>
-        <el-button
           size="mini"
           type="text"
           icon="el-icon-document-add"
           v-if="!isReadonly&&fileType.includes(scope.row.fileType)"
           @click="handlePreview(scope.row)"
         >预览</el-button>
+        <el-button
+         v-if="!isReadonly"
+          size="mini"
+          type="text"
+          icon="el-icon-delete"
+          @click="handleDelete(scope.row)"
+        >删除</el-button>
+        
       </template>
     </jm-table>
     <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -216,9 +217,10 @@ export default {
       }).catch(() => {});
     },
     downloadFile(row){
-      this.download('common/download', {
+      this.$download.resource(row.fileName)
+      /* this.download('common/download', {
         fileName: row.fileName
-      }, row.originalFileName)
+      }, row.originalFileName) */
     },
     handleAdd(){
       this.fileList = []
@@ -257,9 +259,9 @@ export default {
       this.close()
     },
     /** 查询用户列表 */
-    getList(queryParams) {
+    getList() {
       this.loading = true;
-      listResource(queryParams).then(response => {
+      listResource(this.queryParams).then(response => {
           this.equipmentList = response.rows;
           this.total = response.total;
           this.loading = false;

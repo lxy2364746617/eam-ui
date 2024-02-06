@@ -43,10 +43,11 @@ export function delGroup(userIds) {
   })
 }
 // 状态修改
-export function changeItemStatus(id, planStatus) {
+export function changeItemStatus(id, groupStatue) {
   const data = {
     id,
-    planStatus,
+    groupStatue
+,
   };
   return request({
     url: "/system/group/changeStatus",

@@ -222,6 +222,9 @@
               <el-checkbox v-for="item in typeArr2" :key="item.value" :label="item.value">{{item.label}}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
+          <el-form-item label="开始时间：">
+            <el-date-picker v-model="time" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd"></el-date-picker>
+          </el-form-item>
         </el-form>
         <div style="width:140px;position:absolute;right:10px;top:10px">
           <div :class="['btn', isTimeLine2? 'isactive':'']" @click="isTimeLine2=true">日历</div>
@@ -232,7 +235,7 @@
             <full-calendar ref="fullCalendar" :options="calendarOptions"></full-calendar>
           </el-col>
           <el-col :span="8">
-            <el-card style="margin-top:60px">
+            <el-card style="margin-top:64px;height:636px">
               <div class="statistics">
                 <div class="statistics_title">运维计划统计</div>
                 <div>
@@ -273,9 +276,10 @@
 </template>
 
 <script>
-import FullCalendar from "@fullcalendar/vue";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
+import FullCalendar from "@fullcalendar/vue"
+import dayGridPlugin from "@fullcalendar/daygrid"
+import interactionPlugin from "@fullcalendar/interaction"
+import timeGridPlugin from '@fullcalendar/timegrid'
 import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/light.css";
@@ -297,7 +301,7 @@ export default {
       total: 0,
       total2: 0,
       searchForm: {
-        maintenanceList: ["XDJ"],
+        maintenanceList: ["XDJ",'BYJX','DQJY','SBWX'],
         pageNum: 1,
         pageSize: 10,
         deviceCode: this.formData.deviceCode,
@@ -305,13 +309,13 @@ export default {
         endTime: "",
       },
       searchForm2: {
-        type: [],
+        type: ['patrol','keep','regular'],
         pageNum: 1,
         pageSize: 10,
         deviceId: this.formData.deviceId,
       },
-      selectAll: false,
-      selectAll2: false,
+      selectAll: true,
+      selectAll2: true,
       typeArr: [
         { value: "XDJ", label: "巡点检" },
         { value: "BYJX", label: "保养检修" },
@@ -336,26 +340,27 @@ export default {
         regular: 0,
       },
       calendarOptions: {
-        plugins: [dayGridPlugin, interactionPlugin],
+        plugins: [timeGridPlugin,dayGridPlugin, interactionPlugin,],
         initialView: "dayGridMonth",
         locale: "zh",
         firstDay: 1,
         buttonText: {
           today: "今天",
           month: "月",
-          week: "周",
-          day: "日",
+           week: "周",
+          day: "日", 
           // list: "列表",
         },
         headerToolbar: {
           left: "prev,next today",
           center: "title",
-          right: "dayGridMonth,dayGridWeek,dayGridDay",
+          right: "dayGridMonth,dayGridWeek,timeGridDay",
         },
         weekNumberCalculation: "ISO",
-        nowIndicator: true,
+        nowIndicator: false,
         height: 700,
-        validRange: this.validRange, //设置可显示的总日期范围
+        slotDuration:'00:30:00',
+        allDaySlot:false,
         eventTimeFormat: {
           // 在每个事件上显示的时间的格式
           hour: "numeric", // numeric:2022,2-digit:22
@@ -372,12 +377,6 @@ export default {
           },
         },
         events: [],
-        datesSet: this.datesSet, //日期渲染；修改日期范围后触发
-        eventClick: this.handleEventMouseover, //点击日程触发
-        dateClick: this.handleDateClick, //点击日期触发
-        eventDrop: this.calendarEventDropOrResize, //拖动事件触发
-        eventResize: this.calendarEventDropOrResize, //缩放事件触发
-        displayEventTime: false, //不显示具体时间
         eventMouseEnter: (info) => {
           let that = this;
           tippy(info.el, {
@@ -414,6 +413,29 @@ export default {
           });
         },
       },
+      /* calendarOptions:{
+         plugins: [
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin, // needed for dateClick
+        ],
+        
+        headerToolbar: {
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay",
+        },
+        initialView: "timeGridWeek",
+        initialEvents: [], // alternatively, use the `events` setting to fetch from a feed
+        editable: true,
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        weekends: true,
+        select: this.handleDateSelect,
+        eventClick: this.handleEventClick,
+        eventsSet: this.handleEvents,
+      } */
     };
   },
   watch: {

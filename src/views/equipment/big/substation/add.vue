@@ -3,7 +3,7 @@
         <div>
             <div class="mb20" style="background-color: #fff;">基本信息</div>
             <jm-form class="mr20" :showButton="false" :columns="columns" :formData="formData" @submitForm="submitForm"
-                ref="jmform" :disabled="disabled">
+                ref="jmform" :disabled="disabled" :labelWidth="'170px'">
             </jm-form>
             <div class="mb20" style="background-color: #fff;">详细设备信息</div>
             <jm-table :tableData="formData.emArchivesParts" @getList="getList"
@@ -19,10 +19,10 @@
                             @click="handleDelete">解除关联</el-button>
                     </el-col>
                 </template>
-                <template #end_handle="scope" v-if="!disabled">
+                <!-- <template #end_handle="scope" v-if="!disabled">
                     <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row, 'edit')"
                         v-hasPermi="['equipment:substation:edit']">编辑</el-button>
-                    </template>
+                    </template> -->
             </jm-table>
 
             <div style="text-align: center;margin-top: 20px;" v-if="!disabled">
@@ -53,10 +53,10 @@ import fileImport from "@/components/FileImport";
 import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
-
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
-    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_elevator_people'],
+    dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_common_sf'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
@@ -64,35 +64,44 @@ export default {
             return [
             { label:"矿井名称", prop:"mineName", span: 8, required: true, },
 { label:"变电所名称", prop:"substationName", span: 8, },
-{ label:"电源电压等级", prop:"vcc", span: 8, },
+{ label:"电源上级名称", prop:"topSubstationName", span: 8, },
+
+{ label:"电源电压等级(kV)", prop:"vcc", span: 8, },
 { label:"电源电缆型号", prop:"cableModel", span: 8, },
+{ label:"电源供电距离", prop:"powerSupplyLength", span: 8, },
+
 { label:"高压开关设备型号", prop:"highPowerModel", span: 8, },
-{ label:"高压开关电压等级", prop:"highPowerLevel", span: 8, },
+{ label:"高压开关电压等级(kV)", prop:"highPowerLevel", span: 8, },
+{ label:"高压开关台数", prop:"highPowerSum", span: 8, },
+
 { label:"高压开关设备厂家", prop:"highManufacturer", span: 8, },
-{ label:"高压投运时间", prop:"highPutTime", span: 8, formType: "date", },
-{ label:"所用变容量", prop:"variableCapacity", span: 8, },
+{ label:"高压开关投运时间", prop:"highPutTime", span: 8, formType: "date", },
+{ label:"所用变电设备型号", prop:"changePowerModel", span: 8, },
+
+{ label:"所用变容量(kVA)", prop:"variableCapacity", span: 8, },
 { label:"所用变台数", prop:"variableSum", span: 8, },
+{ label:"所用变投运日期", prop:"changePutTime", span: 8, formType: "date", },
+
 { label:"低压开关设备型号", prop:"lowPowerModel", span: 8, },
-{ label:"低压开关电压等级", prop:"lowPowerLevel", span: 8, },
+{ label:"低压开关电压等级(V)", prop:"lowPowerLevel", span: 8, },
+{ label:"低压开关台数", prop:"lowPowerSum", span: 8, },
+
 { label:"低压开关设备厂家", prop:"lowManufacturer", span: 8, },
-{ label:"低压投运时间", prop:"lowPutTime", span: 8, formType: "date", },
+{ label:"低压开关投运时间", prop:"lowPutTime", span: 8, formType: "date", },
+{ label:"监控分站设备型号", prop:"monitorModel", span: 8, },
+
 { label:"监控分站供电电源", prop:"powerSupply", span: 8, },
 { label:"监控分站台数", prop:"powerSupplySum", span: 8, },
-{ label:"监控分站自动切换", prop:"automatic", span: 8, },
+{ label:"监控分站控制方式", prop:"monitorMethod", span: 8, },
+
+{ label:"监控分站自动切换", prop:"automatic", span: 8,formType: "select", options: this.dict.type.equipment_common_sf, },
 { label:"直流电源设备型号", prop:"directModel", span: 8, },
+{ label:"直流电源厂家", prop:"directManufacturer", span: 8, },
+
 { label:"智能保护型号", prop:"protectModel", span: 8, },
 { label:"智能保护厂家", prop:"protectManufacturer", span: 8, },
-{ label:"矿井产能", prop:"producePower", span: 8, },
-{ label:"电源上级名称", prop:"topSubstationName", span: 8, },
-{ label:"电源供电距离", prop:"powerSupplyLength", span: 8, },
-{ label:"高压开关台数", prop:"highPowerSum", span: 8, },
-{ label:"所用变电设备型号", prop:"changePowerModel", span: 8, },
-{ label:"所用变投运日期", prop:"changePutTime", span: 8, formType: "date", },
-{ label:"低压开关数", prop:"lowPowerSum", span: 8, },
-{ label:"监控分站设备型号", prop:"monitorModel", span: 8, },
-{ label:"监控分站控制方式", prop:"monitorMethod", span: 8, },
-{ label:"直流电源厂家", prop:"directManufacturer", span: 8, },
-{ label:"无人值守", prop:"unmanned", span: 8, formType: "select", options: this.dict.type.equipment_elevator_people, },//(是/否)
+{ label:"矿井产能(万吨)", prop:"producePower", span: 8, },
+{ label:"具备无人值守条件(是/否)", prop:"unmanned", span: 8, formType: "select", options: this.dict.type.equipment_common_sf, },//(是/否)
 
 
             ]
@@ -105,7 +114,7 @@ export default {
                 { label: "规格型号", prop: "specs", },
                 { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, },
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
-                { label: "功能位置", prop: "location", },
+                { label: "功能位置", prop: "location", formType: 'selectTree', options: this.locationOptions,width:180},
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
                 { label: "所属子公司", prop: "111", },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
@@ -133,6 +142,7 @@ export default {
             // 部门树选项
             deptOptions: [],
             categoryOptions: [],
+            locationOptions:[],
             valueMap: {},
             disabled: false,
             // 显示搜索条件
@@ -162,14 +172,15 @@ export default {
             },
         };
     },
-    created() {
+    async created() {
         this.queryParams.largeId = this.$route.query.l;
         this.disabled = this.$route.query.d == 'true';
+        await this.getTree();
+        await this.getTreeSelect();
         if(this.$route.query.l){
             this.getDetails(this.$route.query.l);
         }
-        this.getTree();
-        this.getTreeSelect();
+        
     },
     methods: {
         close() {
@@ -188,19 +199,33 @@ export default {
             this.close()
         },
         /** 查询设备档案下拉树结构 */
-        getTree() {
-            equipmentTree().then(response => {
+        async getTree() {
+            await equipmentTree().then(response => {
                 this.categoryOptions = response.data;
                 // 方便获取父级tree
                 this.loops(this.categoryOptions)
             });
+            await getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
         },
         /** 查询部门下拉树结构 */
-        getTreeSelect() {
-            listDept().then(response => {
+        async getTreeSelect() {
+            await listDept().then(response => {
                 this.deptOptions = response.data;
             });
         },
+        getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
         // 递归获取treeselect父节点
         loops(list, parent) {
             return (list || []).map(({ children, id, label }) => {
@@ -245,7 +270,9 @@ export default {
             done()
         },
         getList(queryParams) {
-
+            if(this.$route.query.l){
+            this.getDetails(this.$route.query.l);
+        }
         },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {

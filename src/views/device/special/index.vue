@@ -74,10 +74,10 @@ export default {
           },
       };
   },
-  created() {
-      this.getTree();
-      this.getTreeSelect();
-      this.isSmEmCategoryRadio()
+  async created() {
+     await this.getTree();
+     await this.getTreeSelect();
+     await this.isSmEmCategoryRadio()
   },
   methods: {
     /** 查询设备档案下拉树结构 */
@@ -108,6 +108,7 @@ export default {
                           bb.prop = bb.fieldCode
                           bb.formType = bb.fieldType
                           bb.tableVisible = !bb.custom
+                          bb.width=(bb.fieldName=='设备类别'||bb.fieldName=='所属组织')?180:''
                           for (const key in that.obj) {
                             if(key==bb.prop){
                                 Object.assign(bb,that.obj[key])
@@ -147,7 +148,6 @@ export default {
           var obj = {
                 categoryId: this.queryParams.categoryId,
             }
-            console.log(obj,888);
             this.download('equipment/special/export',
                 obj,
                 `特种设备_${new Date().getTime()}.xlsx`)

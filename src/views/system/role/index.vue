@@ -333,6 +333,8 @@ export default {
       deptOptions: [],
       // 查询参数
       queryParams: {
+        tenantId:undefined,
+        parentId:undefined,
         pageNum: 1,
         pageSize: 10,
         roleName: undefined,
@@ -357,17 +359,20 @@ export default {
           { required: true, message: "角色顺序不能为空", trigger: "blur" }
         ]
       },
-      deptId:'',
+      tenantId:'',
     };
   },
   created() {
     this.getList();
     isAdmin().then(res=>{
       this.isAdmin=res.data
-    })
-    orgTree().then(res=>{
+      if(res.data){
+        orgTree().then(res=>{
       this.treeData=this.getTree(res.data)
     })
+      }
+    })
+    
   },
   methods: {
     getTree(arr){
@@ -381,11 +386,15 @@ export default {
         return arr
     },
     handleNodeClick(e){
-      this.deptId=e.deptId
+      this.tenantId=e.deptId
+      this.queryParams.tenantId=e.deptId
+      this.queryParams.parentId=e.parentId
+      this.getList()
     },
     /** 查询角色列表 */
     getList() {
       this.loading = true;
+      console.log('this.queryParams',this.queryParams)
       listRole(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
           this.roleList = response.rows;
           this.total = response.total;
@@ -462,7 +471,7 @@ export default {
       this.deptExpand = true,
       this.deptNodeAll = false,
       this.form = {
-        deptId:this.deptId,
+        tenantId:this.tenantId,
         roleId: undefined,
         roleName: undefined,
         roleKey: undefined,
