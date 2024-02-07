@@ -16,5 +16,13 @@ export function updateClasses(data) {
     data: data,
   });
 }
+// 列表
+export function listClasses(data) {
+  return request({
+    url: "/maintain/classes/list",
+    method: "get",
+    data: data,
+  });
+}
 
 

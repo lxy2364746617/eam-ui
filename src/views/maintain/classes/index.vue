@@ -94,7 +94,7 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="班次类型" prop="classesType">
-          <el-input v-model="form.classesCode" placeholder="请选择班次类型" />
+          <el-input v-model="form.classesCode" placeholder="请选择班次类型" maintain_classes_type />
         </el-form-item>
         <el-form-item label="班次时间" prop="classesTime">
           <el-date-picker clearable
@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import { listCLASSES, getCLASSES, delCLASSES, addClasses, updateClasses } from "@/api/maintain/classes";
+import { listClasses, getCLASSES, delCLASSES, addClasses, updateClasses } from "@/api/maintain/classes";
 
 export default {
   name: "CLASSES",
@@ -133,7 +133,7 @@ export default {
       // 总条数
       total: 0,
       // 运维计划班次管理表格数据
-      CLASSESList: [],
+      classesList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -177,8 +177,8 @@ export default {
     /** 查询运维计划班次管理列表 */
     getList() {
       this.loading = true;
-      listCLASSES(this.queryParams).then(response => {
-        this.CLASSESList = response.rows;
+      listClasses(this.queryParams).then(response => {
+        this.classesList = response.rows;
         this.total = response.total;
         this.loading = false;
       });

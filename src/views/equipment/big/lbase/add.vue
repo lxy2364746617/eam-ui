@@ -7,7 +7,7 @@
             </jm-form>
             <div class="mb20" style="background-color: #fff;">详细设备信息</div>
             <jm-table :tableData="formData.emArchivesParts" @getList="getList"
-                @handleSelectionChange="handleSelectionChange" @switchchange="switchchange" :total="total" 
+                @handleSelectionChange="handleSelectionChange" @switchchange="switchchange" :total="total"
                 :handleWidth="120" :columns="tablecolumns" ref="jmTable">
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
@@ -48,7 +48,7 @@
         </div>
     </div>
 </template>
-          
+
 <script>
 import { listlbase, getlbase, dellbase, addlbase, updatelbase, importlbase } from "@/api/equipment/big/lbase";
 import JmTable from "@/components/JmTable";
@@ -111,7 +111,7 @@ export default {
                 { label: "综自保护规约", prop: "zzGy", span: 8, },
                 { label: "综自保护厂家", prop: "zzCj", span: 8, },
                 { label: "五防形式", prop: "wfXs", span: 8, },
-                { label: "具备无人信守条件", prop: "wrTj", span: 8, formType: "select", options: this.dict.type.equipment_common_sf, },
+                { label: "具备无人值守条件", prop: "wrTj", span: 8, formType: "select", options: this.dict.type.equipment_common_sf, },
             ]
         },
         // 列信息
@@ -399,4 +399,3 @@ export default {
     }
 };
 </script>
-          

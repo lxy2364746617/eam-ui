@@ -40,7 +40,7 @@
                 <el-input v-model="formData.deptCode" disabled></el-input>
               </el-form-item>
               <el-form-item label="设备位置属性:" label-width="120px" prop="funAttr" :rules="[{required:true}]">
-                <el-input v-model="formData.funAttr" disabled></el-input>
+                <el-input v-model="funAttr1" disabled></el-input>
               </el-form-item>
                 </el-col>
                 <el-col :span="8">
@@ -49,7 +49,7 @@
               </el-form-item>
                 </el-col>
               </el-row>
-              
+
             </el-form>
         </div>
       </div>
@@ -155,7 +155,7 @@
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
 <!--           <el-button type="primary">点击上传<i class="el-icon-upload el-icon--right"></i></el-button>
- -->        </el-upload> 
+ -->        </el-upload>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="uploadDialogVisible = false">取 消</el-button>
@@ -259,6 +259,11 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         fileList:[], // 上传弹窗，文件列表
       }
     },
+    computed:{
+      funAttr1:function () {
+        return  this.findName(this.columns[3].options,this.formData.funAttr)
+      }
+    },
     mounted(){
       this.getRouteData()
       this.getAttr()
@@ -273,7 +278,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         if(BreadcrumbArr){
           this.breadcrumbArr = BreadcrumbArr.reverse()
           let id = this.breadcrumbArr[this.breadcrumbArr.length-1].id
-          this.busId = this.$route.query.i
+          // this.busId = this.$route.query.i
+          this.busId = id
           this.getBaseInfo()
           this.getDevice()
           this.getFile()
@@ -389,7 +395,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
             if(res.data[item.prop]){
               this.formData[item.prop] = res.data[item.prop]
             }
-          })
+
+0          })
           this.src = `${process.env.VUE_APP_BASE_API}${res.data.bannerUrl}`
           this.src1 = `${process.env.VUE_APP_BASE_API}${res.data.qrCode}`
         })
@@ -452,7 +459,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         this.deleteFile(file.id)
         setTimeout(() => {
           this.getBaseInfo()
-        }, 0); 
+        }, 0);
       },
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
@@ -470,7 +477,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
           item.origin = 'FLP'
            /* keys.forEach(key=>{
             item[key] = res[key]
-          }) */ 
+          }) */
         })
         fileList[fileList.length?fileList.length-1:0]=Object.assign(res,{busId:this.busId,origin:'FLP'})
         this.sysFileResources = fileList;
@@ -513,7 +520,16 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
           })
           this.getFile()
         })
-      }
+      },
+      findName(options, value) {
+        var name = "";
+        for (let i = 0; i < options.length; i++) {
+          if (options[i].value == value) {
+            name = options[i].label;
+          }
+        }
+        return name || value;
+      },
     }
   }
 </script>
