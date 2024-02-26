@@ -6,10 +6,10 @@
                 :total="total" ref="jmtable" :handleWidth="230" :columns="columns">
                 <template slot="headerLeft">
                     <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleAdd">添加</el-button>
+                        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">添加</el-button>
                     </el-col>
                     <el-col :span="1.5">
-                        <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete">删除</el-button>
+                        <el-button type="primary" plain icon="el-icon-delete" size="mini" @click="handleDelete">删除</el-button>
                     </el-col>
                 </template>
             </jm-table>
@@ -27,7 +27,7 @@
                 <el-table-column label="保养项编码" align="center" prop="itemCode" min-width="150" />
                 <el-table-column label="保养项名称" align="center" prop="itemName" min-width="150" />
                 <el-table-column label="保养部位" align="center" prop="itemArea" min-width="150" />
-                <el-table-column label="保养内容" align="center" prop="itemContent" min-width="150" />
+                <el-table-column label="保养内容" align="center" prop="itemContent" min-width="150" show-overflow-tooltip/>
                 <el-table-column label="周期" align="center" prop="checkCycle" min-width="150" />
                 <el-table-column label="保养周期类别" align="center" prop="checkCycleType" min-width="150">
                     <template slot-scope="scope">
@@ -57,6 +57,7 @@ import { getMstandard, copyStandard } from "@/api/maintain/mstandard";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import parentdevice from '@/views/device/book/device'
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_is_special', 'mro_m_cycle_type'],
@@ -69,7 +70,7 @@ export default {
                 { label: "设备编码", prop: "deviceCode", },
                 { label: "规格型号", prop: "specs", },
                 { label: "设备类别", prop: "categoryName", },
-                { label: "功能位置", prop: "location", },
+                { label: "功能位置", prop: "location",formType: 'selectTree', options: this.locationOptions,width:180 },
                 { label: "当前使用组织", prop: "currDeptName", },
                 { label: "所属组织", prop: "affDeptName", },
                 { label: "是否是特种设备", prop: "isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, formDisabled: true, required: true, }, //(Y 是、N 否)
@@ -144,12 +145,16 @@ export default {
             itemList: [],
             deviceForm: {
                 disIds: []
-            }
+            },
+            locationOptions:[],
         };
     },
     created() {
         this.standardId = this.$route.query.l;
         this.getDetails(this.$route.query.l);
+        getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
     },
     methods: {
         submitRadio2(row) {
@@ -159,10 +164,22 @@ export default {
         handleAdd() {
             this.drawer = true;
             let disIds = this.itemList.length == 0 ? [] : this.itemList.map(item => { return item.deviceId })
+            disIds.push(this.$route.query.deviceId)
             this.deviceForm = {
                 disIds: disIds
             }
         },
+        getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;

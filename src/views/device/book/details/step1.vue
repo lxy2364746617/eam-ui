@@ -200,6 +200,8 @@ export default {
         { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 12, required: true, formDisabled:true, }, //(Y 是、N 否)
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 12, required: true, },  //(1 设备、2 部件)
         { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 12, formVisible: this.formData.deviceAtt==1 }, //(0 父级)
+        { label:"自选设备编码", prop:"freeDeviceCode", span: 8,  span: 12,},
+        { label:"14885类别", prop:"freeCategoryCode", span: 8,  span: 12,},
       ]
     },
     columns2(){

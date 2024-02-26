@@ -317,7 +317,6 @@ export default {
           this.queryParams.params.startTime = val[0]
           this.queryParams.params.endTime = val[1]
         }
-        console.log(this.queryParams)
       },
       switchchange($event,prop,row){
         this.$emit('switchchange',$event,prop,row)

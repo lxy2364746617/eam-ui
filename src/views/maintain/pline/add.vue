@@ -36,7 +36,11 @@
             <el-table-column label="设备名称" align="center" prop="deviceName" min-width="150"></el-table-column>
             <el-table-column label="规格型号" align="center" prop="specs" min-width="150" />
             <el-table-column label="设备类别" align="center" prop="categoryName" min-width="150"></el-table-column>
-            <el-table-column label="功能位置" align="center" prop="location" min-width="150"></el-table-column>
+            <el-table-column label="功能位置" align="center" prop="location" min-width="150">
+                <template slot-scope="scope">
+                    {{findTreeName(locationOptions,scope.row.location)}}
+                </template>
+            </el-table-column>
             <el-table-column label="所属子公司" align="center" prop="subCompanyName" min-width="150"></el-table-column>
             <el-table-column label="所属组织" align="center" prop="affDeptName" min-width="150" />
             <el-table-column label="设备状态" align="center" prop="deviceStatus">
@@ -97,6 +101,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import parentdevice from '@/views/device/book/device'
 import Sortable from 'sortablejs'
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_device_state', 'mro_s_check_status'],
@@ -161,6 +166,7 @@ export default {
                     { required: true, message: '状态不能为空', trigger: 'blur' },
                 ],
             },
+            locationOptions:[]
         };
     },
     mounted() {
@@ -186,8 +192,44 @@ export default {
             this.lineId = '';
             this.loading = false;
         }
+        getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
     },
     methods: {
+        getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
+        findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
         submitRadio2(row) {
             let deviceIds = row.map(item => item.deviceId);
             let formData = new FormData();

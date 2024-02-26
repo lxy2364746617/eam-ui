@@ -24,8 +24,8 @@
                             <el-input v-model="form.categoryName" placeholder="请输入设备类别" disabled />
                         </el-form-item></el-col>
                     <el-col :span="12">
-                        <el-form-item label="功能位置(工作面)" prop="location">
-                            <el-input v-model="form.location" placeholder="请输入功能位置" disabled />
+                        <el-form-item label="功能位置(工作面)" prop="locationName">
+                            <el-input v-model="form.locationName" placeholder="请输入功能位置" disabled />
                         </el-form-item></el-col>
                     <el-col :span="12"> <el-form-item label="所属组织" prop="affDeptName">
                             <el-input v-model="form.affDeptName" placeholder="请输入所属组织" disabled />
@@ -61,13 +61,13 @@
                 <el-tab-pane label="二级保养" name="third"></el-tab-pane>
                 <el-tab-pane label="常规润滑" name="fourth"></el-tab-pane>
             </el-tabs>
-            <div class="title">关联保养检修项11
+            <div class="title">关联保养检修项
                 <el-button type="text" icon="el-icon-edit" @click="handleAdd">添加</el-button>
             </div>
             <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column label="序号" align="center" type="index" />
-                <el-table-column label="部件" align="center" prop="partsName">
+                <el-table-column label="部件" align="center" prop="partsName" min-width="150">
                     <template slot-scope="scope">
                         <el-input v-model="scope.row.partsName" placeholder="请输入部件" v-if="scope.row.editType" />
                         <span v-else v-html="scope.row.partsName"></span>
@@ -76,7 +76,7 @@
                 <el-table-column label="保养项编码" align="center" prop="itemCode" min-width="150" />
                 <el-table-column label="保养项名称" align="center" prop="itemName" min-width="150" />
                 <el-table-column label="保养部位" align="center" prop="itemArea" min-width="150" />
-                <el-table-column label="保养内容" align="center" prop="itemContent" min-width="150" />
+                <el-table-column label="保养内容" align="center" prop="itemContent" min-width="150" show-overflow-tooltip/>
                 <el-table-column label="周期" align="center" prop="checkCycle" min-width="150">
                     <template slot-scope="scope">
                         <el-input type="number" v-model="scope.row.checkCycle" min="0" placeholder="请输入周期"
@@ -104,7 +104,7 @@
                 <el-table-column label="保养工具" align="center" prop="itemTool" min-width="150" />
                 <el-table-column label="保养点数" align="center" prop="checkNum" min-width="150">
                     <template slot-scope="scope">
-                        <el-input type="number" v-model="scope.row.checkNum" placeholder="请输入保养点数"
+                        <el-input   v-model="scope.row.checkNum" @input="scope.row.checkNum=scope.row.checkNum.replace(/^(0+)|[^\d]+/g,'')" placeholder="请输入保养点数"
                             v-if="scope.row.editType" />
                         <span v-else v-html="scope.row.checkNum"></span>
                     </template>
@@ -150,6 +150,7 @@ import { listDept } from "@/api/system/dept";
 import parentdevice from '@/views/device/book/device'
 import pointItem from '@/views/maintain/mstandard/pointItem'
 import { number } from 'echarts';
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_is_special', 'mro_m_cycle_type'],
@@ -162,7 +163,7 @@ export default {
                 { label: "设备编码", prop: "deviceCode", span: 8, required: true, },
                 { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, span: 8, required: true, },
                 { label: "是否是特种设备", prop: "isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, formDisabled: true, required: true, }, //(Y 是、N 否)
-                { label: "功能位置", prop: "location", span: 8, required: true, },
+                { label: "功能位置", prop: "location", span: 8, required: true,formType: 'selectTree', options: this.locationOptions },
                 { label: "规格型号", prop: "specs", span: 8, },
                 { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
                 { label: "所属组织", prop: "afdeviceStatusfDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
@@ -178,7 +179,7 @@ export default {
                 { label: "规格型号", prop: "specs", },
                 { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, },
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
-                { label: "功能位置", prop: "location", },
+                { label: "功能位置", prop: "location", formType: 'selectTree', options: this.locationOptions,width:180},
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
                 { label: "所属子公司", prop: "111", },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
@@ -256,6 +257,7 @@ export default {
                 index: 0,
                 disIds: []
             },
+             locationOptions:[],
             // 表单校验
             rules: {
                 deviceName: [
@@ -270,7 +272,7 @@ export default {
                 categoryName: [
                     { required: true, message: '设备类别不能为空', trigger: 'blur' },
                 ],
-                location: [
+                locationName: [
                     { required: true, message: '功能位置(工作面)不能为空', trigger: 'blur' },
                 ],
                 affDeptName: [
@@ -293,11 +295,24 @@ export default {
         } else {
             this.standardId = '';
         }
+        
         this.getTree();
         this.getTreeSelect();
         this.getList()
+        
     },
     methods: {
+        getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
         /** 查询设备档案下拉树结构 */
         getTree() {
             equipmentTree().then(response => {
@@ -347,7 +362,9 @@ export default {
         },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
-            getMstandard(queryParams).then(response => {
+            getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+                getMstandard(queryParams).then(response => {
                 let { dayMroMaintainStandardCheckList, oMroMaintainStandardCheckList, tMroMaintainStandardCheckList,cMroMaintainStandardCheckList, ...other } = response.data
                 this.activeName = 'first';
                 this.standardList = dayMroMaintainStandardCheckList || [];
@@ -356,8 +373,33 @@ export default {
                 this.standardList3 = tMroMaintainStandardCheckList || [];
                 this.standardList4 = cMroMaintainStandardCheckList || [];
                 this.form = other;
+                this.form.locationName=this.findTreeName(this.locationOptions,response.data.location)
             });
+            })
+            
         },
+        findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
         /** 重置按钮操作 */
         resetQuery() {
             this.resetForm("queryForm");
@@ -378,6 +420,11 @@ export default {
         /** 修改按钮操作 */
         handleUpdate(scope) {
             this.$set(this.standardList[scope.$index], 'editType', this.standardList[scope.$index].editType ? false : true)
+            this.tableEdit  =   this.standardList1.some(item=>item.editType==true)||
+                                this.standardList2.some(item=>item.editType==true)||
+                                this.standardList3.some(item=>item.editType==true)||
+                                this.standardList4.some(item=>item.editType==true)
+
         },
         /** 删除按钮操作 */
         handleDelete(scope) {
@@ -412,7 +459,12 @@ export default {
         },
         /** 提交按钮 */
         submitForm() {
+
             let that = this;
+            if(this.tableEdit) {
+                this.$message.warning('请先保存数据')
+                return false
+            }
             this.$refs['form'].validate((valid) => {
                 if (valid) {
                     that.btnLoading = true;

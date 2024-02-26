@@ -27,7 +27,7 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养周期" prop="planCycle">
-                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入保养周期"></el-input-number>
+                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入保养周期" :disabled="form.planCycleType=='班'"></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养周期类别" prop="planCycleType">
@@ -48,13 +48,11 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="本次执行日期" prop="thisExecuteTime">
-                        <el-date-picker clearable v-model="form.thisExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择本次执行日期" disabled></el-date-picker>
+                        <el-input  v-model="form.thisExecuteTime"  disabled > </el-input>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="下次执行日期" prop="nextExecuteTime">
-                        <el-date-picker clearable v-model="form.nextExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择下次执行日期" :disabled="(planId != '' && planId)?true:false"></el-date-picker>
+                        <el-input  v-model="form.nextExecuteTime" disabled ></el-input>
                     </el-form-item></el-col>
 
                 <el-col :span="24">
@@ -87,7 +85,7 @@
                 <el-col :span="8">
                     <el-form-item label="其他执行人" prop="otherExecutors">
                         <!-- <el-input v-model="form.otherExecutor" placeholder="请输入其他执行人" /> -->
-                        <el-select v-model="form.otherExecutors" multiple="">
+                        <el-select v-model="form.otherExecutors" multiple="" @change="$forceUpdate()">
                             <el-option v-for=" item in groupMembers" :key="item.userId" :label="item.nickName" 
                             :value="item.userId" >
                             </el-option>
@@ -95,12 +93,13 @@
                     </el-form-item></el-col>
             </el-row>
         </el-form>
-        <div class="title">保养路线
-            <el-button type="text" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
+        <div class="title">保养路线</div>
+        <div style="margin:10px 0">
+            <el-button type="primary" plain size="small" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
+            <el-button type="primary" plain size="small" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false"
-            @radiochange="radiochange" style="margin-top:20px" :rightToolbarShow='false'>
+            @radiochange="radiochange"  :rightToolbarShow='false'>
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:mplan:remove']">查看</el-button>
@@ -130,15 +129,19 @@
                 v-if="lineForm.choosedrawer"></mline>
         </el-drawer>
         <el-drawer title="关联保养检修项目 " :visible.sync="deviceForm.choosedrawer" direction="rtl" size="80%"
-            :wrapperClosable="false">
-            <el-table v-loading="deviceForm.loading" :data="deviceList" ref="queryTable2">
+            :wrapperClosable="false" >
+            <el-table v-loading="deviceForm.loading" highlight-current-row :data="deviceList" ref="queryTable2">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column label="序号" align="center" type="index" />
                 <el-table-column label="设备编码" align="center" prop="deviceCode" min-width="150" />
                 <el-table-column label="设备名称" align="center" prop="deviceName" min-width="150"></el-table-column>
                 <el-table-column label="规格型号" align="center" prop="specs" min-width="150" />
                 <el-table-column label="设备类别" align="center" prop="categoryName" min-width="150"></el-table-column>
-                <el-table-column label="功能位置" align="center" prop="location" min-width="150"></el-table-column>
+                <el-table-column label="功能位置" align="center" prop="location" min-width="150">
+                    <template slot-scope="scope">
+                        {{findTreeName(locationOptions,scope.row.location)}}
+                    </template>
+                </el-table-column>
                 <el-table-column label="所属子公司" align="center" prop="subCompanyName" min-width="150"></el-table-column>
                 <el-table-column label="所属组织" align="center" prop="affDeptName" min-width="150" />
                 <el-table-column label="设备状态" align="center" prop="deviceStatus">
@@ -173,7 +176,7 @@
             </el-table>
         </el-drawer>
         <el-drawer :title="title" :visible.sync="drawer" direction="rtl" size="60%" :wrapperClosable="false">
-            <jm-table :tableData="lineList" ref="jmtable" :columns="columns">
+            <jm-table :tableData="lineList1" ref="jmtable" :columns="columns">
             </jm-table>
         </el-drawer>
 
@@ -186,7 +189,7 @@
         </el-drawer>
 
         <div style="width: 100%; height: 68px;"></div>
-        <div style="position: absolute;bottom: 0px;width: calc(100% - 40px);background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;z-index: 2;">
+        <div style="position: absolute;bottom: 0px;width: calc(100% - 40px);background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;z-index: 9;">
             <el-button size="mini" @click="submitForm" type="primary" :loading="btnLoading">提交</el-button>
             <el-button size="mini" @click="goback">取消</el-button>
         </div>
@@ -200,6 +203,7 @@ import {findAll,getGroup} from '@/api/system/group';
 import { listResource, addResource, delResource } from "@/api/system/resource";
 import JmTable from "@/components/JmTable";
 import mline from '@/views/maintain/mplan/line'
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'BYJX', 'mro_m_cycle_type', 'mro_is_photo', 'em_device_state'],
@@ -229,7 +233,7 @@ export default {
                 { label: '保养项编码', prop: 'itemCode' },
                 { label: '保养项名称', prop: 'itemName', },
                 { label: '保养部位', prop: 'itemArea', },
-                { label: '保养内容', prop: 'itemContent', },
+                { label: '保养内容', prop: 'itemContent', showOverflowTooltip:true},
                 { label: '保养标准', prop: 'checkStandard', },
                 { label: '点数', prop: 'checkNum', },
                 { label: '周期', prop: 'checkCycle', },
@@ -299,7 +303,7 @@ export default {
             },
             deviceList: [],
             // 关联点检测项目
-            lineList: [],
+            lineList1: [],
             drawer: false,
             title: '',
             //文档
@@ -333,9 +337,9 @@ export default {
                 // thisExecuteTime: [
                 //     { required: true, message: '本次执行日期不能为空', trigger: 'blur' },
                 // ],
-                nextExecuteTime: [
+                /* nextExecuteTime: [
                     { required: true, message: '下次执行日期不能为空', trigger: 'blur' },
-                ],
+                ], */
                 groupId: [
                     { required: true, message: '保养班组不能为空', trigger: 'blur' },
                 ],
@@ -348,6 +352,7 @@ export default {
             },
             startDatePicker: this.beginDate(),
             endDatePicker: this.processDate(),
+            
         };
     },
     created() {
@@ -362,8 +367,98 @@ export default {
         findAll({groupType:'BYJX'}).then(res=>{
         this.groupOptions=res.data
       })
+      getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
+    },
+     watch:{
+        'form.thisExecuteTime':{
+            handler(newTime){
+                if(newTime){
+                    let datetime=new Date(newTime)
+                    if(this.form.planCycleType=='时')  datetime.setHours(datetime.getHours()+this.form.planCycle) //时
+                    if(this.form.planCycleType=='班') datetime.setDate(datetime.getDate()+1)
+                    if(this.form.planCycleType=='天') datetime.setDate(datetime.getDate()+this.form.planCycle)
+                    if(this.form.planCycleType=='周') datetime.setDate(datetime.getDate()+7*this.form.planCycle)
+                    if(this.form.planCycleType=='月') {
+                    let currentDate=datetime.getDate()
+                    datetime = new Date(datetime.getFullYear(), datetime.getMonth() + this.form.planCycle, datetime.getDate())
+                    if(datetime.getDate() !== currentDate){
+                         datetime.setDate(0)
+                        }
+                    }
+                    if(this.form.planCycleType=='年') datetime.setFullYear(datetime.getFullYear()+this.form.planCycle)
+                    this.form.nextExecuteTime=new Date(datetime)>new Date(this.form.planEndTime) ?'':this.formatDate(datetime)
+                }
+            }
+        },
+        'form.planCycleType':{
+            handler(newType){
+                if(newType=='班') this.form.planCycle=1
+                if(this.form.thisExecuteTime){
+                    let datetime=new Date(this.form.thisExecuteTime)
+                    if(newType=='时')  datetime.setHours(datetime.getHours()+this.form.planCycle) //时
+                    if(newType=='班') datetime.setDate(datetime.getDate()+1)
+                    if(newType=='天') datetime.setDate(datetime.getDate()+this.form.planCycle)
+                    if(newType=='周') datetime.setDate(datetime.getDate()+7*this.form.planCycle)
+                    if(newType=='月') {
+                    let currentDate=datetime.getDate()
+                    datetime = new Date(datetime.getFullYear(), datetime.getMonth() + this.form.planCycle, datetime.getDate())
+                    if(datetime.getDate() !== currentDate){
+                         datetime.setDate(0)
+                        }
+                    }
+                    if(newType=='年') datetime.setFullYear(datetime.getFullYear()+this.form.planCycle)
+                    this.form.nextExecuteTime=new Date(datetime)>new Date(this.form.planEndTime) ?'':this.formatDate(datetime)
+                }
+            }
+        },
+        immediate: true,
+        deep: true
     },
     methods: {
+        getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
+        findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
+        formatDate(date) {  
+            const year = date.getFullYear();  
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以+1，并使用padStart填充至两位数  
+            const day = String(date.getDate()).padStart(2, '0'); // 使用padStart填充至两位数  
+            const hours = String(date.getHours()).padStart(2, '0'); // 小时  
+            const minutes = String(date.getMinutes()).padStart(2, '0'); // 分钟  
+            const seconds = String(date.getSeconds()).padStart(2, '0'); // 秒  
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;  
+},
         beginDate() {
             const self = this;
             return {
@@ -448,7 +543,7 @@ export default {
         handleDelete(scope) {
             var that = this;
             this.$modal.confirm('是否确认删除？').then(function () {
-                that.lineList.splice(scope.$index, 1);
+                that.lineList.splice(scope.index, 1);
             }).catch(() => { });
         },
         allDelete() {
@@ -530,7 +625,7 @@ export default {
                     deviceId
                 }
                 findByDeviceIdAndItemType(data).then(res => {
-                    this.lineList = res.data
+                    this.lineList1 = res.data
                     this.drawer = true;
                 })
             }
@@ -588,9 +683,10 @@ export default {
             }).catch(() => { });
         },
         downloadFile(row) {
-            this.download('common/download', {
+            this.$download.resource(row.fileName)
+            /* this.download('common/download', {
                 fileName: row.fileName
-            }, row.originalFileName,)
+            }, row.originalFileName,) */
         },
         handlePreview(row) {
             window.open(process.env.VUE_APP_BASE_API + row.fileName)
@@ -655,6 +751,12 @@ export default {
     color: #007bfe;
     cursor: pointer;
     text-decoration: underline;
+}
+::v-deep .el-table th.el-table__cell {
+  background-color: #e7f3ff;
+}
+::v-deep .el-drawer__body{
+    padding: 0 20px !important;
 }
 </style>
           

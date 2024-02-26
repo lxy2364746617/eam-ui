@@ -104,6 +104,7 @@ import { getStandard, copyStandard } from "@/api/maintain/standard";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import parentdevice from '@/views/device/book/device'
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_is_special', 'mro_s_check_res_type', 'mro_s_check_status'],
@@ -116,7 +117,7 @@ export default {
                 { label: "设备编码", prop: "deviceCode", },
                 { label: "规格型号", prop: "specs", },
                 { label: "设备类别", prop: "categoryName", },
-                { label: "功能位置", prop: "location", },
+                { label: "功能位置", prop: "location",formType: 'selectTree', options: this.locationOptions,width:180 },
                 { label: "当前使用组织", prop: "currDeptName", },
                 { label: "所属组织", prop: "affDeptName", },
                 { label: "是否是特种设备", prop: "isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, formDisabled: true, required: true, }, //(Y 是、N 否)
@@ -187,12 +188,16 @@ export default {
             itemList: [],
             deviceForm:{
                 disIds:[]
-            }
+            },
+            locationOptions:[],
         };
     },
     created() {
         this.standardId = this.$route.query.l;
         this.getDetails(this.$route.query.l);
+        getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
     },
     methods: {
         submitRadio2(row) {
@@ -202,10 +207,22 @@ export default {
         handleAdd() {
             this.drawer = true;
             let disIds = this.itemList.length == 0 ? [] : this.itemList.map(item => { return item.deviceId })
+            disIds.push(this.$route.query.deviceId)
             this.deviceForm = {
                 disIds: disIds
             }
         },
+        getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
             this.loading = true;

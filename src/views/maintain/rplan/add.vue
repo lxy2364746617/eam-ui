@@ -27,7 +27,7 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="检验周期" prop="planCycle">
-                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入保养周期"></el-input-number>
+                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入保养周期" :disabled='form.planCycleType=="班"'></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="检验周期类别" prop="planCycleType">
@@ -48,13 +48,11 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="本次执行日期" prop="thisExecuteTime">
-                        <el-date-picker clearable v-model="form.thisExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择本次执行日期" disabled></el-date-picker>
+                        <el-input  v-model="form.thisExecuteTime"  disabled></el-input>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="下次执行日期" prop="nextExecuteTime">
-                        <el-date-picker clearable v-model="form.nextExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择下次执行日期" :disabled="(planId != '' && planId)?true:false"></el-date-picker>
+                        <el-input  v-model="form.nextExecuteTime"  disabled></el-input>
                     </el-form-item></el-col>
 
                 <el-col :span="24">
@@ -76,20 +74,21 @@
                         <el-input v-model="form.leader" placeholder="请输入检测单位负责人"  disabled/>
                     </el-form-item></el-col>
                 <el-col :span="8">
-                    <el-form-item label="内部负责人" prop="userId">
-                        <el-select v-model="form.userId" placeholder="请选择内部负责人">
+                    <el-form-item label="内部负责人" prop="headUserId">
+                        <el-select v-model="form.headUserId" placeholder="请选择内部负责人">
                             <el-option v-for="dict in userArr" :key="dict.userId" :label="dict.nickName"
                                 :value="dict.userId"></el-option>
                         </el-select>
                     </el-form-item></el-col>
             </el-row>
         </el-form>
-        <div class="title">设备信息
-            <el-button type="text" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
+        <div class="title">设备信息   </div>
+        <div style="margin:10px 0">
+            <el-button type="primary" plain size="small" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
+            <el-button type="primary" plain size="small" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false" 
-             style="margin-top:20px" :rightToolbarShow="false" @handleSelectionChange="handleSelectionChange">
+              :rightToolbarShow="false" @handleSelectionChange="handleSelectionChange">
             <template #end_handle="scope">
                 <!-- <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:rplan:remove']">查看</el-button> -->
@@ -142,6 +141,7 @@ import { listResource, addResource, delResource } from "@/api/system/resource";
 import JmTable from "@/components/JmTable";
 import { login, logout, getInfo } from '@/api/login'
 import parentdevice from '@/views/device/book/device'
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'DQJY', 'mro_m_cycle_type', 'mro_is_photo', 'em_device_state','em_is_special'],
@@ -153,7 +153,7 @@ export default {
                 { label: '设备编码', prop: 'deviceCode', class: true },
                 { label: '规格型号', prop: 'specs', },
                 { label: '设备类别', prop: 'categoryName', },
-                { label: '功能位置', prop: 'location', },
+                { label: '功能位置', prop: 'location',formType: 'selectTree', options: this.locationOptions,width:180 },
                 { label: '设备批次号', prop: 'batchNo', },
                 { label: '所属子公司', prop: 'subCompanyName', },
                 { label: '所属组织', prop: 'affDeptName', },
@@ -200,7 +200,7 @@ export default {
                 nextExecuteTime: null,
                 supplierId: null,
                 leader: null,
-                userId: null,
+                headUserId: null,
                 createBy: null,
                 remark: null,
                 createBy: null,
@@ -227,6 +227,7 @@ export default {
             deviceList: [],
             // 关联点检测项目
             lineList: [],
+            locationOptions:[],
             drawer: false,
             title: '',
             //文档
@@ -270,7 +271,7 @@ export default {
                 leader: [
                     { required: true, message: '检测单位负责人不能为空', trigger: 'blur' },
                 ], */
-                userId: [
+                headUserId: [
                     { required: true, message: '内部负责人不能为空', trigger: 'blur' },
                 ],
             },
@@ -291,8 +292,76 @@ export default {
             this.nickName=res.user.nickName
             this.findAll()
         })
+        getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
+    },
+    watch:{
+        'form.thisExecuteTime':{
+            handler(newTime){
+                if(newTime){
+                    let datetime=new Date(newTime)
+                    if(this.form.planCycleType=='时')  datetime.setHours(datetime.getHours()+this.form.planCycle) //时
+                    if(this.form.planCycleType=='班') datetime.setDate(datetime.getDate()+1)
+                    if(this.form.planCycleType=='天') datetime.setDate(datetime.getDate()+this.form.planCycle)
+                    if(this.form.planCycleType=='周') datetime.setDate(datetime.getDate()+7*this.form.planCycle)
+                    if(this.form.planCycleType=='月') {
+                    let currentDate=datetime.getDate()
+                    datetime = new Date(datetime.getFullYear(), datetime.getMonth() + this.form.planCycle, datetime.getDate())
+                    if(datetime.getDate() !== currentDate){
+                         datetime.setDate(0)
+                    }
+                    }
+                    if(this.form.planCycleType=='年') datetime.setFullYear(datetime.getFullYear()+this.form.planCycle)
+                    this.form.nextExecuteTime=new Date(datetime)>new Date(this.form.planEndTime) ?'':this.formatDate(datetime)
+                } 
+            }
+        },
+        'form.planCycleType':{
+            handler(newType){
+                if(newType=='班') this.form.planCycle=1
+                if(this.form.thisExecuteTime){
+                    let datetime=new Date(this.form.thisExecuteTime)
+                    if(newType=='时')  datetime.setHours(datetime.getHours()+this.form.planCycle) //时
+                    if(newType=='班') datetime.setDate(datetime.getDate()+1)
+                    if(newType=='天') datetime.setDate(datetime.getDate()+this.form.planCycle)
+                    if(newType=='周') datetime.setDate(datetime.getDate()+7*this.form.planCycle)
+                    if(newType=='月') {
+                    let currentDate=datetime.getDate()
+                    datetime = new Date(datetime.getFullYear(), datetime.getMonth() + this.form.planCycle, datetime.getDate())
+                    if(datetime.getDate() !== currentDate){
+                         datetime.setDate(0)
+                        }
+                    }
+                    if(newType=='年') datetime.setFullYear(datetime.getFullYear()+this.form.planCycle)
+                    this.form.nextExecuteTime=new Date(datetime)>new Date(this.form.planEndTime) ?'':this.formatDate(datetime)
+                } 
+            }
+        },
+        immediate: true,
+        deep: true
     },
     methods: {
+        formatDate(date) {  
+            const year = date.getFullYear();  
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以+1，并使用padStart填充至两位数  
+            const day = String(date.getDate()).padStart(2, '0'); // 使用padStart填充至两位数  
+            const hours = String(date.getHours()).padStart(2, '0'); // 小时  
+            const minutes = String(date.getMinutes()).padStart(2, '0'); // 分钟  
+            const seconds = String(date.getSeconds()).padStart(2, '0'); // 秒  
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;  
+        },
+        getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
         beginDate() {
             const self = this;
             return {
@@ -362,7 +431,7 @@ export default {
                    obj=this.userArr.find(item=>{
                         return item.nickName==this.nickName
                     })
-                     this.form.userId=obj.userId 
+                     this.form.headUserId=obj.userId 
                 }
             })
         },
@@ -497,9 +566,10 @@ export default {
             }).catch(() => { });
         },
         downloadFile(row) {
-            this.download('common/download', {
+            this.$download.resource(row.fileName)
+            /* this.download('common/download', {
                 fileName: row.fileName
-            }, row.originalFileName,)
+            }, row.originalFileName,) */
         },
         handlePreview(row) {
             window.open(process.env.VUE_APP_BASE_API + row.fileName)

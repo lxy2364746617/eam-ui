@@ -280,6 +280,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击下载
       handleDownload(row){
+        console.log(process.env.VUE_APP_BASE_API)
         let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
         download(url)
       },

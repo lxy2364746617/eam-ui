@@ -3,9 +3,9 @@
     <el-card class="box-card" shadow="never">
       <div class="search">
           <div class="search_center">
-            <el-input placeholder="知识搜索" v-model="search_text"></el-input>
-            <el-button type="primary" icon="el-icon-search" style="margin-left:20px" @click="searchClick">搜 索</el-button>
-            <el-button type="info" icon="el-icon-arrow-left" style="margin-left:20px" @click="backClick">返 回</el-button>
+            <el-input placeholder="知识搜索" prefix-icon="el-icon-search" v-model="search_text"></el-input>
+            <el-button type="primary"  style="margin-left:20px" @click="searchClick">搜 索</el-button>
+            <el-button type="info"  style="margin-left:20px" @click="backClick">返 回</el-button>
           </div>
         </div>
       <div class="search_text" v-hasPermi="['kdb:history:list']">

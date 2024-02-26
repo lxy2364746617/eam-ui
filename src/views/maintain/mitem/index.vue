@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <jm-table :tableData="mitemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
+    <jm-table v-if="hasgetData" :tableData="mitemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
       ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
@@ -8,6 +8,8 @@
             v-hasPermi="['maintain:mitem:add']">新增</el-button>
             <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
             v-hasPermi="['maintain:mitem:remove']">删除</el-button>
+            <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
+            v-hasPermi="['maintain:mitem:add']">导入</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
@@ -71,6 +73,8 @@
         <el-button @click="cancel">取消</el-button>
       </div>
     </el-drawer>
+    <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/maintain/mitem/importTemplate'"
+      ref="fileImport" :importUrl="'/maintain/mitem/importData'" :isUpdate="false"></file-import>
   </div>
 </template>
 
@@ -84,12 +88,14 @@ import {
   changeItemStatus
 } from '@/api/maintain/mitem'
 import JmTable from '@/components/JmTable';
+import fileImport from '@/components/FileImport'
 export default {
   name: 'Mitem',
   dicts: ['BYJX', 'sys_normal_disable'],
-  components: { JmTable },
+  components: { JmTable,fileImport },
   data() {
     return {
+      hasgetData:false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -147,7 +153,7 @@ export default {
         { label: '保养项名称', prop: 'itemName' },
         { label: '保养部位', prop: 'itemArea' },
         { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.BYJX, },
-        { label: '保养内容', prop: 'itemContent', },
+        { label: '保养内容', prop: 'itemContent', showOverflowTooltip:true},
         { label: '保养工具', prop: 'itemTool', },
         { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
         { label: '备注', prop: 'remark' },
@@ -156,17 +162,18 @@ export default {
       ]
     },
   },
-  created() {
+   created() {
     this.getList()
   },
   methods: {
     /** 查询保养检修项目列表 */
-    getList() {
+    getList(queryParams) {
       this.loading = true
-      listMitem(this.queryParams).then((response) => {
+      listMitem(queryParams).then((response) => {
         this.mitemList = response.rows
         this.total = response.total
         this.loading = false
+        this.hasgetData=true
       })
     },
     // 取消按钮
@@ -276,6 +283,12 @@ export default {
         .catch(function () {
           row.itemStatus = row.itemStatus === '0' ? '1' : '0'
         })
+    },
+    handleImport() {
+      this.$refs.fileImport.upload.open = true
+    },
+    handleFileSuccess() {
+      this.getList(this.queryParams)
     },
   },
 }

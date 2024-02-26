@@ -110,6 +110,10 @@ export default {
         // 第二步  扩展数据
         if(response.data.emArchivesExtendAtt){
           response.data.emArchivesExtendAtt.componentContent = JSON.parse(response.data.emArchivesExtendAtt.componentContent)
+          response.data.emArchivesExtendAtt.componentContent.forEach(item=>{
+            item.label=item.label||item.fieldName
+            item.prop=item.prop||item.fieldCode
+          })
           response.data.emArchivesExtendAtt.fieldValue = JSON.parse(response.data.emArchivesExtendAtt.fieldValue)
           // this.setFormLabel(response.data.emArchivesExtendAtt.componentContent)
         }

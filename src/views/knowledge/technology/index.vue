@@ -39,7 +39,7 @@
         </jm-table>
       </el-card>
       <!-- 上传弹窗 -->
-      <el-dialog title="上传" :visible.sync="dialogTableVisible" :fullscreen="true">
+      <el-dialog  title="上传" :visible.sync="dialogTableVisible" :fullscreen="true">
         <div class="dialog_left">
           <div class="title"><i class="el-icon-s-operation"></i>已选择的设备</div>
           <div class="btn_box">
@@ -133,7 +133,10 @@ import { techList,equipmentTree,equipmentTreeList,techAdd,techListDel,addClickNu
 import { download } from '@/utils'
 import { getToken } from "@/utils/auth";
 import JmTable from "@/components/JmTable1";
+import { equipmentTree as deviceTree}  from '@/api/equipment/category'
 import log from "../../monitor/job/log";
+import { getLocationTree} from '@/api/Location'
+import { listDept } from '@/api/system/dept'
   export default {
     name:'technology',
     components: {
@@ -145,15 +148,7 @@ import log from "../../monitor/job/log";
         // 技术资料表格搜索参数
         table_search_params:null,
         // 表单头部
-        tablecolumns:[
-          { label: "文件名称", prop: "fileName" },
-          { label: "设备编码", prop: "deviceCode" },
-          { label: "设备名称", prop: "deviceName", },
-          { label: "设备类别", prop: "categoryName", formType: "select",options:[{label:'1',value:'1'}]},
-          { label: "规格型号", prop: "specs", },
-          { label: "上传人员", prop: "createBy", },
-          { label: "上传时间", prop: "createTime", formType: "date", formType: "daterange",width:200},
-        ],
+        
         // 表格数据
         templateList: [],
         // 总条数
@@ -164,11 +159,11 @@ import log from "../../monitor/job/log";
           { label: "设备名称", prop: "deviceName"},
           { label: "设备编码", prop: "deviceCode"},
           { label: "规格型号", prop: "specs"},
-          { label: "设备类别", prop: "categoryId"},
-          { label: "功能位置", prop: "location"},
+          { label: "设备类别", prop: "categoryId",formType: 'selectTree',options:this.categoryOptions,width: 280,},
+          { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180,},
           { label: "设备批次号", prop: "batchNo"},
           { label: "所属子公司", prop: "subCompanyName"},
-          { label: "所属组织", prop: "affDeptId"},
+          { label: "所属组织", prop: "affDeptId",formType: 'selectTree',options: this.deptOptions,width: 180,},  
         ],
         templateList1: [],
         // 上传地址
@@ -194,11 +189,11 @@ import log from "../../monitor/job/log";
           { label: "设备名称", prop: "deviceName"},
           { label: "设备编码", prop: "deviceCode"},
           { label: "规格型号", prop: "specs"},
-          { label: "设备类别", prop: "categoryId"},
-          { label: "功能位置", prop: "location"},
+          { label: "设备类别", prop: "categoryId",formType: 'selectTree',options:this.categoryOptions,width: 280,},
+          { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180,},
           { label: "设备批次号", prop: "batchNo"},
           { label: "所属子公司", prop: "subCompanyName"},
-          { label: "所属组织", prop: "affDeptId"},
+          { label: "所属组织", prop: "affDeptId",formType: 'selectTree',options: this.deptOptions,width: 180,},
         ],
         templateList2: [],
         // 总条数
@@ -211,21 +206,76 @@ import log from "../../monitor/job/log";
         isHide: false, // 是否合并（隐藏）
         mergeIcon: 'el-icon-s-fold',  // 合并（icon）
         dataTree: [],
+        categoryOptions:[],
+        locationOptions:[],
+        deptOptions:[],
+        valueMap: {},
         defaultProps: {
           children: 'children',
           label: 'label'
         },
       }
     },
+    computed:{
+      tablecolumns(){
+        return[
+          { label: "文件名称", prop: "fileName" },
+          { label: "设备编码", prop: "deviceCode" },
+          { label: "设备名称", prop: "deviceName", },
+          { label: "设备类别", prop: "categoryId",options:this.categoryOptions,formType: 'selectTree',width: 180, },/*  */
+          { label: "规格型号", prop: "specs", },
+          { label: "上传人员", prop: "createBy", },
+          { label: "上传时间", prop: "createTime", formType: "date", formType: "daterange",width:200},
+        ]
+      
+    },
+    },
     watch: {
       filterText(val) {
         this.$refs.tree.filter(val);
       }
     },
-    mounted(){
+   async created(){
+     await deviceTree().then((response) => {
+        this.categoryOptions = response.data
+        // 方便获取父级tree
+        this.loops(this.categoryOptions)
+        this.tablecolumns2[3].options=this.categoryOptions
+      })
+     await getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeName(res.data)
+        this.tablecolumns2[4].options=this.locationOptions
+      })
+      await listDept().then((response) => {
+        this.deptOptions = response.data
+        this.tablecolumns2[7].options=this.deptOptions
+      })
       this.getRouteData()
     },
     methods:{
+      getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
+      // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        })
+        node.children = this.loops(children, node)
+        return node
+      })
+    },
       // 获取路由参数
       getRouteData(){
         let id = this.$route.query.id

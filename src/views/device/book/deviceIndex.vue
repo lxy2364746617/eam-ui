@@ -18,7 +18,10 @@
                     <el-col :span="1.5">
                         <el-button v-if="deptList.length > 0" type="primary" icon="el-icon-download" size="mini"
                             @click="handleExport" v-hasPermi="['equipment:index:export']">下载</el-button>
-                            <span v-if="total" style="display:inline-block;color:#AAAAAA;font-size:16px;margin-left:10px">{{findName(radioColumn,radioColumn[radio].categoryId)}}共{{total}}条</span> 
+                            <div v-if="total" style="display:inline-block;color:#AAAAAA;font-size:16px;margin-left:10px">
+                                <span >{{findName(radioColumn,radioColumn[radio].categoryId)}}</span><span style="margin-left:10px">共{{total}}条</span>
+                            </div>
+                             
                     </el-col>
                 </template>
             </jm-table>

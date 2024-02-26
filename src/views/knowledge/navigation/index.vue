@@ -4,8 +4,8 @@
       <div class="top">
         <div class="search">
           <div class="search_center">
-            <el-input placeholder="知识搜索" v-model="search_text" v-hasPermi="['kdb:indexSearch:search']"></el-input>
-            <el-button type="primary" icon="el-icon-search" style="margin-left:20px" @click="searchClick">搜 索</el-button>
+            <el-input placeholder="知识搜索"  prefix-icon="el-icon-search" v-model="search_text" v-hasPermi="['kdb:indexSearch:search']"></el-input>
+            <el-button type="primary"  style="margin-left:20px" @click="searchClick">搜 索</el-button>
           </div>
         </div>
         <div class="imgBox">
@@ -312,6 +312,10 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
   display: flex;
   flex-wrap: wrap;
 }
+.box-card{
+  border-radius: 15px;
+  padding-bottom:10px;
+}
 .bottom_left{
   width: 70%;
     .left_top{
@@ -323,6 +327,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       .right{
         width: calc(50% - 10px);
         margin-left: 10px;
+        
       }
     }
     .textItem{

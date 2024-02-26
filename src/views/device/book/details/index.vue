@@ -141,7 +141,7 @@ export default {
         { label:'设备图片及位置', name:'step3', visible: true, },
         { label:'技术资料', name:'step4', visible: true, },
         { label:'备件备品', name:'step5', visible: true, },
-        { label:'关联设备', name:'step6', visible: this.formData.deviceAtt==1, },
+        { label:'关联设备', name:'step6', visible: this.formData.deviceAtt==1, },//部件1 设备0
         { label:'关联部件', name:'step7', visible: this.formData.deviceAtt==0, },
         { label:'运维履历', name:'step9', visible: true, },
         { label:'周转履历', name:'step10', visible: true, },

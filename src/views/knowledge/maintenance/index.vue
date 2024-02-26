@@ -204,11 +204,14 @@ import JmTable from "@/components/JmTable1";
         this.$refs['ruleForm'].validate((valid) => {
           if (valid) {
             // console.log(this.ruleForm)
-            this.ruleForm.fileResources[0].kdbType = this.ruleForm.kdbType
-            let params = [{
+            //this.ruleForm.fileResources[0].kdbType = this.ruleForm.kdbType
+            this.ruleForm.fileResources&&this.ruleForm.fileResources.forEach(item=>{
+              item.kdbType= this.ruleForm.kdbType
+            })
+            /* let params = [{
               ...this.ruleForm.fileResources[0]
-            }]
-            maintainAdd(params).then(res=>{
+            }] */
+            maintainAdd(this.ruleForm.fileResources).then(res=>{
               this.dialogTableVisible = false
               this.getList()
               this.$message({

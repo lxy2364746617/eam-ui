@@ -46,6 +46,7 @@ import {
 import JmTable from '@/components/JmTable';
 import { equipmentTree } from '@/api/equipment/category';
 import { listDept } from '@/api/system/dept';
+import { getLocationTree} from '@/api/Location'
 export default {
   name: "Template",
   dicts: ['em_is_special', 'sys_normal_disable'],
@@ -95,6 +96,7 @@ export default {
           { required: true, message: '主键不能为空', trigger: 'blur' },
         ],
       },
+      locationOptions:[]
     }
   },
   computed: {
@@ -105,7 +107,7 @@ export default {
         { label: '设备名称', prop: 'deviceName' },
         { label: '规格型号', prop: 'specs', },
         { label: '设备类别', prop: 'categoryId',formType: 'selectTree',  options: this.categoryOptions,width:280 },
-        { label: '功能位置', prop: 'location', },
+        { label: '功能位置', prop: 'location', formType: 'selectTree', options: this.locationOptions,width:230},
         // { label: '是否特种设备', prop: 'isSpecial', formType: 'select', options: this.dict.type.em_is_special, },
         { label: '当前使用组织', prop: 'currDeptId', formType: 'selectTree', options: this.deptOptions,width:180},
         { label: '所属组织', prop: 'affDeptId', formType: 'selectTree', options: this.deptOptions,width:180},
@@ -122,6 +124,7 @@ export default {
     this.getList()
     this.getTree()
     this.getTreeSelect()
+    
   },
   methods: {
     /** 查询设备档案下拉树结构 */
@@ -140,6 +143,20 @@ export default {
       listDept().then((response) => {
         this.deptOptions = response.data
       })
+      getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
+    },
+    getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
     },
     // 递归获取treeselect父节点
     loops(list, parent) {
@@ -154,9 +171,9 @@ export default {
       })
     },
     /** 查询保养检修标准列表 */
-    getList() {
+    getList(queryParams) {
       this.loading = true
-      listMstandard(this.queryParams).then((response) => {
+      listMstandard(queryParams).then((response) => {
         this.mstandardList = response.rows
         this.total = response.total
         this.loading = false
@@ -178,7 +195,7 @@ export default {
     },
      /** 复制按钮操作 */
      CopyTo(row) {
-      this.$router.push({ path: '/maintain/mstandard/copyTo', query: { l: row.standardId} })
+      this.$router.push({ path: '/maintain/mstandard/copyTo', query: { l: row.standardId,deviceId:row.deviceId} })
     },
     /** 提交按钮 */
     submitForm() {

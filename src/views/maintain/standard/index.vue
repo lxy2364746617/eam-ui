@@ -217,7 +217,7 @@ export default {
     },
      /** 复制按钮操作 */
     CopyTo(row) {
-      this.$router.push({ path: '/maintain/patrol/p_standard/copyTo', query: { l: row.standardId} })
+      this.$router.push({ path: '/maintain/patrol/p_standard/copyTo', query: { l: row.standardId,deviceId:row.deviceId} })
     },
     /** 删除按钮操作 */
     handleDelete(row) {

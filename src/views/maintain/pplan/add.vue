@@ -27,7 +27,7 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="巡点检周期" prop="planCycle">
-                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入巡点检周期"></el-input-number>
+                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入巡点检周期" :disabled='form.planCycleType=="班"'></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="巡点检周期类别" prop="planCycleType">
@@ -48,13 +48,11 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="本次执行日期" prop="thisExecuteTime">
-                        <el-date-picker clearable v-model="form.thisExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择本次执行日期" :disabled="true"></el-date-picker>
+                        <el-input  v-model="form.thisExecuteTime" :disabled="true"></el-input>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="下次执行日期" prop="nextExecuteTime">
-                        <el-date-picker clearable v-model="form.nextExecuteTime" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择下次执行日期" :disabled="(planId != '' && planId)?true:false"></el-date-picker>
+                        <el-input  v-model="form.nextExecuteTime"  disabled></el-input>
                     </el-form-item></el-col>
 
                 <el-col :span="24">
@@ -76,7 +74,7 @@
                 </el-col>
                 <el-col :span="10">
                     <el-form-item label="巡点检执行人" prop="executors">
-                        <el-select v-model="form.executors" multiple>
+                        <el-select v-model="form.executors" multiple @change="$forceUpdate()">
                             <el-option v-for="item in groupMembers" :key="item.userId" :label="item.nickName" 
                             :value="item.userId" >
                             </el-option>
@@ -118,7 +116,7 @@
         </jm-table>
 
         <!-- 添加巡点检路线 -->
-        <el-drawer title="巡点检路线" :visible.sync="plineForm.choosedrawer" direction="rtl" size="40%" :wrapperClosable="false">
+        <el-drawer title="巡点检路线" :visible.sync="plineForm.choosedrawer" direction="rtl" size="50%" :wrapperClosable="false">
             <pline :isChoose="false" @submitRadio="submitRadio2" @close="plineForm.choosedrawer = false"
                 :formData="plineForm" v-if="plineForm.choosedrawer"></pline>
         </el-drawer>
@@ -131,7 +129,11 @@
                 <el-table-column label="设备名称" align="center" prop="deviceName" min-width="150"></el-table-column>
                 <el-table-column label="规格型号" align="center" prop="specs" min-width="150" />
                 <el-table-column label="设备类别" align="center" prop="categoryName" min-width="150"></el-table-column>
-                <el-table-column label="功能位置" align="center" prop="location" min-width="150"></el-table-column>
+                <el-table-column label="功能位置" align="center" prop="location" min-width="150">
+                    <template slot-scope="scope">
+                    {{findTreeName(locationOptions,scope.row.location)}}
+                </template>
+                </el-table-column>
                 <el-table-column label="所属子公司" align="center" prop="subCompanyName" min-width="150"></el-table-column>
                 <el-table-column label="所属组织" align="center" prop="affDeptName" min-width="150" />
                 <el-table-column label="设备状态" align="center" prop="deviceStatus">
@@ -188,6 +190,7 @@ import { listResource, addResource, delResource } from "@/api/system/resource";
 import {findAll,getGroup} from '@/api/system/group';
 import JmTable from "@/components/JmTable";
 import pline from '@/views/maintain/pplan/pline'
+import { getLocationTree} from '@/api/Location'
 import { number } from 'echarts';
 export default {
     name: "Template",
@@ -324,9 +327,9 @@ export default {
                 // thisExecuteTime: [
                 //     { required: true, message: '本次执行日期不能为空', trigger: 'blur' },
                 // ],
-                nextExecuteTime: [
+                /* nextExecuteTime: [
                     { required: true, message: '下次执行日期不能为空', trigger: 'blur' },
-                ],
+                ], */
                 groupId: [
                     { required: true, message: '巡点检班组不能为空', trigger: 'blur' },
                 ],
@@ -339,7 +342,55 @@ export default {
             },
             startDatePicker: this.beginDate(),
             endDatePicker: this.processDate(),
+            locationOptions:[]
         };
+    },
+    watch:{
+        'form.thisExecuteTime':{
+            handler(newTime){
+                if(newTime){
+                    let datetime=new Date(newTime)
+                    if(this.form.planCycleType=='时')  datetime.setHours(datetime.getHours()+this.form.planCycle) //时
+                    if(this.form.planCycleType=='班') datetime.setDate(datetime.getDate()+1)
+                    if(this.form.planCycleType=='天') datetime.setDate(datetime.getDate()+this.form.planCycle)
+                    if(this.form.planCycleType=='周') datetime.setDate(datetime.getDate()+7*this.form.planCycle)
+                    if(this.form.planCycleType=='月') {
+                        let currentDate=datetime.getDate()
+                        datetime = new Date(datetime.getFullYear(), datetime.getMonth() + this.form.planCycle, datetime.getDate())
+                        if(datetime.getDate() !== currentDate){
+                             datetime.setDate(0)
+                        }
+                        }
+                    if(this.form.planCycleType=='年') datetime.setFullYear(datetime.getFullYear()+this.form.planCycle)
+                    this.form.nextExecuteTime=new Date(datetime)>new Date(this.form.planEndTime) ?'':this.formatDate(datetime)
+                }
+               
+            }
+        },
+        'form.planCycleType':{
+            handler(newType){
+                if(newType=='班') this.form.planCycle=1
+                if(this.form.thisExecuteTime){
+                    let datetime=new Date(this.form.thisExecuteTime)
+                if(newType=='时')  datetime.setHours(datetime.getHours()+this.form.planCycle) //时
+                if(newType=='班') datetime.setDate(datetime.getDate()+1)
+                if(newType=='天') datetime.setDate(datetime.getDate()+this.form.planCycle)
+                if(newType=='周') datetime.setDate(datetime.getDate()+7*this.form.planCycle)
+                if(newType=='月') {
+                    let currentDate=datetime.getDate()
+                    datetime = new Date(datetime.getFullYear(), datetime.getMonth() + this.form.planCycle, datetime.getDate())
+                    if(datetime.getDate() !== currentDate){
+                         datetime.setDate(0)
+                    }
+                    }
+                if(newType=='年') datetime.setFullYear(datetime.getFullYear()+this.form.planCycle)
+                this.form.nextExecuteTime=new Date(datetime)>new Date(this.form.planEndTime) ?'':this.formatDate(datetime)
+                }
+                
+            }
+        },
+        immediate: true,
+        deep: true
     },
     created() {
         this.disabled = this.$route.query.d == 'true';
@@ -353,8 +404,53 @@ export default {
         findAll({groupType:'XDJ'}).then(res=>{
         this.groupOptions=res.data
       })
+      getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
     },
     methods: {
+         formatDate(date) {  
+            const year = date.getFullYear();  
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以+1，并使用padStart填充至两位数  
+            const day = String(date.getDate()).padStart(2, '0'); // 使用padStart填充至两位数  
+            const hours = String(date.getHours()).padStart(2, '0'); // 小时  
+            const minutes = String(date.getMinutes()).padStart(2, '0'); // 分钟  
+            const seconds = String(date.getSeconds()).padStart(2, '0'); // 秒  
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;  
+},
+         getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
+        findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
         beginDate() {
             const self = this;
             return {
@@ -423,9 +519,11 @@ export default {
                 this.loading = false;
                 this.form.executors=response.data.executor.split(',').map(item=>Number(item))
                 })
+                
             }).catch(() => {
                 this.loading = false
             });
+            
         },
         /** 新增按钮操作 */
         handleAdd() {
@@ -437,7 +535,7 @@ export default {
         handleDelete(scope) {
             var that = this;
             this.$modal.confirm('是否确认删除？').then(function () {
-                that.plineList.splice(scope.$index, 1);
+                that.plineList.splice(scope.index, 1);
             }).catch(() => { });
         },
         allDelete() {
@@ -574,9 +672,10 @@ export default {
             }).catch(() => { });
         },
         downloadFile(row) {
-            this.download('common/download', {
+            /* this.download('common/download', {
                 fileName: row.fileName
-            }, row.originalFileName,)
+            }, row.originalFileName,) */
+            this.$download.resource(row.fileName)
         },
         handlePreview(row) {
             window.open(process.env.VUE_APP_BASE_API + row.fileName)

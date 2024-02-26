@@ -327,6 +327,7 @@ export default {
           options: this.dict.type.em_device_state,
         },
         { label: '财务资产编码', prop: 'propertyCode' },
+        { label: '自选设备编码', prop: 'freeDeviceCode' },
         { label: '功能位置', prop: 'location',options:this.locationOptions,formType: 'selectTree',width: 180, },
         {
           label: '重要等级',

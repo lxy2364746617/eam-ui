@@ -54,6 +54,7 @@
       :title="title"
       :visible.sync="drawer"
       direction="rtl"
+      size='70%'
       :wrapperClosable="false">
       <!-- <jm-form 
         class="mr20"

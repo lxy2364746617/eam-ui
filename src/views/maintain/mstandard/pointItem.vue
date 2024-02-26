@@ -41,7 +41,7 @@ export default {
         { label: '保养项名称', prop: 'itemName' },
         { label: '保养部位', prop: 'itemArea' },
         { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.BYJX, },
-        { label: '保养内容', prop: 'itemContent', },
+        { label: '保养内容', prop: 'itemContent',showOverflowTooltip:true },
         { label: '保养工具', prop: 'itemTool', },
         { label: '状态', prop: 'itemStatus', formType: 'selectTag', options: this.dict.type.sys_normal_disable, },
       ]

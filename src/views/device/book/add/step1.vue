@@ -25,7 +25,7 @@
         :destroy-on-close="true"
         size="80%"
         :wrapperClosable="false">
-        <parentdevice @submitRadio="submitRadio" @close="close"></parentdevice>
+        <parentdevice @submitRadio="submitRadio" @close="close" :deviceAtt='"0"'></parentdevice>
       </el-drawer>
     </el-card>
     <el-card shadow="never" style="margin-top: 10px;text-align: right;">
@@ -134,7 +134,9 @@ export default {
         { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 8, formVisible: this.formData.deviceAtt==1  }, //(0 父级)
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 8, }, //(A、B、C)
         { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, required: true, },
-      ]
+        { label:"自选设备编码", prop:"freeDeviceCode", span: 8, },
+        { label:"14885类别", prop:"freeCategoryCode", span: 8, },
+        ]
     },
     columns2(){
       return [

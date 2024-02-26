@@ -46,6 +46,10 @@ export default {
       default: () => { },
       type: Object,
     },
+    deviceAtt:{
+      default:'',
+      type:String
+    }
   },
   computed: {
     // 列信息
@@ -59,7 +63,7 @@ export default {
         { label: "财务资产编码", prop: "propertyCode", },
         { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180, },
         { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-        { label: "上级设备", prop: "parentId", formType: 'select', options: [], }, //(0 父级)
+        { label: "上级设备", prop: "parentDeviceName",  }, //(0 父级)
         { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, width: 180, },
         { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree',  options: this.deptOptions,  width: 180, },
       ]
@@ -94,6 +98,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
+      valueMap:{}
     };
   },
   created() {
@@ -154,11 +159,14 @@ export default {
       this.loading = true;
       var data = {
         categoryId: this.queryParams.categoryId,
-        ...queryParams
+        ...queryParams,
+        deviceAtt:this.deviceAtt,
       }
       listBASE(data).then(response => {
+        response.rows.forEach(item=>{
+            item.propertyCode=item.archivesOther.propertyCode
+          })
         // 不展示自身
-        console.log(this.formData)
         if (this.formData) {
           response.rows.forEach((b, i) => {
             if (b.deviceId == this.formData.deviceId) {

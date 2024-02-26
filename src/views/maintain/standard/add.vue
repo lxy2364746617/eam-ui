@@ -76,7 +76,8 @@
                 <el-table-column label="巡点检内容" align="center" prop="itemContent" min-width="150" />
                 <el-table-column label="巡点检点数" align="center" prop="checkNum" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.checkNum" placeholder="请输入巡点检点数" v-if="scope.row.editType" />
+                        <el-input v-model="scope.row.checkNum"
+            @input="scope.row.checkNum=scope.row.checkNum.replace(/^(0+)|[^\d]+/g,'')" placeholder="请输入巡点检点数" v-if="scope.row.editType" />
                         <span v-else v-html="scope.row.checkNum"></span>
                     </template>
                 </el-table-column>
@@ -192,6 +193,7 @@ import { listDept } from "@/api/system/dept";
 import parentdevice from '@/views/device/book/device'
 import pointItem from '@/views/maintain/standard/pointItem'
 import { number } from 'echarts';
+import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_is_special', 'mro_s_check_res_type', 'mro_s_check_status'],
@@ -204,7 +206,7 @@ export default {
                 { label: "设备编码", prop: "deviceCode", span: 8, required: true, },
                 { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, span: 8, required: true, },
                 { label: "是否是特种设备", prop: "isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, formDisabled: true, required: true, }, //(Y 是、N 否)
-                { label: "功能位置", prop: "location", span: 8, required: true, },
+                { label: "功能位置", prop: "location", span: 8, required: true,formType: 'selectTree', options: this.locationOptions },
                 { label: "规格型号", prop: "specs", span: 8, },
                 { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
                 { label: "所属组织", prop: "afdeviceStatusfDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
@@ -282,6 +284,7 @@ export default {
                 deviceStatus: '',
                 remark: ""
             },
+            locationOptions:[],
             activeName: 'first',
             // 关联点检测项目
             standardList: [],
@@ -332,11 +335,25 @@ export default {
         } else {
             this.standardId = '';
         }
+        getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
+            })
         this.getTree();
         this.getTreeSelect();
         this.getList()
     },
     methods: {
+        getTreeName(arr){
+        arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
         /** 查询设备档案下拉树结构 */
         getTree() {
             equipmentTree().then(response => {
@@ -411,6 +428,7 @@ export default {
         /** 修改按钮操作 */
         handleUpdate(scope) {
             this.$set(this.standardList[scope.$index], 'editType', this.standardList[scope.$index].editType ? false : true)
+            this.tableEdit=this.standardList1.some(item=>item.editType==true)||this.standardList2.some(item=>item.editType==true)||this.standardList3.some(item=>item.editType==true)
         },
         /** 删除按钮操作 */
         handleDelete(scope) {
@@ -446,6 +464,10 @@ export default {
         /** 提交按钮 */
         submitForm() {
             let that = this;
+            if(this.tableEdit) {
+                this.$message.warning('请先保存数据')
+                return false
+            }
             this.$refs['form'].validate((valid) => {
                 if (valid) {
                     that.btnLoading = true;

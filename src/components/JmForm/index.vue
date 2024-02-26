@@ -26,7 +26,7 @@
             :label="col.label"
             :prop="col.prop"
             :class="{'hideBorder':hideBorder}"
-            :required="col.required"
+            :required="col.required==true?true:false"
           >
             <editor v-if="col.formType=='editor'" v-model="formData[col.prop]" :min-height="192" />
             <el-select

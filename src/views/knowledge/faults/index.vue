@@ -117,7 +117,7 @@ import * as echarts from "echarts";
             {
               left: '15%',
               center:['30%','50%'],
-              name: 'Access From',
+              name: '',
               type: 'pie',
               radius: ['40%', '50%'],
               avoidLabelOverlap: false,
@@ -161,7 +161,7 @@ import * as echarts from "echarts";
             {
               left: '15%',
               center:['30%','50%'],
-              name: 'Access From',
+              name: '',
               type: 'pie',
               radius: ['40%', '50%'],
               avoidLabelOverlap: false,

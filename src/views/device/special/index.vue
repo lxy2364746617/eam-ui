@@ -32,7 +32,7 @@ import { isSpecialEmCategoryCategory, } from "@/api/equipment/category";
 import { specialListBASE } from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
-
+import { getLocationTree} from '@/api/Location'
 export default {
   name: "deviceindex",
   dicts: ['em_device_state'],
@@ -46,6 +46,7 @@ export default {
   computed: {
     obj(){
         return {
+            location: { formType: 'selectTree', options: this.locationOptions,width:180 },
             categoryId: { formType: 'selectTree', options: this.categoryOptions, },
             currDeptId: { formType: 'selectTree', options: this.deptOptions, },
             affDeptId: { formType: 'selectTree',  options: this.deptOptions, },
@@ -65,6 +66,7 @@ export default {
           // 部门树选项
           deptOptions: [],
           categoryOptions: [],
+          locationOptions:[],
           // 查询参数
           queryParams: {
               pageNum: 1,
@@ -85,12 +87,26 @@ export default {
       await equipmentTree().then(response => {
         this.categoryOptions = response.data;
       });
+      await getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeName(res.data)
+      })
     },
     /** 查询部门下拉树结构 */
     async getTreeSelect(){
       await listDept().then(response => {
         this.deptOptions = response.data;
       });
+    },
+    getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
     },
       radioInput(val){
         this.queryParams.categoryId = this.radioColumn[val].categoryId

@@ -40,7 +40,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['maintain:faultcode:edit']"
-          >修改</el-button>
+          >编辑</el-button>
           <el-button
             size="mini"
             type="text"
@@ -86,8 +86,8 @@
     /> -->
 
     <!-- 添加或修改故障代码管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="550px" append-to-body>
-      <el-form ref="form" :model="form"  label-width="120px">
+    <el-drawer :title="title" :visible.sync="open" size="30%" append-to-body>
+      <el-form ref="form" :model="form"  label-width="120px" style="padding-right:30px;height:calc(100vh - 140px)">
         <el-form-item v-if="isEdit" label="故障代码" prop="faultCode" >
           <el-input v-model="form.faultCode"  disabled />
         </el-form-item>
@@ -113,11 +113,11 @@
           <el-radio v-model="form.status" label="1"><span style="color:#F30909">停用</span></el-radio>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div  class="dialog-footer" style="text-align:center">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </el-drawer>
     <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/maintain/faultCode/importTemplate'" ref="fileImport"
         :importUrl="'/maintain/faultCode/importData'">
@@ -187,8 +187,8 @@ export default {
     columns(){
       return [
         { label: '故障代码', prop: 'faultCode', },
-        { label: '故障名称', prop: 'faultName',  },
-        { label: '故障症状', prop: 'symptom',  },
+        { label: '故障名称', prop: 'faultName',width:130  },
+        { label: '故障症状', prop: 'symptom', showOverflowTooltip:true },
         { label: '故障分类', prop: 'faultType',formType:'select',options: this.dict.type.kdb_fault_type, },
         { label: '状态', prop: 'status',formType:'select',options: this.statusArr, },
         { label: '创建人', prop: 'createBy',},
@@ -204,9 +204,9 @@ export default {
   },
   methods: {
     /** 查询故障代码管理列表 */
-    getList() {
+    getList(queryParams) {
       this.loading = true;
-      listFaultcode(this.queryParams).then(response => {
+      listFaultcode(queryParams).then(response => {
         this.faultcodeList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -260,7 +260,7 @@ export default {
       this.isEdit=false
       this.reset();
       this.open = true;
-      this.title = "添加故障代码管理";
+      this.title = "新增";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -270,7 +270,7 @@ export default {
       getFaultcode(codeId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改故障代码管理";
+        this.title = "编辑";
       });
     },
     /** 提交按钮 */

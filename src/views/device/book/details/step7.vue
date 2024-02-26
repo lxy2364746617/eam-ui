@@ -89,14 +89,14 @@
     </div>
     <!-- 添加或修改设备平台_表单模板对话框 -->
     <el-drawer
-      title="选择上级设备"
+      title="选择子级设备"
       :visible="drawer"
       direction="rtl"
       size="80%"
       destroy-on-close
       :wrapperClosable="false"
       :before-close="close">
-      <childdevice :isChoose="false" @submitRadio="submitRadio" @close="close" :formData="formData"></childdevice>
+      <childdevice :isChoose="false" @submitRadio="submitRadio" @close="close" :formData="formData" :deviceAtt='"1"'></childdevice>
     </el-drawer>
   </div>
 </template>
