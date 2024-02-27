@@ -530,4 +530,7 @@ export default {
   height: 12px;
   opacity: 0.5;
 }
+::v-deep .el-table__fixed-right {
+  height: 100% !important;
+}
 </style>

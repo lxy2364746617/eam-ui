@@ -159,12 +159,10 @@ export default {
         editable: false, // 在日历上是否可拖拽
         selectable: false, // 在日历上是否可以拉长
         navLinks: false, // 点击日期跳转到当天
-        slotLabelFormat: 'H(:mm)',
-        slotMinutes: 30,
+        slotDuration: "24:00:00", //一格时间槽代表多长时间，默认00:30:00（30分钟）
         // displayEventEnd: true,//所有视图显示结束时间
         initialView: "dayGridMonth", // 设置默认显示月，可选周、日
         dateClick: this.handleDateClick,
-        allDaySlot: true,
         eventMouseEnter: this.handleEventMouseEnter,
         eventMouseLeave: this.handleEventMouseLeave,
         // eventsSet: this.handleEvents,
@@ -318,6 +316,7 @@ export default {
         return;
       }
       this.calendarApi.gotoDate(data);
+      // this.today();
       // ! 左侧
       // getCalendarMonth({ date: data.slice(0, 7) }).then((res) => {
       //   if (res.code === 200) {
@@ -508,13 +507,17 @@ export default {
     }
   }
 }
+
+::v-deep .fc-scroller-liquid-absolute {
+  overflow: visible !important;
+}
 .fc-event-main {
   position: relative !important;
   z-index: 1 !important;
 }
 .fc-daygrid-event {
   position: relative !important;
-  z-index: 1 !important; /* 创建一个透视视图 */
+  z-index: 1 !important;
 }
 ::v-deep .fc {
   .fc-scroller-harness {

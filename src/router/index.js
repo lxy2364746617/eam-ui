@@ -464,25 +464,18 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: "/property/purchase/annualAdd",
+        path: "/property/purchase/annualControls",
         component: () =>
-          import("@/views/property/equipmentAcquisition/Annual/add/index"),
-        name: "AnnualAdd",
-        meta: { title: "购置年度计划/新增", icon: "" },
-      },
-      {
-        path: "/property/purchase/annualEdit",
-        component: () =>
-          import("@/views/property/equipmentAcquisition/Annual/edit/index"),
-        name: "AnnualEdit",
-        meta: { title: "购置年度计划/编辑", icon: "" },
-      },
-      {
-        path: "/property/purchase/annualDetails",
-        component: () =>
-          import("@/views/property/equipmentAcquisition/Annual/details/index"),
-        name: "AnnualDetails",
-        meta: { title: "购置年度计划/详情", icon: "" },
+          import("@/views/property/equipmentAcquisition/Annual/ui/index"),
+        name: "annualControls",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "购置年度计划/详情"
+            : "购置年度计划/新增";
+          to.query.d == "true" ? (to.meta.title = "购置年度计划/编辑") : "";
+          next();
+        },
+        meta: { title: "购置年度计划", icon: "" },
       },
     ],
   },
@@ -493,29 +486,18 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: "/property/purchase/temporarilyAdd",
+        path: "/property/purchase/temporarilyControls",
         component: () =>
-          import("@/views/property/equipmentAcquisition/Temporarily/add/index"),
-        name: "TemporarilyAdd",
-        meta: { title: "购置临时计划/新增", icon: "" },
-      },
-      {
-        path: "/property/purchase/temporarilyEdit",
-        component: () =>
-          import(
-            "@/views/property/equipmentAcquisition/Temporarily/edit/index"
-          ),
-        name: "TemporarilyEdit",
-        meta: { title: "购置临时计划/编辑", icon: "" },
-      },
-      {
-        path: "/property/purchase/temporarilyDetails",
-        component: () =>
-          import(
-            "@/views/property/equipmentAcquisition/Temporarily/details/index"
-          ),
-        name: "TemporarilyDetails",
-        meta: { title: "购置临时计划/详情", icon: "" },
+          import("@/views/property/equipmentAcquisition/Temporarily/ui/index"),
+        name: "temporarilyControls",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "购置临时计划/详情"
+            : "购置临时计划/新增";
+          to.query.d == "true" ? (to.meta.title = "购置临时计划/编辑") : "";
+          next();
+        },
+        meta: { title: "购置临时计划", icon: "" },
       },
     ],
   },
@@ -540,22 +522,17 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: "/property/receiveAdd",
-        component: () => import("@/views/property/Receive/add/index"),
-        name: "receiveAdd",
-        meta: { title: "设备领用/新增", icon: "" },
-      },
-      {
-        path: "/property/receiveEdit",
-        component: () => import("@/views/property/Receive/edit/index"),
-        name: "receiveEdit",
-        meta: { title: "设备领用/编辑", icon: "" },
-      },
-      {
-        path: "/property/receiveDetails",
-        component: () => import("@/views/property/Receive/details/index"),
-        name: "receiveDetails",
-        meta: { title: "设备领用/详情", icon: "" },
+        path: "/property/receiveControls",
+        component: () => import("@/views/property/Receive/ui/index"),
+        name: "receiveControls",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "设备领用/详情"
+            : "设备领用/新增";
+          to.query.d == "true" ? (to.meta.title = "设备领用/编辑") : "";
+          next();
+        },
+        meta: { title: "设备领用", icon: "" },
       },
     ],
   },
@@ -566,22 +543,17 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: "/property/backspaceAdd",
-        component: () => import("@/views/property/Backspace/add/index"),
-        name: "backspaceAdd",
-        meta: { title: "设备回退/新增", icon: "" },
-      },
-      {
-        path: "/property/backspaceEdit",
-        component: () => import("@/views/property/Backspace/edit/index"),
-        name: "backspaceEdit",
-        meta: { title: "设备回退/编辑", icon: "" },
-      },
-      {
-        path: "/property/backspaceDetails",
-        component: () => import("@/views/property/Backspace/details/index"),
-        name: "backspaceDetails",
-        meta: { title: "设备回退/详情", icon: "" },
+        path: "/property/backspaceControls",
+        component: () => import("@/views/property/Backspace/ui/index"),
+        name: "backspaceControls",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "设备回退/详情"
+            : "设备回退/新增";
+          to.query.d == "true" ? (to.meta.title = "设备回退/编辑") : "";
+          next();
+        },
+        meta: { title: "设备回退", icon: "" },
       },
     ],
   },
@@ -592,22 +564,17 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: "/property/turnOverAdd",
-        component: () => import("@/views/property/TurnOver/add/index"),
-        name: "turnOverAdd",
-        meta: { title: "设备移交/新增", icon: "" },
-      },
-      {
-        path: "/property/turnOverEdit",
-        component: () => import("@/views/property/TurnOver/edit/index"),
-        name: "turnOverEdit",
-        meta: { title: "设备移交/编辑", icon: "" },
-      },
-      {
-        path: "/property/turnOverDetails",
-        component: () => import("@/views/property/TurnOver/details/index"),
-        name: "turnOverDetails",
-        meta: { title: "设备移交/详情", icon: "" },
+        path: "/property/turnOverControls",
+        component: () => import("@/views/property/TurnOver/ui/index"),
+        name: "turnOverControls",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "设备移交/详情"
+            : "设备移交/新增";
+          to.query.d == "true" ? (to.meta.title = "设备移交/编辑") : "";
+          next();
+        },
+        meta: { title: "设备移交", icon: "" },
       },
     ],
   },
@@ -618,22 +585,17 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: "/property/scrappingAdd",
-        component: () => import("@/views/property/Scrapping/add/index"),
-        name: "scrappingAdd",
-        meta: { title: "设备报废/新增", icon: "" },
-      },
-      {
-        path: "/property/scrappingEdit",
-        component: () => import("@/views/property/Scrapping/edit/index"),
-        name: "scrappingEdit",
-        meta: { title: "设备报废/编辑", icon: "" },
-      },
-      {
-        path: "/property/scrappingDetails",
-        component: () => import("@/views/property/Scrapping/details/index"),
-        name: "scrappingDetails",
-        meta: { title: "设备报废/详情", icon: "" },
+        path: "/property/scrappingControls",
+        component: () => import("@/views/property/Scrapping/ui/index"),
+        name: "scrappingControls",
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "设备报废/详情"
+            : "设备报废/新增";
+          to.query.d == "true" ? (to.meta.title = "设备报废/编辑") : "";
+          next();
+        },
+        meta: { title: "设备报废", icon: "" },
       },
     ],
   },
@@ -644,23 +606,17 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: "/property/positionChangeAdd",
-        component: () => import("@/views/property/PositionChange/add/index"),
-        name: "positionChangeAdd",
-        meta: { title: "位置状态变动/新增", icon: "" },
-      },
-      {
-        path: "/property/positionChangeEdit",
-        component: () => import("@/views/property/PositionChange/edit/index"),
-        name: "positionChangeEdit",
-        meta: { title: "位置状态变动/编辑", icon: "" },
-      },
-      {
         path: "/property/positionChangeDetails",
-        component: () =>
-          import("@/views/property/PositionChange/details/index"),
+        component: () => import("@/views/property/PositionChange/ui/index"),
         name: "positionChangeDetails",
-        meta: { title: "位置状态变动/详情", icon: "" },
+        beforeEnter: (to, from, next) => {
+          to.meta.title = Number(to.query.isShowCard)
+            ? "位置状态变动/详情"
+            : "位置状态变动/新增";
+          to.query.d == "true" ? (to.meta.title = "位置状态变动/编辑") : "";
+          next();
+        },
+        meta: { title: "位置状态变动", icon: "" },
       },
     ],
   },
@@ -732,7 +688,7 @@ export const constantRoutes = [
         beforeEnter: (to, from, next) => {
           next();
         },
-        meta: { title: "工单/巡检点", icon: "" },
+        meta: { title: "工单/巡检点/操作", icon: "" },
       },
       {
         path: "/work/questAdd5",
@@ -747,7 +703,7 @@ export const constantRoutes = [
         beforeEnter: (to, from, next) => {
           next();
         },
-        meta: { title: "工单/保养检修", icon: "" },
+        meta: { title: "工单/保养检修/操作", icon: "" },
       },
       {
         path: "/work/questUpkeep3",
@@ -756,19 +712,19 @@ export const constantRoutes = [
         beforeEnter: (to, from, next) => {
           next();
         },
-        meta: { title: "工单/定期检验", icon: "" },
+        meta: { title: "工单/定期检验/操作", icon: "" },
       },
       {
         path: "/work/questAdd6",
         component: () => import("@/views/work/Quest/add/index6"),
         name: "questAdd6",
-        meta: { title: "工单/保养检修", icon: "" },
+        meta: { title: "工单/保养检修路线", icon: "" },
       },
       {
         path: "/work/questAdd7",
         component: () => import("@/views/work/Quest/add/index7"),
         name: "questAdd7",
-        meta: { title: "工单/巡检点", icon: "" },
+        meta: { title: "工单/巡检点路线", icon: "" },
       },
       {
         path: "/work/questAdd8",
@@ -896,7 +852,7 @@ export const constantRoutes = [
           import("@/views/sparepart/spareList/details/index.vue"),
         name: "spareListDetails",
 
-        meta: { title: "备件需求/详情", icon: "" },
+        meta: { title: "备件列表/详情", icon: "" },
       },
     ],
   },

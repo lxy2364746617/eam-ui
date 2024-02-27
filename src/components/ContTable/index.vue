@@ -93,6 +93,18 @@
                     placeholder="选择日期"
                   >
                   </el-date-picker>
+                  <el-date-picker
+                    v-else-if="col.formType == 'datetime'"
+                    v-model="queryParams[col.prop]"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                    size="small"
+                    type="datetime"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                    style="width: auto"
+                    placeholder="选择日期"
+                  >
+                  </el-date-picker>
                   <el-select
                     v-else-if="
                       col.formType == 'select' ||
@@ -559,5 +571,8 @@ export default {
 .content-body {
   max-height: 440px;
   overflow-y: scroll;
+}
+::v-deep .el-table__fixed-right {
+  height: 100% !important;
 }
 </style>

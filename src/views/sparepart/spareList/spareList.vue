@@ -121,7 +121,7 @@ export default {
         },
         {
           label: "默认存储位置",
-          prop: "location",
+          prop: "locationCode",
           span: 22,
           width: 150,
           options: this.locationOptions,
@@ -180,9 +180,9 @@ export default {
     },
     getTree(arr) {
       arr.forEach((item) => {
-        item.value = item.deptCode;
+        item.id = item.deptCode;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? true : false;
+        item.isDisabled = item.locationFlag == "N" ? false : true;
         if (item.children && item.children.length > 0) {
           this.getTree(item.children);
         }

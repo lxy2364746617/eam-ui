@@ -7,27 +7,39 @@
         <el-steps
           :active="2"
           align-center
-          style="margin-top: 20px"
+          style="margin-top: 20px; width: 100%"
           finish-status="success"
         >
-          <el-step
-            v-for="item in [
-              { title: '待分派', label: '王子璇 2016-12-12 12:32' },
-              { title: '待执行', label: '王子璇 2016-12-12 12:32' },
-              { title: '执行中', label: '' },
-              { title: '验收中', label: '' },
-              { title: '已完成', label: '' },
-              { title: '已关闭', label: '' },
-            ]"
-            :key="item.title"
-            :title="item.title"
-            icon="el-icon-loading"
-            :description="item.label"
-          ></el-step>
+          <el-steps
+            :active="formData.workActive"
+            align-center
+            style="margin-top: 20px"
+            finish-status="success"
+          >
+            <el-step
+              v-for="item in formData.workOrderSchedule"
+              :key="item.id"
+              :title="item.orderStatus"
+              icon="el-icon-loading"
+            >
+              <div slot="description">
+                <span style="font-size: 14px">{{ item.createBy }}</span>
+                <br />
+                <span>{{ item.createTime }}</span>
+              </div></el-step
+            >
+          </el-steps>
         </el-steps>
       </div>
       <div class="subtitle">
-        工单信息
+        <div style="display: flex; align-items: center">
+          <svg-icon
+            :icon-class="'bookmark-fill'"
+            class-name="icon"
+            style="height: 25px; width: 16px; margin-right: 6px"
+          />
+          工单信息
+        </div>
         <div>
           <span class="mr20 pack" @click="handlerView">关联文档查看</span>
         </div>
@@ -99,7 +111,14 @@
       </el-row>
       <!-- 下方 -->
     </div>
-    <div class="title">工单执行</div>
+    <div class="title">
+      <svg-icon
+        :icon-class="'bar-chart-horizontal-fill'"
+        class-name="icon"
+        style="height: 25px; width: 16px; margin-right: 6px"
+      ></svg-icon
+      >工单执行
+    </div>
     <el-table
       v-loading="loading"
       :data="equipmentList"
@@ -511,50 +530,46 @@ export default {
       this.loadingRelevance = true;
       this.loadingRelevance = false;
     },
-    getList() {
-      this.equipmentList = [
-        {
-          deviceCode: "123123123",
-          deviceName: "123123123",
-          specs: "123123123",
-          location: "123123123",
-          isPhoto: "Y",
-          categoryNum: "123123123",
-          deviceStatus: "123123123",
-          deviceStatus2: "123123123",
-        },
-      ];
-      this.total = 1;
-      this.loading = false;
-    },
+    // getList() {
+    //   this.equipmentList = [
+    //     {
+    //       deviceCode: "123123123",
+    //       deviceName: "123123123",
+    //       specs: "123123123",
+    //       location: "123123123",
+    //       isPhoto: "Y",
+    //       categoryNum: "123123123",
+    //       deviceStatus: "123123123",
+    //       deviceStatus2: "123123123",
+    //     },
+    //   ];
+    //   this.total = 1;
+    //   this.loading = false;
+    // },
   },
 };
 </script>
 <style lang='scss' scoped>
 .box {
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-top: 20px;
   width: 100%;
   height: auto;
   background-color: #ecf1fa;
 }
 .title {
-  padding: 0 20px;
+  font-size: 18px;
   width: 100%;
-  height: 40px;
+  // border-bottom: 1px solid #d8d8d8;
   display: flex;
+  justify-content: start;
   align-items: center;
-  font-size: 16px;
-  font-weight: 700;
-  justify-content: space-between;
-  border-bottom: 1px solid #eaeaea;
-  margin-bottom: 20px;
+  padding-left: 40px;
 }
 .subtitle {
   border-bottom: 1px solid #ddd;
   background-color: #ebf4fc;
   color: #55566d;
-  font-weight: bold;
   text-align: left;
   font-size: 16px;
   padding: 5px 0;
@@ -604,8 +619,10 @@ export default {
   flex-wrap: wrap;
 }
 .box-header {
-  margin-bottom: 20px;
   background-color: #fff;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
   .title {
     color: #55566d;
     font-weight: bold;
@@ -619,7 +636,9 @@ export default {
     color: #0c7de0;
     border-color: #0c7de0;
   }
-
+  ::v-deep .el-steps--horizontal {
+    width: 100%;
+  }
   ::v-deep .el-step__description.is-success {
     color: #adadad;
   }
@@ -642,5 +661,13 @@ export default {
 }
 ::v-deep .el-table th.el-table__cell {
   background-color: #f9f9f9;
+}
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 12px;
+  opacity: 0.5;
+}
+::v-deep .el-table__fixed-right {
+  height: 100% !important;
 }
 </style>

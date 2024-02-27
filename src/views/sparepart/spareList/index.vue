@@ -112,7 +112,7 @@
       @handleFileSuccess="handleFileSuccess"
       :downloadTemplateUrl="'/attachment/importTemplate'"
       ref="fileImport"
-      :isUpdate="false"
+      :isUpdate="true"
       :importUrl="'/attachment/import'"
     ></file-import>
   </Wrapper>
@@ -191,7 +191,7 @@ export default {
           prop: "partCode",
           span: 22,
           required: true,
-          formDisabled: this.title === "新增设备" ? false : true,
+          formDisabled: this.title === "新增备件" ? false : true,
         },
         { label: "备件名称", prop: "partName", span: 22, required: true },
         {
@@ -219,7 +219,7 @@ export default {
           prop: "inventory",
           span: 22,
           formType: "number",
-          formDisabled: this.title === "新增设备" ? false : true,
+          formDisabled: this.title === "新增备件" ? false : true,
         },
         {
           label: "单位",
@@ -231,7 +231,7 @@ export default {
         },
         {
           label: "默认存储位置",
-          prop: "location",
+          prop: "locationCode",
           span: 22,
           width: 150,
           options: this.locationOptions,
@@ -267,6 +267,18 @@ export default {
     this.getTreeSelect();
   },
   methods: {
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = "";
+        }
+      });
+
+      return defaultObject;
+    },
     // 详情
     handleDetails(row) {
       const spareId = "1";
@@ -284,11 +296,14 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess() {
-      this.getList();
+      this.getList(this.queryParams);
     },
     // 下载
     handleDownload() {
-      exportManagementList({ ids: this.ids }).then((res) => {
+      exportManagementList({
+        ids: this.ids.length > 0 ? this.ids : null,
+        ...this.convertToDefaultObject(this.columns),
+      }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });
@@ -306,9 +321,9 @@ export default {
     },
     getTree(arr) {
       arr.forEach((item) => {
-        item.value = item.deptCode;
+        item.id = item.deptCode;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? true : false;
+        item.isDisabled = item.locationFlag == "N" ? false : true;
         if (item.children && item.children.length > 0) {
           this.getTree(item.children);
         }
@@ -366,16 +381,25 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.drawer = true;
-      this.title = "新增设备";
+      this.title = "新增备件";
       this.$refs.titleform.clearValidate();
       this.formDataNow = {};
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.drawer = true;
-      this.title = "编辑设备";
-      this.formDataNow = JSON.parse(JSON.stringify(row));
-      this.editValue = JSON.parse(JSON.stringify(row));
+      this.title = "编辑备件";
+      this.formDataNow = {
+        ...row,
+        partType: "" + row.partType,
+        unit: "" + row.unit,
+        inventory: undefined,
+      };
+      this.editValue = {
+        ...row,
+        partType: "" + row.partType,
+        unit: "" + row.unit,
+      };
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -405,8 +429,10 @@ export default {
       //   formVal.location
       // );
       if (formVal.id) {
-        if (this.editValue.unit !== formVal.unit)
-          this.$modal.msgWarning("该备件有库存，请谨慎修改单位！");
+        // if (this.editValue.unit !== formVal.unit)
+        //   this.$modal.msgWarning(
+        //     "该备件有库存，无法修改单位。没有库存可以修改单位！"
+        //   );
         updateManagement(formVal).then((res) => {
           if (res.code === 200) {
             this.$message.success("编辑成功！");

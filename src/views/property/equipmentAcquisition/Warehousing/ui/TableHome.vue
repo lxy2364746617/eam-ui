@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <jm-table
+    <ContTable
       :tableData="equipmentList"
       @getList="getList"
       @handleSelectionChange="handleSelectionChange"
@@ -80,7 +80,7 @@
           >删除</el-button
         > -->
       </template>
-    </jm-table>
+    </ContTable>
     <el-drawer
       size="65%"
       class="drawer"
@@ -88,7 +88,7 @@
       :visible.sync="drawer"
     >
       <div style="padding: 0 20px">
-        <ContTable
+        <ContTable2
           :tableData="equipmentList2"
           @getList="getList2"
           @handleSelectionChange="handleSelectionChange2"
@@ -101,7 +101,7 @@
           v-if="!addEdit2"
           :showOperate="false"
         >
-        </ContTable>
+        </ContTable2>
       </div>
 
       <div class="submit">
@@ -135,7 +135,6 @@
   </div>
 </template>
 <script>
-import { findByTemplateType } from "@/api/equipment/attribute";
 import {
   getPurchaseList,
   uploadInfo,
@@ -143,17 +142,19 @@ import {
   getWarehousingList,
   deleteBASE,
 } from "@/api/property/warehousing";
-import JmTable from "@/components/JmTable";
-import ContTable from "@/components/ContTable/index2";
+import ContTable from "@/components/ContTable";
+import ContTable2 from "@/components/ContTable/index2";
 import { listDept } from "@/api/system/dept";
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
+import fileImport from "@/components/FileImport";
 export default {
   components: {
-    JmTable,
-    subprocess,
     ContTable,
+    subprocess,
+    ContTable2,
+    fileImport
   },
   dicts: ["em_device_att", "em_device_level", "wf_process_status"],
   props: {},

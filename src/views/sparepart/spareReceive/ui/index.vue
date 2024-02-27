@@ -176,6 +176,7 @@ export default {
       this.formData = {
         recruiterName: this.$store.state.user.standing.nickName,
         recruiterId: this.$store.state.user.standing.userId,
+        receiptDate: new Date(),
       };
       this.isShowCard = 0;
     }
@@ -226,7 +227,7 @@ export default {
           prop: "remark",
           span: 24,
           formType: "textarea",
-          rows: 1,
+          rows: 2,
         },
       ];
     },
@@ -240,6 +241,7 @@ export default {
           clickFn: () => {
             this.drawersupplier = true;
           },
+          formDisabled: this.title === "修改领用备件",
         },
         {
           label: "备件名称",
@@ -273,6 +275,7 @@ export default {
           span: 22,
           formType: "number",
           required: true,
+          min: 1,
         },
         {
           label: "单位",
@@ -340,6 +343,8 @@ export default {
     },
     // ! 选择备件
     submitRadio(row) {
+      this.$set(this.formDataNow, "partType", String(row.partType));
+      this.$set(this.formDataNow, "unit", String(row.unit));
       this.formDataNow = { ...row, ...this.formDataNow };
       this.closesupplier();
     },
@@ -373,6 +378,7 @@ export default {
     },
     submitForm(formVal) {
       if (formVal.type === 1) {
+        delete formVal.id;
         formVal.type = 2;
         this.equipmentList = this.equipmentList.concat([formVal]);
       } else {
@@ -407,7 +413,7 @@ export default {
 
         this.selectIndex = scope.index - 1;
         this.$modal
-          .confirm('是否确认删除备件编码为"' + row.partsCodes + '"的数据项？')
+          .confirm('是否确认删除备件编码为"' + row.partCode + '"的数据项？')
           .then(() => {
             // return delParts(ids);
 

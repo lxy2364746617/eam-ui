@@ -46,7 +46,7 @@
             class="mr20"
             v-if="spareValue"
             :columns="columns"
-            :formData="formData"
+            :formData="spareValue"
             :showButton="false"
             :disabled="disabled1"
             ref="jmform1"
@@ -57,7 +57,7 @@
           <span v-if="!disabled1">
             <el-button type="primary" @click="save" size="mini">确认</el-button>
             <br /><br />
-            <el-button size="mini" @click="close">取消</el-button>
+            <el-button size="mini" @click="close(null)">取消</el-button>
           </span>
         </el-col>
       </el-row>
@@ -84,7 +84,7 @@
     </el-card>
     <!-- 打印二维码 -->
     <el-drawer
-      title="设备二维码"
+      title="备件二维码"
       :visible.sync="drawer"
       direction="rtl"
       size="40%"
@@ -199,9 +199,10 @@ export default {
   created() {
     this.getTreeSelect();
     // 编辑
-    this.spareValue = this.$route.query.i;
+    this.spareValue = {...this.$route.query.i, partType: "" + this.$route.query.i.partType};
+
     getManagementDetails(this.spareValue.id).then((res) => {
-      this.formData = res.data;
+      this.formData = { ...res.data, partType: "" + res.data.partType };
       this.$refs.jmform1.clearValidate();
     });
   },
@@ -232,6 +233,7 @@ export default {
           prop: "partCode",
           span: 8,
           required: true,
+          formDisabled: true,
         },
         { label: "备件名称", prop: "partName", span: 8, required: true },
         {
@@ -241,9 +243,9 @@ export default {
         },
         {
           label: "默认存储位置",
-          prop: "location",
+          prop: "locationCode",
           span: 8,
-          required: true,
+          // required: true,
           options: this.locationOptions,
           formType: "selectTree",
         },
@@ -251,7 +253,7 @@ export default {
           label: "默认供应商",
           prop: "supplierName",
           span: 8,
-          required: true,
+          // required: true,
           clickFn: () => {
             this.drawersupplier = true;
           },
@@ -275,9 +277,9 @@ export default {
   methods: {
     getTree(arr) {
       arr.forEach((item) => {
-        item.value = item.deptCode;
+        item.id = item.deptCode;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? true : false;
+        item.isDisabled = item.locationFlag == "N" ? false : true;
         if (item.children && item.children.length > 0) {
           this.getTree(item.children);
         }
@@ -321,6 +323,7 @@ export default {
     },
     close(callback) {
       this.spareValue = JSON.parse(JSON.stringify(this.formData));
+
       this.disabled1 = true;
       this.$refs.jmform1.clearValidate();
       if (callback) callback();
@@ -338,7 +341,7 @@ export default {
         updateManagement(this.spareValue).then((res) => {
           if (res.code === 200) {
             getManagementDetails(this.spareValue.id).then((res) => {
-              this.formData = res.data;
+              this.formData = { ...res.data, partType: "" + res.data.partType };
               this.$refs.jmform1.clearValidate();
             });
             this.$message.success("编辑成功！");
@@ -359,7 +362,7 @@ export default {
       uploadImgPut(newFile).then((response) => {
         if (response.code === 200) {
           getManagementDetails(this.spareValue.id).then((res) => {
-            this.formData = res.data;
+            this.formData = { ...res.data, partType: "" + res.data.partType };
             this.$refs.jmform1.clearValidate();
           });
           this.$modal.msgSuccess("修改成功");

@@ -1,13 +1,18 @@
 <template>
   <div class="app-container2">
     <div class="title">
-      费用核算 合计：{{
-        standardList instanceof Array &&
-        standardList.reduce(
-          (v, t) => v + (t.num * ~~(t.unitPrice * 100)) / 100,
-          0
-        )
-      }}
+      <i class="el-icon-caret-right"
+        ><span class="icon-text"
+          >费用核算 合计：{{
+            standardList instanceof Array &&
+            standardList.reduce(
+              (v, t) => v + (t.num * ~~(t.unitPrice * 100)) / 100,
+              0
+            )
+          }}</span
+        ></i
+      >
+
       <el-button
         type="text"
         icon="el-icon-plus"
@@ -34,6 +39,11 @@
           min-width="150"
         />
         <el-table-column label="单位" align="center" prop="unit">
+          <template slot-scope="scope">
+            <span>{{
+              findName(dict.type.expense_accounting, scope.row.costUnit)
+            }}</span>
+          </template>
         </el-table-column>
         <el-table-column
           label="数量"
@@ -122,10 +132,9 @@
   </div>
 </template>
 <script>
-import TitleForm from "@/components/TitleForm";
-
 export default {
-  components: { "title-form": TitleForm },
+  components: {},
+  dicts: ["expense_accounting"],
   props: {
     disabled: {
       default: false,
@@ -164,7 +173,14 @@ export default {
     columns2() {
       return [
         { label: "材料费用及名称", prop: "costItem", required: true, span: 22 },
-        { label: "单位", prop: "unit", required: true, span: 22 },
+        {
+          label: "单位",
+          prop: "unit",
+          required: true,
+          span: 22,
+          formType: "select",
+          options: this.dict.type.expense_accounting,
+        },
         {
           label: "数量",
           prop: "num",
@@ -183,6 +199,15 @@ export default {
     },
   },
   methods: {
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
     HandlerInput(val) {},
     handleSelectionChange() {},
     handleAdd() {
@@ -277,7 +302,8 @@ export default {
   font-weight: 700;
   text-align: left;
   font-size: 14px;
-  height: 30px;
+  height: 36px;
+  width: 100%;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: justify;
@@ -286,7 +312,17 @@ export default {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding: 0 18px;
+  padding-right: 18px;
+  border-left: 5px solid #1f77fc;
+  i {
+    margin-right: 10px;
+    color: #1f77fc;
+    .icon-text {
+      color: #555;
+      font-weight: 700;
+      padding-left: 5px;
+    }
+  }
 }
 ::v-deep .el-table th.el-table__cell {
   background-color: #f9f9f9;

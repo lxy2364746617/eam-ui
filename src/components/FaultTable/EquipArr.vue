@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <div class="subtitle">
-      工单信息
+      <i class="el-icon-caret-right"><span class="icon-text">工单信息</span></i>
       <div>
         <span class="mr20">请求时间：{{ formData.createTime }}</span
         ><span
@@ -147,7 +147,7 @@ export default {
     SelectParentDeviceDialog,
     faultManage,
   },
-  dicts: ["em_device_state", "em_is_special", "order_obj",'fault_grade'],
+  dicts: ["em_device_state", "em_is_special", "order_obj", "fault_grade"],
   props: {
     formData: {
       default: {},
@@ -501,7 +501,7 @@ export default {
   font-weight: 700;
   text-align: left;
   font-size: 14px;
-  height: 30px;
+  height: 36px;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: justify;
@@ -510,7 +510,18 @@ export default {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding: 0 18px;
+  // padding: 0 18px;
+  padding-right: 18px;
+  border-left: 5px solid #1f77fc;
+  i {
+    margin-right: 10px;
+    color: #1f77fc;
+    .icon-text {
+      color: #555;
+      font-weight: 700;
+      padding-left: 5px;
+    }
+  }
   span {
     font-weight: 400;
     padding-right: 5px;

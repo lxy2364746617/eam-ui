@@ -10,20 +10,25 @@
           style="margin-top: 20px"
           finish-status="success"
         >
-          <el-step
-            v-for="item in [
-              { title: '待分派', label: '王子璇 2016-12-12 12:32' },
-              { title: '待执行', label: '王子璇 2016-12-12 12:32' },
-              { title: '执行中', label: '' },
-              { title: '验收中', label: '' },
-              { title: '已完成', label: '' },
-              { title: '已关闭', label: '' },
-            ]"
-            :key="item.title"
-            :title="item.title"
-            icon="el-icon-loading"
-            :description="item.label"
-          ></el-step>
+          <el-steps
+            :active="formData.workActive"
+            align-center
+            style="margin-top: 20px"
+            finish-status="success"
+          >
+            <el-step
+              v-for="item in formData.workOrderSchedule"
+              :key="item.id"
+              :title="item.orderStatus"
+              icon="el-icon-loading"
+            >
+              <div slot="description">
+                <span style="font-size: 14px">{{ item.createBy }}</span>
+                <br />
+                <span>{{ item.createTime }}</span>
+              </div></el-step
+            >
+          </el-steps>
         </el-steps>
       </div>
       <carry-form

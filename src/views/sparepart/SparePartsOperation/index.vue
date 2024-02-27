@@ -30,8 +30,10 @@
         <el-col v-for="item in columnsInfo" :key="item.prop" :span="item.span">
           {{ item.label }}:
           {{
-            typeof listValue[item.prop] == "number"
+            item.formType == "selectTree"
               ? findTreeName(deptOptions, listValue[item.prop])
+              : item.formType == "select"
+              ? findName(item.options, listValue[item.prop])
               : listValue[item.prop]
           }}
         </el-col>
@@ -100,6 +102,7 @@ export default {
   computed: {},
   methods: {
     findTreeName(options, value) {
+      if (!options || !value) return null;
       for (let item of options) {
         if (item.id === value) return item.label;
         if (item.children && item.children.length > 0) {
@@ -108,6 +111,15 @@ export default {
         }
       }
       return null;
+    },
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
     },
     submitForm2(obj) {
       this.$emit("submitForm", obj, this.review);

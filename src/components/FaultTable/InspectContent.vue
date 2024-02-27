@@ -23,7 +23,7 @@ export default {
   components: {
     "title-form": TitleForm,
   },
-  dicts: [ "em_device_result", "em_device_check"],
+  dicts: ["em_device_result", "em_device_check"],
   props: {
     disabled: {
       default: false,
@@ -157,9 +157,11 @@ export default {
       const secondDate = new Date(date2);
       const oneMinute = 60 * 1000;
 
-      return (
-        Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
-      ).toFixed(1);
+      return Number(
+        (
+          Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
+        ).toFixed(1)
+      );
     },
     //选择班组
     changeGroupId(val, flag) {

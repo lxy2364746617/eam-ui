@@ -8,6 +8,8 @@
       :handleWidth="230"
       :columns="columns"
       :showOperate="false"
+      :showSearch="false"
+      :isRadio="true"
     >
       <template slot="headerLeft"> </template>
     </jm-table>
@@ -17,6 +19,7 @@
 <script>
 import JmTable from "@/components/JmTable";
 import { getStockInOutCondition } from "@/api/sparePart/sparePartList";
+import { getLocationTree } from "@/api/Location";
 export default {
   dicts: ["spare_parts_unit"],
   components: {
@@ -48,8 +51,10 @@ export default {
         },
         {
           label: "存储位置",
-          prop: "locationName",
+          prop: "locationCode",
           width: 150,
+          options: this.locationOptions,
+          formType: "selectTree",
         },
         {
           label: "库存数量",
@@ -83,12 +88,30 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
+      locationOptions: null,
     };
   },
   created() {
-    this.getList(this.formData.id);
+    this.getTreeSelect();
   },
   methods: {
+    getTreeSelect() {
+      getLocationTree().then((res) => {
+        this.getList(this.formData.id);
+        this.locationOptions = this.getTree(res.data);
+      });
+    },
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.id = item.deptCode;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? false : true;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;

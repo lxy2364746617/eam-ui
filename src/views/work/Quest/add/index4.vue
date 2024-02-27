@@ -1,8 +1,45 @@
 <template>
   <Wrapper :title="wrapperTitle"
     ><div class="box">
+      <div class="box-header" v-if="disabled">
+        <div class="title">工单进度</div>
+        <!-- 进度条 -->
+        <el-steps
+          :active="2"
+          align-center
+          style="margin-top: 20px"
+          finish-status="success"
+        >
+          <el-steps
+            :active="formData.workActive"
+            align-center
+            style="margin-top: 20px"
+            finish-status="success"
+          >
+            <el-step
+              v-for="item in formData.workOrderSchedule"
+              :key="item.id"
+              :title="item.orderStatus"
+              icon="el-icon-loading"
+            >
+              <div slot="description">
+                <span style="font-size: 14px">{{ item.createBy }}</span>
+                <br />
+                <span>{{ item.createTime }}</span>
+              </div></el-step
+            >
+          </el-steps>
+        </el-steps>
+      </div>
       <div class="subtitle">
-        工单信息
+        <div style="display: flex; align-items: center">
+          <svg-icon
+            :icon-class="'bookmark-fill'"
+            class-name="icon"
+            style="height: 25px; width: 16px; margin-right: 6px"
+          />
+          工单信息
+        </div>
         <div>
           <span class="mr20 pack" style="cursor: pointer" @click="handlerUpkeep"
             >保养人员</span
@@ -72,7 +109,14 @@
       </el-row>
       <!-- 下方 -->
     </div>
-    <div class="title">工单执行</div>
+    <div class="title">
+      <svg-icon
+        :icon-class="'bar-chart-horizontal-fill'"
+        class-name="icon"
+        style="height: 25px; width: 16px; margin-right: 6px"
+      ></svg-icon
+      >工单执行
+    </div>
     <el-table
       v-loading="loading"
       :data="equipmentList"
@@ -362,6 +406,7 @@ import ContTable from "@/components/ContTable";
 import JmTable from "@/components/JmTable";
 import TitleForm from "@/components/TitleForm";
 import Wrapper from "@/components/wrapper";
+import { getWarehousingList } from "@/api/property/warehousing";
 import { equipmentTree } from "@/api/equipment/category";
 import {
   getWomDevice,
@@ -1018,7 +1063,7 @@ export default {
 <style lang='scss' scoped>
 .box {
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-top: 20px;
   width: 100%;
   height: auto;
   background-color: #ecf1fa;
@@ -1031,7 +1076,6 @@ export default {
   align-items: center;
   font-size: 16px;
   font-weight: 700;
-  justify-content: space-between;
   border-bottom: 1px solid #eaeaea;
   margin-bottom: 20px;
 }
@@ -1039,7 +1083,6 @@ export default {
   border-bottom: 1px solid #ddd;
   background-color: #ebf4fc;
   color: #55566d;
-  font-weight: bold;
   text-align: left;
   font-size: 16px;
   padding: 5px 0;
@@ -1095,7 +1138,10 @@ export default {
   border-bottom: 0;
 }
 .box-header {
-  margin-bottom: 20px;
+  background-color: #fff;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
   .title {
     color: #55566d;
     font-weight: bold;
@@ -1109,7 +1155,9 @@ export default {
     color: #0c7de0;
     border-color: #0c7de0;
   }
-
+  ::v-deep .el-steps--horizontal {
+    width: 100%;
+  }
   ::v-deep .el-step__description.is-success {
     color: #adadad;
   }
@@ -1130,7 +1178,12 @@ export default {
     background-color: #0c7de0;
   }
 }
-::v-deep .el-table th.el-table__cell {
-  background-color: #f9f9f9;
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 12px;
+  opacity: 0.5;
+}
+::v-deep .el-table__fixed-right {
+  height: 100% !important;
 }
 </style>

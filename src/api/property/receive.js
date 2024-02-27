@@ -41,10 +41,19 @@ export function getAssociatedPlan(data) {
   });
 }
 // 领用更新
-export function updateNeck(data) {
+export function updateProject(data) {
   return request({
     url: "/property/neck/updateNeck",
     method: "post",
     data: data,
+  });
+}
+
+// ! 设备领用-详情
+export function getPurchaseDetail(data) {
+  return request({
+    url: "/property/neck/getNeck",
+    method: "get",
+    params: data,
   });
 }

@@ -1,7 +1,7 @@
 <template>
   <Wrapper :title="wrapperTitle">
     <div class="box">
-      <jm-table
+      <ContTable
         :tableData="equipmentList"
         @getList="getList"
         @handleSelectionChange="handleSelectionChange"
@@ -57,7 +57,7 @@
             >关闭</el-button
           >
         </template>
-      </jm-table>
+      </ContTable>
 
       <!-- 关闭工单 -->
       <el-dialog :visible.sync="drawer2">
@@ -97,13 +97,17 @@
 </template>
 <script>
 import Wrapper from "@/components/wrapper";
-import JmTable from "@/components/JmTable";
-import { getScheduleList, exportWomInfo } from "@/api/work/schedule";
+import ContTable from "@/components/ContTable";
+import {
+  getScheduleList,
+  exportWomInfo,
+  getWorkOrderSchedule,
+} from "@/api/work/schedule";
 import { orderTemplate } from "@/api/work/template";
 import { listUser } from "@/api/system/user";
 import { findAll } from "@/api/system/group";
 export default {
-  components: { Wrapper, JmTable },
+  components: { Wrapper, ContTable },
   data() {
     return {
       btnLoading: false,
@@ -128,6 +132,15 @@ export default {
           },
         ],
       },
+      // 进度
+      workActiveList: [
+        { orderStatus: "待派工" },
+        { orderStatus: "待执行" },
+        { orderStatus: "执行中" },
+        { orderStatus: "待验收" },
+        { orderStatus: "已完成" },
+        { orderStatus: "已关闭" },
+      ],
     };
   },
   async created() {
@@ -244,97 +257,115 @@ export default {
       });
     },
     goDetails(row) {
-      // this.$router.push({
-      //   path: "/work/requestAdd",
-      //   query: { item: row, disabled: true },
-      // });
-      switch (row.orderType + row.orderObj) {
-        // ! 巡点捡
-        case "RCDJ1":
-        case "ZZDJ1":
-        case "JMDJ1":
-          this.$router.push({
-            path: "/work/questAdd7",
-          });
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
+      getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
+        row["workActive"] = 0;
+        if (
+          row.orderType !== "DZWX" ||
+          row.orderType !== "JDBWX" ||
+          row.orderType !== "WWWX"
+        ) {
+          this.workActiveList.splice(3, 1);
+        }
+        this.workActiveList.forEach((item, index) => {
+          const matchedItem = res.data.find(
+            (val) => val.orderStatus === item.orderStatus
           );
-          break;
-        case "RCDJ2":
-        case "ZZDJ2":
-        case "JMDJ2":
-          this.$router.push({
-            path: "/work/questAdd5",
-          });
 
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        // ! 设备维修
-        case "DZWX2":
-        case "JDBWX2":
-          this.$router.push({
-            path: "/work/questAdd2",
-            query: { item: row, disabled: true },
-          });
-          break;
-        case "WWWX2":
-          this.$router.push({
-            path: "/work/questAdd3",
-            query: { item: row, disabled: true },
-          });
-          break;
-        case "DZWX3":
-        case "WWWX3":
-        case "JDBWX3":
-          this.$router.push({
-            path: "/work/questAdd",
-            query: { item: row, disabled: true },
-          });
-          break;
-        // ! 定期检验
-        case "DQJY2":
-          this.$router.push({
-            path: "/work/questAdd8",
-          });
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        // ! 保养
-        case "RCBY1":
-        case "YJBY1":
-        case "EJBY1":
-        case "CGRH1":
-          this.$router.push({
-            path: "/work/questAdd6",
-          });
+          if (matchedItem) {
+            row["workActive"] = index + 1;
+            Object.assign(item, matchedItem);
+          }
+        });
 
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        case "RCBY2":
-        case "YJBY2":
-        case "EJBY2":
-        case "CGRH2":
-          this.$router.push({
-            path: "/work/questAdd4",
-          });
+        row["workOrderSchedule"] = this.workActiveList;
+        switch (row.orderType + row.orderObj) {
+          // ! 巡点捡
+          case "RCDJ1":
+          case "ZZDJ1":
+          case "JMDJ1":
+            this.$router.push({
+              path: "/work/questAdd7",
+            });
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          case "RCDJ2":
+          case "ZZDJ2":
+          case "JMDJ2":
+            this.$router.push({
+              path: "/work/questAdd5",
+            });
 
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        default:
-          break;
-      }
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          // ! 设备维修
+          case "DZWX2":
+          case "JDBWX2":
+            this.$router.push({
+              path: "/work/questAdd2",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "WWWX2":
+            this.$router.push({
+              path: "/work/questAdd3",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "DZWX3":
+          case "WWWX3":
+          case "JDBWX3":
+            this.$router.push({
+              path: "/work/questAdd",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 定期检验
+          case "DQJY2":
+            this.$router.push({
+              path: "/work/questAdd8",
+            });
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          // ! 保养
+          case "RCBY1":
+          case "YJBY1":
+          case "EJBY1":
+          case "CGRH1":
+            this.$router.push({
+              path: "/work/questAdd6",
+            });
+
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          case "RCBY2":
+          case "YJBY2":
+          case "EJBY2":
+          case "CGRH2":
+            this.$router.push({
+              path: "/work/questAdd4",
+            });
+
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          default:
+            break;
+        }
+      });
     },
     handleAdd() {
       this.$router.push({ path: "/work/requestAdd" });

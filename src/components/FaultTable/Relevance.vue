@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="title">
-      关联文档
+      <span class="icon-text">关联文档</span>
+      <!-- <i class="el-icon-caret-right"><span class="icon-text">关联文档</span></i> -->
       <el-button
         type="text"
         icon="el-icon-plus"
@@ -61,7 +62,6 @@
         :drag="true"
         @uploadChange="uploadChange2"
         :listType="'picture-card'"
-        :fileType="fileType"
         style="padding: 0 20px"
       >
       </file-upload>
@@ -119,7 +119,7 @@ export default {
       //文档
       fileList: [],
       filedrawer: false,
-      fileType: ["png", "jpg", "bmp", "jpeg", "pdf", "gif"],
+      fileType: ["png", "jpg", "bmp", "jpeg", "pdf", "gif", "xls", "xlsx"],
       fileResourceList: [],
       delFileList: [],
     };
@@ -155,13 +155,11 @@ export default {
               }
             });
           } else {
-            if (res.code === 200) {
-              that.fileResourceList.forEach((item, index) => {
-                if (item.url == row.url) {
-                  that.fileResourceList.splice(index, 1);
-                }
-              });
-            }
+            that.fileResourceList.forEach((item, index) => {
+              if (item.url == row.url) {
+                that.fileResourceList.splice(index, 1);
+              }
+            });
           }
         })
         .catch(() => {});
@@ -205,6 +203,17 @@ export default {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding: 0 18px;
+  padding-right: 18px;
+  padding-left: 18px;
+  // border-left: 5px solid #1f77fc;
+  i {
+    margin-right: 10px;
+    color: #1f77fc;
+    .icon-text {
+      color: #555;
+      font-weight: 700;
+      padding-left: 5px;
+    }
+  }
 }
 </style>

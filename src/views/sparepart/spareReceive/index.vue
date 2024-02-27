@@ -207,8 +207,9 @@ export default {
         {
           label: "请求时间",
           prop: "createTime",
-          formType: "date",
+          formType: "datetime",
           tableVisible: true,
+          width: 180,
         },
 
         { label: "备注", prop: "remark", tableVisible: true, width: 200 },

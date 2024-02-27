@@ -5,7 +5,14 @@
       <el-row :gutter="12">
         <el-col :span="19">
           <!-- <i class="el-icon-back" @click="backparent" style="color: #007bfe;cursor: pointer;"></i>  -->
-          <span style="font-size: 14px"> {{ formTitle }}</span>
+          <div style="display: flex; align-items: center">
+            <svg-icon
+              :icon-class="'bookmark-fill'"
+              class-name="icon"
+              style="height: 25px; width: 16px; margin-right: 6px"
+            />
+            <span style="font-size: 14px"> {{ formTitle }}</span>
+          </div>
         </el-col>
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px">
@@ -33,10 +40,10 @@
         >
           <jm-form
             class="mr20"
-            :columns="columns"
+            :columns="columns2"
             :formData="form"
             :showButton="false"
-            :labelWidth="'80px'"
+            :labelWidth="'100px'"
             :disabled="true"
             ref="jmform1"
           >
@@ -66,11 +73,12 @@
 </template>
 <script>
 import CarryForm from "@/components/CarryForm";
+import JmForm from "@/components/JmForm";
 import Wrapper from "@/components/wrapper";
 import { goExecutorSubmit, goExecutorDetail } from "@/api/work/schedule";
 import { findAll, getGroup } from "@/api/system/group";
 export default {
-  components: { Wrapper, CarryForm },
+  components: { Wrapper, CarryForm, JmForm },
   dicts: ["em_is_special", "em_device_state", "em_device_check"],
   data() {
     return {
@@ -253,7 +261,9 @@ export default {
       const firstDate = new Date(date1);
       const secondDate = new Date(date2);
 
-      return Math.round(Math.abs((firstDate - secondDate) / oneDay)) * 24;
+      return Number(
+        Math.round(Math.abs((firstDate - secondDate) / oneDay)) * 24
+      );
     },
     //选择班组
     changeGroupId(val, flag) {
@@ -340,6 +350,7 @@ export default {
   justify-content: space-between;
   border-bottom: 1px solid #eaeaea;
   margin-bottom: 20px;
+  padding-left: 10px;
 }
 .medium {
   width: 150px;
@@ -409,5 +420,15 @@ export default {
   vertical-align: top;
   height: 100px;
   background: url("../../../../assets/images/noImg.png") no-repeat;
+}
+::v-deep .el-table th.el-table__cell {
+  background-color: #f9f9f9;
+}
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 12px;
+  opacity: 0.5;
+}::v-deep .el-table__fixed-right {
+  height: 100% !important;
 }
 </style>

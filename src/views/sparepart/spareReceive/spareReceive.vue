@@ -40,7 +40,7 @@ import ContTable from "@/components/ContTable";
 import { listDept } from "@/api/system/dept";
 import { getAttachmentList } from "@/api/sparePart/spareReceive";
 export default {
-  dicts: ["require_type"],
+  dicts: ["require_type", "wf_process_status"],
   components: {
     ContTable,
   },
@@ -117,7 +117,13 @@ export default {
         },
 
         { label: "备注", prop: "remark", tableVisible: true, width: 200 },
-        { label: "审批状态", prop: "approvalStatus", tableVisible: true },
+        {
+          label: "审批状态",
+          prop: "approvalStatus",
+          tableVisible: true,
+          formType: "selectTag",
+          options: this.dict.type.wf_process_status,
+        },
       ];
     },
   },

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container2">
     <div class="title">
-      备件记录
+      <i class="el-icon-caret-right"><span class="icon-text">备件记录</span></i>
       <el-button
         type="text"
         icon="el-icon-plus"
@@ -170,7 +170,7 @@ export default {
   async created() {
     await this.getDeptTree();
     if (this.deptOptions && this.formData.attachmentDTOList) {
-      this.standardList = this.formData.attachmentDTOList;
+      this.standardList = this.formData.attachmentDTOList ?? [];
     }
     if (this.formData.orderCode && this.disabled) {
       request({
@@ -276,7 +276,7 @@ export default {
           options: this.dict.type.spare_parts_type,
           formDisabled: true,
         },
-        { label: "供应商名称", prop: "supplierName", span: 22 },
+        { label: "供应商名称", prop: "supplierName", span: 22, required: true },
         { label: "使用部位", prop: "location", required: true, span: 22 },
         {
           label: "更换数量",
@@ -308,11 +308,20 @@ export default {
   methods: {
     // ! 选择备件
     submitRadio(row) {
-      this.$set(this.form, "attachmentCode", row.partCode);
-      this.$set(this.form, "attachmentName", row.partName);
-      this.$set(this.form, "specs", row.sModel);
-      this.$set(this.form, "attachmentType", row.partType);
-      this.$set(this.form, "unit", row.unit);
+      // this.$set(this.form, "attachmentCode", row.partCode);
+      // this.$set(this.form, "attachmentName", row.partName);
+      // this.$set(this.form, "specs", row.sModel);
+      // this.$set(this.form, "attachmentType", row.partType);
+      // this.$set(this.form, "unit", row.unit);
+      delete row.createTime;
+      delete row.id;
+      this.form = {
+        ...row,
+        attachmentCode: row.partCode,
+        attachmentName: row.partName,
+        specs: row.sModel,
+        attachmentType: row.partType,
+      };
 
       this.closesupplier();
     },
@@ -448,7 +457,8 @@ export default {
   font-weight: 700;
   text-align: left;
   font-size: 14px;
-  height: 30px;
+  width: 100%;
+  height: 36px;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: justify;
@@ -457,6 +467,16 @@ export default {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding: 0 18px;
+  padding-right: 18px;
+  border-left: 5px solid #1f77fc;
+  i {
+    margin-right: 10px;
+    color: #1f77fc;
+    .icon-text {
+      color: #555;
+      font-weight: 700;
+      padding-left: 5px;
+    }
+  }
 }
 </style>

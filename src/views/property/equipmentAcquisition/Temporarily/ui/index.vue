@@ -1,25 +1,44 @@
 <template>
   <Wrapper>
-    <SparePartsOperation
+    <PropertyOperation
       :formData="formData"
       @submitForm="spareSubmitForm"
-      infoTitle="需求信息"
+      infoTitle="计划信息"
+      detailTitle="计划明细"
+      attachmentsTitle="关联附件"
       :columnsInfo="columnsInfo"
       :columns="columns"
       :equipmentList="equipmentList2"
       :getList="getList"
       :isShowCard="isShowCard"
+      :isChoose="isChoose"
+      :busId="formData.purchasePlanNo"
+      :busString="'busNo'"
+      @addFileList="handlerAddFileList"
+      @delFileList="handlerDelFileList"
       ref="spareForm"
     >
       <!-- 左侧 -->
-      <template slot="headerLeft" v-if="!isChoose">
+      <template slot="headerLeft">
         <el-button
+          v-if="!isChoose"
           type="primary"
           icon="el-icon-plus"
           size="mini"
           style="margin-left: 5px"
+          v-hasPermi="['property:purchase:add']"
           @click="handlerControls(null, 'add')"
-          >添加备件</el-button
+          >新增</el-button
+        >
+        <el-button
+          type="primary"
+          v-if="isChoose"
+          icon="el-icon-plus"
+          size="mini"
+          style="margin-left: 5px"
+          v-hasPermi="['property:purchase:download']"
+          @click="handlerControls(null, 'download')"
+          >下载</el-button
         >
       </template>
       <!-- 操作 -->
@@ -27,17 +46,19 @@
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-edit"
           @click="handlerControls(scope.row, 'edit', scope)"
           >编辑</el-button
         >
         <el-button
           size="mini"
           type="text"
+          icon="el-icon-delete"
           @click="handlerControls(scope.row, 'delete', scope)"
           >删除</el-button
         >
       </template>
-    </SparePartsOperation>
+    </PropertyOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
       <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
@@ -52,11 +73,11 @@
       :wrapperClosable="false"
     >
       <TitleForm
-        :columns="columns"
+        :columns="columns.filter((item) => item.prop !== 'lineNum')"
         :formData="formDataNow"
         @submitForm="submitForm"
         ref="titleform"
-        :labelWidth="'120px'"
+        :labelWidth="'100px'"
         :disabled="disabledForm"
       >
         <template #footer>
@@ -67,64 +88,41 @@
         </template>
       </TitleForm>
     </el-drawer>
-
-    <!-- 选择备件 -->
-    <el-drawer
-      title="选择备件"
-      :visible.sync="drawersupplier"
-      size="60%"
-      direction="rtl"
-      :wrapperClosable="false"
-    >
-      <spareList
-        @submitRadio="submitRadio"
-        :isRadio="true"
-        @close="closesupplier"
-      ></spareList>
-    </el-drawer>
-    <!-- 提交 -->
-    <el-dialog
-      :title="subtitle"
-      :visible.sync="subopen"
-      width="60%"
-      append-to-body
-    >
-      <subprocess
-        :tableData="tableData"
-        @submit="sub"
-        @getTableData="getTableData"
-      ></subprocess>
-    </el-dialog>
   </Wrapper>
 </template>
 <script>
 import Wrapper from "@/components/wrapper";
-import SparePartsOperation from "@/views/sparepart/SparePartsOperation/index.vue";
+import PropertyOperation from "@/views/property/PropertyOperation/index.vue";
 import { listUser } from "@/api/system/user";
 import { v4 as uuidv4 } from "uuid";
-import spareList from "@/views/sparepart/spareList/spareList.vue";
 import { listDept } from "@/api/system/dept";
+
 import {
-  getAttachmentReceiptList,
-  getAttachmentDetail,
-  addAttachment,
-  updateAttachment,
-} from "@/api/sparePart/requirement";
+  getProjectList,
+  setProject,
+  updateProject,
+  getPurchaseDetail,
+  downDetailLoad,
+} from "@/api/property/purchase";
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 export default {
   components: {
-    SparePartsOperation,
+    PropertyOperation,
     Wrapper,
-    spareList,
     subprocess,
   },
-  dicts: ["spare_parts_unit", "spare_parts_type", "require_type"],
+  dicts: [
+    "em_device_state",
+    "em_device_att",
+    "em_device_level",
+    "acquisition_plan",
+  ],
 
   data() {
     return {
-      isChoose: false,
+      isChoose: 0,
       equipmentList: [],
       equipmentList2: [],
       formData: {},
@@ -135,15 +133,16 @@ export default {
       drawer: false,
       selectIndex: null,
       addList: [],
-      updateDetailList: [],
-      delDetailList: [],
+      updateList: [],
+      delList: [],
       isShowCard: false,
       deptOptions: [],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
       },
-
+      addFileList: [],
+      delFileList: [],
       // 选择备件
       drawersupplier: false,
       userList: [],
@@ -161,34 +160,27 @@ export default {
       this.formData = this.$route.query.formData;
       this.isShowCard = Number(this.$route.query.isShowCard);
       this.isChoose = Number(this.$route.query.isShowCard);
+      // this.getList(this.queryParams);
       if (this.formData.id) {
-        getAttachmentDetail({ id: this.formData.id }).then((res) => {
+        getPurchaseDetail({ id: this.formData.id }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
-
-            this.$set(
-              this.formData,
-              "demandType",
-              String(this.formData.demandType)
-            );
           }
         });
-        getAttachmentReceiptList({
-          ...this.formData,
-          pageNum: 1,
-          pageSize: 1000,
-        }).then((res) => {
-          if (res.code == 200) {
-            this.equipmentList = res.data.records ?? [];
-          }
-        });
-        this.reviewCode = this.formData.demandCode;
+        // getProjectList({
+        //   purchasePlanNo: this.formData.purchasePlanNo,
+        //   pageNum: 1,
+        //   pageSize: 1000,
+        // }).then((res) => {
+        //   if (res.code == 200) {
+        //     this.equipmentList = res.data ?? [];
+        //   }
+        // });
+        this.reviewCode = this.formData.purchasePlanNo;
       }
     } else {
       this.formData = {
-        createBy: this.$store.state.user.standing.nickName,
-        // recruiterId: this.$store.state.user.standing.userId,
-        applyDept: this.$store.state.user.standing.deptId,
+        purchasePlanType: 2,
       };
       this.isShowCard = 0;
     }
@@ -207,118 +199,137 @@ export default {
     columnsInfo() {
       return [
         {
-          label: "备件需求编码",
-          prop: "demandCode",
-          span: 5,
-          formDisabled: true,
-        },
-        {
-          label: "备件需求名称",
-          prop: "demandName",
-          span: 5,
+          label: "计划名称",
+          prop: "purchasePlanName",
+          span: 6,
           required: true,
         },
         {
-          label: "需求类型",
-          prop: "demandType",
-          span: 5,
+          label: "计划类型",
+          prop: "purchasePlanType",
+          span: 6,
+          required: true,
           formType: "select",
-          options: this.dict.type.require_type,
-          required: true,
-        },
-
-        {
-          label: "申报人员",
-          prop: "createBy",
-          span: 4,
-          required: true,
+          options: [
+            {
+              label: "临时采购",
+              value: 2,
+            },
+          ],
           formDisabled: true,
         },
+        // {
+        //   label: "年度",
+        //   prop: "annual",
+        //   span: 5,
+        //   formType: "dateYear",
+        //   required: true,
+        // },
         {
-          label: "申报单位",
-          prop: "applyDept",
-          span: 5,
-          formType: "selectTree",
+          label: "开竣工时间",
+          prop: "time",
+          span: 12,
           required: true,
-          options: this.deptOptions,
+          formType: "dateRange",
         },
       ];
     },
     columns() {
       return [
         {
-          label: "备件编码",
-          prop: "partCode",
-          span: 22,
+          label: "设备名称",
+          prop: "deviceName",
+          tableVisible: true,
+          width: 150,
+          span: 23,
           required: true,
-          clickFn: () => {
-            this.drawersupplier = true;
-          },
-          formDisabled: this.title === "编辑备件",
-        },
-        {
-          label: "备件名称",
-          prop: "partName",
-          span: 22,
-          required: true,
-          formVisible: true,
-          formDisabled: true,
-        },
-        {
-          label: "备件类别",
-          prop: "partType",
-          span: 22,
-          required: true,
-          formType: "select",
-          options: this.dict.type.spare_parts_type,
-          formVisible: true,
-          formDisabled: true,
         },
         {
           label: "规格型号",
-          prop: "smodel",
-          span: 22,
-          formVisible: true,
-          formDisabled: true,
-        },
-        {
-          label: "需求数量",
-          prop: "demandNum",
-          span: 22,
-          formType: "number",
+          prop: "sModel",
+          tableVisible: true,
+          span: 23,
           required: true,
         },
         {
-          label: "单位",
-          prop: "unit",
-          span: 22,
-          formType: "select",
-          options: this.dict.type.spare_parts_unit,
+          label: "技术参数",
+          prop: "technologyParam",
+          tableVisible: true,
+          width: 250,
+          span: 23,
+        },
+        {
+          label: "必要性分析",
+          prop: "necessityAnalysis",
+          tableVisible: true,
+          width: 250,
+          span: 23,
           required: true,
-          formDisabled: true,
+        }, //(1 设备、2 部件)
+        {
+          label: "项目分类",
+          prop: "projectCategory",
+          tableVisible: true,
+          span: 23,
+        },
+        {
+          label: "子公司审查依据",
+          prop: "examinationAccording",
+          tableVisible: true,
+          width: 150,
+          span: 23,
         },
         {
           label: "需求日期",
           prop: "demandDate",
-          span: 22,
-          formType: "afterDate",
+          width: 150,
+          formType: "date",
+          tableVisible: true,
+          span: 23,
+          required: true,
+        }, //(A、B、C)
+        {
+          label: "需求数量",
+          prop: "demandNum",
+          formType: "number",
+          tableVisible: true,
+          span: 23,
+          required: true,
+        }, //(0 父级)
+        {
+          label: "计划单价(万元)",
+          prop: "planPrice",
+          tableVisible: true,
+          width: 120,
+          formType: "number",
+          span: 23,
+          required: true,
+        },
+        {
+          label: "需求组织",
+          prop: "demandOrganization",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          width: 150,
+          span: 23,
           required: true,
         },
         {
           label: "备注",
           prop: "remark",
-          span: 22,
-          formType: "textarea",
-          rows: 4,
-          width: 200,
+          tableVisible: true,
+          span: 23,
+          required: true,
         },
+        { label: "行号", prop: "lineNum", tableVisible: true, span: 23 },
       ];
     },
   },
   methods: {
     // ! 提交审批流
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "spare_requirement", {}).then(
+      definitionStart2(val.id, this.reviewCode, "purchase_plan", {}).then(
         (res) => {
           if (res.code == 200) {
             this.$message.success(res.msg);
@@ -333,7 +344,7 @@ export default {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "spare_requirement",
+        category: "purchase_plan",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -345,7 +356,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "spare_requirement",
+        category: "purchase_plan",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -353,16 +364,6 @@ export default {
     },
     // ! 选择备件
     submitRadio(row) {
-      // this.$set(this.formDataNow, "partCode", row.partCode);
-      // this.$set(this.formDataNow, "partName", row.partName);
-      // this.$set(this.formDataNow, "partType", row.partType);
-      // this.$set(this.formDataNow, "smodel", row.smodel);
-      // this.$set(this.formDataNow, "unit", row.unit);
-      // this.$set(this.formDataNow, "supplierId", row.supplierId);
-      this.$set(this.formDataNow, "partType", String(row.partType));
-      this.$set(this.formDataNow, "unit", String(row.unit));
-      this.$set(this.formDataNow, "smodel", row.sModel);
-
       this.formDataNow = { ...row, ...this.formDataNow };
       this.closesupplier();
     },
@@ -382,6 +383,17 @@ export default {
     getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data;
+        if (this.$route.query.formData.id) {
+          getProjectList({
+            purchasePlanNo: this.$route.query.formData.purchasePlanNo,
+            pageNum: 1,
+            pageSize: 1000,
+          }).then((res) => {
+            if (res.code == 200) {
+              this.equipmentList = res.data ?? [];
+            }
+          });
+        }
       });
     },
     // ! 对话框
@@ -396,13 +408,12 @@ export default {
     },
     submitForm(formVal) {
       if (formVal.type === 1) {
-        delete formVal.id;
         formVal.type = 2;
         this.equipmentList = this.equipmentList.concat([formVal]);
       } else {
         if (formVal.id) {
           this.equipmentList.splice(this.selectIndex, 1, formVal);
-          this.updateDetailList.push(formVal);
+          this.updateList.push(formVal);
         } else {
           this.equipmentList.splice(this.selectIndex, 1, formVal);
         }
@@ -413,7 +424,7 @@ export default {
     handlerControls(row, act, scope) {
       if (act === "add") {
         // ! 新增
-        this.title = "添加备件";
+        this.title = "新增";
         this.formDataNow = { type: 1 };
         this.drawer = true;
         this.$refs.titleform.clearValidate();
@@ -421,7 +432,7 @@ export default {
         return;
       } else if (act === "edit") {
         // ! 编辑
-        this.title = "编辑备件";
+        this.title = "编辑";
         this.drawer = true;
         this.formDataNow = JSON.parse(JSON.stringify(row));
         this.selectIndex = scope.index - 1;
@@ -431,13 +442,13 @@ export default {
 
         this.selectIndex = scope.index - 1;
         this.$modal
-          .confirm('是否确认删除备件编码为"' + row.partCode + '"的数据项？')
+          .confirm('是否确认删除备件编码为"' + row.partsCodes + '"的数据项？')
           .then(() => {
-            // return delDetailList(ids);
+            // return delList(ids);
 
             if (row.id) {
               this.equipmentList.splice(this.selectIndex, 1);
-              this.delDetailList.push(row);
+              this.delList.push(row);
             } else this.equipmentList.splice(this.selectIndex, 1);
           })
           .then(() => {
@@ -446,20 +457,37 @@ export default {
           })
           .catch(() => {});
         return;
+      } else if (act === "download") {
+        downDetailLoad({ ids: this.ids }).then((res) => {
+          const blob = new Blob([res], {
+            type: "application/vnd.ms-excel;charset=utf-8",
+          });
+          saveAs(blob, `sparePart_${new Date().getTime()}`);
+        });
       } else {
         // ! 其他
         return;
       }
     },
+    handlerAddFileList(val) {
+      this.addFileList = val;
+    },
+    handlerDelFileList(val) {
+      this.delFileList = val;
+    },
     // ! 信息提交
     spareSubmitForm(val, review) {
-      delete val.parts;
+      val["startTime"] = val.time[0];
+      val["endTime"] = val.time[1];
+      val["annual"] = val.time[1].substring(0, 4);
+      delete val.time;
       // * 新增
       if (review) {
         if (!this.formData.id) {
-          val["addDetailList"] = this.equipmentList;
-          // if (!(val["addDetailList"].length >=0))
-          addAttachment(val).then((res) => {
+          val["addList"] = this.equipmentList;
+          val["addFileList"] = this.addFileList;
+          // if (!(val["addList"].length >=0))
+          setProject(val).then((res) => {
             if (res.code === 200) {
               this.reviewCode = res.msg;
               this.handleSubmit();
@@ -467,12 +495,16 @@ export default {
           });
         } else {
           // * 编辑
-          val["addDetailList"] = this.equipmentList.filter((item) => !item.id);
-          if (this.delDetailList && this.delDetailList.length > 0)
-            val["delDetailList"] = this.delDetailList;
-          if (this.updateDetailList && this.updateDetailList.length > 0)
-            val["updateDetailList"] = this.updateDetailList;
-          updateAttachment(val).then((res) => {
+          val["addList"] = this.equipmentList.filter((item) => !item.id);
+          val["addFileList"] = this.addFileList;
+          if (this.delList && this.delList.length > 0)
+            val["delList"] = this.delList;
+          if (this.updateList && this.updateList.length > 0)
+            val["updateList"] = this.updateList;
+
+          if (val["delFileList"] && val["delFileList"].length > 0)
+            val["delFileList"] = this.delFileList;
+          updateProject(val).then((res) => {
             if (res.code === 200) {
               this.handleSubmit();
             }
@@ -480,9 +512,10 @@ export default {
         }
       } else {
         if (!this.formData.id) {
-          val["addDetailList"] = this.equipmentList;
-          // if (!(val["addDetailList"].length >=0))
-          addAttachment(val).then((res) => {
+          val["addList"] = this.equipmentList;
+          val["addFileList"] = this.addFileList;
+          // if (!(val["addList"].length >=0))
+          setProject(val).then((res) => {
             if (res.code === 200) {
               this.$modal.msgSuccess("添加成功！");
               this.cancel();
@@ -490,12 +523,15 @@ export default {
           });
         } else {
           // * 编辑
-          val["addDetailList"] = this.equipmentList.filter((item) => !item.id);
-          if (this.delDetailList && this.delDetailList.length > 0)
-            val["delDetailList"] = this.delDetailList;
-          if (this.updateDetailList && this.updateDetailList.length > 0)
-            val["updateDetailList"] = this.updateDetailList;
-          updateAttachment(val).then((res) => {
+          val["addList"] = this.equipmentList.filter((item) => !item.id);
+          val["addFileList"] = this.addFileList;
+          if (this.delList && this.delList.length > 0)
+            val["delList"] = this.delList;
+          if (this.updateList && this.updateList.length > 0)
+            val["updateList"] = this.updateList;
+          if (val["delFileList"] && val["delFileList"].length > 0)
+            val["delFileList"] = this.delFileList;
+          updateProject(val).then((res) => {
             if (res.code === 200) {
               this.$modal.msgSuccess("更新成功！");
               this.cancel();

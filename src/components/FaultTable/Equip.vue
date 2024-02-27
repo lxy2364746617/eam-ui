@@ -128,6 +128,7 @@ import parentdevice from "@/views/device/book/device";
 import { getMline, findByDeviceId, larchivesList } from "@/api/maintain/mline";
 import Sortable from "sortablejs";
 import { getWomDevice } from "@/api/work/schedule";
+import { getLocationTree } from "@/api/Location";
 export default {
   components: { parentdevice },
   dicts: ["em_device_state", "em_is_special"],

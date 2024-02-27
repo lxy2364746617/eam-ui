@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
 // 查询年度报废-首页
-export function getScrappedList(data) {
+export function getPurchaseList(data) {
   return request({
     url: "/property/scrapped/list",
     method: "post",
@@ -18,14 +18,6 @@ export function getProjectList(data) {
   });
 }
 
-// 删除报废明细
-export function deleteProjectId(id) {
-  return request({
-    url: "/property/purchase/plan/delDetail",
-    method: "post",
-    data: { id: id },
-  });
-}
 // 新增报废
 export function setProject(data) {
   return request({
@@ -43,7 +35,7 @@ export function updateProject(data) {
   });
 }
 // 报废删除
-export function delId(id) {
+export function deleteProjectId(id) {
   return request({
     url: "/property/scrapped/del/" + id,
     method: "post",
@@ -59,7 +51,7 @@ export function download(data) {
     responseType: "blob",
   });
 }
-// 报废页面-下载
+// 资产管理-设备报废单明细-下载
 export function downDetailLoad(ids) {
   return request({
     url: "/property/scrapped/export/detail",

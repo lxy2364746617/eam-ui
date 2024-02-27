@@ -360,10 +360,19 @@ export const getWorkOrderCount = (data) => {
     data: data,
   });
 };
+// 加入故障案例库
 export const addFaultCase = (data) => {
   return request({
     url: "/kdb/faultCase/add",
     method: "post",
     data: data,
+  });
+};
+// 工单进度
+export const getWorkOrderSchedule = (query) => {
+  return request({
+    url: "/workorder/getWomExecuteRecord",
+    method: "get",
+    params: query,
   });
 };

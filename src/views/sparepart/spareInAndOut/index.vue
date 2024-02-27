@@ -10,7 +10,6 @@
       :initLoading="false"
       :handleWidth="150"
       :columns="columns"
-      :showOperate="false"
     >
       <template slot="headerLeft">
         <el-col :span="1.5">
@@ -175,7 +174,7 @@
     </el-drawer>
     <!-- 选择备件 -->
     <el-drawer
-      title="领用备件"
+      title="选择备件"
       :visible.sync="drawerPartCode"
       size="60%"
       direction="rtl"
@@ -317,6 +316,7 @@ export default {
   watch: {
     "formDataNow.quantitySum": {
       handler(val) {
+        if (this.title !== "备件出库") return;
         if (val) {
           if (!this.formDataNow.partCode)
             return this.$message.warning("请选择备件");
@@ -397,7 +397,7 @@ export default {
         { label: "供应商", prop: "supplierName", span: 22, width: 150 },
         {
           label: "存储位置",
-          prop: "location",
+          prop: "locationCode",
           span: 22,
           width: 150,
           options: this.locationOptions,
@@ -450,6 +450,7 @@ export default {
             span: 13,
             formType: "number",
             required: true,
+            min: 1,
           },
           {
             label: "单位",
@@ -513,6 +514,7 @@ export default {
             span: 13,
             formType: "number",
             required: true,
+            min: 1,
           },
           {
             label: "单位",
@@ -523,17 +525,17 @@ export default {
             required: true,
             formDisabled: true,
           },
-          {
-            label: "供应商",
-            prop: "supplierName",
-            span: 13,
-            clickFn: () => {
-              this.drawersupplier = true;
-            },
-          },
+          // {
+          //   label: "供应商",
+          //   prop: "supplierName",
+          //   span: 13,
+          //   clickFn: () => {
+          //     this.drawersupplier = true;
+          //   },
+          // },
           {
             label: "存储位置",
-            prop: "location",
+            prop: "locationCode",
             span: 13,
             options: this.locationOptions,
             formType: "selectTree",
@@ -548,7 +550,7 @@ export default {
             span: 13,
           },
           {
-            label: "出库原因",
+            label: "入库原因",
             prop: "reason",
             span: 13,
             formType: "textarea",
@@ -613,9 +615,9 @@ export default {
     },
     getTree(arr) {
       arr.forEach((item) => {
-        item.value = item.deptId;
+        item.id = item.deptCode;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? true : false;
+        item.isDisabled = item.locationFlag == "N" ? false : true;
         if (item.children && item.children.length > 0) {
           this.getTree(item.children);
         }
@@ -624,11 +626,17 @@ export default {
     },
     // ! 选择备件
     submitPartCoder(row) {
-      this.$set(this.formDataNow, "partCode", row.partCode);
-      this.$set(this.formDataNow, "partName", row.partName);
-      this.$set(this.formDataNow, "partType", row.partType);
-      this.$set(this.formDataNow, "sModel", row.sModel);
-      this.$set(this.formDataNow, "unit", row.unit);
+      // this.$set(this.formDataNow, "partCode", row.partCode);
+      // this.$set(this.formDataNow, "partName", row.partName);
+      // this.$set(this.formDataNow, "partType", row.partType);
+      // this.$set(this.formDataNow, "sModel", row.sModel);
+      this.$set(this.formDataNow, "unit", String(row.unit));
+
+      this.formDataNow = {
+        ...JSON.parse(JSON.stringify(row)),
+        ...this.formDataNow,
+      };
+
       getStockInOutCondition(row.partCode).then((res) => {
         this.inOutList = res.data;
       });
@@ -737,6 +745,11 @@ export default {
           }
         });
       } else {
+        if (formVal.locationCode)
+          formVal["locationName"] = this.findTreeName(
+            this.locationOptions,
+            formVal.locationCode
+          );
         stockIn(formVal).then((res) => {
           if (res.code === 200) {
             this.getList(this.queryParams);
@@ -745,6 +758,28 @@ export default {
         });
       }
       this.close();
+    },
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
     },
   },
 };

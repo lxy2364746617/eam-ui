@@ -79,7 +79,7 @@
             ></BarChartBar>
           </div>
         </dir>
-        <jm-table
+        <ContTable
           :tableData="equipmentList"
           @getList="getList"
           @handleSelectionChange="handleSelectionChange"
@@ -101,7 +101,7 @@
               >
             </el-col>
           </template>
-        </jm-table>
+        </ContTable>
       </el-col>
     </el-row>
   </Wrapper>
@@ -126,7 +126,7 @@ import {
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 
-import JmTable from "@/components/JmTable";
+import ContTable from "@/components/ContTable";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Wrapper from "@/components/wrapper";
@@ -144,7 +144,7 @@ export default {
   components: {
     Treeselect,
     JmUserTree,
-    JmTable,
+    ContTable,
     Wrapper,
     BarChart,
     BarChartBar,

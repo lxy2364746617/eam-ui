@@ -53,7 +53,7 @@ export function updateProject(data) {
 // }
 
 // 回退删除
-export function delId(id) {
+export function delProject(id) {
   return request({
     url: "/property/transfer/delTransfer?id=" + id,
     method: "post",
@@ -64,5 +64,13 @@ export function getAssociatedPlan() {
   return request({
     url: "/property/purchase/plan/getRelateFileList",
     method: "get",
+  });
+}
+// ! 设备移交-详情
+export function getPurchaseDetail(data) {
+  return request({
+    url: "/property/transfer/getTransfer",
+    method: "get",
+    params: data,
   });
 }

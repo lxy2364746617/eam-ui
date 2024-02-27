@@ -1,8 +1,45 @@
 <template>
   <Wrapper :title="wrapperTitle"
     ><div class="box">
+      <div class="box-header" v-if="disabled">
+        <div class="title">工单进度</div>
+        <!-- 进度条 -->
+        <el-steps
+          :active="2"
+          align-center
+          style="margin-top: 20px"
+          finish-status="success"
+        >
+          <el-steps
+            :active="formData.workActive"
+            align-center
+            style="margin-top: 20px"
+            finish-status="success"
+          >
+            <el-step
+              v-for="item in formData.workOrderSchedule"
+              :key="item.id"
+              :title="item.orderStatus"
+              icon="el-icon-loading"
+            >
+              <div slot="description">
+                <span style="font-size: 14px">{{ item.createBy }}</span>
+                <br />
+                <span>{{ item.createTime }}</span>
+              </div></el-step
+            >
+          </el-steps>
+        </el-steps>
+      </div>
       <div class="subtitle">
-        工单信息
+        <div style="display: flex; align-items: center">
+          <svg-icon
+            :icon-class="'bookmark-fill'"
+            class-name="icon"
+            style="height: 25px; width: 16px; margin-right: 6px"
+          />
+          工单信息
+        </div>
         <div>
           <span class="mr20 pack" style="cursor: pointer" @click="handlerUpkeep"
             >保养人员</span
@@ -72,7 +109,14 @@
       </el-row>
       <!-- 下方 -->
     </div>
-    <div class="title">工单执行</div>
+    <div class="title">
+      <svg-icon
+        :icon-class="'bar-chart-horizontal-fill'"
+        class-name="icon"
+        style="height: 25px; width: 16px; margin-right: 6px"
+      ></svg-icon
+      >工单执行
+    </div>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
       <el-tab-pane
         style=""
@@ -672,9 +716,11 @@ export default {
       const secondDate = new Date(date2);
       const oneMinute = 60 * 1000;
 
-      return (
-        Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
-      ).toFixed(1);
+      return Number(
+        (
+          Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
+        ).toFixed(1)
+      );
     },
     async getOrderTree() {
       await orderTemplate().then((response) => {
@@ -842,7 +888,6 @@ export default {
     },
     async getList2(row) {
       this.loading2 = true;
-      getOrderExecutor;
       getExecutorList({ groupId: this.formData.groupId }).then((response) => {
         if (this.equipmentList3.length !== 0) {
           response.data = response.data.filter((user) =>
@@ -1041,7 +1086,7 @@ export default {
 <style lang='scss' scoped>
 .box {
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-top: 20px;
   width: 100%;
   height: auto;
   background-color: #ecf1fa;
@@ -1059,7 +1104,6 @@ export default {
   border-bottom: 1px solid #ddd;
   background-color: #ebf4fc;
   color: #55566d;
-  font-weight: bold;
   text-align: left;
   font-size: 16px;
   padding: 5px 0;
@@ -1138,7 +1182,6 @@ export default {
   align-items: center;
   font-size: 16px;
   font-weight: 700;
-  justify-content: space-between;
   border-bottom: 1px solid #eaeaea;
   margin-bottom: 20px;
 }
@@ -1155,7 +1198,10 @@ export default {
   margin-bottom: 10px;
 }
 .box-header {
-  margin-bottom: 20px;
+  background-color: #fff;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
   .title {
     color: #55566d;
     font-weight: bold;
@@ -1169,7 +1215,9 @@ export default {
     color: #0c7de0;
     border-color: #0c7de0;
   }
-
+  ::v-deep .el-steps--horizontal {
+    width: 100%;
+  }
   ::v-deep .el-step__description.is-success {
     color: #adadad;
   }
@@ -1192,5 +1240,13 @@ export default {
 }
 ::v-deep .el-table th.el-table__cell {
   background-color: #f9f9f9;
+}
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 12px;
+  opacity: 0.5;
+}
+::v-deep .el-table__fixed-right {
+  height: 100% !important;
 }
 </style>

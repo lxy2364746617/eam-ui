@@ -61,7 +61,7 @@ export default {
   async created() {
     this.form.unit = this.formData.groupId;
     this.$set(this.form, "executor", this.formData.executor);
-
+    console.log("========================", this.formData.executor);
     findAll({ groupType: "" }).then((res) => {
       res.data.forEach((item) => {
         item.label = item.groupName;
@@ -203,9 +203,11 @@ export default {
       const secondDate = new Date(date2);
       const oneMinute = 60 * 1000;
 
-      return (
-        Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
-      ).toFixed(1);
+      return Number(
+        (
+          Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
+        ).toFixed(1)
+      );
     },
     //选择班组
     changeGroupId(val, flag) {

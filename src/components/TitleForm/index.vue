@@ -20,11 +20,19 @@
           :key="col.prop"
           v-if="col.formVisible != false"
         >
-          <el-form-item
+          <!-- <el-form-item
             v-if="col.subTitle"
             :label="col.label"
             class="subtitle"
-          ></el-form-item>
+          ></el-form-item> -->
+          <div v-if="col.subTitleNoIcon" class="subtitleNoIcon">
+            <span class="icon-text">{{ col.label }}</span>
+          </div>
+          <div v-else-if="col.subTitle" class="subtitle">
+            <i class="el-icon-caret-right"
+              ><span class="icon-text">{{ col.label }}</span></i
+            >
+          </div>
           <!-- 这里传入乱七八糟的东西 -->
           <Request
             v-else-if="col.formType == 'table'"
@@ -123,6 +131,7 @@
             @uploadChange="uploadChange1"
             :value="formData['fileList']"
             :disabled="disabled"
+            :limit="10"
             :extraData="{ category: 1 }"
             :listType="'picture-card'"
           >
@@ -252,6 +261,50 @@
               placeholder="选择日期"
             >
             </el-date-picker>
+            <el-date-picker
+              v-else-if="col.formType == 'dateYear'"
+              v-model="formData[col.prop]"
+              value-format="yyyy"
+              type="year"
+              size="small"
+              placeholder="选择年份"
+              clearable
+              style="width: 100%"
+              :disabled="col.formDisabled || disabled"
+            >
+            </el-date-picker>
+            <el-date-picker
+              v-else-if="col.formType == 'dateRange'"
+              v-model="formData[col.prop]"
+              type="daterange"
+              format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd"
+              :style="{ width: '100%' }"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              clearable
+              :disabled="col.formDisabled || disabled"
+            >
+              >
+            </el-date-picker>
+            <el-date-picker
+              v-else-if="col.formType == 'afterDate'"
+              v-model="formData[col.prop]"
+              value-format="yyyy-MM-dd"
+              size="small"
+              type="date"
+              clearable
+              :disabled="col.formDisabled || disabled"
+              style="width: 100%"
+              placeholder="选择日期"
+              :picker-options="{
+                disabledDate(time) {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0); // 设置为当天零点
+                  return time.getTime() < today.getTime(); // 如果时间小于等于今天的零点，则禁用
+                },
+              }"
+            ></el-date-picker>
             <treeselect
               size="small"
               v-else-if="col.formType == 'selectTree'"
@@ -276,17 +329,20 @@
               placeholder="请输入"
               :rows="col.rows"
               :disabled="col.formDisabled || disabled"
+              maxlength="200"
+              show-word-limit
             />
             <el-input-number
               v-else-if="col.formType == 'number'"
               v-model="formData[col.prop]"
               placeholder="请输入"
               :step="1"
-              :min="0"
+              :min="col.min || 0"
               style="width: 100%"
               controls-position="right"
               :disabled="col.formDisabled || disabled"
             ></el-input-number>
+
             <el-input
               v-else
               v-model="formData[col.prop]"
@@ -636,24 +692,52 @@ export default {
 }
 .subtitle {
   //   border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
   background-color: #ebf4fc;
-  ::v-deep .el-form-item__label {
-    color: #555;
-    font-weight: 700;
-    text-align: left;
-    font-size: 14px;
-    padding-left: 18px;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    height: 30px;
+  border-left: 5px solid #1f77fc;
+  font-weight: 700;
+  text-align: left;
+  font-size: 14px;
+  height: 36px;
+  color: #555;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  i {
+    margin-right: 10px;
+    color: #1f77fc;
+    .icon-text {
+      color: #555;
+      font-weight: 700;
+      padding-left: 5px;
+    }
   }
+}
+.subtitleNoIcon {
+  //   border-bottom: 1px solid #ddd;
+  background-color: #ebf4fc;
+  font-weight: 700;
+  text-align: left;
+  font-size: 14px;
+  height: 36px;
+  padding-left: 18px;
+  color: #555;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-bottom: 20px;
 }
 .selectTag {
   background: none !important;

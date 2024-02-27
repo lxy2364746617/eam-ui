@@ -92,8 +92,21 @@ export default {
       handler(newVal, oldVla) {
         if (newVal !== oldVla) {
           switch (newVal) {
-            case "DZWX":
             case "WWWX":
+              this.routePoint = JSON.parse(
+                JSON.stringify(this.dict.type.order_obj)
+              )
+                .filter((item) => item.value == 2)
+                .map((item) => {
+                  return {
+                    id: item.value,
+                    label: item.label,
+                  };
+                });
+
+              this.resetColumns();
+              break;
+            case "DZWX":
             case "JDBWX":
               this.routePoint = JSON.parse(
                 JSON.stringify(this.dict.type.order_obj)
@@ -105,14 +118,7 @@ export default {
                     label: item.label,
                   };
                 });
-              if (
-                this.$route.query.item &&
-                this.$route.query.item.deviceDTOList
-              ) {
-                this.routePoint = this.routePoint.filter(
-                  (item) => item.id == 2
-                );
-              }
+
               this.resetColumns();
               break;
             case "RCDJ":
@@ -159,7 +165,7 @@ export default {
                   {
                     label: "工单信息",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     label: "工单类型",
@@ -220,7 +226,7 @@ export default {
                   {
                     label: "工单信息",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     label: "工单类型",
@@ -281,7 +287,7 @@ export default {
                   {
                     label: "工单信息",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     label: "工单类型",
@@ -322,7 +328,7 @@ export default {
                   {
                     label: "故障信息",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     label: "故障时间",
@@ -377,7 +383,7 @@ export default {
                   {
                     label: "故障图片",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     prop: "fileList",
@@ -404,14 +410,13 @@ export default {
                 ];
                 break;
               case "DZWX3":
-              case "WWWX3":
               case "JDBWX3":
                 this.columns2 = [
                   // 需填信息
                   {
                     label: "工单信息",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     label: "工单类型",
@@ -475,7 +480,7 @@ export default {
                   {
                     label: "工单信息",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     label: "工单类型",
@@ -527,7 +532,7 @@ export default {
                   {
                     label: "工单信息",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     label: "工单类型",
@@ -590,7 +595,7 @@ export default {
                   {
                     label: "工单信息",
                     span: 24,
-                    subTitle: true,
+                    subTitleNoIcon: true,
                   },
                   {
                     label: "工单类型",
@@ -678,7 +683,7 @@ export default {
           {
             label: "工单信息",
             span: 24,
-            subTitle: true,
+            subTitleNoIcon: true,
           },
           {
             label: "工单类型",
@@ -708,7 +713,7 @@ export default {
           {
             label: "工单信息",
             span: 24,
-            subTitle: true,
+            subTitleNoIcon: true,
           },
           {
             label: "工单类型",
@@ -752,6 +757,9 @@ export default {
           planExecuteDate: this.formData.planExecuteDate,
           orderObj: this.formData.orderObj,
         };
+      }
+      if (this.routePoint && this.routePoint.length > 0) {
+        this.formData.orderObj = Number(this.routePoint[0].id);
       }
       this.formData["orderTypeFather"] = this.findParentType(
         this.formData["orderType"],
@@ -854,7 +862,6 @@ export default {
         case "WWWX2":
         case "JDBWX2":
         case "DZWX3":
-        case "WWWX3":
         case "JDBWX3":
           if (
             localStorage.getItem("addList") &&

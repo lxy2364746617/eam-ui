@@ -1,7 +1,9 @@
 <template>
   <div class="app-container2">
     <div class="title">
-      人员与工时记录
+      <i class="el-icon-caret-right"
+        ><span class="icon-text">人员与工时记录</span></i
+      >
       <el-button
         type="text"
         icon="el-icon-plus"
@@ -50,11 +52,11 @@
     <el-drawer
       :visible.sync="drawer"
       direction="rtl"
-      title="新增"
+      :title="flag.isSub"
       size="30%"
       :wrapperClosable="false"
     >
-      <el-form
+      <!-- <TitleForm
         ref="rulesForm"
         :model="form"
         :rules="rules"
@@ -85,7 +87,6 @@
               <el-input
                 v-model="form.phone"
                 placeholder="请输入联系方式"
-                disabled
               /> </el-form-item
           ></el-col>
           <el-col :span="24">
@@ -142,7 +143,20 @@
           <el-button type="primary" @click="saveHandle">立即创建</el-button>
           <el-button @click="close">取消</el-button>
         </el-form-item>
-      </el-form>
+      </TitleForm> -->
+      <TitleForm
+        :columns="columns2"
+        :formData="form"
+        @submitForm="submitForm"
+        ref="titleform"
+      >
+        <template #footer>
+          <div class="container-box2">
+            <el-button type="primary" @click="saveHandle">立即创建</el-button>
+            <el-button @click="close">取消</el-button>
+          </div>
+        </template>
+      </TitleForm>
     </el-drawer>
 
     <!-- 分派人员 -->
@@ -177,14 +191,13 @@
   </div>
 </template>
 <script>
-import TitleForm from "@/components/TitleForm";
 import ContTable from "@/components/ContTable/index3";
 import ContTable2 from "@/components/ContTable";
 import { listDept } from "@/api/system/dept";
 import { getExecutorList } from "@/api/work/schedule";
 import request from "@/utils/request";
 export default {
-  components: { TitleForm, ContTable, ContTable2 },
+  components: { ContTable, ContTable2 },
   props: {
     disabled: {
       default: false,
@@ -290,8 +303,14 @@ export default {
         { label: "维修人员", prop: "realName", required: true, width: 150 },
         { label: "用户名", prop: "userName", required: true },
         { label: "联系方式", prop: "phone", width: 150 },
-        { label: "开始时间", prop: "startTime", span: 22 },
-        { label: "结束时间", prop: "endTime", required: true, span: 22 },
+        { label: "开始时间", prop: "startTime", span: 22, width: 200 },
+        {
+          label: "结束时间",
+          prop: "endTime",
+          required: true,
+          span: 22,
+          width: 200,
+        },
         {
           label: "工时（h）",
           prop: "workHours",
@@ -304,28 +323,48 @@ export default {
           prop: "repairInfo",
           required: true,
           span: 22,
-          width: 300,
+          width: 200,
         },
       ];
     },
     columns2() {
       return [
-        { label: "维修人员", prop: "realName", required: true, span: 22 },
-        { label: "用户名", prop: "userName", required: true, span: 22 },
-        { label: "联系方式", prop: "phone", span: 22 },
+        {
+          label: "维修人员",
+          prop: "realName",
+          required: true,
+          span: 22,
+          clickFn: () => {
+            this.openSb();
+          },
+        },
+        {
+          label: "用户名",
+          prop: "userName",
+          required: true,
+          span: 22,
+          formDisabled: true,
+        },
+        {
+          label: "联系方式",
+          prop: "phone",
+          span: 22,
+          formType: "intNumber",
+          formDisabled: true,
+        },
         {
           label: "开始时间",
           prop: "startTime",
           required: true,
           span: 22,
-          formType: "date",
+          formType: "datetime",
         },
         {
           label: "结束时间",
           prop: "endTime",
           required: true,
           span: 22,
-          formType: "date",
+          formType: "datetime",
         },
         {
           label: "工时（h）",
@@ -385,9 +424,11 @@ export default {
       const secondDate = new Date(date2);
       const oneMinute = 60 * 1000;
 
-      return (
-        Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
-      ).toFixed(1);
+      return Number(
+        (
+          Math.round(Math.abs((firstDate - secondDate) / oneMinute)) / 60
+        ).toFixed(1)
+      );
     },
     drawerClose() {
       this.isDrawer = false;
@@ -424,29 +465,40 @@ export default {
       this.close();
     },
     saveHandle() {
-      this.$refs.rulesForm.validate((valid, item) => {
-        if (valid) {
-          if (this.flag.isSub === "新增") {
-            let newValue = JSON.parse(JSON.stringify(this.form));
-            this.standardList = this.standardList.concat([newValue]);
-            this.close();
-          } else if (this.flag.isSub === "编辑") {
-            let newValue = JSON.parse(JSON.stringify(this.form));
-            this.$set(this.standardList, this.flag.index, newValue);
-            this.close();
-          }
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
+      // this.$refs.rulesForm.validate((valid, item) => {
+      //   if (valid) {
+      //     if (this.flag.isSub === "新增") {
+      //       let newValue = JSON.parse(JSON.stringify(this.form));
+      //       this.standardList = this.standardList.concat([newValue]);
+      //       this.close();
+      //     } else if (this.flag.isSub === "编辑") {
+      //       let newValue = JSON.parse(JSON.stringify(this.form));
+      //       this.$set(this.standardList, this.flag.index, newValue);
+      //       this.close();
+      //     }
+      //   } else {
+      //     console.log("error submit!!");
+      //     return false;
+      //   }
+      // });
+      this.$refs.titleform.submitForm();
     },
     close() {
-      this.$refs.rulesForm.resetFields();
+      this.$refs.titleform.resetFields();
 
       this.drawer = false;
     },
-    submitForm(formVal) {},
+    submitForm(formVal) {
+      if (this.flag.isSub === "新增") {
+        let newValue = JSON.parse(JSON.stringify(formVal));
+        this.standardList = this.standardList.concat([newValue]);
+        this.close();
+      } else if (this.flag.isSub === "编辑") {
+        let newValue = JSON.parse(JSON.stringify(formVal));
+        this.$set(this.standardList, this.flag.index, newValue);
+        this.close();
+      }
+    },
     handleSelectionChange(value) {},
     // 多选框选中数据
     handleSelectionChange2(selection) {
@@ -529,7 +581,8 @@ export default {
   font-weight: 700;
   text-align: left;
   font-size: 14px;
-  height: 30px;
+  height: 36px;
+  width: 100%;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: justify;
@@ -538,7 +591,17 @@ export default {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding: 0 18px;
+  padding-right: 18px;
+  border-left: 5px solid #1f77fc;
+  i {
+    margin-right: 10px;
+    color: #1f77fc;
+    .icon-text {
+      color: #555;
+      font-weight: 700;
+      padding-left: 5px;
+    }
+  }
 }
 .submit {
   display: flex;

@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
 // 查询位置状态变动列表
-export function getPositionChangeList(data) {
+export function getPurchaseList(data) {
   return request({
     url: "/property/pos_change/selectPage",
     method: "post",
@@ -17,7 +17,7 @@ export function setProject(data) {
   });
 }
 // 删除位置状态变动
-export function delId(changeNo) {
+export function delProject(changeNo) {
   return request({
     url: "/property/pos_change/del/" + changeNo,
     method: "post",
@@ -50,7 +50,7 @@ export function downDetailLoad(ids) {
     responseType: "blob",
   });
 }
-// 查询新增位置状态明细
+// 修改
 export function updateProject(data) {
   return request({
     url: "/property/pos_change/update",

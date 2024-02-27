@@ -1,7 +1,7 @@
 <template>
   <Wrapper :title="wrapperTitle">
     <div class="box">
-      <jm-table
+      <ContTable
         :tableData="equipmentList"
         @getList="getList"
         @handleSelectionChange="handleSelectionChange"
@@ -40,7 +40,7 @@
               type="text"
               icon="el-icon-edit"
               :loading="btnLoading"
-              @click="goDetails(scope.row, 'edit')"
+              @click="goEdit(scope.row, 'edit')"
               v-hasPermi="['work:schedule:edit']"
               >编辑</el-button
             >
@@ -62,7 +62,7 @@
             ></span
           >
         </template>
-      </jm-table>
+      </ContTable>
       <!-- 分派人员 -->
       <el-drawer
         size="65%"
@@ -172,6 +172,7 @@ import {
   updateExecutor,
   getAllocationClose,
   updateAllocation,
+  getWorkOrderSchedule,
 } from "@/api/work/schedule";
 import JmTable from "@/components/JmTable/index.vue";
 import ContTable from "@/components/ContTable";
@@ -255,6 +256,16 @@ export default {
       userList: [],
       itemArr: [],
       typeAll: [],
+      listGroupId: null,
+      // 进度
+      workActiveList: [
+        { orderStatus: "待派工" },
+        { orderStatus: "待执行" },
+        { orderStatus: "执行中" },
+        { orderStatus: "待验收" },
+        { orderStatus: "已完成" },
+        { orderStatus: "已关闭" },
+      ],
     };
   },
   computed: {
@@ -377,9 +388,11 @@ export default {
       handler(newVal, oldVal) {
         if (newVal) {
           if (this.itemValue && this.itemValue.groupId) {
-            this.getList2(this.itemValue.groupId);
+            this.listGroupId = this.itemValue.groupId;
+            this.getList2();
           } else {
-            this.getList2(this.itemArr[0].groupId);
+            this.listGroupId = this.itemArr[0].groupId;
+            this.getList2();
           }
         } else {
           this.title = "";
@@ -401,99 +414,6 @@ export default {
     const uniqueId = uuidv4();
   },
   methods: {
-    goDetails(row) {
-      // this.$router.push({
-      //   path: "/work/requestAdd",
-      //   query: { item: row, disabled: true },
-      // });
-      switch (row.orderType + row.orderObj) {
-        // ! 巡点捡
-        case "RCDJ1":
-        case "ZZDJ1":
-        case "JMDJ1":
-          this.$router.push({
-            path: "/work/questAdd7",
-          });
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        case "RCDJ2":
-        case "ZZDJ2":
-        case "JMDJ2":
-          this.$router.push({
-            path: "/work/questAdd5",
-          });
-
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        // ! 设备维修
-        case "DZWX2":
-        case "JDBWX2":
-          this.$router.push({
-            path: "/work/questAdd2",
-            query: { item: row, disabled: true },
-          });
-          break;
-        case "WWWX2":
-          this.$router.push({
-            path: "/work/questAdd3",
-            query: { item: row, disabled: true },
-          });
-          break;
-        case "DZWX3":
-        case "WWWX3":
-        case "JDBWX3":
-          this.$router.push({
-            path: "/work/questAdd",
-            query: { item: row, disabled: true },
-          });
-          break;
-        // ! 定期检验
-        case "DQJY2":
-          this.$router.push({
-            path: "/work/questAdd8",
-          });
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        // ! 保养
-        case "RCBY1":
-        case "YJBY1":
-        case "EJBY1":
-        case "CGRH1":
-          this.$router.push({
-            path: "/work/questAdd6",
-          });
-
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        case "RCBY2":
-        case "YJBY2":
-        case "EJBY2":
-        case "CGRH2":
-          this.$router.push({
-            path: "/work/questAdd4",
-          });
-
-          localStorage.setItem(
-            "item",
-            JSON.stringify({ item: row, disabled: true })
-          );
-          break;
-        default:
-          break;
-      }
-    },
     getTypeList() {
       findAll().then((res) => {
         this.typeAll = res.data.map((item) => {
@@ -684,7 +604,7 @@ export default {
     // },
     async getList2(row) {
       this.loading2 = true;
-      getExecutorList({ groupId: row }).then((response) => {
+      getExecutorList({ groupId: this.listGroupId }).then((response) => {
         this.equipmentList2 = response.data;
         this.total2 = response.total;
         this.loading2 = false;
@@ -715,10 +635,125 @@ export default {
       this.radioRow2 = selection[0];
     },
     /** 修改按钮操作 */
-    goDetails(row, f) {
-      this.drawer = true;
-      this.title = "编辑设备";
-      this.itemValue = row;
+    goEdit(row, f) {
+      if (f === "edit") {
+        // workOrderSchedule
+
+        this.drawer = true;
+        this.title = "编辑设备";
+        this.itemValue = row;
+      }
+    },
+    goDetails(row) {
+      getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
+        row["workActive"] = 0;
+        if (
+          row.orderType !== "DZWX" ||
+          row.orderType !== "JDBWX" ||
+          row.orderType !== "WWWX"
+        ) {
+          this.workActiveList.splice(3, 1);
+        }
+        this.workActiveList.forEach((item, index) => {
+          const matchedItem = res.data.find(
+            (val) => val.orderStatus === item.orderStatus
+          );
+
+          if (matchedItem) {
+            row["workActive"] = index + 1;
+            Object.assign(item, matchedItem);
+          }
+        });
+
+        row["workOrderSchedule"] = this.workActiveList;
+        switch (row.orderType + row.orderObj) {
+          // ! 巡点捡
+          case "RCDJ1":
+          case "ZZDJ1":
+          case "JMDJ1":
+            this.$router.push({
+              path: "/work/questAdd7",
+            });
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          case "RCDJ2":
+          case "ZZDJ2":
+          case "JMDJ2":
+            this.$router.push({
+              path: "/work/questAdd5",
+            });
+
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          // ! 设备维修
+          case "DZWX2":
+          case "JDBWX2":
+            this.$router.push({
+              path: "/work/questAdd2",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "WWWX2":
+            this.$router.push({
+              path: "/work/questAdd3",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "DZWX3":
+          case "WWWX3":
+          case "JDBWX3":
+            this.$router.push({
+              path: "/work/questAdd",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 定期检验
+          case "DQJY2":
+            this.$router.push({
+              path: "/work/questAdd8",
+            });
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          // ! 保养
+          case "RCBY1":
+          case "YJBY1":
+          case "EJBY1":
+          case "CGRH1":
+            this.$router.push({
+              path: "/work/questAdd6",
+            });
+
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          case "RCBY2":
+          case "YJBY2":
+          case "EJBY2":
+          case "CGRH2":
+            this.$router.push({
+              path: "/work/questAdd4",
+            });
+
+            localStorage.setItem(
+              "item",
+              JSON.stringify({ item: row, disabled: true })
+            );
+            break;
+          default:
+            break;
+        }
+      });
     },
     getTreeParent(id) {
       const path = [];

@@ -8,7 +8,14 @@ export function getPurchaseList(data) {
     data: data,
   });
 }
-
+// 设备购置计划-详情
+export function getPurchaseDetail(data) {
+  return request({
+    url: "/property/purchase/plan/getPlan",
+    method: "get",
+    params: data,
+  });
+}
 // 查询计划明细
 export function getProjectList(data) {
   return request({

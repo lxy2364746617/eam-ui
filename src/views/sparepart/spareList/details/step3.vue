@@ -8,6 +8,8 @@
       :handleWidth="230"
       :columns="columns"
       :showOperate="false"
+      :showSearch="false"
+      :isRadio="true"
     >
       <template slot="headerLeft"> </template>
     </jm-table>

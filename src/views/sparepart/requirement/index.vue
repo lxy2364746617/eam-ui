@@ -10,7 +10,6 @@
       :isRadio="false"
       :handleWidth="230"
       :columns="columns"
-      :isScroll="true"
     >
       <template slot="headerLeft">
         <el-col :span="1.5">
@@ -95,7 +94,7 @@
         <el-button
           size="mini"
           type="text"
-          @click="handleSet"
+          @click="handleSet(scope.row)"
           v-if="
             scope.row.apvStatus == 'completed' ||
             scope.row.apvStatus == 'running'
@@ -249,12 +248,24 @@ export default {
     },
   },
   methods: {
+     // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = "";
+        }
+      });
+
+      return defaultObject;
+    },
     // ! 提交
     sub(val) {
       definitionStart2(
         val.id,
         this.radioRow.demandCode,
-        "spare_requirement",
+        "attachment_demand",
         {}
       ).then((res) => {
         if (res.code == 200) {
@@ -268,7 +279,7 @@ export default {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "spare_requirement",
+        category: "attachment_demand",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -280,7 +291,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "spare_requirement",
+        category: "attachment_demand",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -309,7 +320,7 @@ export default {
         // ! 编辑
         this.$router.push({
           path: "/sparepart/requirementControls",
-          query: { formData: row, isShowCard: 0, d: true },
+          query: { formData: { ...row }, isShowCard: 0, d: true },
         });
         return;
       } else if (act === "delete") {
@@ -330,7 +341,8 @@ export default {
           .catch(() => {});
         return;
       } else if (act === "download") {
-        exportManagementList({ ids: this.ids }).then((res) => {
+        exportManagementList({  ids: this.ids.length > 0 ? this.ids : null,
+          ...this.convertToDefaultObject(this.columns),}).then((res) => {
           const blob = new Blob([res], {
             type: "application/vnd.ms-excel;charset=utf-8",
           });
@@ -388,7 +400,7 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess() {
-      this.getList();
+      this.getList(this.queryParams);
     },
   },
 };

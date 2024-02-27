@@ -5,7 +5,14 @@
       <el-row :gutter="12">
         <el-col :span="19">
           <!-- <i class="el-icon-back" @click="backparent" style="color: #007bfe;cursor: pointer;"></i>  -->
-          <span style="font-size: 14px"> {{ formTitle }}</span>
+          <div style="display: flex; align-items: center">
+            <svg-icon
+              :icon-class="'bookmark-fill'"
+              class-name="icon"
+              style="height: 25px; width: 16px; margin-right: 6px"
+            />
+            <span style="font-size: 14px"> {{ formTitle }}</span>
+          </div>
         </el-col>
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px">
@@ -46,7 +53,14 @@
     </div>
 
     <div class="title">
-      <span>保养检修项目</span>
+      <div style="display: flex; align-items: center">
+        <svg-icon
+          :icon-class="'bookmark-fill'"
+          class-name="icon"
+          style="height: 25px; width: 16px; margin-right: 6px"
+        />
+        <strong style="font-size: 14px">保养检修项目</strong>
+      </div>
       <span style="font-size: 20px">
         <i class="el-icon-camera-solid controls" @click="AddFile"></i
         >&nbsp;&nbsp;<i
@@ -278,7 +292,7 @@
       </div>
       <div class="img-submit" v-if="carryValue.i">
         <el-button type="primary" @click="handlerImgSubmit">确定</el-button>
-        <el-button @click="filedrawer = false">取消</el-button>
+        <el-button @click="handlerImgCancel">取消</el-button>
       </div>
     </el-drawer>
   </Wrapper>
@@ -480,6 +494,10 @@ export default {
         }
       });
     },
+    handlerImgCancel() {
+      this.filedrawer = false;
+      this.fileLists = [];
+    },
     uploadChange2(val) {
       this.fileLists = val;
       // this.filedrawer = false;
@@ -653,6 +671,8 @@ export default {
 .header {
   background-color: #ecf1fa;
   margin-bottom: 20px;
+  padding-left: 10px;
+  padding-top: 5px;
 }
 .title {
   padding: 0 20px;
@@ -665,6 +685,7 @@ export default {
   justify-content: space-between;
   border-bottom: 1px solid #eaeaea;
   margin-bottom: 20px;
+  padding-left: 10px;
 }
 .medium {
   width: 150px;
@@ -729,5 +750,16 @@ export default {
   vertical-align: top;
   height: 100px;
   background: url("../../../../assets/images/noImg.png") no-repeat;
+}
+::v-deep .el-table th.el-table__cell {
+  background-color: #f9f9f9;
+}
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 12px;
+  opacity: 0.5;
+}
+::v-deep .el-table__fixed-right {
+  height: 100% !important;
 }
 </style>

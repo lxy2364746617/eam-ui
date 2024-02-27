@@ -158,7 +158,9 @@ export default {
       const firstDate = new Date(date1);
       const secondDate = new Date(date2);
 
-      return Math.round(Math.abs((firstDate - secondDate) / oneDay)) * 24;
+      return Number(
+        Math.round(Math.abs((firstDate - secondDate) / oneDay)) * 24
+      );
     },
     //选择班组
     changeGroupId(val, flag) {

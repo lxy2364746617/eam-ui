@@ -66,3 +66,12 @@ export function getAssociatedPlan() {
     method: "get",
   });
 }
+
+// ! 设备回退-详情
+export function getPurchaseDetail(data) {
+  return request({
+    url: "/device/back/getDeviceBack",
+    method: "get",
+    params: data,
+  });
+}
