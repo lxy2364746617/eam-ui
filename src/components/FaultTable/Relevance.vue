@@ -119,7 +119,7 @@ export default {
       //文档
       fileList: [],
       filedrawer: false,
-      fileType: ["png", "jpg", "bmp", "jpeg", "pdf", "gif", "xls", "xlsx"],
+      fileType: ["png", "jpg", "bmp", "jpeg", "pdf", "gif"],
       fileResourceList: [],
       delFileList: [],
     };
@@ -175,14 +175,7 @@ export default {
       this.filedrawer = false;
     },
     downloadFile(row) {
-      this.download(
-        "common/download",
-        {
-          fileName: row.fileName,
-        },
-
-        row.originalFileName
-      );
+      this.$download.resource(row.fileName);
     },
   },
 };

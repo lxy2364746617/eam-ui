@@ -395,6 +395,18 @@ export default {
   },
   mounted() {},
   methods: {
+     // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = "";
+        }
+      });
+
+      return defaultObject;
+    },
     // ! 导入
     /** 导入按钮操作 */
     handlerImport() {
@@ -494,7 +506,8 @@ export default {
     },
 
     exportWarnLog(data) {
-      download(this.ids).then((res) => {
+      download({ ids: this.ids.length > 0 ? this.ids : null,
+          ...this.convertToDefaultObject(this.columns),}).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });

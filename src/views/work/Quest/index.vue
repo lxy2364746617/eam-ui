@@ -399,6 +399,18 @@ export default {
     const uniqueId = uuidv4();
   },
   methods: {
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = "";
+        }
+      });
+
+      return defaultObject;
+    },
     goDetails(row) {
       getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
         row["workActive"] = 0;
@@ -604,7 +616,10 @@ export default {
       this.isDrawer = true;
     },
     handlerDerive() {
-      exportWomInfo({ ids: this.ids }).then((res) => {
+      exportWomInfo({
+        ids: this.ids.length > 0 ? this.ids : null,
+        ...this.convertToDefaultObject(this.columns),
+      }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });

@@ -406,7 +406,7 @@ export default {
     await this.getOrderTree();
     await this.getTypeList();
     // data赋值
-    await this.getList();
+
     // await this.getList2();
   },
   mounted() {
@@ -422,6 +422,7 @@ export default {
             label: item.groupName,
           };
         });
+        this.getList();
       });
     },
 
@@ -581,6 +582,7 @@ export default {
     ) {
       this.queryParams = form;
       this.loading = true;
+      form["orderStatus"] = "待派工";
       getScheduleList(form).then((response) => {
         this.equipmentList = response.data.records;
         this.total = response.data.total;

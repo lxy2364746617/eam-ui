@@ -78,6 +78,7 @@ import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
+  name: "bookadd",
   dicts: ["em_property_type"],
   components: {
     Treeselect,
@@ -299,12 +300,12 @@ export default {
     submitForm: function (fn) {
       var formData = this.$parent.getFormDataParams();
       if (formData.deviceId != undefined) {
-        updateBASE(formData).then((response) => {
+        updateBASE({ ...formData, archivesBase: formData }).then((response) => {
           this.$modal.msgSuccess("修改成功");
           if (typeof fn == "function") fn();
         });
       } else {
-        addBASE(formData).then((response) => {
+        addBASE({ ...formData, archivesBase: formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
           if (typeof fn == "function") fn();
         });
@@ -324,15 +325,6 @@ export default {
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
-      });
-    },
-    /** 查询用户列表 */
-    getList(queryParams) {
-      this.loading = true;
-      listBASE(queryParams).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
-        this.loading = false;
       });
     },
   },

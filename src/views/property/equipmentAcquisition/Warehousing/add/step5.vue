@@ -1,29 +1,44 @@
 <template>
   <div>
-    <el-card shadow="never" style="margin-top: 10px;">
+    <el-card shadow="never" style="margin-top: 10px">
       <p><i class="el-icon-magic-stick"></i> 设备图片</p>
-      <image-upload 
-        :fileType="['jpg','png']"
+      <image-upload
+        :fileType="['jpg', 'png']"
         @uploadChange="uploadChange1"
         :value="formData.imgFileResourceList"
-        :extraData="{'category':1}"
-        :listType="'picture-card'">
-
+        :extraData="{ category: 1 }"
+        :listType="'picture-card'"
+      >
       </image-upload>
       <p><i class="el-icon-magic-stick"></i> 技术资料</p>
-      <file-upload 
+      <file-upload
         :drag="true"
-        :extraData="{'category':2}"
+        :extraData="{ category: 2 }"
         @uploadChange="uploadChange2"
         :value="formData.genFileResourceList"
-        :listType="'picture-card'">
-
+        :listType="'picture-card'"
+      >
       </file-upload>
     </el-card>
-    <el-card shadow="never" style="margin-top: 10px;text-align: right;">
+    <el-card shadow="never" style="margin-top: 10px; text-align: right">
       <el-button size="mini" @click="closeform">取消</el-button>
-      <el-button size="mini" @click="prvstep" type="primary" v-if="stepActive>=1">上一步</el-button>
-      <el-button size="mini" @click="nextstep" type="primary" v-if="stepActive<=(elstep[2].visible?elstep.length-2:elstep.length-3)">下一步</el-button>
+      <el-button
+        size="mini"
+        @click="prvstep"
+        type="primary"
+        v-if="stepActive >= 1"
+        >上一步</el-button
+      >
+      <el-button
+        size="mini"
+        @click="nextstep"
+        type="primary"
+        v-if="
+          stepActive <=
+          (elstep[2].visible ? elstep.length - 2 : elstep.length - 3)
+        "
+        >下一步</el-button
+      >
       <el-button size="mini" @click="save" type="primary">保存</el-button>
     </el-card>
   </div>
@@ -34,31 +49,27 @@ import { addBASE, updateBASE } from "@/api/property/warehousing";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
+import store from "@/store";
 export default {
-  dicts: [
-    
-  ],
-  components: { 
-  },
-  props:{
-    stepActive:{
-      default:0,
+  name: "bookadd",
+  dicts: [],
+  components: {},
+  props: {
+    stepActive: {
+      default: 0,
       type: Number,
     },
-    elstep:{
-      default:[],
+    elstep: {
+      default: [],
       type: Array,
     },
     formData: {
       default: {},
       type: Object,
     },
-
   },
-  computed:{
-  },
-  mounted(){
-  },
+  computed: {},
+  mounted() {},
   data() {
     return {
       // 遮罩层
@@ -107,7 +118,7 @@ export default {
         // 设置上传的请求头部
         headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/system/user/importData"
+        url: process.env.VUE_APP_BASE_API + "/system/user/importData",
       },
       // 查询参数
       queryParams: {
@@ -116,129 +127,165 @@ export default {
         userName: undefined,
         phonenumber: undefined,
         status: undefined,
-        deptId: undefined
+        deptId: undefined,
       },
       // 表单校验
       rules: {
         userName: [
           { required: true, message: "用户名称不能为空", trigger: "blur" },
-          { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
+          {
+            min: 2,
+            max: 20,
+            message: "用户名称长度必须介于 2 和 20 之间",
+            trigger: "blur",
+          },
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
+          { required: true, message: "用户昵称不能为空", trigger: "blur" },
         ],
         password: [
           { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+          {
+            min: 5,
+            max: 20,
+            message: "用户密码长度必须介于 5 和 20 之间",
+            trigger: "blur",
+          },
         ],
         email: [
           {
             type: "email",
             message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
-          }
+            trigger: ["blur", "change"],
+          },
         ],
         phonenumber: [
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
-        ]
-      }
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   created() {
-    this.getTreeSelect()
+    this.getTreeSelect();
   },
   methods: {
-    uploadChange1(val){
-      this.formData.imgFileResourceList = val
+    uploadChange1(val) {
+      this.formData.imgFileResourceList = val;
     },
-    uploadChange2(val){
-      this.formData.genFileResourceList = val
+    uploadChange2(val) {
+      this.formData.genFileResourceList = val;
     },
-    closeform(){
-      this.$emit('closeform')
+    closeform() {
+      this.$emit("closeform");
     },
-    prvstep(){
-      this.save(()=>{
-        this.$emit('prvstep')
-      })
+    prvstep() {
+      this.save(() => {
+        this.$emit("prvstep");
+      });
     },
-    nextstep(){
-      this.save(()=>{
-        this.$emit('nextstep')
-      })
+    nextstep() {
+      this.save(() => {
+        this.$emit("nextstep");
+      });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.partsCode);
+      this.ids = selection.map((item) => item.partsCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
-    close(){
-      this.drawer = false
+    close() {
+      this.drawer = false;
     },
     // form保存
-    saveToTable(){
-      if(this.title == "新增设备"){
-        this.formData.archivesPartsList.push(JSON.parse(JSON.stringify(this.formDataNow)))
-        this.total = this.formData.archivesPartsList.length
+    saveToTable() {
+      if (this.title == "新增设备") {
+        this.formData.archivesPartsList.push(
+          JSON.parse(JSON.stringify(this.formDataNow))
+        );
+        this.total = this.formData.archivesPartsList.length;
       }
-      this.close()
+      this.close();
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.drawer = true;
       this.title = "新增设备";
-      this.formDataNow = {}
+      this.formDataNow = {};
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.drawer = true;
       this.title = "编辑设备";
-      this.formDataNow = row
+      this.formDataNow = row;
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       const partsCodes = row.partsCode || this.ids;
-      this.$modal.confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？')
-      .then(() =>{
-        console.log(this.formData.archivesPartsList,444);
-        this.formData.archivesPartsList = this.formData.archivesPartsList.filter((b)=>{
-          return partsCodes.indexOf(b.partsCode)<0
+      this.$modal
+        .confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？')
+        .then(() => {
+          console.log(this.formData.archivesPartsList, 444);
+          this.formData.archivesPartsList =
+            this.formData.archivesPartsList.filter((b) => {
+              return partsCodes.indexOf(b.partsCode) < 0;
+            });
+          this.total = this.formData.archivesPartsList.length;
         })
-        this.total = this.formData.archivesPartsList.length
-      })
-      .catch(() => {});
+        .catch(() => {});
     },
-    save(fn){
-      this.submitForm(fn)
+    save(fn) {
+      this.submitForm(fn);
     },
+    // 修改====
+    isActive(route) {
+      return route.path === this.$route.path;
+    },
+    toLastView(visitedViews, view) {
+      const latestView = visitedViews.slice(-1)[0];
+      if (latestView) {
+        this.$router.push(latestView.fullPath);
+      } else {
+        // now the default is to redirect to the home page if there is no tags-view,
+        // you can adjust it according to your needs.
+        if (view.name === "Dashboard") {
+          // to reload home page
+          this.$router.replace({ path: "/redirect" + view.fullPath });
+        } else {
+          this.$router.push("/");
+        }
+      }
+    },
+    // 修改====
     /** 提交按钮 */
-    submitForm: function(fn) {
+    submitForm: function (fn) {
       var formData = this.$parent.getFormDataParams();
+      // 当前路由
+      let obj = this.$route;
       if (formData.deviceId != undefined) {
-        updateBASE(formData).then(response => {
+        updateBASE({ ...formData, archivesBase: formData }).then((response) => {
           this.$modal.msgSuccess("修改成功");
-          if(typeof fn == 'function') fn()
+          if (typeof fn == "function") fn();
         });
       } else {
-        addBASE(formData).then(response => {
+        addBASE({ ...formData, archivesBase: formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
-          if(typeof fn == 'function') fn()
+          if (typeof fn == "function") fn();
         });
       }
     },
-    getTreeSelect(){
-      equipmentTree().then(response => {
+    getTreeSelect() {
+      equipmentTree().then((response) => {
         this.categoryOptions = response.data;
       });
-      listDept().then(response => {
+      listDept().then((response) => {
         this.deptOptions = response.data;
       });
     },
-  }
+  },
 };
 </script>

@@ -34,6 +34,8 @@
               ? findTreeName(deptOptions, listValue[item.prop])
               : item.formType == "select"
               ? findName(item.options, listValue[item.prop])
+              : item.formType == "dateRange"
+              ? listValue.startTime + "~" + listValue.endTime
               : listValue[item.prop]
           }}
         </el-col>
@@ -68,7 +70,7 @@
       :columns="columns"
       :isScroll="true"
     >
-      <template slot="headerLeft" v-if="!isChoose">
+      <template slot="headerLeft">
         <slot name="headerLeft"></slot>
       </template>
       <template #right_end>
@@ -311,17 +313,7 @@ export default {
       this.filedrawer = false;
     },
     downloadFile(row) {
-      request({
-        url: "common/download",
-        method: "get",
-        data: { fileName: row.fileName },
-        responseType: "blob",
-      }).then((res) => {
-        const blob = new Blob([res], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        saveAs(blob, `relevance_${new Date().getTime()}`);
-      });
+      this.$download.resource(row.fileName);
     },
     findTreeName(options, value) {
       if (!options || !value) return null;

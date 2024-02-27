@@ -165,6 +165,7 @@ export default {
         getPurchaseDetail({ id: this.formData.id }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
+            this.formData.time = [res.data.startTime, res.data.endTime];
           }
         });
         // getProjectList({

@@ -102,6 +102,7 @@ import {
   getScheduleList,
   exportWomInfo,
   getWorkOrderSchedule,
+  getAllocationClose,
 } from "@/api/work/schedule";
 import { orderTemplate } from "@/api/work/template";
 import { listUser } from "@/api/system/user";
@@ -147,7 +148,6 @@ export default {
     await this.getUserList();
     await this.getOrderTree();
     await this.getTypeList();
-    await this.getList();
   },
   mounted() {
     this.wrapperTitle = this.$route.meta.title;
@@ -215,6 +215,18 @@ export default {
     },
   },
   methods: {
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = "";
+        }
+      });
+
+      return defaultObject;
+    },
     getTypeList() {
       findAll().then((res) => {
         this.typeAll = res.data.map((item) => {
@@ -223,6 +235,7 @@ export default {
             label: item.groupName,
           };
         });
+        this.getList();
       });
     },
     async getOrderTree() {
@@ -392,7 +405,10 @@ export default {
       });
     },
     handlerDerive() {
-      exportWomInfo({ ids: this.ids }).then((res) => {
+      exportWomInfo({
+        ids: this.ids.length > 0 ? this.ids : null,
+        ...this.convertToDefaultObject(this.columns),
+      }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });

@@ -1,21 +1,35 @@
 <template>
   <div>
-    <el-card shadow="never" style="margin-top: 10px;">
-      <div v-if="formData.emArchivesIndex!=null">
+    <el-card shadow="never" style="margin-top: 10px">
+      <div v-if="formData.emArchivesIndex != null">
         <p><i class="el-icon-magic-stick"></i> 主要指标</p>
-        <jm-form 
+        <jm-form
+          :forceUpdate="true"
           class="mr20"
-          :columns="formData.emArchivesIndex.componentContent" 
+          :columns="formData.emArchivesIndex.componentContent"
           :showButton="false"
           :formData="formData.emArchivesIndex.fieldValue"
-          ref="jmform1">
+          ref="jmform1"
+        >
         </jm-form>
       </div>
     </el-card>
-    <el-card shadow="never" style="margin-top: 10px;text-align: right;">
+    <el-card shadow="never" style="margin-top: 10px; text-align: right">
       <el-button size="mini" @click="closeform">取消</el-button>
-      <el-button size="mini" @click="prvstep" type="primary" v-if="stepActive>=1">上一步</el-button>
-      <el-button size="mini" @click="nextstep" type="primary" v-if="stepActive<=elstep.length-2">下一步</el-button>
+      <el-button
+        size="mini"
+        @click="prvstep"
+        type="primary"
+        v-if="stepActive >= 1"
+        >上一步</el-button
+      >
+      <el-button
+        size="mini"
+        @click="nextstep"
+        type="primary"
+        v-if="stepActive <= elstep.length - 2"
+        >下一步</el-button
+      >
       <el-button size="mini" @click="save" type="primary">保存</el-button>
     </el-card>
   </div>
@@ -33,19 +47,21 @@ import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
-  dicts: [
-    'em_property_type', 
-  ],
-  components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, 
+  name: "bookadd",
+  dicts: ["em_property_type"],
+  components: {
+    Treeselect,
+    JmUserTree,
+    JmTable,
+    JmForm,
   },
-  props:{
-    stepActive:{
-      default:0,
+  props: {
+    stepActive: {
+      default: 0,
       type: Number,
     },
-    elstep:{
-      default:[],
+    elstep: {
+      default: [],
       type: Array,
     },
     formData: {
@@ -53,12 +69,7 @@ export default {
       type: Object,
     },
   },
-  computed:{
-    
-  },
-  mounted(){
-    console.log(this.formData,33333);
-  },
+  computed: {},
   data() {
     return {
       // 遮罩层
@@ -106,7 +117,7 @@ export default {
         // 设置上传的请求头部
         headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/system/user/importData"
+        url: process.env.VUE_APP_BASE_API + "/system/user/importData",
       },
       // 查询参数
       queryParams: {
@@ -115,100 +126,114 @@ export default {
         userName: undefined,
         phonenumber: undefined,
         status: undefined,
-        deptId: undefined
+        deptId: undefined,
       },
       // 表单校验
       rules: {
         userName: [
           { required: true, message: "用户名称不能为空", trigger: "blur" },
-          { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
+          {
+            min: 2,
+            max: 20,
+            message: "用户名称长度必须介于 2 和 20 之间",
+            trigger: "blur",
+          },
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
+          { required: true, message: "用户昵称不能为空", trigger: "blur" },
         ],
         password: [
           { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+          {
+            min: 5,
+            max: 20,
+            message: "用户密码长度必须介于 5 和 20 之间",
+            trigger: "blur",
+          },
         ],
         email: [
           {
             type: "email",
             message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
-          }
+            trigger: ["blur", "change"],
+          },
         ],
         phonenumber: [
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
-        ]
-      }
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   created() {
-    this.getTreeSelect()
+    this.getTreeSelect();
+    console.log('step3-formData:"', this.formData);
+  },
+  mounted() {
+    this.$refs.jmform1.$forceUpdate();
+    console.log(this.formData, 33333);
   },
   methods: {
-    closeform(){
-      this.$emit('closeform')
+    closeform() {
+      this.$emit("closeform");
     },
-    prvstep(){
-      this.$emit('prvstep')
+    prvstep() {
+      this.$emit("prvstep");
     },
-    nextstep(){
-      this.save(()=>{
-        this.$emit('nextstep')
-      })
+    nextstep() {
+      this.save(() => {
+        this.$emit("nextstep");
+      });
     },
-    async save(fn){
-      var jmform1 = await this.$refs.jmform1.submitForm()
-      if(jmform1){
-        this.submitForm(fn)
+    async save(fn) {
+      var jmform1 = await this.$refs.jmform1.submitForm();
+      if (jmform1) {
+        this.submitForm(fn);
       }
     },
     /** 提交按钮 */
-    submitForm: function(fn) {
+    submitForm: function (fn) {
       var formData = this.$parent.getFormDataParams();
       if (formData.deviceId != undefined) {
-        updateBASE(formData).then(response => {
+        updateBASE({ ...formData, archivesBase: formData }).then((response) => {
           this.$modal.msgSuccess("修改成功");
-          if(typeof fn == 'function') fn()
+          if (typeof fn == "function") fn();
         });
       } else {
-        addBASE(formData).then(response => {
+        addBASE({ ...formData, archivesBase: formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
-          if(typeof fn == 'function') fn()
+          if (typeof fn == "function") fn();
         });
       }
     },
-    close(){
-      this.drawer = false
+    close() {
+      this.drawer = false;
     },
-    submitRadio(row){
-      this.$set(this.formData,'parentId',row.deviceId)
-      this.$set(this.formData,'parentDeviceName',row.deviceName)
-      this.close()
+    submitRadio(row) {
+      this.$set(this.formData, "parentId", row.deviceId);
+      this.$set(this.formData, "parentDeviceName", row.deviceName);
+      this.close();
     },
-    getTreeSelect(){
-      equipmentTree().then(response => {
+    getTreeSelect() {
+      equipmentTree().then((response) => {
         this.categoryOptions = response.data;
       });
-      listDept().then(response => {
+      listDept().then((response) => {
         this.deptOptions = response.data;
       });
     },
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;
-      listBASE(queryParams).then(response => {
-          this.equipmentList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        }
-      );
+      listBASE(queryParams).then((response) => {
+        this.equipmentList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
     },
-  }
+  },
 };
 </script>

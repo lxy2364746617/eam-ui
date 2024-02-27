@@ -36,6 +36,7 @@
       :elstep="elstep"
       @prvstep="prvstep"
       @closeform="backparent"
+      :isEdit="isEdit"
     ></step1>
     <step2
       v-if="stepActive == 1"
@@ -84,13 +85,14 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
-import step1 from "@/views/property/equipmentAcquisition/Warehousing/add/step1";
-import step2 from "@/views/property/equipmentAcquisition/Warehousing/add/step2";
-import step3 from "@/views/property/equipmentAcquisition/Warehousing/add/step3";
-import step4 from "@/views/property/equipmentAcquisition/Warehousing/add/step4";
-import step5 from "@/views/property/equipmentAcquisition/Warehousing/add/step5";
+import step1 from "@/views/device/book/add/step1";
+import step2 from "@/views/device/book/add/step2";
+import step3 from "@/views/device/book/add/step3";
+import step4 from "@/views/device/book/add/step4";
+import step5 from "@/views/device/book/add/step5";
 
 export default {
+  name: "bookadd",
   dicts: [
     "em_device_state",
     "device_run_state",
@@ -128,11 +130,11 @@ export default {
     // },
   },
   watch: {
-    // formData: {
-    //   handler(val) {},
-    //   immediate: true,
-    //   deep: true,
-    // },
+    formData: {
+      handler(val) {},
+      immediate: true,
+      deep: true,
+    },
   },
   computed: {
     elstep() {
@@ -170,12 +172,14 @@ export default {
       stepActive: 0,
       formTitle: "",
       formData: {},
+      isEdit: false,
     };
   },
   created() {
     if (this.$route.query.i) {
       // 编辑
       const deviceId = this.$route.query.i;
+      this.isEdit = this.$route.query.f == "edit";
       this.formTitle = "编辑设备";
       getBASE(deviceId)
         .then((response) => {
@@ -197,6 +201,12 @@ export default {
           if (response.data.emArchivesExtendAtt) {
             response.data.emArchivesExtendAtt.componentContent = JSON.parse(
               response.data.emArchivesExtendAtt.componentContent
+            );
+            response.data.emArchivesExtendAtt.componentContent.forEach(
+              (item) => {
+                item.label = item.label || item.fieldName;
+                item.prop = item.prop || item.fieldCode;
+              }
             );
             response.data.emArchivesExtendAtt.fieldValue = JSON.parse(
               response.data.emArchivesExtendAtt.fieldValue
@@ -240,10 +250,7 @@ export default {
           fieldValue: {},
         } */
           this.$set(this.formData, "emArchivesExtendAtt", {
-            componentContent: response.data.map((item) => ({
-              ...item,
-              required: false,
-            })),
+            componentContent: response.data,
             fieldValue: {},
           });
         })
@@ -327,9 +334,6 @@ export default {
 
       return formData;
     },
-  },
-  beforeDestroy() {
-    window.sessionStorage.removeItem("purchaseValue");
   },
 };
 </script>
