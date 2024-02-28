@@ -40,7 +40,7 @@ import ContTable from "@/components/ContTable";
 import { listDept } from "@/api/system/dept";
 import { getAttachmentList } from "@/api/sparePart/requirement";
 export default {
-  dicts: ["require_type"],
+  dicts: ["require_type", "wf_process_status"],
   components: {
     ContTable,
   },
@@ -48,6 +48,10 @@ export default {
     isRadio: {
       default: true,
       type: Boolean,
+    },
+    searchValue: {
+      default: [],
+      type: Array,
     },
   },
   data() {
@@ -131,7 +135,13 @@ export default {
           tableVisible: true,
           formType: "date",
         },
-        { label: "审批状态", prop: "apvStatus", tableVisible: true },
+        {
+          label: "审批状态",
+          prop: "apvStatus",
+          tableVisible: true,
+          formType: "selectTag",
+          options: this.dict.type.wf_process_status,
+        },
       ];
     },
   },
@@ -161,6 +171,11 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;
+      if (this.searchValue && this.searchValue.length > 0) {
+        this.searchValue.forEach((item) => {
+          queryParams[item.prop] = item.value;
+        });
+      }
       getAttachmentList(queryParams).then((response) => {
         this.equipmentList = response.data.records;
         this.total = response.data.total;

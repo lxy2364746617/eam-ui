@@ -273,7 +273,7 @@ export default {
 
       columns.forEach((column) => {
         if (column.prop) {
-          defaultObject[column.prop] = "";
+          defaultObject[column.prop] = null;
         }
       });
 
@@ -307,7 +307,7 @@ export default {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });
-        saveAs(blob, `sparePart_${new Date().getTime()}`);
+        saveAs(blob, `spareList_${new Date().getTime()}`);
       });
     },
     getTreeSelect() {

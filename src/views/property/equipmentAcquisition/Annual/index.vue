@@ -273,7 +273,7 @@ export default {
 
       columns.forEach((column) => {
         if (column.prop) {
-          defaultObject[column.prop] = "";
+          defaultObject[column.prop] = null;
         }
       });
 
@@ -424,7 +424,7 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess() {
-      this.getList();
+      this.getList(this.queryParams);
     },
   },
 };

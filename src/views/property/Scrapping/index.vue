@@ -157,7 +157,11 @@
 <script>
 import Wrapper from "@/components/wrapper";
 import ContTable from "@/components/ContTable";
-import { getPurchaseList, delProject } from "@/api/property/scrapping";
+import {
+  getPurchaseList,
+  delProject,
+  download,
+} from "@/api/property/scrapping";
 import { listDept } from "@/api/system/dept";
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
@@ -242,6 +246,18 @@ export default {
     },
   },
   methods: {
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = null;
+        }
+      });
+
+      return defaultObject;
+    },
     handlePrint(row) {
       // 打印单据跳转
       // /device/back/printDocument
@@ -347,16 +363,17 @@ export default {
           })
           .catch(() => {});
         return;
-      }
-      // else if (act === "download") {
-      //   download({ ids: this.ids }).then((res) => {
-      //     const blob = new Blob([res], {
-      //       type: "application/vnd.ms-excel;charset=utf-8",
-      //     });
-      //     saveAs(blob, `purchase_${new Date().getTime()}`);
-      //   });
-      // }
-      else if (act === "submit") {
+      } else if (act === "download") {
+        download({
+          ids: this.ids.length > 0 ? this.ids : null,
+          ...this.convertToDefaultObject(this.columns),
+        }).then((res) => {
+          const blob = new Blob([res], {
+            type: "application/vnd.ms-excel;charset=utf-8",
+          });
+          saveAs(blob, `scrapped_${new Date().getTime()}`);
+        });
+      } else if (act === "submit") {
         // ! 提交审批流
         this.handleSubmit();
       } else {
@@ -408,7 +425,7 @@ export default {
     },
     // 文件上传成功处理
     handleFileSuccess() {
-      this.getList();
+      this.getList(this.queryParams);
     },
   },
 };

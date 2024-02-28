@@ -174,9 +174,9 @@ export default {
           }
         });
         getAttachmentReceiptList({
-          ...this.formData,
           pageNum: 1,
           pageSize: 1000,
+          demandCode: this.formData.demandCode,
         }).then((res) => {
           if (res.code == 200) {
             this.equipmentList = res.data.records ?? [];
@@ -511,7 +511,7 @@ export default {
       delete search.pageSize;
       let matches = this.equipmentList.filter((item) => {
         for (let key in search) {
-          if (item[key] != search[key]) {
+          if (!String(item[key]).includes(search[key])) {
             if (search[key] == "") continue;
             return false;
           }

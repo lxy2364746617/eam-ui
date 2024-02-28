@@ -49,6 +49,10 @@ export default {
       default: true,
       type: Boolean,
     },
+    searchValue: {
+      default: [],
+      type: Array,
+    },
   },
   data() {
     return {
@@ -153,6 +157,11 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;
+      if (this.searchValue && this.searchValue.length > 0) {
+        this.searchValue.forEach((item) => {
+          queryParams[item.prop] = item.value;
+        });
+      } 
       getAttachmentList(queryParams).then((response) => {
         this.equipmentList = response.data.records;
         this.total = response.data.total;

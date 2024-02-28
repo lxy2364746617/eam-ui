@@ -52,11 +52,11 @@ export function download(data) {
   });
 }
 // 资产管理-设备报废单明细-下载
-export function downDetailLoad(ids) {
+export function downDetailLoad(data) {
   return request({
     url: "/property/scrapped/export/detail",
     method: "post",
-    data: { ids: ids },
+    data: data,
     responseType: "blob",
   });
 }

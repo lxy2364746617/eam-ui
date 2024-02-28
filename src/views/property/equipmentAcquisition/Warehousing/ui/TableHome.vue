@@ -154,7 +154,7 @@ export default {
     ContTable,
     subprocess,
     ContTable2,
-    fileImport
+    fileImport,
   },
   dicts: ["em_device_att", "em_device_level", "wf_process_status"],
   props: {},
@@ -395,13 +395,13 @@ export default {
   },
   mounted() {},
   methods: {
-     // ! 提供下载列表字段
+    // ! 提供下载列表字段
     convertToDefaultObject(columns) {
       const defaultObject = {};
 
       columns.forEach((column) => {
         if (column.prop) {
-          defaultObject[column.prop] = "";
+          defaultObject[column.prop] = null;
         }
       });
 
@@ -506,12 +506,14 @@ export default {
     },
 
     exportWarnLog(data) {
-      download({ ids: this.ids.length > 0 ? this.ids : null,
-          ...this.convertToDefaultObject(this.columns),}).then((res) => {
+      download({
+        ids: this.ids.length > 0 ? this.ids : null,
+        ...this.convertToDefaultObject(this.columns),
+      }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });
-        saveAs(blob, `下载数据_${new Date().getTime()}`);
+        saveAs(blob, `warehousing_${new Date().getTime()}`);
       });
     },
     // 导入

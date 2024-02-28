@@ -77,11 +77,11 @@ export function download(data) {
   });
 }
 // 计划明细页面-下载
-export function downDetailLoad(ids) {
+export function downDetailLoad(data) {
   return request({
     url: "/property/purchase/plan/downloadDetails",
     method: "post",
-    data: { ids: ids },
+    data: data,
     responseType: "blob",
   });
 }

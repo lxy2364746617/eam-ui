@@ -116,8 +116,9 @@ export default {
     getList(queryParams) {
       this.loading = true;
       getStockInOutCondition(this.formData.partCode).then((response) => {
-        this.equipmentList = response.data;
-        this.total = response.total;
+        this.equipmentList = response.data.filter(
+          (item) => item.inventory !== 0
+        );
         this.loading = false;
       });
     },

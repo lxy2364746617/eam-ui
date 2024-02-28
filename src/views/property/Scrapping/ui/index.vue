@@ -12,6 +12,7 @@
       :isShowCard="isShowCard"
       :isChoose="isChoose"
       :busId="formData.scrapNo"
+      :handleSelectionChange="handleSelectionChange"
       :busString="'busNo'"
       @addFileList="handlerAddFileList"
       @delFileList="handlerDelFileList"
@@ -181,6 +182,8 @@ export default {
         disIds: [],
       },
       categoryOptions: null,
+      ids: [],
+      radioRow: null,
     };
   },
   created() {
@@ -414,6 +417,18 @@ export default {
     },
   },
   methods: {
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = null;
+        }
+      });
+
+      return defaultObject;
+    },
     submitRadio2(row) {
       this.addItem.copyInputName = row.deviceName;
       this.addItem.copyInputId = row.deviceId;
@@ -598,16 +613,25 @@ export default {
           .catch(() => {});
         return;
       } else if (act === "download") {
-        downDetailLoad({ ids: this.ids }).then((res) => {
+        downDetailLoad({
+          ids: this.ids.length > 0 ? this.ids : null,
+          ...this.convertToDefaultObject(this.columns),
+          scrapNo: this.formData.scrapNo,
+        }).then((res) => {
           const blob = new Blob([res], {
             type: "application/vnd.ms-excel;charset=utf-8",
           });
-          saveAs(blob, `sparePart_${new Date().getTime()}`);
+          saveAs(blob, `sparePartDetail_${new Date().getTime()}`);
         });
       } else {
         // ! 其他
         return;
       }
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.id);
+      this.radioRow = selection[0];
     },
     handlerAddFileList(val) {
       this.addFileList = val;
@@ -676,7 +700,7 @@ export default {
       delete search.pageSize;
       let matches = this.equipmentList.filter((item) => {
         for (let key in search) {
-          if (item[key] != search[key]) {
+          if (!String(item[key]).includes(search[key])) {
             if (search[key] == "") continue;
             return false;
           }

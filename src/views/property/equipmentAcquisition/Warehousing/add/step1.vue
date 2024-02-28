@@ -537,15 +537,6 @@ export default {
       });
       return arr;
     },
-    /** 查询用户列表 */
-    getList(queryParams) {
-      this.loading = true;
-      listBASE(queryParams).then((response) => {
-        this.equipmentList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
   },
 };
 </script>

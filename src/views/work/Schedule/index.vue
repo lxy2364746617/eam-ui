@@ -524,14 +524,17 @@ export default {
       this.isDrawer = false;
     },
     save() {
-      if (this.itemArr && this.itemArr.length > 0) {
+      if (
+        this.itemArr &&
+        this.itemArr.length > 0 &&
+        this.title === "任务转派"
+      ) {
         this.itemArr = this.itemArr.map((item) => {
           item.workOrderCode = item.orderCode;
           delete item.orderCode;
           item = { ...item, ...this.radioRow2 };
           return item;
         });
-
         updateExecutor(this.itemArr).then((res) => {
           if (res.code === 200) {
             this.$message.success(res.msg);
@@ -539,7 +542,7 @@ export default {
             this.getList(this.queryParams);
           }
         });
-      } else if (this.itemValue) {
+      } else if (this.itemValue && this.title === "份派") {
         this.itemValue.workOrderCode = this.itemValue.orderCode;
         delete this.itemValue.orderCode;
         updateExecutor([{ ...this.itemValue, ...this.radioRow2 }]).then(

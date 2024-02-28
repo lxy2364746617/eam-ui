@@ -109,9 +109,15 @@
               <el-table-column
                 label="存储位置"
                 align="center"
-                prop="locationName"
+                prop="locationCode"
                 width="150"
-              />
+                ><template slot-scope="scope">
+                  <span
+                    v-html="
+                      findTreeName(locationOptions, scope.row.locationCode)
+                    "
+                  ></span> </template
+              ></el-table-column>
               <el-table-column
                 label="库存数量"
                 align="center"
@@ -197,6 +203,10 @@
       <requirement
         @submitRadio="submitRequirement"
         :isRadio="true"
+        :searchValue="[
+          { prop: 'apvStatus', value: 'completed' },
+          { prop: 'partCode', value: formDataNow.partCode },
+        ]"
         @close="closeRequirement"
       ></requirement>
     </el-drawer>
@@ -212,6 +222,10 @@
       <spareReceive
         @submitRadio="submitSpareReceive"
         :isRadio="true"
+        :searchValue="[
+          { prop: 'approvalStatus', value: 'completed' },
+          { prop: 'partCode', value: formDataNow.partCode },
+        ]"
         @close="closeSpareReceive"
       ></spareReceive>
     </el-drawer>
@@ -467,6 +481,10 @@ export default {
             prop: "relatedRequestCode",
             readonly: true,
             clickFn: () => {
+              if (!this.formDataNow.partCode) {
+                this.$message.warning("请先选择备件编码");
+                return;
+              }
               this.drawerSpareReceive = true;
 
               // this.drawerRequirement = true;
@@ -545,6 +563,10 @@ export default {
             prop: "relatedRequestCode",
             readonly: true,
             clickFn: () => {
+              if (!this.formDataNow.partCode) {
+                this.$message.warning("请先选择备件编码");
+                return;
+              }
               this.drawerRequirement = true;
             },
             span: 13,
@@ -571,6 +593,18 @@ export default {
     this.getTreeSelect();
   },
   methods: {
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = null;
+        }
+      });
+
+      return defaultObject;
+    },
     closeDrawer() {
       this.drawer = false;
       this.inOutList = null;
@@ -597,11 +631,14 @@ export default {
     // 下载
 
     handleDownload() {
-      stockInOutDownload({ ids: this.ids }).then((res) => {
+      stockInOutDownload({
+        ids: this.ids.length > 0 ? this.ids : null,
+        ...this.convertToDefaultObject(this.columns),
+      }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
         });
-        saveAs(blob, `sparePart_${new Date().getTime()}`);
+        saveAs(blob, `spareInAndOut_${new Date().getTime()}`);
       });
     },
     getTreeSelect() {
@@ -626,10 +663,10 @@ export default {
     },
     // ! 选择备件
     submitPartCoder(row) {
-      // this.$set(this.formDataNow, "partCode", row.partCode);
-      // this.$set(this.formDataNow, "partName", row.partName);
-      // this.$set(this.formDataNow, "partType", row.partType);
-      // this.$set(this.formDataNow, "sModel", row.sModel);
+      this.$set(this.formDataNow, "partCode", row.partCode);
+      this.$set(this.formDataNow, "partName", row.partName);
+      this.$set(this.formDataNow, "partType", row.partType);
+      this.$set(this.formDataNow, "sModel", row.sModel);
       this.$set(this.formDataNow, "unit", String(row.unit));
 
       this.formDataNow = {
@@ -638,7 +675,7 @@ export default {
       };
 
       getStockInOutCondition(row.partCode).then((res) => {
-        this.inOutList = res.data;
+        this.inOutList = res.data.filter((item) => item.inventory !== 0);
       });
       this.closePartCoder();
     },

@@ -68,7 +68,7 @@
             icon="el-icon-delete"
             @click="handleAllot(scope.row)"
             v-hasPermi="['work:quest:allot']"
-            >分派</el-button
+            >转派</el-button
           >
           <el-button
             v-if="scope.row.orderStatus !== '已关闭'"
@@ -391,7 +391,6 @@ export default {
     await this.getTypeList();
 
     // data赋值
-    await this.getList();
     // await this.getList2();
   },
   mounted() {
@@ -405,7 +404,7 @@ export default {
 
       columns.forEach((column) => {
         if (column.prop) {
-          defaultObject[column.prop] = "";
+          defaultObject[column.prop] = null;
         }
       });
 
@@ -530,6 +529,7 @@ export default {
             label: item.groupName,
           };
         });
+        this.getList();
       });
     },
     getUserList() {
@@ -627,9 +627,10 @@ export default {
       });
     },
     handleAllot(row) {
-      this.title = "分派";
+      this.title = "转派";
       this.itemValue = row;
       this.isDrawer = true;
+      console.log("========================");
     },
     handlerGetId() {},
 
@@ -642,14 +643,17 @@ export default {
       this.isDrawer = false;
     },
     save() {
-      if (this.itemArr && this.itemArr.length > 0) {
+      if (
+        this.itemArr &&
+        this.itemArr.length > 0 &&
+        this.title === "任务转派"
+      ) {
         this.itemArr = this.itemArr.map((item) => {
           item.workOrderCode = item.orderCode;
           delete item.orderCode;
           item = { ...item, ...this.radioRow2 };
           return item;
         });
-
         updateExecutor(this.itemArr).then((res) => {
           if (res.code === 200) {
             this.$message.success(res.msg);
@@ -657,7 +661,7 @@ export default {
             this.getList(this.queryParams);
           }
         });
-      } else if (this.itemValue) {
+      } else if (this.itemValue && this.title === "转派") {
         this.itemValue.workOrderCode = this.itemValue.orderCode;
         delete this.itemValue.orderCode;
         updateExecutor([{ ...this.itemValue, ...this.radioRow2 }]).then(
@@ -712,7 +716,7 @@ export default {
       if (
         this.title !== "编辑设备" &&
         this.title !== "关闭" &&
-        this.title !== "分派"
+        this.title !== "转派"
       ) {
         this.ids = selection.map((item) => item.id);
         this.orderTypes = new Set(selection.map((item) => item.orderType));

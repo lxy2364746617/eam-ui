@@ -221,7 +221,7 @@ export default {
 
       columns.forEach((column) => {
         if (column.prop) {
-          defaultObject[column.prop] = "";
+          defaultObject[column.prop] = null;
         }
       });
 

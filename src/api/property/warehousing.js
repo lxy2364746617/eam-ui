@@ -42,11 +42,11 @@ export function deleteBASE(id) {
   });
 }
 // 资产管理-设备购置入库-下载
-export function download(ids) {
+export function download(data) {
   return request({
     url: "/device/warehousing/download",
     method: "post",
-    data: { ids: ids },
+    data: data,
     responseType: "blob",
   });
 }

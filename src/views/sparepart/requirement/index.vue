@@ -248,13 +248,13 @@ export default {
     },
   },
   methods: {
-     // ! 提供下载列表字段
+    // ! 提供下载列表字段
     convertToDefaultObject(columns) {
       const defaultObject = {};
 
       columns.forEach((column) => {
         if (column.prop) {
-          defaultObject[column.prop] = "";
+          defaultObject[column.prop] = null;
         }
       });
 
@@ -341,12 +341,14 @@ export default {
           .catch(() => {});
         return;
       } else if (act === "download") {
-        exportManagementList({  ids: this.ids.length > 0 ? this.ids : null,
-          ...this.convertToDefaultObject(this.columns),}).then((res) => {
+        exportManagementList({
+          ids: this.ids.length > 0 ? this.ids : null,
+          ...this.convertToDefaultObject(this.columns),
+        }).then((res) => {
           const blob = new Blob([res], {
             type: "application/vnd.ms-excel;charset=utf-8",
           });
-          saveAs(blob, `sparePart_${new Date().getTime()}`);
+          saveAs(blob, `spareRequirement_${new Date().getTime()}`);
         });
       } else if (act === "submit") {
         // ! 提交审批流

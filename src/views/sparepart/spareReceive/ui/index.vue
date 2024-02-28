@@ -491,7 +491,7 @@ export default {
       delete search.pageSize;
       let matches = this.equipmentList.filter((item) => {
         for (let key in search) {
-          if (item[key] != search[key]) {
+          if (!String(item[key]).includes(search[key])) {
             if (search[key] == "") continue;
             return false;
           }
