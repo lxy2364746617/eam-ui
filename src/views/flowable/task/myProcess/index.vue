@@ -25,7 +25,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="primary"
           plain
@@ -34,7 +34,7 @@
           @click="handleAdd"
           v-hasPermi="['system:deployment:add']"
         >新增流程</el-button>
-      </el-col>
+      </el-col> 
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -45,7 +45,7 @@
           @click="handleDelete"
           v-hasPermi="['system:deployment:remove']"
         >删除</el-button>
-      </el-col>
+      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 

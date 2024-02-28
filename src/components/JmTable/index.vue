@@ -91,6 +91,16 @@
                     placeholder="选择日期"
                   >
                   </el-date-picker>
+                  <el-date-picker
+                    v-if="col.formType == 'datetime'"
+                    v-model="queryParams[col.prop]"
+                    size="small"
+                    type="datetime"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                    placeholder="选择日期时间"
+                  >
+                  </el-date-picker>
                   <el-select
                     v-else-if="
                       col.formType == 'select' ||

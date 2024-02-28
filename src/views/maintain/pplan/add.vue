@@ -73,8 +73,8 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="10">
-                    <el-form-item label="巡点检执行人" prop="executors">
-                        <el-select v-model="form.executors" multiple @change="$forceUpdate()">
+                    <el-form-item label="巡点检执行人" prop="executor">
+                        <el-select v-model="form.executor"  @change="$forceUpdate()">
                             <el-option v-for="item in groupMembers" :key="item.userId" :label="item.nickName" 
                             :value="item.userId" >
                             </el-option>
@@ -267,7 +267,7 @@ export default {
                 nextExecuteTime: null,
                 groupId: null,
                 executor: null,
-                executors:[],
+                executors:'',
                 directorName: null,
                 directorName:null,
                 remark: null,
@@ -333,7 +333,7 @@ export default {
                 groupId: [
                     { required: true, message: '巡点检班组不能为空', trigger: 'blur' },
                 ],
-                executors: [
+                executor: [
                     { required: true, message: '巡点检执行人不能为空', trigger: 'blur' },
                 ],
                 /* directorName: [
@@ -501,9 +501,9 @@ export default {
             })
             this.form.director=obj.leaderId
             this.form.directorName=obj.leaderName
-            this.form.executors=[]
+            this.form.executor=''
             getGroup(val).then(response=>{
-               this.groupMembers= response.data.sysUserGroupList
+               this.groupMembers= response.data.sysUserGroupList    
             })
         },       
         /** 查询设备平台_表单模板列表 */
@@ -517,7 +517,7 @@ export default {
                 this.plineList = mroPatrolPlanLineList || [];
                 this.fileResourceList = fileResourceList || [];
                 this.loading = false;
-                this.form.executors=response.data.executor.split(',').map(item=>Number(item))
+                //this.form.executors=response.data.executor.split(',').map(item=>Number(item))
                 })
                 
             }).catch(() => {
@@ -563,7 +563,7 @@ export default {
                     that.btnLoading = true;
                     let data = {
                         ...that.form,
-                        executor:that.form.executors.join(','),
+                        //executor:that.form.executors.join(','),
                         mroPatrolPlanLineList: that.plineList.map(item => {
                             return { lineId: item.lineId, isPhoto: item.isPhoto }
                         }),

@@ -318,7 +318,6 @@ export default {
             b.options = [];
             // 字典
             if(b.dictionaryType){
-              console.log(this,222);
               b.options = this.dict.type[b.dictionaryType]
             }
             break;

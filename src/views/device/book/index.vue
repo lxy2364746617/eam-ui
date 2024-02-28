@@ -14,7 +14,7 @@
         <el-popover
           placement="bottom"
           title
-          style="position: fixed;z-index: 1009;top: 55px;right: 10px;"
+          style="position: fixed;z-index: 1009;top: 75px;right: 10px;"
           trigger="click"
           content
         >
@@ -241,9 +241,9 @@
       ></parentdevice>
     </el-drawer>
     <!-- 提交 -->
-    <el-drawer  direction="ltr" :title="subtitle" :visible.sync="subopen"  size='600px' >
+    <el-dialog   :title="subtitle" :visible.sync="subopen"  width="800px">
       <subprocess :tableData='tableData' @submit="sub" @getTableData='getTableData'></subprocess>
-    </el-drawer>
+    </el-dialog>
     <el-dialog :visible="copyCodeOpen" top="20vh" append-to-body :show-close='false'>
       <el-form ref="copyCode" :model="addItem"  label-width="120px" >
               <el-form-item label="设备编码" prop="copyInputCode" :rules="[{required:true,message:'请输入设备编码'}]">
@@ -328,7 +328,7 @@ export default {
         },
         { label: '财务资产编码', prop: 'propertyCode' },
         { label: '自选设备编码', prop: 'freeDeviceCode' },
-        { label: '功能位置', prop: 'location',options:this.locationOptions,formType: 'selectTree',width: 180, },
+        { label: '功能位置', prop: 'location',options:this.locationOptions,formType: 'selectTree',width: 230, },
         {
           label: '重要等级',
           prop: 'level',

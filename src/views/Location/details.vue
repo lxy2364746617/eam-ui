@@ -450,16 +450,14 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       },
       // 位置图片-删除
       handleRemove(file) {
-        console.log('deleteImage',file);
         this.sysFileResources.forEach((item,idx)=>{
           if(item.uid == file.uid){
             this.sysFileResources.splice(idx,1)
           }
         })
-        this.deleteFile(file.id)
-        setTimeout(() => {
+        locationDetailFileDelete(file.id).then(
           this.getBaseInfo()
-        }, 0);
+        )
       },
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
@@ -470,26 +468,29 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       }, */
       // 上传成功回调
       onSuccess(res,file,fileList){
-          console.log(fileList)
-        let keys = Object.keys(res)
-        fileList.forEach(item=>{
-          item.busId = this.busId,
-          item.origin = 'FLP'
-           /* keys.forEach(key=>{
-            item[key] = res[key]
-          }) */
-        })
-        fileList[fileList.length?fileList.length-1:0]=Object.assign(res,{busId:this.busId,origin:'FLP'})
-        this.sysFileResources = fileList;
-
+       fileList[fileList.length-1]={
+          busId : this.busId,
+          origin : 'FLP',
+          ...fileList[fileList.length-1],
+          ...fileList[fileList.length-1].response
+        }
+         //fileList[fileList.length?fileList.length-1:0]=Object.assign(res,{busId:this.busId,origin:'FLP'})
+        //this.sysFileResources = fileList; 
         // 自动保存
-        uploadSave([this.sysFileResources[this.sysFileResources.length-1]]).then(res=>{
+        uploadSave([fileList[fileList.length-1]]).then(res=>{
           this.$message({
             message: '操作成功！',
             type: 'success'
           })
-          this.getImg()
-          this.getBaseInfo()
+          let params = {
+          busId:this.busId,
+          origin:'FLP',
+        }
+        locationDetailFile(params).then(res=>{
+          res.rows&&(()=>{fileList[fileList.length-1].id = res.rows[res.rows.length-1].id})()
+          this.sysFileResources=fileList
+        })
+          this.getBaseInfo() 
         })
       },
       // 上传弹窗，文件上传成功回调

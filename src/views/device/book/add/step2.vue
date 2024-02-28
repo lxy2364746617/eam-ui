@@ -198,7 +198,6 @@ export default {
     if(!this.formData.archivesOther){
       this.$set(this.formData,'archivesOther',{})
     }
-    console.log(this.formData,222);
     this.getTreeSelect()
   },
   methods: {

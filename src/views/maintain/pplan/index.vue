@@ -45,7 +45,7 @@ export default {
         { label: '计划开始时间', prop: 'planBeginTime', formType: 'date' },
         { label: '计划结束时间', prop: 'planEndTime', formType: 'date' },
         { label: '计划状态', prop: 'planStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
-        { label: '下次执行日期', prop: 'nextExecuteTime', formType: 'date' },
+        { label: '下次执行日期', prop: 'nextExecuteTime', },
         { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.XDJ, },
         { label: '周期', prop: 'planCycle', },
         { label: '巡点检周期类别', prop: 'planCycleType', formType: 'select', options: this.dict.type.mro_plan_cycle_type, },
@@ -112,10 +112,37 @@ export default {
     this.getList(this.queryParams)
   },
   methods: {
+    formatDate(date) {  
+            const year = date.getFullYear();  
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以+1，并使用padStart填充至两位数  
+            const day = String(date.getDate()).padStart(2, '0'); // 使用padStart填充至两位数  
+            const hours = String(date.getHours()).padStart(2, '0'); // 小时  
+            const minutes = String(date.getMinutes()).padStart(2, '0'); // 分钟  
+            const seconds = String(date.getSeconds()).padStart(2, '0'); // 秒  
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;  
+        },
     /** 查询巡点检计划列表 */
     getList(queryParams) {
       this.loading = true
       listPplan(queryParams).then((response) => {
+        response.rows.forEach(item=>{
+        if(item.thisExecuteTime){
+            let datetime=new Date(item.thisExecuteTime)
+                    if(item.planCycleType=='时')  datetime.setHours(datetime.getHours()+item.planCycle) //时
+                    if(item.planCycleType=='班') datetime.setDate(datetime.getDate()+1)
+                    if(item.planCycleType=='天') datetime.setDate(datetime.getDate()+item.planCycle)
+                    if(item.planCycleType=='周') datetime.setDate(datetime.getDate()+7*item.planCycle)
+                    if(item.planCycleType=='月') {
+                    let currentDate=datetime.getDate()
+                    datetime = new Date(datetime.getFullYear(), datetime.getMonth() + item.planCycle, datetime.getDate())
+                    if(datetime.getDate() !== currentDate){
+                         datetime.setDate(0)
+                    }
+                    }
+                    if(item.planCycleType=='年') datetime.setFullYear(datetime.getFullYear()+item.planCycle)
+                    item.nextExecuteTime=new Date(datetime)>new Date(item.planEndTime) ?'':this.formatDate(datetime)
+          }
+        })
         this.pplanList = response.rows
         this.total = response.total
         this.loading = false

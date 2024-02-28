@@ -3,10 +3,10 @@
     <el-row :gutter="12">
       <el-col :span="16">
         <p class="subtitle"><i class="el-icon-magic-stick"></i> 设备位置：
-          <span> 111 </span>
+          <span> {{formData.locationFullName}} </span>
         </p>
         <div>
-          地图
+          
         </div> 
       </el-col>
       <el-col :span="8">
@@ -28,7 +28,6 @@
             :extraData="{'category':1}"
             :listType="'picture-card'"
             :isReadonly='isReadonly'>
-            
           </image-upload>
         </div>
       </el-col>
