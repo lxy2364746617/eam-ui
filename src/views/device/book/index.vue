@@ -167,7 +167,6 @@
               type="text"
               icon="el-icon-document-add"
               @click="handleSet(scope.row)"
-              v-hasPermi="['equipment:book:edit']"
               v-if="scope.row.processStatus=='uncommitted'||scope.row.processStatus=='reject'||scope.row.processStatus=='canceled'||scope.row.processStatus=='terminated'"
             >提交</el-button>
           </template>

@@ -43,7 +43,13 @@
       <!--        >导入</el-button>-->
       <!--      </el-col>-->
       <el-col :span="1.5">
-        <el-button type="success" plain icon="el-icon-plus" size="mini" @click="handleLoadXml">新增</el-button>
+        <el-button type="success" 
+        plain 
+        icon="el-icon-plus" 
+        size="mini" 
+        @click="handleLoadXml"
+        v-hasPermi="['system:deployment:add']"
+        >新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -121,6 +127,7 @@
             icon="el-icon-edit-outline"
             type="text"
             size="small"
+            v-hasPermi="['system:deployment:query']"
           >设计</el-button>
           <!-- <el-button
             @click="handleAddForm(scope.row)"
@@ -135,6 +142,7 @@
             type="text"
             size="small"
             v-if="scope.row.suspensionState === 1"
+            v-hasPermi="['system:deployment:state']"
           >挂起</el-button>
           <el-button
             @click="handleUpdateSuspensionState(scope.row)"
@@ -142,6 +150,7 @@
             type="text"
             size="small"
             v-if="scope.row.suspensionState === 2"
+            v-hasPermi="['system:deployment:state']"
           >激活</el-button>
           <el-button
             @click="handleDelete(scope.row)"

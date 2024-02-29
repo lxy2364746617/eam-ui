@@ -11,7 +11,7 @@
         </el-col>
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
-            v-hasPermi="['equipment:book:add']">导入</el-button>
+            v-hasPermi="['maintain:item:import']">导入</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
