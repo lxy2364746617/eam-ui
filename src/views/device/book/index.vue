@@ -199,6 +199,7 @@
       direction="rtl"
       :wrapperClosable="false"
       destroy-on-close
+      :before-close='handleCancel'
     >
       <el-radio-group v-model="addItem.addRadio" style="margin-left: 20px;">
         <el-row style="margin-bottom: 20px;margin-top: 20px;">
@@ -222,7 +223,7 @@
       </el-radio-group>
       <div class="dialog-footer">
         <el-button type="primary" @click="handleAdd" size="small">确 定</el-button>
-        <el-button @click="addItem.addDrawer=false" size="small">取 消</el-button>
+        <el-button @click="handleCancel" size="small">取 消</el-button>
       </div>
     </el-drawer>
     <!-- 添加或修改设备平台_表单模板对话框 -->
@@ -250,7 +251,7 @@
               </el-form-item>
             </el-form>
             <span slot="footer" style="width:100%;text-align:center;display: inline-block;">
-          <el-button @click="copyCodeOpen = false">取 消</el-button>
+          <el-button @click="()=>{copyCodeOpen = false;addItem.copyInputCode=''}">取 消</el-button>
           <el-button type="primary" @click="handleAdd">确 定</el-button>
         </span>
     </el-dialog>
@@ -733,6 +734,9 @@ export default {
         //   this.btnLoading = false
         // });
       }
+    },
+    handleCancel(){
+      this.addItem=this.$options.data().addItem
     },
     /** 修改按钮操作 */
     handleUpdate(row, f) {

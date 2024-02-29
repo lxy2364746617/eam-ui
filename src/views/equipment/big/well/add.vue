@@ -8,7 +8,7 @@
             <div class="mb20" style="background-color: #fff;">详细设备信息</div>
             <jm-table :tableData="formData.emArchivesParts" @getList="getList"
                 @handleSelectionChange="handleSelectionChange" @switchchange="switchchange" :total="total"
-                :handleWidth="120" :columns="tablecolumns" ref="jmTable">
+                :handleWidth="120" :columns="tablecolumns" ref="jmTable" :showSearch='false' :showOperate='false'>
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
@@ -104,10 +104,10 @@ export default {
 
                 { label:"提升设备速度", prop:"upSpeed", span: 8,required: true, },
                 { label:"逆止器型号", prop:"backstopModel", span: 8, required: true,},
-                { label:"逆止器台数", prop:"backstop", span: 8,required: true, },
+                { label:"逆止器台数", prop:"backstop", span: 8,required: true,number:true },
 
                 { label:"制动器型号", prop:"brakesModel", span: 8,required: true, },
-                { label:"制动器台数", prop:"brakesSum", span: 8, required: true,},
+                { label:"制动器台数", prop:"brakesSum", span: 8, required: true,number:true},
                 { label:"地面远程集控", prop:"isRemote", span: 8, formType: "select", options: this.dict.type.equipment_common_sf,required: true, },
 
             ]

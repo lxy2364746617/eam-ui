@@ -59,15 +59,37 @@
     </jm-table>
 
     <!-- 添加或修改公告对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1080px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
-          <el-col :span="col.span||12" v-for="col in columns" :key="col.prop" v-if="col.formVisible!=false">
-            <el-form-item :label="col.label" :prop="col.prop">
-              <editor v-if="col.formType=='textarea'" v-model="form.noticeContent" :min-height="192"/>
-              <el-input v-else v-model="form[col.prop]" placeholder="请输入" />
-            </el-form-item>
-          </el-col>
+          <el-col :span="24"  >
+            <el-form-item label="标题" prop="noticeTitle">
+              <el-input  v-model="form.noticeTitle" />
+              </el-form-item>
+              </el-col>
+              <el-col :span="13"  >
+            <el-form-item label="创建时间" prop="createTime">
+              <el-date-picker v-model="form.createTime"  type="datetime" value-format="yyyy-MM-dd hh:mm:ss"  placeholder="选择日期时间" style="width:300px">
+    </el-date-picker>
+              </el-form-item>
+              </el-col>
+              <el-col :span="13"  >
+            <el-form-item label="发布人" prop="issUser">
+              <el-input  v-model="form.issUser"  style="width:300px"/>
+              </el-form-item>
+              </el-col>
+              <el-col :span="13"  >
+            <el-form-item label="简介" prop="noticeIntro">
+              <el-input type="textarea"  v-model="form.noticeIntro" />
+              </el-form-item>
+              </el-col>
+          <el-col :span="24"  >
+            <el-form-item label="内容" prop="noticeContent">
+              <editor  v-model="form.noticeContent" :min-height="192"/>
+              </el-form-item>
+              </el-col>
+              
+          
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -107,7 +129,7 @@ export default {
       open: false,
       // 表格列
       columns: [
-        { label: '创建时间', prop: 'createTime', width: '120', formType: 'date', formVisible: false },
+        { label: '创建时间', prop: 'createTime', width: '120', formType: 'datetime', },
         { label: '发布人', prop: 'issUser', width: '100',  },
         { label: '标题', prop: 'noticeTitle', width: '100',  },
         { label: '简介', prop: 'noticeIntro', width: '100',  },
@@ -125,7 +147,13 @@ export default {
         // status: undefined
       },
       // 表单参数
-      form: {},
+      form: {
+        noticeTitle:'',
+        createTime:'',
+        issUser:'',
+        noticeIntro:'',
+        noticeContent:'',
+      },
       // 表单校验
       rules: {
         noticeTitle: [
@@ -144,6 +172,7 @@ export default {
     /** 查询公告列表 */
     getList(queryParams) {
       this.loading = true;
+      console.log('queryParams',queryParams,'this.queryParams',this.queryParams)
       listNotice(queryParams||this.queryParams).then(response => {
         this.noticeList = response.rows;
         this.total = response.total;

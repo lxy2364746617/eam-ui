@@ -8,12 +8,12 @@
       <!-- 基本信息 -->
       <div class="details_baseData">
         <div class="details_baseData_img">
-          <el-image :src="src" style="width: 120px;height:100px;">
+          <el-image :src="src||require('@/assets/images/noImg.png')" style="width: 120px;height:100px;">
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline" style="font-size:30px;color:#909399"></i>
             </div>
           </el-image>
-          <el-image :src="src1"  style="width: 120px;height:100px;">
+          <el-image :src="src1||require('@/assets/images/noImg.png')"  style="width: 120px;height:100px;">
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline" style="font-size:30px;color:#909399"></i>
             </div>
@@ -397,8 +397,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
             }
 
 0          })
-          this.src = `${process.env.VUE_APP_BASE_API}${res.data.bannerUrl}`
-          this.src1 = `${process.env.VUE_APP_BASE_API}${res.data.qrCode}`
+          this.src = res.data.bannerUrl?`${process.env.VUE_APP_BASE_API}${res.data.bannerUrl}`:false
+          this.src1 = res.data.qrCode?`${process.env.VUE_APP_BASE_API}${res.data.qrCode}`:false
         })
       },
       // 获取表格数据

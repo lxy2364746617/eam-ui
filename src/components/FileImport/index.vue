@@ -17,7 +17,8 @@
         :disabled="upload.isUploading"
         :on-progress="handleFileUploadProgress"
         :on-success="handleFileSuccess"
-        :auto-upload="false"
+        :before-upload='beforeUpload'
+        :auto-upload="true"
         drag
       >
         <i class="el-icon-upload"></i>
@@ -68,7 +69,7 @@ export default {
       }
     },
   },
-  data() {
+    data() {
     return {
       // 用户导入参数
       upload: {
@@ -84,14 +85,25 @@ export default {
     };
   },
   methods: {
-    
+    beforeUpload(file){
+      let fileType=file.name&&file.name.split('.')[file.name.split('.').length-1] //获取文件后缀名
+  console.log(fileType)
+                if (!(fileType=='xlsx'||fileType=='xls')) {
+                    this.$message({
+                        message: '文件格式错误',
+                        type: 'error',  
+                        duration: 2000
+                    });
+                    return Promise.reject(false);
+                } 
+    },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
       this.upload.isUploading = true;
     },
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
-      this.open = false;
+      this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
       this.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });

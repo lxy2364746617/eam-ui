@@ -8,7 +8,7 @@
             <div class="mb20" style="background-color: #fff;">详细设备信息</div>
             <jm-table :tableData="formData.emArchivesParts" @getList="getList"
                 @handleSelectionChange="handleSelectionChange" @switchchange="switchchange" :total="total" 
-                :handleWidth="120" :columns="tablecolumns" ref="jmTable">
+                :handleWidth="120" :columns="tablecolumns" ref="jmTable" :showSearch='false' :showOperate='false'>
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"

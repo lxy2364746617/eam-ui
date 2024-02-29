@@ -5,8 +5,8 @@
         <p class="subtitle"><i class="el-icon-magic-stick"></i> 设备位置：
           <span> {{formData.locationFullName}} </span>
         </p>
-        <div>
-          
+        <div style="height:200px;width:300px;">
+          <img :src="mainImage||require('@/assets/images/noImg.png')" style="width:100%;height:100%">
         </div> 
       </el-col>
       <el-col :span="8">
@@ -21,6 +21,7 @@
         </p>
         <div>
           <image-upload 
+          :class="{'hide':disabled1}"
             :fileType="['jpg','png']"
             @uploadChange="uploadChange1"
             :disabled="disabled1"
@@ -72,7 +73,9 @@ export default {
     },
   },
   computed:{
-
+     mainImage(){
+      return this.formData.locationImage?process.env.VUE_APP_BASE_API + this.formData.locationImage:false
+    },  
   },
   data() {
     return {

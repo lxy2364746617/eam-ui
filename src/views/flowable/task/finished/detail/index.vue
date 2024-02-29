@@ -7,13 +7,15 @@
       </div>
       <el-tabs  tab-position="top" v-model="activeName" @tab-click="handleClick">
         <!--表单信息-->
-        <!-- <el-tab-pane label="表单信息" name="1">
-          <el-col :span="16" :offset="4" v-if="variableOpen">
+         <el-tab-pane label="表单信息" name="1">
+          <el-col :span="24"  >
             <div class="test-form">
-              <parser :key="new Date().getTime()" :form-conf="variablesData" />
+              <parser v-if="variablesData" :key="new Date().getTime()" :form-conf="variablesData" />
+              <!-- 设备档案详情 -->
+              <device-detail v-if="path=='/device/book/details'" :detailReadonly='true' :detailId='taskForm.businessId'></device-detail>
             </div>
           </el-col>
-        </el-tab-pane> -->
+        </el-tab-pane>
         <!--流程流转记录-->
         <el-tab-pane label="流转记录" name="2">
           <el-col :span="16" :offset="4" >
@@ -85,6 +87,7 @@ import {flowRecord} from "@/api/flowable/finished";
 import Parser from '@/components/parser/Parser'
 import {getProcessVariables, flowXmlAndNode} from "@/api/flowable/definition";
 import flow from '@/views/flowable/task/finished/detail/flow'
+import deviceDetail from '@/views/device/book/details'
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
@@ -92,13 +95,14 @@ export default {
   components: {
     Parser,
     flow,
+    deviceDetail
   },
   props: {},
   data() {
     return {
       // 模型xml数据
       flowData: {},
-      activeName: '2',
+      activeName: '1',
       // 用户表格数据
       userList: null,
       defaultProps: {
@@ -128,12 +132,15 @@ export default {
       variables: [], // 流程变量数据
       variablesData: {}, // 流程变量数据
       variableOpen: false, // 是否加载流程变量数据
+      path:'',
     };
   },
   created() {
     this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
     this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
+    this.taskForm.businessId = this.$route.query.businessId;
+    console.log(this.taskForm)
     // 回显流程记录
     // 流程任务重获取变量表单
     if (this.taskForm.taskId){
@@ -178,7 +185,8 @@ export default {
       if (taskId) {
         // 提交流程申请时填写的表单存入了流程变量中后续任务处理时需要展示
         getProcessVariables(taskId).then(res => {
-          this.variablesData = res.data.variables;
+          this.path=res.data.path?res.data.path:''
+          //this.variablesData = res.data.variables;
           this.variableOpen = true
         });
       }
