@@ -297,6 +297,8 @@ export default {
           label: "计划执行日期",
           prop: "planExecuteDate",
           tableVisible: true,
+          formType: "date",
+          width: 150,
         },
         {
           label: "请求人员",
@@ -309,7 +311,8 @@ export default {
           label: "请求时间",
           prop: "createTime",
           tableVisible: true,
-          width: 160,
+          formType: "date",
+          width: 150,
         },
         {
           label: "执行班组",
@@ -427,7 +430,7 @@ export default {
     },
 
     getUserList() {
-      listUser().then((res) => {
+      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
         this.userList = res.rows.map((item) => {
           return {
             id: item.userId,
@@ -527,7 +530,7 @@ export default {
       if (
         this.itemArr &&
         this.itemArr.length > 0 &&
-        this.title === "任务转派"
+        this.title === "手动分派"
       ) {
         this.itemArr = this.itemArr.map((item) => {
           item.workOrderCode = item.orderCode;
@@ -542,7 +545,7 @@ export default {
             this.getList(this.queryParams);
           }
         });
-      } else if (this.itemValue && this.title === "份派") {
+      } else if (this.itemValue && this.title === "分派") {
         this.itemValue.workOrderCode = this.itemValue.orderCode;
         delete this.itemValue.orderCode;
         updateExecutor([{ ...this.itemValue, ...this.radioRow2 }]).then(
