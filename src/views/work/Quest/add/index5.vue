@@ -5,30 +5,23 @@
         <div class="title">工单进度</div>
         <!-- 进度条 -->
         <el-steps
-          :active="2"
+          :active="formData.workActive"
           align-center
           style="margin-top: 20px"
           finish-status="success"
         >
-          <el-steps
-            :active="formData.workActive"
-            align-center
-            style="margin-top: 20px"
-            finish-status="success"
+          <el-step
+            v-for="item in formData.workOrderSchedule"
+            :key="item.id"
+            :title="item.orderStatus"
+            icon="el-icon-loading"
           >
-            <el-step
-              v-for="item in formData.workOrderSchedule"
-              :key="item.id"
-              :title="item.orderStatus"
-              icon="el-icon-loading"
-            >
-              <div slot="description">
-                <span style="font-size: 14px">{{ item.createBy }}</span>
-                <br />
-                <span>{{ item.createTime }}</span>
-              </div></el-step
-            >
-          </el-steps>
+            <div slot="description">
+              <span style="font-size: 14px">{{ item.createBy }}</span>
+              <br />
+              <span>{{ item.createTime }}</span>
+            </div></el-step
+          >
         </el-steps>
       </div>
       <div class="subtitle">

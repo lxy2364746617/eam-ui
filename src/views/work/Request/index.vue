@@ -182,6 +182,8 @@ export default {
           prop: "planExecuteDate",
           tableVisible: true,
           formType: "date",
+          formType: "date",
+          width: 150,
         },
         {
           label: "执行班组",
@@ -209,6 +211,7 @@ export default {
           label: "请求时间",
           prop: "createTime",
           formType: "date",
+          width: 150,
           tableVisible: true,
         },
       ];
@@ -260,7 +263,7 @@ export default {
       this.$refs["elForm2"].resetFields();
     },
     getUserList() {
-      listUser({ deptId: 100, pageSize: 10000 }).then((res) => {
+      listUser({ pageNum:1,pageSize:10000  }).then((res) => {
         this.userList = res.rows.map((item) => {
           return {
             id: item.userId,

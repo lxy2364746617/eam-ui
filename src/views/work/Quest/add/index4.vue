@@ -4,12 +4,6 @@
       <div class="box-header" v-if="disabled">
         <div class="title">工单进度</div>
         <!-- 进度条 -->
-        <el-steps
-          :active="2"
-          align-center
-          style="margin-top: 20px"
-          finish-status="success"
-        >
           <el-steps
             :active="formData.workActive"
             align-center
@@ -28,7 +22,7 @@
                 <span>{{ item.createTime }}</span>
               </div></el-step
             >
-          </el-steps>
+         
         </el-steps>
       </div>
       <div class="subtitle">

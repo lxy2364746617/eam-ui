@@ -169,8 +169,8 @@
 <script>
 import { listDept } from "@/api/system/dept";
 import ContTable from "@/components/ContTable";
-import { getRelevanceInfo } from "@/api/work/schedule";
 import request from "@/utils/request";
+import { getAssociatedPlan } from '@/api/property/receive';
 export default {
   components: { ContTable },
   props: {
@@ -213,12 +213,12 @@ export default {
       this.listValue = this.formData;
     }
     if (this.attachmentsTitle) {
-      getRelevanceInfo({
+      getAssociatedPlan({
         [this.busString]: this.busId ? this.busId : 1,
         pageNum: 1,
         pageSize: 1000,
       }).then((res) => {
-        this.fileResourceList = res.rows;
+        this.fileResourceList = res.data;
       });
     }
   },

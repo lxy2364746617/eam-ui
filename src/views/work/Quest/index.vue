@@ -61,7 +61,8 @@
           <el-button
             v-if="
               scope.row.orderStatus !== '待验收' &&
-              scope.row.orderStatus !== '已关闭'
+              scope.row.orderStatus !== '已关闭' &&
+              scope.row.orderStatus !== '执行中'
             "
             size="mini"
             type="text"
@@ -280,6 +281,8 @@ export default {
         {
           label: "计划执行日期",
           prop: "planExecuteDate",
+          formType: "date",
+          width: 150,
           tableVisible: true,
         },
         {
@@ -293,6 +296,7 @@ export default {
           label: "请求时间",
           prop: "createTime",
           tableVisible: true,
+          formType: "date",
           width: 160,
         },
         {
@@ -317,6 +321,7 @@ export default {
           formType: "select",
           options: this.dict.type.order_source,
           tableVisible: true,
+          width: 160,
         },
         {
           label: "是否逾期",
@@ -533,7 +538,7 @@ export default {
       });
     },
     getUserList() {
-      listUser({ deptId: 100 }).then((res) => {
+      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
         this.userList = res.rows.map((item) => {
           return {
             id: item.userId,
@@ -694,8 +699,10 @@ export default {
         pageSize: 10,
       }
     ) {
+      form["pendingFlag"] = 1;
       this.queryParams = form;
       this.loading = true;
+
       getScheduleList(form).then((response) => {
         this.equipmentList = response.data.records;
         this.total = response.data.total;
