@@ -94,6 +94,7 @@
                   <el-date-picker
                     v-if="col.formType == 'datetime'"
                     v-model="queryParams[col.prop]"
+                    value-format="yyyy-MM-dd hh:mm:ss"
                     size="small"
                     type="datetime"
                     clearable

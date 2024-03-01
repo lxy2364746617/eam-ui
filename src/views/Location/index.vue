@@ -45,7 +45,7 @@
             </jm-form>
           </div>
           <div class="content_right">
-            <el-image :src="src" style="width: 180px;height:180px;">
+            <el-image :src="src||require('@/assets/images/noImg.png')" style="width: 180px;height:180px;">
               <div slot="error" class="image-slot">
                 <i class="el-icon-picture-outline" style="font-size:30px;color:#909399"></i>
               </div>
@@ -218,7 +218,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           })
           this.templateList = res.data.nextList.records || []
           this.total = res.data.nextList.total
-          this.src = `${process.env.VUE_APP_BASE_API}${res.data.baseInfo.qrCode}`
+          this.src = res.data.baseInfo.qrCode?`${process.env.VUE_APP_BASE_API}${res.data.baseInfo.qrCode}`:false
         })
       },
       // 获取表格数据

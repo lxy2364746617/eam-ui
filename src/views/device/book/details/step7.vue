@@ -112,7 +112,7 @@ import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import childdevice from "@/views/device/book/device";
-
+import { getLocationTree} from '@/api/Location'
 export default {
   name: "bookadd",
   dicts: [
@@ -142,14 +142,14 @@ export default {
         { label:"规格型号", prop:"specs", },
         { label:"设备类型", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions,   },
         { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
-        { label:"功能位置", prop:"location",  },
+        { label:"功能位置", prop:"location", options:this.locationOptions,formType: 'selectTree', },
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
         // { label:"所属子公司", prop:"",  },
         { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions,  },
       ]
     }
   },
-  mounted(){
+    mounted(){
     
   },
   data() {
@@ -241,11 +241,25 @@ export default {
     };
   },
   created() {
+    getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeData(res.data)
+      });
     this.getTree();
     this.getTreeSelect();
     this.getList(this.queryParams)
   },
   methods: {
+    getTreeData(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeData(item.children)
+          }
+        })
+        return arr
+    },
     submitRadio(rows){
       const deviceId = this.formData.deviceId;
       var arr = rows.map((b)=> {

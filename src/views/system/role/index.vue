@@ -1,15 +1,15 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <el-col v-if="isAdmin" :span="4">
+      <!-- <el-col v-if="isAdmin" :span="4">
         <jm-user-tree
           :treeData="treeData"
           @handleNodeClick="handleNodeClick"
           style="height:80vh"
         >
         </jm-user-tree>
-      </el-col>
-      <el-col :span="isAdmin?20:24">
+      </el-col> -->
+      <el-col :span="isAdmin?24:24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item label="角色名称" prop="roleName">
         <el-input

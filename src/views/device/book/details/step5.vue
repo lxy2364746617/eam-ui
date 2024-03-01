@@ -9,7 +9,8 @@
       ref="jmtable"
       :initLoading="false"
       :handleWidth="130"
-      :columns="columns">
+      :columns="columns"
+      :paginationShow='false'>
       <!-- <template slot="right_end">
         <el-radio-group v-model="radio3" size="mini" style="margin-left: 10px;">
           <el-radio-button label="图示"></el-radio-button>
@@ -71,7 +72,8 @@
       :total="total2"
       :initLoading="false"
       :handleWidth="130"
-      :showOperate='false'>
+      :showOperate='false'
+      >
       </jm-table>
       <div style="width:100%;height:48px"></div>
       <div style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 10px;border-top: 1px solid #ddd;">

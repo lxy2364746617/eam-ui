@@ -36,7 +36,7 @@
             type="text"
             icon="el-icon-view"
             @click="handleUpdate(scope.row,'view')"
-            v-hasPermi="['equipment:template:edit']"
+            v-hasPermi="['equipment:template:query']"
           >查看</el-button>
           <el-button
             size="mini"
@@ -57,7 +57,7 @@
             type="text"
             icon="el-icon-document-add"
             @click="handleSet(scope.row)"
-            v-hasPermi="['equipment:template:edit']"
+            v-hasPermi="['equipment:attribute:list']"
           >设置字段</el-button>
         </template>
       </jm-table>

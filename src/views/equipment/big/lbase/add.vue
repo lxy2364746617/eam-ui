@@ -8,7 +8,7 @@
             <div class="mb20" style="background-color: #fff;">详细设备信息</div>
             <jm-table :tableData="formData.emArchivesParts" @getList="getList"
                 @handleSelectionChange="handleSelectionChange" @switchchange="switchchange" :total="total"
-                :handleWidth="120" :columns="tablecolumns" ref="jmTable">
+                :handleWidth="120" :columns="tablecolumns" ref="jmTable" :showSearch='false' :showOperate='false'>
                 <template slot="headerLeft" v-if="!disabled">
                     <el-col :span="1.5">
                         <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">
@@ -124,10 +124,10 @@ export default {
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
                 { label: "功能位置", prop: "location",formType: 'selectTree', options: this.locationOptions, },
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-                { label: "所属子公司", prop: "111", },
+                { label: "所属子公司", prop: "subCompanyName", },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions,width:160 },
                 { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, width:160},
-                { label: "购置日期", prop: "makerAoTime", formType: 'date', },
+                { label: "购置日期", prop: "finanTime", formType: 'date', },
 
             ]
         },

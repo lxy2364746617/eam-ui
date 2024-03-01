@@ -18,7 +18,7 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
-            v-hasPermi="['equipment:template:add']"
+            v-hasPermi="['equipment:attribute:add']"
           >新增</el-button>
         </el-col>
         <el-col :span="1.5">
@@ -28,7 +28,7 @@
             size="mini"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermi="['equipment:template:remove']"
+            v-hasPermi="['equipment:attribute:remove']"
           >删除</el-button>
         </el-col>
       </template>
@@ -38,21 +38,21 @@
           type="text"
           icon="el-icon-edit"
           @click="handleUpdate(scope.row,'view')"
-          v-hasPermi="['equipment:template:edit']"
+          v-hasPermi="['equipment:attribute:query']"
         >查看</el-button>
         <el-button
           size="mini"
           type="text"
           icon="el-icon-edit"
           @click="handleUpdate(scope.row,'edit')"
-          v-hasPermi="['equipment:template:edit']"
+          v-hasPermi="['equipment:attribute:edit']"
         >修改</el-button>
         <el-button
           size="mini"
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:template:remove']"
+          v-hasPermi="['equipment:attribute:remove']"
         >删除</el-button>
       </template>
     </jm-table>
