@@ -9,7 +9,7 @@
             <el-button type="primary" icon="el-icon-delete" size="mini" @click="handleDelete"
             v-hasPermi="['maintain:mitem:remove']">删除</el-button>
             <el-button type="primary" icon="el-icon-upload2" size="mini" @click="handleImport"
-            v-hasPermi="['maintain:mitem:add']">导入</el-button>
+            v-hasPermi="['maintain:mitem:import']">导入</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
