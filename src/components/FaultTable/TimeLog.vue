@@ -535,7 +535,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-
+  margin-bottom: 20px;
   .container-box1 {
     max-height: 550px;
     overflow-y: scroll;

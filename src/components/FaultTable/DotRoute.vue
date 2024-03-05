@@ -21,6 +21,7 @@
       :columns="formData.orderCode ? columnData : columns1"
       :showSearch="false"
       @switchchange="handleStatusChange"
+      @handleSelectionChange="handleSelectionChange"
       :rightToolbarShow="false"
       style="margin-top: 20px"
     >

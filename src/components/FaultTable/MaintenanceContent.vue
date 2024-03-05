@@ -12,15 +12,29 @@
       >
       </TitleForm>
     </div>
+    <!-- 添加供应商对话框 -->
+    <el-drawer
+      title="选择供应商"
+      :visible.sync="drawersupplier"
+      size="60%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <supplier
+        @submitRadio="submitRadio"
+        :isRadio="true"
+        @close="closesupplier"
+      ></supplier>
+    </el-drawer>
   </div>
 </template>
 <script>
 import { listDept } from "@/api/system/dept";
 import { findAll, getGroup } from "@/api/system/group";
-import request from "@/utils/request";
+import supplier from "@/views/sparepart/supplier";
 
 export default {
-  components: {},
+  components: { supplier },
   dicts: ["em_device_result", "em_device_check"],
   props: {
     disabled: {
@@ -34,9 +48,10 @@ export default {
   },
   data() {
     return {
-      form: { directorName: "", unit: null },
+      form: { director: "", unit: null },
       groupMembers: [],
       groupOptions: [],
+      drawersupplier: false,
     };
   },
   watch: {
@@ -47,7 +62,7 @@ export default {
       deep: true,
       immediate: true,
     },
-    "form.unit": {
+    "form.groupId": {
       handler(val) {
         if (val) {
           this.changeGroupId(val, 2);
@@ -57,15 +72,15 @@ export default {
     },
   },
   async created() {
-    findAll({ groupType: this.formData.orderTypeFather }).then((res) => {
+    findAll({ groupType: this.formData.maintenanceType }).then((res) => {
       this.groupOptions = res.data.map((item) => ({
         label: item.groupName,
         value: item.id,
       }));
       if (this.formData.groupId) {
         // this.$set(this.form, "unit", this.formData.groupId);
-        this.form.unit = this.formData.groupId;
-        this.form.executor = this.formData.executor;
+        this.$set(this.form, "groupId", this.formData.groupId);
+        this.$set(this.form, "executor", this.formData.executor);
       }
     });
     if (this.formData.orderCode && this.disabled) {
@@ -84,7 +99,7 @@ export default {
   computed: {
     columns() {
       return [
-        // ! 批量维修记录
+        // ! 维修内容记录 委外
         {
           label: "维修内容记录",
           span: 24,
@@ -94,15 +109,17 @@ export default {
           label: "委外维修单位",
           span: 8,
           prop: "unit",
-          formType: "select",
-          options: this.groupOptions,
           required: true,
+          clickFn: () => {
+            this.drawersupplier = true;
+          },
         },
         {
           label: "委外单位负责人",
           span: 8,
-          prop: "directorName",
+          prop: "director",
           required: true,
+          formDisabled: true,
         },
         {
           label: "联系方式",
@@ -110,7 +127,25 @@ export default {
           prop: "phonenumber",
           required: true,
         },
-
+        {
+          label: "执行班组",
+          span: 8,
+          prop: "groupId",
+          formType: "select",
+          options: this.groupOptions,
+          required: true,
+          formDisabled: true,
+        },
+        {
+          label: "执行负责人人",
+          span: 8,
+          prop: "executor",
+          required: true,
+          formType: "select",
+          options: this.groupMembers,
+          formDisabled: true,
+        },
+        { label: "", formType: "blank" },
         {
           label: "设备状态鉴定结果",
           span: 8,
@@ -153,6 +188,14 @@ export default {
     },
   },
   methods: {
+    closesupplier() {
+      this.drawersupplier = false;
+    },
+    submitRadio(row) {
+      console.log("========================", row);
+      this.$set(this.form, "unit", row.supplierName);
+      this.closesupplier();
+    },
     dateDiffInHours(date1, date2) {
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
       const firstDate = new Date(date1);
@@ -166,15 +209,8 @@ export default {
     changeGroupId(val, flag) {
       if (!val) val = 1;
       getGroup(val).then((response) => {
-        this.$set(this.form, "directorName", response.data.leaderName);
-
-        this.form.director = response.data.leaderId;
-        this.$set(
-          this.form,
-          "phonenumber",
-          response.data.sysUserGroupList[0].phonenumber
-        );
-
+        this.form.executor = response.data.leaderId;
+        console.log("========================", this.form.executor);
         response.data.sysUserGroupList.forEach((item) => {
           item.label = item.nickName;
           item.value = item.userId;

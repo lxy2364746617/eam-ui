@@ -4,25 +4,24 @@
       <div class="box-header" v-if="disabled">
         <div class="title">工单进度</div>
         <!-- 进度条 -->
-          <el-steps
-            :active="formData.workActive"
-            align-center
-            style="margin-top: 20px"
-            finish-status="success"
+        <el-steps
+          :active="formData.workActive"
+          align-center
+          style="margin-top: 20px"
+          finish-status="success"
+        >
+          <el-step
+            v-for="item in formData.workOrderSchedule"
+            :key="item.id"
+            :title="item.orderStatus"
+            icon="el-icon-loading"
           >
-            <el-step
-              v-for="item in formData.workOrderSchedule"
-              :key="item.id"
-              :title="item.orderStatus"
-              icon="el-icon-loading"
-            >
-              <div slot="description">
-                <span style="font-size: 14px">{{ item.createBy }}</span>
-                <br />
-                <span>{{ item.createTime }}</span>
-              </div></el-step
-            >
-         
+            <div slot="description">
+              <span style="font-size: 14px">{{ item.createBy }}</span>
+              <br />
+              <span>{{ item.createTime }}</span>
+            </div></el-step
+          >
         </el-steps>
       </div>
       <div class="subtitle">
@@ -196,7 +195,7 @@
             >查看</el-button
           >
           <el-button
-            v-if="!disabled"
+            v-if="!disabled && scope.row.executeStatus != 1"
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -532,8 +531,9 @@ export default {
         this.changeGroupId(this.formData.groupId, 2);
       });
       await this.getListRelevance();
-      await this.getList2();
       await this.getList3();
+
+      await this.getList2();
     }
   },
   mounted() {
@@ -739,13 +739,7 @@ export default {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
     handlerDownload(row) {
-      this.download(
-        "common/download",
-        {
-          fileName: row.fileName,
-        },
-        row.originalFileName
-      );
+      this.$download.resource(row.fileName);
     },
     handleClose(done) {
       done();
@@ -766,6 +760,7 @@ export default {
             this.$message.success(res.msg);
             this.isDrawer2 = false;
             this.getList4();
+            this.getList3();
           }
         });
       } else {
@@ -774,6 +769,7 @@ export default {
             this.$message.success(res.msg);
             this.isDrawer2 = false;
             this.getList4();
+            this.getList3();
           }
         });
       }
@@ -864,7 +860,6 @@ export default {
             this.equipmentList3.some((u) => u.userId !== user.userId)
           );
           this.equipmentList2 = response.data;
-          this.total2 = response.total;
           this.loading2 = false;
         }
         // getOrderExecutor({ workOrderCode: this.formData.orderCode }).then((response) => {
@@ -895,7 +890,7 @@ export default {
       form["workOrderCode"] = this.formData.orderCode;
       form["userName"] = this.selectUser.userName;
       // form["userId"] = this.selectUser.userId;
-      await getWorkHours(form).then((response) => {
+      await getWorkHours({ ...form, ...this.selectUser }).then((response) => {
         if (response.data.length && response.data.length > 0) {
           response.data.forEach((item) => {
             item.workHours = item.workHours / 60;

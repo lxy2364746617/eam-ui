@@ -39,7 +39,8 @@
           <el-button
             v-if="
               scope.row.orderStatus !== '待验收' &&
-              scope.row.orderStatus !== '已关闭'
+              scope.row.orderStatus !== '已关闭' &&
+              scope.row.orderStatus !== '执行中'
             "
             size="mini"
             type="text"

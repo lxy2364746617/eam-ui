@@ -8,7 +8,7 @@
           v-if="formData.orderType !== 'WWWX'"
           class="pack"
           @click="gzalClick"
-          >案例详情</span
+          >案例查看</span
         >&nbsp;<span class="pack" @click="openUp">收起</span>
       </div>
     </div>
@@ -45,7 +45,12 @@
           ><span class="show">联系方式：</span>{{ data.phoneNumber }}</el-col
         >
       </el-row>
-      <div class="title">设备信息</div>
+      <br />
+      <div class="subtitle">
+        <i class="el-icon-caret-right"
+          ><span class="icon-text">设备信息</span></i
+        >
+      </div>
       <ContTable
         :tableData="equipmentList"
         @getList="getList"
@@ -93,6 +98,7 @@
       >
         <template #footer>
           <image-upload
+            v-if="form.fileList.length !== 0"
             class="upload-demo"
             :fileType="['jpg', 'png']"
             @uploadChange="uploadChange1"

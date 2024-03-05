@@ -261,6 +261,15 @@ export const goExecutorDetail = (data) => {
   });
 };
 
+// 工单管理-检验工单添加费用
+export const addCheckExpense = (data) => {
+  return request({
+    url: "/wom/check/add/costs",
+    method: "post",
+    data: data,
+  });
+};
+
 // ! 工单代办-执行-巡点捡
 export const goWorkOrder = (data) => {
   return request({

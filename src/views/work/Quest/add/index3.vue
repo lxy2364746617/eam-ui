@@ -109,8 +109,8 @@ export default {
       this.formData = { supplierName: "" };
 
       this.$refs.titleform.clearValidate();
-      //   this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      //   this.$router.go(-1); //跳回上页
+        this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+        this.$router.go(-1); //跳回上页
     },
     /** 转换部门数据结构 */
     normalizer(node) {

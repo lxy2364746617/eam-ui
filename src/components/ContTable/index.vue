@@ -223,6 +223,7 @@
                   @change="switchchange($event, col.prop, scope.row)"
                   :active-value="col.options[0].value"
                   :inactive-value="col.options[1].value"
+                  :disabled="col.disabled"
                 >
                 </el-switch>
               </span>

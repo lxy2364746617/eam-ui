@@ -68,7 +68,7 @@ export default {
       if (this.formData.groupId) {
         this.$set(this.form, "checkUnit", this.formData.groupId);
         // this.form.unit = this.formData.groupId;
-        this.form.executor = this.formData.executor;
+        this.$set(this.form, "executor", this.formData.executor);
       }
     });
   },
@@ -83,7 +83,7 @@ export default {
           subTitle: true,
         },
         {
-          label: "维修单位",
+          label: "检测单位",
           span: 8,
           prop: "checkUnit",
           formType: "select",
@@ -91,7 +91,7 @@ export default {
           required: true,
         },
         {
-          label: "维修单位负责人",
+          label: "检测单位负责人",
           span: 8,
           prop: "checkUnitHead",
           required: true,

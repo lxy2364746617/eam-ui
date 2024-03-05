@@ -201,7 +201,7 @@
             >查看</el-button
           >
           <el-button
-            v-if="!disabled"
+            v-if="!disabled && scope.row.executeStatus != 1"
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -211,7 +211,7 @@
             >执行</el-button
           >
           <el-button
-            v-if="!disabled"
+            v-if="scope.row.executeNum > 0"
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -409,13 +409,7 @@ export default {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
     handlerDownload(row) {
-      this.download(
-        "common/download",
-        {
-          fileName: row.fileName,
-        },
-        row.originalFileName
-      );
+      this.$download.resource(row.fileName);
     },
 
     // 抽屉

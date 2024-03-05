@@ -4,25 +4,25 @@
       <div class="box-header" v-if="disabled">
         <div class="title">工单进度</div>
         <!-- 进度条 -->
-          <el-steps
-            :active="formData.workActive"
-            align-center
-            style="margin-top: 20px"
-            finish-status="success"
+        <el-steps
+          :active="formData.workActive"
+          align-center
+          style="margin-top: 20px"
+          finish-status="success"
+        >
+          <el-step
+            v-for="item in formData.workOrderSchedule"
+            :key="item.id"
+            :title="item.orderStatus"
+            icon="el-icon-loading"
           >
-            <el-step
-              v-for="item in formData.workOrderSchedule"
-              :key="item.id"
-              :title="item.orderStatus"
-              icon="el-icon-loading"
-            >
-              <div slot="description">
-                <span style="font-size: 14px">{{ item.createBy }}</span>
-                <br />
-                <span>{{ item.createTime }}</span>
-              </div></el-step
-            >
-          </el-steps>
+            <div slot="description">
+              <span style="font-size: 14px">{{ item.createBy }}</span>
+              <br />
+              <span>{{ item.createTime }}</span>
+            </div></el-step
+          >
+        </el-steps>
       </div>
       <div class="subtitle">
         <div style="display: flex; align-items: center">
@@ -214,7 +214,7 @@
                 >查看</el-button
               >
               <el-button
-                v-if="!disabled"
+                v-if="!disabled && scope.row.executeStatus != 1"
                 size="mini"
                 type="text"
                 icon="el-icon-edit"
@@ -224,7 +224,7 @@
                 >执行</el-button
               >
               <el-button
-                v-if="!disabled"
+                v-if="scope.row.executeNum > 0"
                 size="mini"
                 type="text"
                 icon="el-icon-edit"
@@ -341,6 +341,7 @@ export default {
       // 路线
       activeName: "",
       lineList: [],
+      disabled: false,
     };
   },
   async created() {
@@ -438,13 +439,7 @@ export default {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
     handlerDownload(row) {
-      this.download(
-        "common/download",
-        {
-          fileName: row.fileName,
-        },
-        row.originalFileName
-      );
+      this.$download.resource(row.fileName);
     },
 
     // 抽屉

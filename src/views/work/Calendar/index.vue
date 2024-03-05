@@ -144,36 +144,32 @@ export default {
         headerToolbar: {
           left: "prev today next",
           center: "title",
-          right: "dayGridMonth,dayGridWeek,dayGrid",
-          // right: 'agendaWeek,dayGridWeek,dayGrid'
+          // right: "dayGridMonth,dayGridWeek,dayGrid",
+          right: "dayGridMonth,dayGridWeek",
         },
 
         buttonText: {
           // 设置按钮
-          today: "今天",
           month: "月",
           week: "周",
-          dayGrid: "天",
         },
         // allDaySlot: false,
         editable: false, // 在日历上是否可拖拽
         selectable: false, // 在日历上是否可以拉长
         navLinks: false, // 点击日期跳转到当天
-        slotDuration: "24:00:00", //一格时间槽代表多长时间，默认00:30:00（30分钟）
         // displayEventEnd: true,//所有视图显示结束时间
         initialView: "dayGridMonth", // 设置默认显示月，可选周、日
         dateClick: this.handleDateClick,
         eventMouseEnter: this.handleEventMouseEnter,
         eventMouseLeave: this.handleEventMouseLeave,
         // eventsSet: this.handleEvents,
-        select: this.handleDateSelect,
+        // select: this.handleDateSelect,
 
         // timezone
         // 设置日程
         events: [],
         eventColor: "#f08f00", // 修改日程背景色
         locale: "zh-cn", // 设置语言
-        weekNumberCalculation: "ISO", // 周数
 
         customButtons: {
           prev: {
@@ -185,7 +181,7 @@ export default {
           },
           next: {
             // this overrides the next button
-            text: "PREV",
+            text: "NEXT",
             click: () => {
               this.next();
             },
@@ -316,21 +312,6 @@ export default {
         return;
       }
       this.calendarApi.gotoDate(data);
-      // this.today();
-      // ! 左侧
-      // getCalendarMonth({ date: data.slice(0, 7) }).then((res) => {
-      //   if (res.code === 200) {
-      //     this.dataList = res.data.map((item, index) => ({
-      //       id: item.orderCode,
-      //       title: item.orderName,
-      //       beginDate: item.planExecuteDate,
-      //       endDate: item.planExecuteDate,
-      //       status: this.getColor(),
-      //       maintenanceType: item.maintenanceType,
-      //     }));
-      //     this.getReservationList(this.dataList);
-      //   }
-      // });
       // ! 明细
       this.flag = true;
       getOrderDetailDay({ date: data }).then((res) => {
@@ -413,7 +394,22 @@ export default {
     },
     handleDateClick: function (arg) {
       // ! 这里添加时间
-      // console.log(arg, "点击了日期");
+      this.dataValue = arg.dateStr;
+      if (!arg.dateStr) {
+        this.detailList = [];
+        return;
+      }
+      this.calendarApi.gotoDate(arg.dateStr);
+      // ! 明细
+      this.flag = true;
+      getOrderDetailDay({ date: arg.dateStr }).then((res) => {
+        if (res.code === 200) {
+          this.detailList = res.data;
+          if (this.detailList.length > 0) {
+            this.flag = false;
+          }
+        }
+      });
     },
     // handleEventClick(calEvent) {
     //   console.log(calEvent, "事件2");

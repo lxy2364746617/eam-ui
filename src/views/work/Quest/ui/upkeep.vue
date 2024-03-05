@@ -82,7 +82,6 @@
       @selection-change="handleSelectionChange"
       ref="queryTable"
     >
-      <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" type="index" />
       <el-table-column
         label="点检项目编码"
@@ -368,14 +367,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="pagination"
-    />
+
     <el-row>
       <el-col
         :span="24"
@@ -549,7 +541,7 @@ export default {
       },
       standardList: [],
       routerForm: [],
-      queryParams: { pageNum: 1, pageSize: 10 },
+      queryParams: { pageNum: 1, pageSize: 1000 },
       // 添加备注
       remarkForm: { remark: "" },
       selectId: null,
@@ -581,7 +573,7 @@ export default {
           this.itemId = null;
           this.formData.itemId = null;
           this.$refs.titleform.resetFields();
-          this.formData.attachmentDTOList = [];
+          this.formData.addAttachmentDTOList = [];
         }
       },
       deep: true,
@@ -756,13 +748,19 @@ export default {
     },
     /** 提交按钮 */
     submitForm2: function (formdata) {
+      console.log("========================", formdata);
       // ! 成功了才会走这
       formdata["idList"] = this.itemIds;
-      formdata.attachmentDTOList.forEach((item) => {
+      formdata.addAttachmentDTOList.forEach((item) => {
         item.createTime = item.createTime.substring(0, 10);
       });
+      formdata["attachmentDTOList"] = JSON.parse(
+        JSON.stringify(formdata.addAttachmentDTOList)
+      );
+      delete formdata.addAttachmentDTOList;
       dealPatrolItem(formdata).then((res) => {
         if (res.code === 200) {
+          this.getDetails(this.queryParams);
           this.$message.success("提交成功！");
           this.drawerOne = false;
         }
@@ -771,23 +769,36 @@ export default {
       // this.formData = { supplierName: "" };
     },
     handleCancel() {
-      this.formData = {};
-
-      this.$refs.titleform.clearValidate();
-      //   this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      //   this.$router.go(-1); //跳回上页
+      //   //   this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+      //   //   this.$router.go(-1); //跳回上页
     },
     handelerGenerate() {
+      if (!this.itemIds.length > 0) {
+        this.$message.warning("请选择异常项!");
+        return;
+      }
+      if (this.checkBoxRows.some((item) => item.dealMethod)) {
+        this.$message.warning("请选择未处理的异常项异常项!");
+        return;
+      }
       this.$router.push({
         path: "/work/requestAdd",
         query: {
-          item: { orderType: "DZWX", orderObj: 2, deviceDTOList: this.form },
+          item: {
+            orderType: "DZWX",
+            deviceDTOList: this.form,
+            itemIdList: this.itemIds,
+          },
         },
       });
     },
     handlerSelf() {
       if (!this.itemIds.length > 0) {
         this.$message.warning("请选择异常项!");
+        return;
+      }
+      if (this.checkBoxRows.some((item) => item.dealMethod)) {
+        this.$message.warning("请选择未处理的异常项异常项!");
         return;
       }
       this.disabled = false;
@@ -812,6 +823,7 @@ export default {
         quotaValue: item.quotaValue,
         remark: item.remark,
       }));
+
       stagingPatrolItem(data).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
@@ -828,6 +840,13 @@ export default {
         quotaValue: item.quotaValue,
         remark: item.remark,
       }));
+      if (
+        data.filter((item) => item.dealResult).length !==
+        this.standardList.length
+      ) {
+        this.$message.warning("请填写所有操作！");
+        return;
+      }
       commitPatrolItem(data).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
@@ -866,7 +885,6 @@ export default {
       getSelectPage(queryParams).then((res) => {
         if (res.code == 200) {
           this.standardList = res.data.records;
-          this.total = res.data.total;
         }
       });
     },
@@ -903,13 +921,13 @@ export default {
       this.checkBoxRows = selection;
     },
   },
-  beforeRouteLeave(to, from, next) {
-    // 保存上一个路由信息
-    this.$store.dispatch("tagsView/delView", from); // 关闭当前页
-    // this.$router.go(-1);
-    removeStore("carryValue");
-    next();
-  },
+  // beforeRouteLeave(to, from, next) {
+  //   // 保存上一个路由信息
+  //   this.$store.dispatch("tagsView/delView", from); // 关闭当前页
+  //   // this.$router.go(-1);
+  //   removeStore("carryValue");
+  //   next();
+  // },
 };
 </script>
 <style lang='scss' scoped>
@@ -953,9 +971,9 @@ export default {
 ::v-deep .el-radio {
   margin-right: 0;
 }
-::v-deep .el-upload-list {
-  display: none;
-}
+// ::v-deep .el-upload-list {
+//   display: none;
+// }
 .controls {
   color: #1f77fc;
   padding-left: 6px;

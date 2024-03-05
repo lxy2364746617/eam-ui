@@ -184,6 +184,9 @@
         @submitRadio="submitSpareReceive"
         :isRadio="true"
         @close="closeSpareReceive"
+         :searchValue="[
+          { prop: 'approvalStatus', value: 'completed' },
+        ]"
       ></spareReceive>
     </el-drawer>
 
@@ -292,6 +295,7 @@ export default {
           prop: "replaceNum",
           formType: "number",
           span: 22,
+          min:1,
         },
         {
           label: "备注",

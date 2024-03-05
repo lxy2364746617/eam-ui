@@ -11,14 +11,31 @@
       >
       </TitleForm>
     </div>
+
+    <!-- 选择故障类型 -->
+    <el-drawer
+      title="故障类型"
+      :visible.sync="drawerFaultManage"
+      size="70%"
+      direction="rtl"
+      :wrapperClosable="false"
+    >
+      <faultManage
+        @submitRadio="submitFaultManage"
+        :isRadio="true"
+        @close="closeFaultManage"
+      ></faultManage>
+    </el-drawer>
   </div>
 </template>
 <script>
 import { listDept } from "@/api/system/dept";
 import { findAll, getGroup } from "@/api/system/group";
 import request from "@/utils/request";
+import { getWomDevice, getWomFaultInfo2 } from "@/api/work/schedule";
+import faultManage from "@/views/work/Request/ui/faultManage.vue";
 export default {
-  components: {},
+  components: { faultManage },
   dicts: ["fault_grade"],
   props: {
     disabled: {
@@ -40,6 +57,7 @@ export default {
       },
       groupMembers: [],
       groupOptions: [],
+      drawerFaultManage: false,
     };
   },
   watch: {
@@ -59,10 +77,7 @@ export default {
     },
   },
   async created() {
-    this.form.unit = this.formData.groupId;
-    this.$set(this.form, "executor", this.formData.executor);
-    console.log("========================", this.formData.executor);
-    findAll({ groupType: "" }).then((res) => {
+    findAll({ groupType: this.formData.maintenanceType }).then((res) => {
       res.data.forEach((item) => {
         item.label = item.groupName;
         item.value = item.id;
@@ -77,6 +92,29 @@ export default {
         }).then((res) => {
           if (res.code === 200) {
             this.form = { ...this.form, ...res.data };
+            this.$set(this.form, "unit", Number(this.formData.groupId));
+            this.$set(this.form, "executor", this.formData.executor);
+          }
+        });
+      }
+    });
+    await getWomDevice({
+      orderCode: this.formData.orderCode,
+      lineCode: "",
+    }).then((res) => {
+      if (res.code == 200) {
+        getWomFaultInfo2({
+          deviceCode: res.data[0].deviceCode,
+          orderCode: this.formData.orderCode,
+        }).then((res) => {
+          if (res.code == 200) {
+            this.$set(this.form, "faultType", res.data.faultInfoDTO.faultType);
+            this.$set(this.form, "faultInfo", res.data.faultInfoDTO.faultInfo);
+            this.$set(
+              this.form,
+              "faultReason",
+              res.data.faultInfoDTO.faultReason
+            );
           }
         });
       }
@@ -92,14 +130,15 @@ export default {
           span: 24,
           subTitle: true,
         },
-        // {
-        //   label: "故障类型",
-        //   span: 7,
-        //   prop: "faultType",
-        //   formType: "select",
-        //   options: this.dict.type.fault_grade,
-        //   required: true,
-        // },
+        {
+          label: "故障类型",
+          span: 7,
+          prop: "faultType",
+          required: true,
+          clickFn: () => {
+            this.drawerFaultManage = true;
+          },
+        },
         {
           label: "维修单位",
           span: 6,
@@ -115,7 +154,6 @@ export default {
           prop: "executor",
           formType: "select",
           options: this.groupMembers,
-          required: true,
           formDisabled: true,
         },
 
@@ -144,26 +182,28 @@ export default {
           formType: "number",
         },
         {
-          label: "维修结果",
+          label: "故障详情",
           span: 24,
           prop: "faultInfo",
           formType: "textarea",
           rows: 4,
         },
-        // {
-        //   label: "故障原因",
-        //   span: 12,
-        //   prop: "faultReason",
-        //   formType: "textarea",
-        //   required: true,
-        // },
-        // {
-        //   label: "维修措施",
-        //   span: 12,
-        //   prop: "repairInfo",
-        //   formType: "textarea",
-        //   required: true,
-        // },
+        {
+          label: "故障原因",
+          span: 12,
+          prop: "faultReason",
+          formType: "textarea",
+          required: true,
+          rows: 4,
+        },
+        {
+          label: "维修措施",
+          span: 12,
+          prop: "repairInfo",
+          formType: "textarea",
+          required: true,
+          rows: 4,
+        },
         {
           label: "是否维修完成",
           span: 12,
@@ -198,6 +238,13 @@ export default {
     },
   },
   methods: {
+    submitFaultManage(row) {
+      this.$set(this.form, "faultType", row.faultCode + " " + row.faultName);
+      this.closeFaultManage();
+    },
+    closeFaultManage() {
+      this.drawerFaultManage = false;
+    },
     dateDiffInHours(date1, date2) {
       const firstDate = new Date(date1);
       const secondDate = new Date(date2);
@@ -215,11 +262,12 @@ export default {
       getGroup(val).then((response) => {
         this.form.directorName = response.data.leaderName;
         this.form.director = response.data.leaderId;
-        this.groupMembers = response.data.sysUserGroupList.map((item) => ({
-          label: item.nickName,
-          value: item.userId,
-        }));
-        // this.groupMembers = response.data.sysUserGroupList;
+        this.groupMembers = response.data?.sysUserGroupList
+          ? response.data?.sysUserGroupList?.map((item) => ({
+              label: item.nickName,
+              value: item.userId,
+            }))
+          : [];
       });
     },
     getList() {},

@@ -8,7 +8,7 @@
           v-if="formData.orderType !== 'WWWX'"
           class="pack"
           @click="gzalClick"
-          >案例详情</span
+          >案例查看</span
         >&nbsp;<span class="pack" @click="openUp">收起</span>
       </div>
     </div>
@@ -166,6 +166,10 @@ export default {
             if (res.code == 200) {
               this.faultInfoDTO = res.data.faultInfoDTO;
               this.formData.faultInfoDTO = res.data.faultInfoDTO;
+              this.formData["faultType"] =
+                res.data.faultInfoDTO.faultType +
+                "-" +
+                res.data.faultInfoDTO.faultInfo;
             }
           });
         }

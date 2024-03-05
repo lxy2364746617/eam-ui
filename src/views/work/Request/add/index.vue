@@ -70,16 +70,16 @@ export default {
       orderOptions: [],
       routePoint: [],
       drawerFaultManage: false,
+      itemIdList: [],
     };
   },
   async created() {
     await this.getOrderTree();
 
     if (this.$route.query.item) {
-      let row = JSON.parse(JSON.stringify(this.$route.query.item));
       // this.$route.query.item = null;
-      this.formData = JSON.parse(JSON.stringify(row));
-
+      this.formData = JSON.parse(JSON.stringify(this.$route.query.item));
+      this.itemIdList = JSON.parse(JSON.stringify(this.formData.itemIdList));
       this.disabled = this.$route.query.disabled === "true" ? true : false;
     }
   },
@@ -282,6 +282,10 @@ export default {
               case "DZWX2":
               case "WWWX2":
               case "JDBWX2":
+                console.log(
+                  "========================this.formData",
+                  this.itemIdList
+                );
                 this.columns2 = [
                   // 需填信息
                   {
@@ -317,7 +321,7 @@ export default {
                     required: true,
                     formType: "selectTree",
                     options: this.routePoint,
-                    // formDisabled: true,
+                    formDisabled: this.itemIdList.length && true,
                   },
                   // ! 设备信息
                   {
@@ -765,7 +769,7 @@ export default {
         this.formData["orderType"],
         this.orderOptions
       );
-      this.formData["maintenanceType"] = this.formData["orderType"];
+      this.formData["maintenanceType"] = this.formData["orderTypeFather"];
     },
     // 根据二级工单类型获取一级工单类型
     findParentType(selectedChildType, data) {
@@ -891,6 +895,9 @@ export default {
               delete formdata.fileList;
               delete formdata.faultCode;
             }
+          }
+          if (this.itemIdList.length && this.itemIdList.length > 0) {
+            formdata["itemIdList"] = this.itemIdList;
           }
           addEquip(formdata).then((res) => {
             if ((res.code = 200)) {

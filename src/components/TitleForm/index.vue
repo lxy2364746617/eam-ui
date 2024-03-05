@@ -258,7 +258,7 @@
               clearable
               :disabled="col.formDisabled || disabled"
               style="width: 100%"
-              placeholder="选择日期"
+              placeholder="选择时间"
             >
             </el-date-picker>
             <el-date-picker

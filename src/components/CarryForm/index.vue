@@ -243,7 +243,7 @@
               clearable
               :disabled="col.formDisabled || disabled"
               style="width: 100%"
-              placeholder="选择日期"
+              placeholder="选择时间"
             >
             </el-date-picker>
             <el-date-picker
@@ -478,12 +478,13 @@ export default {
       this.filedrawer = false;
     },
     uploadChange3(val) {
-      this.fileList2 = this.fileList2.concat(val);
-      let props = JSON.parse(JSON.stringify(this.columns))
-        .filter((item) => item.formType == "fileBtn")
-        .map((item) => item.prop);
-      this.formData[`${props[0]}`] = this.fileList2;
-
+      // this.fileList2 = this.fileList2.concat(val);
+      // let props = JSON.parse(JSON.stringify(this.columns))
+      //   .filter((item) => item.formType == "fileBtn")
+      //   .map((item) => item.prop);
+      // this.formData[`${props[0]}`] = this.fileList2;
+      this.formData["fileResourceList"] =
+        this.formData["fileResourceList"].concat(val);
       this.filedrawer2 = false;
     },
     uploadChange1(e) {
@@ -495,12 +496,12 @@ export default {
 
     fileResourceList(val) {
       this.formData["addFileList"] = val.filter((item) => !item.id);
+      this.formData["fileResourceList"] = val;
     },
     delFileList(val) {
       this.formData["delFileList"] = val;
     },
     spareRecord(val) {
-      console.log("========================", val);
       this.formData["addAttachmentDTOList"] = val.filter((item) => !item.id);
     },
     delAttachmentList(val) {

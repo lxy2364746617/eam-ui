@@ -75,7 +75,11 @@
 import CarryForm from "@/components/CarryForm";
 import JmForm from "@/components/JmForm";
 import Wrapper from "@/components/wrapper";
-import { goExecutorSubmit, goExecutorDetail } from "@/api/work/schedule";
+import {
+  goExecutorSubmit,
+  goExecutorDetail,
+  addCheckExpense,
+} from "@/api/work/schedule";
 import { findAll, getGroup } from "@/api/system/group";
 export default {
   components: { Wrapper, CarryForm, JmForm },
@@ -97,36 +101,31 @@ export default {
     this.formTitle = this.carryValue.t;
     this.form = this.carryValue.val;
     this.routerForm = this.carryValue.l;
-    this.formData = this.carryValue.l;
-    this.formData["workOrderCode"] = this.formData.orderCode;
-    delete this.formData.orderCode;
-
+    this.formData["workOrderCode"] = this.carryValue.l.orderCode;
+    this.formData["orderCode"] = this.carryValue.l.orderCode;
     // await this.getDetails(this.queryParams);
-    findAll({ groupType: this.formData.orderType }).then((res) => {
+    findAll({ groupType: this.carryValue.l.orderType }).then((res) => {
       res.data.forEach((item) => {
         item.label = item.groupName;
         item.value = item.id;
       });
       this.groupOptions = res.data;
-
-      if (!this.carryValue.i) {
+      if (!this.fileShow) {
         goExecutorDetail({
           workOrderCode: this.formData.workOrderCode,
           deviceCode: this.form.deviceCode,
         }).then((res) => {
-          // this.formData = Object.assign(this.formData, res.data);
-          this.formData = { ...this.formData, ...res.data };
-          this.$set(this.formData, "checkUnit", Number(res.data.checkUnit));
-
-          this.$set(this.formData, "checkResult", String(res.data.checkResult));
+          this.formData = {
+            ...this.formData,
+            ...res.data,
+            checkResult: "" + res.data.checkResult,
+            checkUnit: Number(res.data.checkUnit),
+          };
         });
-      } else {
-        if (this.formData.groupId) {
-          this.$set(this.formData, "checkUnit", this.formData.groupId);
-          // this.form.unit = this.formData.groupId;
-          this.formData.executor = this.formData.executor;
-        }
       }
+      this.formData["recorder"] = this.$store.state.user.standing.nickName;
+      this.formData["recordTime"] = new Date();
+      this.$set(this.formData, "checkUnit", this.carryValue.l.groupId);
     });
   },
   mounted() {
@@ -167,12 +166,14 @@ export default {
           formType: "select",
           options: this.groupOptions,
           required: true,
+          formDisabled: true,
         },
         {
           label: "检测单位负责人",
           span: 8,
           prop: "checkUnitHead",
           required: true,
+          formDisabled: true,
         },
 
         {
@@ -180,6 +181,7 @@ export default {
           span: 8,
           prop: "headPhonenum",
           required: true,
+          formDisabled: true,
         },
         {
           label: "执行时间",
@@ -192,14 +194,16 @@ export default {
           label: "记录时间",
           span: 8,
           prop: "recordTime",
-          formType: "date",
+          formType: "datetime",
           required: true,
+          formDisabled: true,
         },
         {
           label: "记录人",
           span: 8,
           prop: "recorder",
           required: true,
+          formDisabled: true,
         },
         {
           label: "设备检验结果",
@@ -296,11 +300,8 @@ export default {
       });
     },
     handleCancel() {
-      this.formData = { supplierName: "" };
-
-      this.$refs.titleform.clearValidate();
-      //   this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      //   this.$router.go(-1); //跳回上页
+      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+      this.$router.go(-1); //跳回上页
     },
     /** 转换部门数据结构 */
     normalizer(node) {
@@ -316,11 +317,22 @@ export default {
     /** 提交按钮 */
     submitForm: function (formdata) {
       // ! 成功了才会走这
-
+      formdata.recordTime = this.parseTime(
+        new Date(),
+        "{y}-{m}-{d} {h}:{m}:{s}"
+      );
       formdata["sysFileResources"] = formdata.addFileList;
       delete formdata.addFileList;
-      goExecutorSubmit(formdata).then((res) => {
-        if (res.code === 200) {
+      let newCheckCosts = formdata.checkCosts.map((item) => ({
+        ...item,
+        workOrderCode: formdata.workOrderCode,
+        deviceCode: formdata.deviceCode,
+      }));
+      Promise.all([
+        goExecutorSubmit(formdata),
+        addCheckExpense({ checkCosts: newCheckCosts }),
+      ]).then((res) => {
+        if (res[0].code === 200 && res[1].code === 200) {
           this.$message.success(res.msg);
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
           this.$router.go(-1); //跳回上页
@@ -373,9 +385,7 @@ export default {
 ::v-deep .el-radio {
   margin-right: 0;
 }
-::v-deep .el-upload-list {
-  display: none;
-}
+
 .controls {
   color: #1f77fc;
   padding-left: 6px;
@@ -414,6 +424,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 20px;
 }
 .noImg {
   width: 140px;
@@ -428,7 +439,8 @@ export default {
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
   height: 12px;
   opacity: 0.5;
-}::v-deep .el-table__fixed-right {
+}
+::v-deep .el-table__fixed-right {
   height: 100% !important;
 }
 </style>

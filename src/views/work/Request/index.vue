@@ -263,7 +263,7 @@ export default {
       this.$refs["elForm2"].resetFields();
     },
     getUserList() {
-      listUser({ pageNum:1,pageSize:10000  }).then((res) => {
+      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
         this.userList = res.rows.map((item) => {
           return {
             id: item.userId,
@@ -280,6 +280,7 @@ export default {
           row.orderType !== "JDBWX" ||
           row.orderType !== "WWWX"
         ) {
+          console.log("========================", row.orderType);
           this.workActiveList.splice(3, 1);
         }
         this.workActiveList.forEach((item, index) => {

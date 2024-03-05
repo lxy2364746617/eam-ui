@@ -38,7 +38,7 @@
           prop="costItem"
           min-width="150"
         />
-        <el-table-column label="单位" align="center" prop="unit">
+        <el-table-column label="单位" align="center" prop="costUnit">
           <template slot-scope="scope">
             <span>{{
               findName(dict.type.expense_accounting, scope.row.costUnit)
@@ -157,7 +157,13 @@ export default {
   watch: {
     standardList: {
       handler(val) {
-        this.$emit("expenseInspect", val);
+        this.$emit(
+          "expenseInspect",
+          val.map((item) => ({
+            ...item,
+            allPrice: item.unitPrice * item.num,
+          }))
+        );
       },
       deep: true,
       immediate: true,
@@ -167,6 +173,17 @@ export default {
     if (this.formData.checkCosts) {
       this.standardList = this.formData.checkCosts;
     }
+    // if (this.formData.orderCode && this.disabled) {
+    //   request({
+    //     url: "/wom/repair/getWomFaultCostInfo",
+    //     method: "get",
+    //     params: { orderCode: this.formData.orderCode,deviceCode: this.formData.deviceCode },
+    //   }).then((res) => {
+    //     if (res.code === 200) {
+    //       this.standardList = res.data.costList;
+    //     }
+    //   });
+    // }
   },
   mounted() {},
   computed: {
@@ -175,7 +192,7 @@ export default {
         { label: "材料费用及名称", prop: "costItem", required: true, span: 22 },
         {
           label: "单位",
-          prop: "unit",
+          prop: "costUnit",
           required: true,
           span: 22,
           formType: "select",
@@ -213,7 +230,6 @@ export default {
     handleAdd() {
       this.drawer = true;
     },
-    submitForm() {},
     /** 修改按钮操作 */
     handleUpdate(scope) {
       this.$set(
@@ -237,6 +253,7 @@ export default {
     },
     submitForm(formVal) {
       let newValue = JSON.parse(JSON.stringify(formVal));
+      // newValue.allPrice = newValue.num * newValue.unitPrice;
       this.standardList = this.standardList.concat([newValue]);
       this.close();
     },
@@ -256,7 +273,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-
+  margin-bottom: 20px;
   .container-box1 {
     max-height: 550px;
     overflow-y: scroll;
@@ -314,6 +331,7 @@ export default {
   align-items: center;
   padding-right: 18px;
   border-left: 5px solid #1f77fc;
+  margin-bottom: 20px;
   i {
     margin-right: 10px;
     color: #1f77fc;

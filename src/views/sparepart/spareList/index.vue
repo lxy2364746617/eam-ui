@@ -123,7 +123,7 @@ import ContTable from "@/components/ContTable";
 import Wrapper from "@/components/wrapper";
 import JmForm from "@/components/JmForm";
 import { listDept } from "@/api/system/dept";
-import supplier from "@/views/device/book/supplier";
+import supplier from "@/views/sparepart/supplier";
 import { saveAs } from "file-saver";
 import {
   getManagementList,

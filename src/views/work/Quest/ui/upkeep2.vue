@@ -170,14 +170,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 分页 -->
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="pagination"
-    />
+   
     <el-row>
       <el-col :span="24" class="submit" v-if="carryValue.i">
         <el-button @click="handlerBack">取消</el-button>
@@ -270,7 +263,7 @@
       >
       </file-upload>
 
-      <div class="img-list" v-show="fileList.length">
+      <div class="img-list" v-if="fileList.length">
         <div style="padding-bottom: 5px">
           <i
             class="el-icon-menu"
@@ -290,6 +283,7 @@
           />
         </div>
       </div>
+      <div class="img-text" v-else>暂无图片</div>
       <div class="img-submit" v-if="carryValue.i">
         <el-button type="primary" @click="handlerImgSubmit">确定</el-button>
         <el-button @click="handlerImgCancel">取消</el-button>
@@ -338,7 +332,7 @@ export default {
       },
       standardList: [],
       routerForm: [],
-      queryParams: { pageNum: 1, pageSize: 10 },
+      queryParams: { pageNum: 1, pageSize: 1000 },
       // 添加备注
       remarkForm: { remark: "" },
       selectId: null,
@@ -533,11 +527,9 @@ export default {
       // this.formData = { supplierName: "" };
     },
     handleCancel() {
-      this.formData = {};
-
-      this.$refs.titleform.clearValidate();
-      //   this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      //   this.$router.go(-1); //跳回上页
+    
+        this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+        this.$router.go(-1); //跳回上页
     },
     handelerGenerate() {},
     handlerSelf() {
@@ -583,6 +575,13 @@ export default {
       //   quotaValue: item.quotaValue,
       //   remark: item.remark,
       // }));
+      if (
+        this.standardList.filter((item) => item.dealResult).length !==
+        this.standardList.length
+      ) {
+        this.$message.warning("请填写所有操作！");
+        return;
+      }
       upkeepSubmitItem({ maintainItems: this.standardList }).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
@@ -621,7 +620,6 @@ export default {
       getMaintenanceItem(queryParams).then((res) => {
         if (res.code == 200) {
           this.standardList = res.data.records;
-          this.total = res.data.total;
         }
       });
     },
@@ -708,9 +706,7 @@ export default {
 ::v-deep .el-radio {
   margin-right: 0;
 }
-::v-deep .el-upload-list {
-  display: none;
-}
+
 .controls {
   color: #1f77fc;
   padding-left: 6px;

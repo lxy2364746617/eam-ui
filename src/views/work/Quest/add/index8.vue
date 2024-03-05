@@ -4,25 +4,25 @@
       <div class="box-header" v-if="disabled">
         <div class="title">工单进度</div>
         <!-- 进度条 -->
-          <el-steps
-            :active="formData.workActive"
-            align-center
-           style="margin-top: 20px"
-            finish-status="success"
+        <el-steps
+          :active="formData.workActive"
+          align-center
+          style="margin-top: 20px"
+          finish-status="success"
+        >
+          <el-step
+            v-for="item in formData.workOrderSchedule"
+            :key="item.id"
+            :title="item.orderStatus"
+            icon="el-icon-loading"
           >
-            <el-step
-              v-for="item in formData.workOrderSchedule"
-              :key="item.id"
-              :title="item.orderStatus"
-              icon="el-icon-loading"
-            >
-              <div slot="description">
-                <span style="font-size: 14px">{{ item.createBy }}</span>
-                <br />
-                <span>{{ item.createTime }}</span>
-              </div></el-step
-            >
-          </el-steps>
+            <div slot="description">
+              <span style="font-size: 14px">{{ item.createBy }}</span>
+              <br />
+              <span>{{ item.createTime }}</span>
+            </div></el-step
+          >
+        </el-steps>
       </div>
       <div class="subtitle">
         <div style="display: flex; align-items: center">
@@ -153,13 +153,18 @@
       <el-table-column
         label="检测单位"
         align="center"
-        prop="location2"
+        prop="checkUnit"
         min-width="150"
-      />
+      >
+        <template slot-scope="scope">
+          <span
+            v-html="findName(groupOptions, scope.row.checkUnit)"
+          ></span> </template
+      ></el-table-column>
       <el-table-column
         label="检测单位负责人"
         align="center"
-        prop="location3"
+        prop="checkUnitHead"
         min-width="150"
       />
 
@@ -190,7 +195,7 @@
             >查看</el-button
           >
           <el-button
-            v-if="!disabled"
+            v-if="!disabled && scope.row.executeStatus != 1"
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -388,13 +393,7 @@ export default {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
     handlerDownload(row) {
-      this.download(
-        "common/download",
-        {
-          fileName: row.fileName,
-        },
-        row.originalFileName
-      );
+      this.$download.resource(row.fileName);
     },
 
     // 抽屉
@@ -479,6 +478,7 @@ export default {
           i: true,
           val,
           l: this.formData,
+          id: val.id,
           t:
             this.getTreeParent(val.deviceType).join(" > ") +
             " > " +
@@ -551,13 +551,15 @@ export default {
   background-color: #ecf1fa;
 }
 .title {
-  font-size: 18px;
+  padding: 0 20px;
   width: 100%;
-  // border-bottom: 1px solid #d8d8d8;
+  height: 40px;
   display: flex;
-  justify-content: start;
   align-items: center;
-  padding-left: 40px;
+  font-size: 16px;
+  font-weight: 700;
+  border-bottom: 1px solid #eaeaea;
+  margin-bottom: 20px;
 }
 .subtitle {
   border-bottom: 1px solid #ddd;

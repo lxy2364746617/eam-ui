@@ -263,7 +263,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-
+  margin-bottom: 20px;
   .container-box1 {
     max-height: 550px;
     overflow-y: scroll;
@@ -321,6 +321,7 @@ export default {
   align-items: center;
   padding-right: 18px;
   border-left: 5px solid #1f77fc;
+  margin-bottom: 20px;
   i {
     margin-right: 10px;
     color: #1f77fc;

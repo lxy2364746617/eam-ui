@@ -1,7 +1,10 @@
 <template>
   <div class="app-container2">
     <div class="title">
-      <i class="el-icon-caret-right"><span class="icon-text">备件记录</span></i>
+      <i class="el-icon-caret-right"
+        ><span class="icon-text">备件记录</span>
+        请维护使用部位和替换的原件信息</i
+      >
       <el-button
         type="text"
         icon="el-icon-plus"
@@ -77,6 +80,7 @@
       :visible.sync="drawersupplier"
       size="60%"
       direction="rtl"
+      :append-to-body="true"
       :wrapperClosable="false"
     >
       <spareList
@@ -84,6 +88,22 @@
         :isRadio="true"
         @close="closesupplier"
       ></spareList>
+    </el-drawer>
+
+    <!-- 添加供应商对话框 -->
+    <el-drawer
+      title="选择供应商"
+      :visible.sync="drawersupplier2"
+      size="60%"
+      direction="rtl"
+      :append-to-body="true"
+      :wrapperClosable="false"
+    >
+      <supplier
+        @submitRadio="submitRadio2"
+        :isRadio="true"
+        @close="closesupplier2"
+      ></supplier>
     </el-drawer>
   </div>
 </template>
@@ -109,6 +129,7 @@ export default {
   data() {
     return {
       drawersupplier: false,
+      drawersupplier2: false,
       standardList: [],
       loading: false,
       btnLoading: false,
@@ -172,7 +193,7 @@ export default {
     if (this.deptOptions && this.formData.attachmentDTOList) {
       this.standardList = this.formData.attachmentDTOList ?? [];
     }
-    if (this.formData.orderCode && this.disabled) {
+    if (this.formData.orderCode) {
       request({
         url: "/wom/repair/getWomAttachmentList",
         method: "get",
@@ -222,14 +243,15 @@ export default {
           required: true,
           span: 22,
           formType: "number",
+          min: 1,
         },
         {
           label: "单位",
           prop: "unit",
           required: true,
           span: 22,
-          formType: "selectTree",
-          options: this.deptOptions,
+          formType: "select",
+          options: this.dict.type.spare_parts_unit,
           formDisabled: true,
         },
         { label: "原件编码", prop: "scriptCode", required: true, span: 22 },
@@ -271,12 +293,11 @@ export default {
           label: "备件类别",
           prop: "attachmentType",
           span: 22,
-          required: true,
           formType: "select",
           options: this.dict.type.spare_parts_type,
           formDisabled: true,
         },
-        { label: "供应商名称", prop: "supplierName", span: 22, required: true },
+        { label: "供应商名称", prop: "supplierName", span: 22 },
         { label: "使用部位", prop: "location", required: true, span: 22 },
         {
           label: "更换数量",
@@ -306,6 +327,12 @@ export default {
     },
   },
   methods: {
+    submitRadio2(row) {
+      this.$set(this.formDataNow, "supplierName", row.supplierName);
+      this.$set(this.formDataNow, "supplierCode", row.supplierCode);
+      this.$set(this.formDataNow, "supplierId", row.id);
+      this.closesupplier2();
+    },
     // ! 选择备件
     submitRadio(row) {
       // this.$set(this.form, "attachmentCode", row.partCode);
@@ -320,13 +347,17 @@ export default {
         attachmentCode: row.partCode,
         attachmentName: row.partName,
         specs: row.sModel,
-        attachmentType: row.partType,
+        attachmentType: "" + row.partType,
+        unit: "" + row.unit,
       };
 
       this.closesupplier();
     },
     closesupplier() {
       this.drawersupplier = false;
+    },
+    closesupplier2() {
+      this.drawersupplier2 = false;
     },
     getList(id) {},
     /** 查询部门下拉树结构 */
@@ -409,7 +440,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-
+  margin-bottom: 20px;
   .container-box1 {
     max-height: 550px;
     overflow-y: scroll;
