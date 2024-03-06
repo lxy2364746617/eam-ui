@@ -41,11 +41,13 @@
           >
           </Request>
           <Relevance
+            ref="relevance"
             v-else-if="col.formType == 'document'"
             @fileResourceList="fileResourceList"
             @delFileList="delFileList"
             :formData="formData"
             :disabled="disabled"
+            :isTask="col.isTask"
           ></Relevance>
           <SparePart
             v-else-if="col.formType == 'sparePart'"
@@ -107,7 +109,7 @@
             type="primary"
             icon="el-icon-plus"
             :disabled="col.formDisabled || disabled"
-            @click="AddFile2"
+            @click="AddFile"
             >{{ col.btnText }}</el-button
           >
           <el-button
@@ -115,7 +117,7 @@
             type="primary"
             icon="el-icon-plus"
             :disabled="col.formDisabled || disabled"
-            @click="AddFile3"
+            @click="AddFile"
             >{{ col.btnText }}</el-button
           >
           <div
@@ -503,14 +505,8 @@ export default {
     },
     //上传文件
     AddFile() {
-      this.filedrawer = true;
+      document.querySelector(".add-btn-file").click();
     },
-    // setEquipMessage(data) {
-    //   //
-    //   this.$nextTick(() => {
-    //     this.$refs.message.setFormData(data);
-    //   });
-    // },
     // 定期检验设备
     womDevices(val) {
       this.formData["womDevices"] = val;

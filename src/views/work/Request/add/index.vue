@@ -215,6 +215,7 @@ export default {
                     prop: "contacts2",
                     span: 24,
                     formType: "document",
+                    isTask: false,
                   },
                 ];
                 break;
@@ -275,7 +276,7 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",
+                    formType: "document",isTask: false,
                   },
                 ];
                 break;
@@ -409,7 +410,7 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",
+                    formType: "document",isTask: false,
                   },
                 ];
                 break;
@@ -474,7 +475,7 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",
+                    formType: "document",isTask: false,
                   },
                 ];
                 break;
@@ -523,7 +524,7 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",
+                    formType: "document",isTask: false,
                   },
                 ];
                 break;
@@ -586,7 +587,7 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",
+                    formType: "document",isTask: false,
                   },
                 ];
                 break;
@@ -649,7 +650,7 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",
+                    formType: "document",isTask: false,
                   },
                 ];
                 break;

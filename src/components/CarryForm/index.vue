@@ -49,6 +49,7 @@
             @delFileList="delFileList"
             :disabled="col.formDisabled || disabled"
             :formData="formData"
+            :isTask="col.isTask"
           ></Relevance>
           <SpareRecord
             v-else-if="col.formType == 'spareRecord'"
@@ -100,7 +101,7 @@
             type="primary"
             icon="el-icon-plus"
             :disabled="col.formDisabled || disabled"
-            @click="AddFile2"
+            @click="AddFile"
             >{{ col.btnText }}</el-button
           >
           <div
@@ -462,7 +463,7 @@ export default {
     },
     //上传文件
     AddFile() {
-      this.filedrawer = true;
+      document.querySelector(".add-btn-file").click();
     },
     AddFile2() {
       this.filedrawer2 = true;

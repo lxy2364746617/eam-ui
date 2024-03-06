@@ -110,21 +110,24 @@ export default {
         item.value = item.id;
       });
       this.groupOptions = res.data;
-      if (!this.fileShow) {
-        goExecutorDetail({
-          workOrderCode: this.formData.workOrderCode,
-          deviceCode: this.form.deviceCode,
-        }).then((res) => {
-          this.formData = {
-            ...this.formData,
-            ...res.data,
-            checkResult: "" + res.data.checkResult,
-            checkUnit: Number(res.data.checkUnit),
-          };
-        });
-      }
-      this.formData["recorder"] = this.$store.state.user.standing.nickName;
-      this.formData["recordTime"] = new Date();
+
+      goExecutorDetail({
+        workOrderCode: this.formData.workOrderCode,
+        deviceCode: this.form.deviceCode,
+      }).then((res) => {
+        this.formData = {
+          ...this.formData,
+          ...res.data,
+          checkResult: "" + res.data.checkResult,
+          checkUnit: res.data.checkUnit
+            ? Number(res.data.checkUnit)
+            : this.carryValue.l.groupId,
+          recorder:
+            res.data.recorder ?? this.$store.state.user.standing.nickName,
+          recordTime: res.data.recordTime ?? new Date(),
+        };
+      });
+
       this.$set(this.formData, "checkUnit", this.carryValue.l.groupId);
     });
   },
@@ -326,14 +329,14 @@ export default {
       let newCheckCosts = formdata.checkCosts.map((item) => ({
         ...item,
         workOrderCode: formdata.workOrderCode,
-        deviceCode: formdata.deviceCode,
+        deviceCode: this.form.deviceCode,
       }));
       Promise.all([
         goExecutorSubmit(formdata),
         addCheckExpense({ checkCosts: newCheckCosts }),
       ]).then((res) => {
         if (res[0].code === 200 && res[1].code === 200) {
-          this.$message.success(res.msg);
+          this.$message.success("执行成功！");
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
           this.$router.go(-1); //跳回上页
         }

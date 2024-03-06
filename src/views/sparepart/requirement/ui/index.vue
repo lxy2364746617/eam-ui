@@ -301,7 +301,7 @@ export default {
           label: "需求日期",
           prop: "demandDate",
           span: 22,
-          formType: "afterDate",
+          formType: "date",
           required: true,
         },
         {
@@ -353,17 +353,12 @@ export default {
     },
     // ! 选择备件
     submitRadio(row) {
-      // this.$set(this.formDataNow, "partCode", row.partCode);
-      // this.$set(this.formDataNow, "partName", row.partName);
-      // this.$set(this.formDataNow, "partType", row.partType);
-      // this.$set(this.formDataNow, "smodel", row.smodel);
-      // this.$set(this.formDataNow, "unit", row.unit);
-      // this.$set(this.formDataNow, "supplierId", row.supplierId);
+      this.$set(this.formDataNow, "partCode", row.partCode);
+      this.$set(this.formDataNow, "partName", row.partName);
       this.$set(this.formDataNow, "partType", String(row.partType));
       this.$set(this.formDataNow, "unit", String(row.unit));
       this.$set(this.formDataNow, "smodel", row.sModel);
-
-      this.formDataNow = { ...row, ...this.formDataNow };
+      // this.formDataNow = { ...row, ...this.formDataNow };
       this.closesupplier();
     },
     closesupplier() {

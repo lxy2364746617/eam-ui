@@ -656,8 +656,8 @@ export default {
       getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
         row["workActive"] = 0;
         if (
-          row.orderType !== "DZWX" ||
-          row.orderType !== "JDBWX" ||
+          row.orderType !== "DZWX" &&
+          row.orderType !== "JDBWX" &&
           row.orderType !== "WWWX"
         ) {
           this.workActiveList.splice(3, 1);
