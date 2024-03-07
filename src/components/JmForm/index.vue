@@ -79,6 +79,8 @@
                 :label="item.value"
                 v-for="item in col.options"
                 :key="item.value"
+                :disabled='item.disabled'
+                :style="col.style"
               >{{item.label}}</el-radio>
             </el-radio-group>
             <el-date-picker

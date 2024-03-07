@@ -4,11 +4,12 @@
       <!--部门数据-->
       <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
-        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" style="position: fixed;top: 121px;height: calc(100vh - 141px);">
+        <jm-user-tree  :treeData="deptOptions"  @handleNodeClick="handleNodeClick" style="position: fixed;top: 121px;height: calc(100vh - 141px);">
           <template slot="middle-pos">
             <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"></el-button>
             <el-button type="text" icon="el-icon-edit-outline" @click="editTreeItem"></el-button>
             <el-button type="text" icon="el-icon-delete" @click="handleDelete(nowClickTreeItem)"></el-button>
+            
           </template>
         </jm-user-tree>
       </el-col>
@@ -122,8 +123,8 @@ export default {
             message: "请输入正确的手机号码",
             trigger: "blur"
           }
-        ]
-      }
+        ],
+      },
     };
   },
   async created() {
@@ -285,8 +286,6 @@ export default {
           this.rightTitle = '基本信息'
           this.$modal.msgSuccess("修改成功");
           this.disabled = true;
-          this.getCategoryFn()
-          this.getDeptTree()
         });
       } else {
         addCategory(formdata).then(response => {

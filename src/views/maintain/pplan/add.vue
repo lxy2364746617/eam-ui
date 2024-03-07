@@ -455,6 +455,8 @@ export default {
             const self = this;
             return {
                 disabledDate(time) {
+                    return (self.form.thisExecuteTime&&new Date(self.form.thisExecuteTime).getTime() < time.getTime())
+                        || (self.form.planEndTime&&new Date(self.form.planEndTime).getTime() < time.getTime())
                     if (
                         self.form.planEndTime != "" &&
                         self.form.planEndTime != null &&
@@ -472,6 +474,8 @@ export default {
             const self = this;
             return {
                 disabledDate(time) {
+                    return(self.form.thisExecuteTime&&new Date(self.form.thisExecuteTime).getTime() > time.getTime()) 
+                    || (self.form.planBeginTime&&new Date(self.form.planBeginTime).getTime() > time.getTime())
                     if (
                         self.form.planBeginTime != "" &&
                         self.form.planBeginTime != null &&

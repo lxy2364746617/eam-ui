@@ -238,9 +238,11 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击下载
       handleDownload(row){
+        console.log(row,row.fileName)
+        this.$download.resource(row.filePath)
         // console.log(row)
-        let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
-        download(url)
+        /* let url = `${process.env.VUE_APP_BASE_API}${row.filePath}`
+        download(url) */
       },
       // 点击预览
       handlePreview(row){

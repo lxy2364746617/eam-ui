@@ -34,7 +34,7 @@
 import JmTable from "@/components/JmTable";
 import { isSmEmCategoryCategory, exportIndexEquipment } from "@/api/equipment/category";
 import { listIndexBASE } from "@/api/equipment/BASE";
-
+import { listDept } from '@/api/system/dept'
 export default {
     name: "deviceindex",
     dicts: [],
@@ -63,10 +63,14 @@ export default {
                 isSm: "Y",
                 categoryId: undefined,
             },
+            deptOptions:[]
         };
     },
-    created() {
-        this.isSmEmCategoryRadio()
+   async created() {
+       await listDept().then((response) => {
+        this.deptOptions = response.data
+      })
+       await this.isSmEmCategoryRadio()
     },
     methods: {
         findName(options, value) {
@@ -77,6 +81,28 @@ export default {
         }
       }
       return name || value;
+    },
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
     },
         radioInput(val){
             this.queryParams.categoryId = this.radioColumn[val].categoryId
@@ -116,6 +142,9 @@ export default {
                         b.emArchivesSpecial?JSON.parse(b.emArchivesSpecial.fieldValue):{},
                     )
                 });
+                response.rows.forEach(item=>{
+                    item.position=this.findTreeName(this.deptOptions, item.position)
+                })
                 this.deptList = response.rows;
                 this.total = response.total;
                 this.loading = false;

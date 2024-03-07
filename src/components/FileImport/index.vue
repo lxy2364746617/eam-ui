@@ -5,7 +5,9 @@
       :visible.sync="upload.open"
       :direction="direction"
       :wrapperClosable="false"
-      destroy-on-close>
+      destroy-on-close
+      :before-close='()=>{upload.open=false;upload.updateSupport=0}'
+      >
       
       <el-upload
         ref="upload"
@@ -18,7 +20,8 @@
         :on-progress="handleFileUploadProgress"
         :on-success="handleFileSuccess"
         :before-upload='beforeUpload'
-        :auto-upload="true"
+        :auto-upload="autoUpload"
+        :on-exceed='handleFileExceed'
         drag
       >
         <i class="el-icon-upload"></i>
@@ -33,7 +36,7 @@
       </el-upload>
       <div class="dialog-footer">
         <el-button type="primary" @click="submitFileForm">确 定</el-button>
-        <el-button @click="upload.open=false">取 消</el-button>
+        <el-button @click="()=>{upload.open=false;upload.updateSupport=0}">取 消</el-button>
       </div>
     </el-drawer>
     
@@ -57,6 +60,10 @@ export default {
     isUpdate:{
       default: true,
       type: Boolean
+    },
+    autoUpload:{
+      default:true,
+      type:Boolean
     }
   },
   computed:{
@@ -90,7 +97,7 @@ export default {
   console.log(fileType)
                 if (!(fileType=='xlsx'||fileType=='xls')) {
                     this.$message({
-                        message: '文件格式错误',
+                        message: '仅允许导入xls、xlsx格式文件',
                         type: 'error',  
                         duration: 2000
                     });
@@ -120,6 +127,10 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
+      this.upload.updateSupport=0
+    },
+    handleFileExceed(){
+      this.$message.error('文件数量超出，只允许上传一个文件！');
     }
   }
 };

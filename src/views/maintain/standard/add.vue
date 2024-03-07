@@ -24,8 +24,8 @@
                             <el-input v-model="form.categoryName" placeholder="请输入设备类别" disabled />
                         </el-form-item></el-col>
                     <el-col :span="12">
-                        <el-form-item label="功能位置(工作面)" prop="location">
-                            <el-input v-model="form.location" placeholder="请输入功能位置" disabled />
+                        <el-form-item label="功能位置(工作面)" prop="locationName">
+                            <el-input v-model="form.locationName" placeholder="请输入功能位置" disabled />
                         </el-form-item></el-col>
                     <el-col :span="12"> <el-form-item label="所属组织" prop="affDeptName">
                             <el-input v-model="form.affDeptName" placeholder="请输入所属组织" disabled />
@@ -403,6 +403,8 @@ export default {
         },
         /** 查询设备平台_表单模板列表 */
         getDetails(queryParams) {
+            getLocationTree().then(res=>{
+                this.locationOptions=this.getTreeName(res.data)
             getStandard(queryParams).then(response => {
                 let { dayMroPatrolStandardCheckList, preMroPatrolStandardCheckList, fullMroPatrolStandardCheckList, ...other } = response.data
                 this.activeName = 'first';
@@ -411,8 +413,32 @@ export default {
                 this.standardList2 = preMroPatrolStandardCheckList || [];
                 this.standardList3 = fullMroPatrolStandardCheckList || [];
                 this.form = other;
+                this.form.locationName=this.findTreeName(this.locationOptions,response.data.location)
             });
+            })
         },
+        findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
         /** 新增按钮操作 */
         handleAdd() {
             let disIds = this.standardList.length == 0 ? [] : this.standardList.map(item => { return item.itemCode })
