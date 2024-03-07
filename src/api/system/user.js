@@ -141,3 +141,11 @@ export function groupList() {
     method: 'get'
   })
 }
+// 查询用户详细
+export function optionDept(query) {
+  return request({
+    url: '/system/user/optionDept',
+    method: 'get',
+    params: query
+  })
+}

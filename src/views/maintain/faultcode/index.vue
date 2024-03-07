@@ -9,28 +9,28 @@
         <el-col :span="1.5">
           <el-button
           type="primary"
-          plain
+          
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['maintain:faultcode:add']"
         >新增</el-button>
         <el-button
-          type="success"
-          plain
+          type="primary"
+          
           icon="el-icon-upload2"
           size="mini"
           @click="handleImport"
           v-hasPermi="['maintain:faultcode:edit']"
         >导入</el-button>
           <el-button
-          type="warning"
-          plain
+          type="primary"
+          
           icon="el-icon-download"
           size="mini"
           @click="importTemplate"
           v-hasPermi="['maintain:faultcode:export']"
-        >下载模板</el-button>
+        >下载</el-button>
         </el-col>
       </template>
       <template #end_handle="scope">
@@ -109,8 +109,8 @@
           <el-input v-model="form.measure" type="textarea" placeholder="请输入故障处理措施"  :autosize="{ minRows: 3}" maxlength="100" show-word-limit />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio v-model="form.status" label="0"><span style="color:#0BCD15">启用</span></el-radio>
-          <el-radio v-model="form.status" label="1"><span style="color:#F30909">停用</span></el-radio>
+          <el-radio v-model="form.status" label="0">启用</el-radio>
+          <el-radio v-model="form.status" label="1">停用</el-radio>
         </el-form-item>
       </el-form>
       <div  class="dialog-footer" style="text-align:center">

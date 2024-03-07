@@ -51,3 +51,15 @@ export function findByTemplateType(data) {
     data: data
   })
 }
+// 状态修改
+export function changeAttrStatus(fieldId, attStatus) {
+  const data = {
+    fieldId,
+    attStatus,
+  };
+  return request({
+    url: "/equipment/attribute/changeStatus",
+    method: "put",
+    data: data,
+  });
+}

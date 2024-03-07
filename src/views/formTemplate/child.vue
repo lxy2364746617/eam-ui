@@ -10,7 +10,8 @@
       @handleSelectionChange="handleSelectionChange"
       :total="total"
       :handleWidth="200"
-      :columns="columns">
+      :columns="tbColumns"
+      @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button
@@ -84,7 +85,7 @@
 </template>
 
 <script>
-import { listTemplate, getTemplate, delTemplate, addTemplate, updateTemplate } from "@/api/equipment/attribute";
+import { listTemplate, getTemplate, delTemplate, addTemplate, updateTemplate,changeAttrStatus } from "@/api/equipment/attribute";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import { optionselect as getDictOptionselect } from "@/api/system/dict/type";
@@ -104,18 +105,50 @@ export default {
       return [ 
         { label: '字段编码', prop: 'fieldCode',width: 100, required: true, span:24, },
         { label: '字段名称', prop: 'fieldName', required: true, width: 100, span:24,  },
-        { label: '字段值类型', prop: 'fieldType',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_filed, width: 200, span:24, },
-        { label: '字典属性', prop: 'dictionaryType', formType:'select', options: this.dictOptions,required: true, optionShowValue: true, formVisible: this.formData.fieldType=='dictionary', width: 100,  span:24, },
+        { label: '字段值类型', prop: 'fieldType',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_filed, width: 120, span:24, },
+        { label: '字典属性', prop: 'dictionaryType', formType:'select', options: this.dictOptions,required: true, optionShowValue: true, formVisible: this.formData.fieldType=='dictionary', width: 150,  span:24, },
+        // { label: '取值路径', prop: 'valuePath',width: 100,  span:24, },
+        { label: '组件类型', prop: 'componentType',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_assembly, width: 100, span:24, style:'margin-top:10px'},
+        { label: '组件提示语', prop: 'componentContent',width: 100, span:24, },
+        { label: '是否必填', prop: 'required',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_must,  width: 100, span:24, },
+        { label: '是否可修改', prop: 'isModify',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_int, width: 100, span:24, },
+        { label: '备注', prop: 'remark',width: 100, span:24, },
+        { label: '启用状态', prop: 'attStatus',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_must,  width: 100, span:24, },
+        // { label: '启用状态', prop: 'disabled',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_use,width: 100, span:24, },
+        { label: '更新时间', prop: 'updateTime',width: 100, span:24, formVisible:false, },
+      ]
+    },
+    tbColumns(){
+      return [ 
+        { label: '字段编码', prop: 'fieldCode',width: 100, required: true, span:24, },
+        { label: '字段名称', prop: 'fieldName', required: true, width: 100, span:24,  },
+        { label: '字段值类型', prop: 'fieldType',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_filed, width: 120, span:24, },
+        { label: '字典属性', prop: 'dictionaryType', formType:'select', options: this.dictOptions,required: true, optionShowValue: true, formVisible: this.formData.fieldType=='dictionary', width: 150,  span:24, },
         // { label: '取值路径', prop: 'valuePath',width: 100,  span:24, },
         { label: '组件类型', prop: 'componentType',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_assembly, width: 100, span:24, },
         { label: '组件提示语', prop: 'componentContent',width: 100, span:24, },
         { label: '是否必填', prop: 'required',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_must,  width: 100, span:24, },
         { label: '是否可修改', prop: 'isModify',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_int, width: 100, span:24, },
         { label: '备注', prop: 'remark',width: 100, span:24, },
+        { label: '启用状态', prop: 'attStatus',formType: 'switch',required: true, options: this.dict.type.equipment_attribute_must,  width: 100, span:24, },
         // { label: '启用状态', prop: 'disabled',formType: 'radio',required: true, options: this.dict.type.equipment_attribute_use,width: 100, span:24, },
         { label: '更新时间', prop: 'updateTime',width: 100, span:24, formVisible:false, },
       ]
-    }
+    },
+  },
+  watch:{
+        'formData.componentType':{
+          handler(newType){
+            newType=='input'&&this.changeTypeFile('string')
+            newType=='textarea'&&this.changeTypeFile('string')
+            newType=='radio'&&this.changeTypeFile('dictionary')
+            newType=='select'&&this.changeTypeFile('dictionary')
+            newType=='date'&&this.changeTypeFile('date')
+            newType=='number'&&this.changeTypeFile('int','float')
+          }
+        },
+        immediate:true,
+        deep:true
   },
   data() {
     return {
@@ -188,11 +221,44 @@ export default {
         b.value = b.dictType;
       });
       this.dictOptions = response.data;
+      
     });
     this.queryParams.templateId = this.nowclickitem.templateId
     this.getList(this.queryParams);
+    
   },
   methods: {
+    handleStatusChange(event, prop, row) {
+      let text = row.attStatus == '0' ? '启用' : '停用'
+      this.$modal
+        .confirm('确认要' + text + '"' + row.fieldName + '"吗？')
+        .then(function () {
+          return changeAttrStatus(row.fieldId, row.attStatus)
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + '成功')
+        })
+        .catch(function () {
+          row.attStatus = row.attStatus === '0' ? '1' : '0'
+        })
+    },
+    changeTypeFile(type1,type2){
+      this.$set(this.formData,'fieldType',type1)
+      if(type1==''){
+        this.dict.type.equipment_attribute_filed.forEach(item=>{
+          item.disabled=false
+        })
+      }else{
+        this.dict.type.equipment_attribute_filed.forEach(item=>{
+      if(item.value==type1||item.value==type2){
+        item.disabled=false
+      }else{
+        item.disabled=true
+      }
+      })
+      }
+      
+    },
     backparent(){
       this.$emit('back')
     },
@@ -204,6 +270,7 @@ export default {
     },
     /** 查询设备平台_表单模板列表 */
     getList(queryParams) {
+      queryParams.templateId = this.nowclickitem.templateId
       this.loading = true;
       listTemplate(queryParams).then(response => {
         this.templateList = response.rows;
@@ -253,10 +320,11 @@ export default {
         templateId: this.nowclickitem.templateId,
       }
       // this.reset();
-      this.drawer = true;
       this.disabled = false
+      this.drawer = true;
       this.title = "新增自定义字段";
-
+      this.changeTypeFile('')
+      this.$refs.jmform&&this.$refs.jmform.clearValidate()
     },
     /** 修改按钮操作 */
     handleUpdate(row,state) {
@@ -293,7 +361,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const fieldIds = row.fieldId || this.ids;
-      this.$modal.confirm('是否确认删除设备平台_表单模板编号为"' + fieldIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除字段名称为"' + row.fieldName + '"的数据项？').then(function() {
         return delTemplate(fieldIds);
       }).then(() => {
         this.getList(this.queryParams);

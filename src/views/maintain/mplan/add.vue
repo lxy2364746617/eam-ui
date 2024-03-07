@@ -396,6 +396,7 @@ export default {
             handler(newType){
                 if(newType=='班') this.form.planCycle=1
                 if(this.form.thisExecuteTime){
+                    
                     let datetime=new Date(this.form.thisExecuteTime)
                     if(newType=='时')  datetime.setHours(datetime.getHours()+this.form.planCycle) //时
                     if(newType=='班') datetime.setDate(datetime.getDate()+1)
@@ -463,6 +464,9 @@ export default {
             const self = this;
             return {
                 disabledDate(time) {
+                    return (self.form.thisExecuteTime&&new Date(self.form.thisExecuteTime).getTime() < time.getTime())
+                        || (self.form.planEndTime&&new Date(self.form.planEndTime).getTime() < time.getTime())
+                        
                     if (
                         self.form.planEndTime != "" &&
                         self.form.planEndTime != null &&
@@ -480,6 +484,10 @@ export default {
             const self = this;
             return {
                 disabledDate(time) {
+                    return(self.form.thisExecuteTime&&new Date(self.form.thisExecuteTime).getTime() > time.getTime()) 
+                    || (self.form.planBeginTime&&new Date(self.form.planBeginTime).getTime() > time.getTime())
+                      
+                        
                     if (
                         self.form.planBeginTime != "" &&
                         self.form.planBeginTime != null &&
@@ -672,15 +680,15 @@ export default {
         handleDelete2(row) {
             var name = row.originalFileName;
             let that = this;
-            this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function () {
-                return delResource(id);
+            this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(()=>{
+                delResource(row.id)
             }).then(() => {
                 that.fileResourceList.forEach((element, index) => {
                     if (element.originalFileName == row.originalFileName) {
                         that.fileResourceList.splice(index, 1);
                     }
                 });
-            }).catch(() => { });
+            })
         },
         downloadFile(row) {
             this.$download.resource(row.fileName)

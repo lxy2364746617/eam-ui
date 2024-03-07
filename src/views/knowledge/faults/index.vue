@@ -61,6 +61,7 @@ import { faultCaseList,faultCaseListDel,faultCaseInfo,faultCaseType,faultCaseLev
 import JmTable from "@/components/JmTable1";
 import * as echarts from "echarts";
   export default {
+    dicts:['fault_grade'],
     name:'faults',
     components: {
       JmTable
@@ -72,26 +73,7 @@ import * as echarts from "echarts";
         // 年添加案例数
         yearNum:'0',
         // 表单头部
-        tablecolumns:[
-          { label: "案例编码", prop: "caseNo" },
-          { label: "故障代码", prop: "code" },
-          { label: "故障名称", prop: "faultName", },
-          { label: "故障分类", prop: "type", formType: "select",options:[]},
-          { label: "故障设备编码", prop: "deviceCode",type:'link'},
-          { label: "设备名称", prop: "deviceName", },
-          { label: "故障部件(KV)", prop: "location", },
-          { label: "故障等级", prop: "level", formType: "select",options:[{label:'1',value:'1'}]},
-          { label: "工单编码", prop: "orderCode", type:'link'},
-          { label: "故障描述", prop: "faultInfo", },
-          { label: "故障原因", prop: "faultReason", },
-          { label: "维修措施", prop: "repairInfo", },
-          { label: "预防对策", prop: "prevention", },
-          { label: "补充说明", prop: "footNote", },
-          { label: "添加日期", prop: "createTime", formType: "daterange",dateKey:['beginCreateTime','endCreateTime'],width:200},
-          { label: "添加人", prop: "createBy", },
-          { label: "更新时间", prop: "updateTime", formType: "daterange",dateKey:['beginUpdateTime','endUpdateTime'],width:200},
-          { label: "更新人", prop: "updateBy", },
-        ],
+        
         // 表格数据
         templateList: [],
         // 总条数
@@ -192,6 +174,30 @@ import * as echarts from "echarts";
           ]
         }
       }
+    },
+    computed:{
+      tablecolumns(){
+        return [
+          { label: "案例编码", prop: "caseNo" },
+          { label: "故障代码", prop: "code" },
+          { label: "故障名称", prop: "faultName", },
+          { label: "故障分类", prop: "type", formType: "select",options:[]},
+          { label: "故障设备编码", prop: "deviceCode",type:'link'},
+          { label: "设备名称", prop: "deviceName", },
+          { label: "故障部件(KV)", prop: "location", },
+          { label: "故障等级", prop: "faultGrade", formType: "select",options:this.dict.type.fault_grade},
+          { label: "工单编码", prop: "orderCode", type:'link'},
+          { label: "故障描述", prop: "faultInfo", },
+          { label: "故障原因", prop: "faultReason", },
+          { label: "维修措施", prop: "repairInfo", },
+          { label: "预防对策", prop: "prevention", },
+          { label: "补充说明", prop: "footNote", },
+          { label: "添加日期", prop: "createTime", formType: "daterange",dateKey:['beginCreateTime','endCreateTime'],width:200},
+          { label: "添加人", prop: "createBy", },
+          { label: "更新时间", prop: "updateTime", formType: "daterange",dateKey:['beginUpdateTime','endUpdateTime'],width:200},
+          { label: "更新人", prop: "updateBy", },
+        ]
+      },
     },
     mounted(){
       this.getRouteData()

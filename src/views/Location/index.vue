@@ -156,9 +156,30 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       // 扁平化树结构为数组，根据ID获取所有上级
       flatFn(id){
         let arr = flat(this.deptOptions)
-        console.log(arr)
         return parentTree(arr,id)
       },
+      findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].deptId == value) {
+          changeName(name1, options[i].deptName);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
       // 设置是否显示上级功能位置
       setShowParentLocation(Boolean){
         this.columns.forEach(item=>{
@@ -201,7 +222,6 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       },
       // 获取基本信息
       getBaseInfo(){
-        console.log(this.nowClickTreeItem)
         let params = {
           id:this.nowClickTreeItem.id,
           pageNum:1,
@@ -217,6 +237,9 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
             }
           })
           this.templateList = res.data.nextList.records || []
+          this.templateList&&this.templateList.forEach(item=>{
+            item.parentDeptName=this.findTreeName(this.deptOptions,item.parentId)
+          })
           this.total = res.data.nextList.total
           this.src = res.data.baseInfo.qrCode?`${process.env.VUE_APP_BASE_API}${res.data.baseInfo.qrCode}`:false
         })
@@ -231,6 +254,9 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         locationInfo(params).then(response => {
           console.log(response)
           this.templateList = response.data.nextList.records || []
+          this.templateList&&this.templateList.forEach(item=>{
+            item.parentDeptName=this.findTreeName(this.deptOptions,item.parentId)
+          })
           this.total = response.data.nextList.total;
           this.loading = false;
         });
@@ -322,6 +348,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         this.columns.forEach(item=>{
           item.formDisabled = true
         })
+        this.getBaseInfo()
       },
       // 点击保存
       saveClick(){

@@ -219,7 +219,7 @@ export default {
         { label:"是否租赁设备", prop:"isLease", formType: 'select', options: this.dict.type.em_is_lease, tableVisible: false, span: 12, },//(Y 是、N 否)
         { label:"租赁设备到期日", prop:"leaseTime", formType: 'date', tableVisible: false, span: 12, },
         { label:"出租意向", prop:"rentOut", tableVisible: false, span: 12, formType: 'select', options: this.dict.type.em_rent_out, },
-        { label:"是否跨公司调剂", prop:"isRelieve", tableVisible: false, span: 12, formType: 'select', options: this.dict.type.em_is_relieve, },
+        { label:"是否跨子公司调剂", prop:"isRelieve", tableVisible: false, span: 12, formType: 'select', options: this.dict.type.em_is_relieve, },
         { label:"备注", prop:"remark", formType: 'textarea', tableVisible: false, span: 24, },
       ]
     },

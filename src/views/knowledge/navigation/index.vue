@@ -67,9 +67,9 @@
               <div class="content_body content_body2">
                 <el-row :gutter="20" style="width:100%">
                   <el-col :span="6" v-for="(item,index) in ywwdData.list" :key="index">
-                    <div class="wd_box">
+                    <div class="wd_box" >
                       <p class="el-icon-folder-opened icon_top"></p>
-                      <p class="name">{{item.fileName}}</p>
+                      <p class="name" >{{item.fileName}}</p>
                       <p class="type">{{item.type}}</p>
                       <el-divider></el-divider>
                       <p class="icon_bottom"><span class="el-icon-right" @click="ywwdClick(item)"></span></p>
@@ -392,11 +392,18 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
   font-size: 12px;
 }
 .wd_box{
+  width: 100%;
+  height:130px;
   background-color: #F7FBFF;
   border: 1px solid #E9EAEF;
+  border-radius: 8px;
   padding: 10PX 10px 0 10px;
   margin-bottom: 10PX;
+  
   p{
+    overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
     margin: 0;
     line-height: 25px;
   }

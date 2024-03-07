@@ -77,13 +77,11 @@
           @submitForm="submitForm" 
           ref="jmform"
           :disabled="disabled">
-          <template #footer>
-            <div style="text-align: center;">
-              <el-button size="mini" @click="drawer=false">取消</el-button>
-              <el-button size="mini" @click="saveHandle" type="primary" v-if="!disabled">保存</el-button>
-            </div>
-          </template>
         </jm-form>
+         <div class="dialog-footer" style="text-align: center;">
+              <el-button size="mini" style="margin-right:15%" @click="drawer=false">取消</el-button>
+              <el-button size="mini" style="margin-left:15%" @click="saveHandle" type="primary" v-if="!disabled">保存</el-button>
+            </div>
       </el-drawer>
     </div>
     <child v-if="!isParent" :nowclickitem="nowclickitem" @back="isParent=true"></child>
@@ -213,6 +211,11 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.formData={}
+      this.$nextTick(()=>{
+        this.$refs.jmform.clearValidate()
+      })
+      this.disabled=false
       this.drawer = true;
       this.title = "新增表单模板";
     },
@@ -245,7 +248,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const templateIds = row.templateId || this.ids;
-      this.$modal.confirm('是否确认删除设备平台_表单模板编号为"' + templateIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除表单名称为"' + row.templateName + '"的数据项？').then(function() {
         return delTemplate(templateIds);
       }).then(() => {
         this.getList();
@@ -266,3 +269,13 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.dialog-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  line-height: 50px;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+</style>

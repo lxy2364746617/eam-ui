@@ -40,7 +40,7 @@
                 <el-input v-model="formData.deptCode" disabled></el-input>
               </el-form-item>
               <el-form-item label="设备位置属性:" label-width="120px" prop="funAttr" :rules="[{required:true}]">
-                <el-input v-model="funAttr1" disabled></el-input>
+                <el-input v-model="formData.funAttr" disabled></el-input>
               </el-form-item>
                 </el-col>
                 <el-col :span="8">
@@ -101,7 +101,44 @@
           </jm-table>
         </el-tab-pane>
         <el-tab-pane label="位置图片" name="third">
-          <el-upload
+          <!-- <draggable v-model="sysFileResources" >
+            <transition-group>
+              <div class="el-upload-list__item" v-for="item in sysFileResources" :key="item.id">
+                  <img :src="item.url" style="width:100%;height:100%">
+                  <span class="img_btn" >
+                    <span
+                      class="el-upload-list__item-preview"
+                      @click="handlePictureCardPreview(item)"
+                    >
+                      <i class="el-icon-zoom-in"></i>
+                    </span>
+                    <span
+                      v-if="!disabled"
+                      class="el-upload-list__item-delete"
+                      @click="handleRemove(item)"
+                    >
+                      <i class="el-icon-delete"></i>
+                    </span>
+              </span>
+              </div>    
+            </transition-group>
+            <div slot="footer" class="el-upload-list__item" style="display:inline-block;width:148px;height:148px">
+              <el-upload
+              style="float:right"
+            :action="action"
+            :headers="headers"
+            list-type="picture-card"
+            :on-success="onSuccess"
+            :file-list="sysFileResources"
+            :show-file-list="false"
+            accept="image/png,image/jpeg"
+            :key="'1'"
+            >
+            <i slot="default" class="el-icon-plus"></i>
+        </el-upload>
+            </div>
+        </draggable> -->
+         <el-upload
             :action="action"
             :headers="headers"
             list-type="picture-card"
@@ -131,7 +168,7 @@
                 </span>
               </span>
             </div>
-        </el-upload>
+         </el-upload>
         <el-dialog :visible.sync="dialogVisible">
           <img width="100%" :src="dialogImageUrl" alt="">
         </el-dialog>
@@ -169,12 +206,14 @@
 import JmTable from "@/components/JmTable1";
 import JmForm from "@/components/JmForm1";
 import { getToken } from "@/utils/auth";
+import draggable from 'vuedraggable'
 import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,getDeviceStatus,getDeviceAtt,uploadSave,locationDetailFileDelete } from '@/api/Location'
   export default {
     name:'locationDetails',
     components: {
       JmForm,
-      JmTable
+      JmTable,
+      draggable
     },
     data(){
       return {
@@ -278,8 +317,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         if(BreadcrumbArr){
           this.breadcrumbArr = BreadcrumbArr.reverse()
           let id = this.breadcrumbArr[this.breadcrumbArr.length-1].id
-          // this.busId = this.$route.query.i
-          this.busId = id
+           this.busId = this.$route.query.i
+          //this.busId = id
           this.getBaseInfo()
           this.getDevice()
           this.getFile()
@@ -428,7 +467,10 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       },
       // 文件-点击删除
       handleDelete(row){
-        this.deleteFile(row.id)
+        this.$modal.confirm('是否确认删除？').then(()=>{
+          this.deleteFile(row.id)
+        })
+        
       },
       // 文件-点击下载
       handleDownload(row){
@@ -450,7 +492,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       },
       // 位置图片-删除
       handleRemove(file) {
-        this.sysFileResources.forEach((item,idx)=>{
+        this.$modal.confirm('是否确认删除？').then(()=>{
+          this.sysFileResources.forEach((item,idx)=>{
           if(item.uid == file.uid){
             this.sysFileResources.splice(idx,1)
           }
@@ -458,6 +501,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         locationDetailFileDelete(file.id).then(
           this.getBaseInfo()
         )
+        })
+        
       },
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
@@ -513,6 +558,10 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       filePrimary(){
         this.uploadDialogVisible = false
         // 自动保存
+        
+        this.fileList.forEach(item=>{
+          item=Object.assign(item,item.response)
+        })
         uploadSave(this.fileList).then(res=>{
           /* console.log(res,'文件保存成功') */
           this.$message({
@@ -579,4 +628,26 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
   .upload_box{
     min-height: 400px;
   }
+ /* .el-upload-list__item {
+    overflow: hidden;
+    background-color: #fff;
+    border: 1px solid #c0ccda;
+    border-radius: 6px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 148px;
+    height: 148px;
+    margin: 0 8px 8px 0;
+    display: inline-block;
+    position: relative;
+    
+} */
+/* .img_btn{
+  width:100%;
+  height: 100%;
+   background-color: rgba(0,0,0,.5);
+   position: absolute;
+   top: 0;
+   display: none;
+} */
 </style>

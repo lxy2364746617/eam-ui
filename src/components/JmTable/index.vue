@@ -57,7 +57,7 @@
           <template slot-scope="scope">
             <div
               v-if="scope.$index != 0 && showSearch"
-              v-html="scope.$index"
+              v-html="scope.row.index"
             ></div>
             <div v-else-if="!showSearch">{{ scope.$index + 1 }}</div>
           </template>
@@ -92,7 +92,7 @@
                   >
                   </el-date-picker>
                   <el-date-picker
-                    v-if="col.formType == 'datetime'"
+                    v-else-if="col.formType == 'datetime'"
                     v-model="queryParams[col.prop]"
                     value-format="yyyy-MM-dd hh:mm:ss"
                     size="small"
@@ -188,7 +188,7 @@
               }}</span>
               <span
                 v-else-if="col.formType == 'select' || col.formType == 'radio'"
-                v-html="findName(col.options, scope.row[col.prop])"
+                v-html="scope.row[col.prop]&&(findName(col.options, scope.row[col.prop])+(col.optionShowValue?('<br>'+scope.row[col.prop]):''))"
               ></span>
               <span v-else-if="col.formType == 'selectTag'">
                 <el-tag
@@ -346,6 +346,9 @@ export default {
     tableData: {
       handler(val) {
         this.tableData2 = JSON.parse(JSON.stringify(this.tableData));
+        this.tableData2.forEach((item,index)=>{
+          item.index=10*(this.queryParams.pageNum-1)+index+1
+        })
         if (this.showSearch && this.tableData2) {
           this.tableData2.unshift({});
         }

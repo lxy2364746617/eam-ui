@@ -96,10 +96,10 @@ import { navSearchList,searchHistoryList,searchHistoryAdd } from '@/api/knowledg
       getRouteData(){
         let text = this.$route.query.searchText
         console.log(text)
-        if(text){
+        
           this.search_text = text
           this.getSearchList(text)
-        }
+        
       },
       // 获取历史搜索列表
       getSSLSList(){

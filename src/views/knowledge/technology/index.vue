@@ -154,17 +154,7 @@ import { listDept } from '@/api/system/dept'
         // 总条数
         total: 0,
 
-        // 上传表格
-        tablecolumns1:[
-          { label: "设备名称", prop: "deviceName"},
-          { label: "设备编码", prop: "deviceCode"},
-          { label: "规格型号", prop: "specs"},
-          { label: "设备类别", prop: "categoryId",formType: 'selectTree',options:this.categoryOptions,width: 280,},
-          { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180,},
-          { label: "设备批次号", prop: "batchNo"},
-          { label: "所属子公司", prop: "subCompanyName"},
-          { label: "所属组织", prop: "affDeptId",formType: 'selectTree',options: this.deptOptions,width: 180,},  
-        ],
+        
         templateList1: [],
         // 上传地址
         action:process.env.VUE_APP_BASE_API + "/common/upload",
@@ -184,17 +174,6 @@ import { listDept } from '@/api/system/dept'
 
 
 
-        // 设备表格
-        tablecolumns2:[
-          { label: "设备名称", prop: "deviceName"},
-          { label: "设备编码", prop: "deviceCode"},
-          { label: "规格型号", prop: "specs"},
-          { label: "设备类别", prop: "categoryId",formType: 'selectTree',options:this.categoryOptions,width: 280,},
-          { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180,},
-          { label: "设备批次号", prop: "batchNo"},
-          { label: "所属子公司", prop: "subCompanyName"},
-          { label: "所属组织", prop: "affDeptId",formType: 'selectTree',options: this.deptOptions,width: 180,},
-        ],
         templateList2: [],
         // 总条数
         total2: 0,
@@ -227,7 +206,30 @@ import { listDept } from '@/api/system/dept'
           { label: "上传人员", prop: "createBy", },
           { label: "上传时间", prop: "createTime", formType: "date", formType: "daterange",width:200},
         ]
-      
+    },
+    tablecolumns1(){
+      return[
+          { label: "设备名称", prop: "deviceName"},
+          { label: "设备编码", prop: "deviceCode"},
+          { label: "规格型号", prop: "specs"},
+          { label: "设备类别", prop: "categoryId",formType: 'selectTree',options:this.categoryOptions,width: 280,},
+          { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180,},
+          { label: "设备批次号", prop: "batchNo"},
+          { label: "所属子公司", prop: "subCompanyName"},
+          { label: "所属组织", prop: "affDeptId",formType: 'selectTree',options: this.deptOptions,width: 180,},  
+        ]
+    },
+    tablecolumns2(){
+      return[
+          { label: "设备名称", prop: "deviceName"},
+          { label: "设备编码", prop: "deviceCode"},
+          { label: "规格型号", prop: "specs"},
+          { label: "设备类别", prop: "categoryId",formType: 'selectTree',options:this.categoryOptions,width: 280,},
+          { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180,},
+          { label: "设备批次号", prop: "batchNo"},
+          { label: "所属子公司", prop: "subCompanyName"},
+          { label: "所属组织", prop: "affDeptId",formType: 'selectTree',options: this.deptOptions,width: 180,},
+        ]
     },
     },
     watch: {
@@ -240,15 +242,12 @@ import { listDept } from '@/api/system/dept'
         this.categoryOptions = response.data
         // 方便获取父级tree
         this.loops(this.categoryOptions)
-        this.tablecolumns2[3].options=this.categoryOptions
       })
      await getLocationTree().then(res=>{
         this.locationOptions=this.getTreeName(res.data)
-        this.tablecolumns2[4].options=this.locationOptions
       })
       await listDept().then((response) => {
         this.deptOptions = response.data
-        this.tablecolumns2[7].options=this.deptOptions
       })
       this.getRouteData()
     },
@@ -466,6 +465,7 @@ import { listDept } from '@/api/system/dept'
       confirmDeviceClick(){
         this.templateList1 =  this.deviceCheckboxData
         this.dialogSbVisible = false
+        console.log('this.templateList1:',this.templateList1)
         this.$message({
           message: '操作成功！',
           type: 'success'

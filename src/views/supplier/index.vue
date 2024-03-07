@@ -109,6 +109,7 @@
         :downloadTemplateUrl="'/system/supplier/importTemplate'"
         ref="fileImport"
         :importUrl="'/system/supplier/importData'"
+        :autoUpload='false'
       ></file-import>
     </div>
   </div>
@@ -202,7 +203,7 @@ export default {
           prop: 'updateTime',
           span: 24,
           formVisible: false,
-          formType: 'date',
+          formType: 'datetime',
         },
       ]
     },
@@ -268,7 +269,7 @@ export default {
           prop: 'updateTime',
           span: 24,
           formVisible: false,
-          formType: 'date',
+          formType: 'datetime',
         },
       ]
     },
@@ -296,7 +297,7 @@ export default {
       // 设备平台_表单模板表格数据
       templateList: [],
       // 弹出层标题
-      title: '新增表单',
+      title: '',
       // 是否显示弹出层
       open: false,
       importData: [],
@@ -798,7 +799,8 @@ export default {
       done()
     },
     /** 查询设备平台_表单模板列表 */
-    getList(queryParams) {
+    getList(queryParams=this.queryParams) {
+      this.queryParams=queryParams
       this.loading = true
       listSupplier(queryParams).then((response) => {
         this.templateList = response.rows
@@ -814,11 +816,11 @@ export default {
     // 表单重置
     reset() {
       this.$data.formData = this.$options.data.call(this).formData
-      this.$refs.jmform.clearValidate()
+      this.$refs.jmform&&this.$refs.jmform.clearValidate()
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1
+      
       this.getList()
     },
     /** 重置按钮操作 */
@@ -834,9 +836,13 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
+      this.title = '新增'
       this.drawer = true
       this.reset()
-      this.title = '新增表单模板'
+      this.$nextTick(()=>{
+      document.querySelector(".el-drawer__body").scrollTo(0,0)
+      })
+      
     },
     /** 修改按钮操作 */
     handleUpdate(row, state) {
@@ -844,7 +850,7 @@ export default {
       // const id = row.id
       // getSupplier(id).then(response => {
       this.formData = JSON.parse(JSON.stringify(row))
-      this.title = state == 'view' ? '查看表单模板' : '修改表单模板'
+      this.title = state == 'view' ? '查看' : '修改'
       this.drawer = true
       // });
     },
