@@ -33,7 +33,7 @@
         <el-button
           type="primary"
           v-if="isChoose"
-          icon="el-icon-plus"
+          icon="el-icon-download"
           size="mini"
           style="margin-left: 5px"
           v-hasPermi="['property:purchase:download']"
@@ -88,6 +88,19 @@
         </template>
       </TitleForm>
     </el-drawer>
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
@@ -335,7 +348,6 @@ export default {
           if (res.code == 200) {
             this.$message.success(res.msg);
             this.subopen = false;
-            this.clear();
             this.cancel();
           }
         }
@@ -443,7 +455,7 @@ export default {
 
         this.selectIndex = scope.index - 1;
         this.$modal
-          .confirm('是否确认删除备件编码为"' + row.partsCodes + '"的数据项？')
+          .confirm('是否确认删除备件编码为"' + row.deviceName + '"的数据项？')
           .then(() => {
             // return delList(ids);
 
@@ -490,7 +502,7 @@ export default {
           // if (!(val["addList"].length >=0))
           setProject(val).then((res) => {
             if (res.code === 200) {
-              this.reviewCode = res.msg;
+              this.reviewCode = res.data;
               this.handleSubmit();
             }
           });

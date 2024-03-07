@@ -543,14 +543,14 @@ export default {
             required: true,
             formDisabled: true,
           },
-          // {
-          //   label: "供应商",
-          //   prop: "supplierName",
-          //   span: 13,
-          //   clickFn: () => {
-          //     this.drawersupplier = true;
-          //   },
-          // },
+          {
+            label: "供应商",
+            prop: "supplierName",
+            span: 13,
+            clickFn: () => {
+              this.drawersupplier = true;
+            },
+          },
           {
             label: "存储位置",
             prop: "locationCode",
@@ -654,7 +654,7 @@ export default {
       arr.forEach((item) => {
         item.id = item.deptCode;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? false : true;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
         if (item.children && item.children.length > 0) {
           this.getTree(item.children);
         }

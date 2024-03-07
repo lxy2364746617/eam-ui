@@ -352,7 +352,7 @@ export default {
         // ! 删除
 
         this.$modal
-          .confirm('是否确认删除单号为"' + row.neckNo + '"的数据项？')
+          .confirm('是否确认删除单号为"' + row.scrapNo + '"的数据项？')
           .then(() => {
             // return delParts(ids);
             return delProject(row.id);

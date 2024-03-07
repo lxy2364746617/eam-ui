@@ -113,8 +113,9 @@ import { listDept } from "@/api/system/dept";
 import request from "@/utils/request";
 import { v4 as uuidv4 } from "uuid";
 import spareList from "@/views/sparepart/spareList/spareList.vue";
+import supplier from "@/views/sparepart/supplier";
 export default {
-  components: { ContTable, spareList },
+  components: { ContTable, spareList,supplier },
   dicts: ["spare_parts_unit", "spare_parts_type"],
   props: {
     disabled: {
@@ -235,7 +236,11 @@ export default {
           formDisabled: true,
         },
         { label: "规格型号", prop: "specs", span: 22, formDisabled: true },
-        { label: "供应商名称", prop: "supplierName", span: 22 },
+        {
+          label: "供应商名称",
+          prop: "supplierName",
+          span: 22,
+        },
         { label: "使用部位", prop: "location", required: true, span: 22 },
         {
           label: "更换数量",
@@ -297,7 +302,14 @@ export default {
           options: this.dict.type.spare_parts_type,
           formDisabled: true,
         },
-        { label: "供应商名称", prop: "supplierName", span: 22 },
+        {
+          label: "供应商名称",
+          prop: "supplierName",
+          span: 22,
+          clickFn: () => {
+            this.drawersupplier2 = true;
+          },
+        },
         { label: "使用部位", prop: "location", required: true, span: 22 },
         {
           label: "更换数量",
@@ -328,9 +340,9 @@ export default {
   },
   methods: {
     submitRadio2(row) {
-      this.$set(this.formDataNow, "supplierName", row.supplierName);
-      this.$set(this.formDataNow, "supplierCode", row.supplierCode);
-      this.$set(this.formDataNow, "supplierId", row.id);
+      this.$set(this.form, "supplierName", row.supplierName);
+      this.$set(this.form, "supplierCode", row.supplierCode);
+      this.$set(this.form, "supplierId", row.id);
       this.closesupplier2();
     },
     // ! 选择备件

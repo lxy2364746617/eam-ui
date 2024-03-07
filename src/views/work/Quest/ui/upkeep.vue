@@ -171,13 +171,13 @@
       <el-table-column
         label="结果类型"
         align="center"
-        prop="checkResType"
+        prop="resultType"
         min-width="140"
       >
         <template slot-scope="scope">
           <!-- <el-select
             v-if="scope.row.editType"
-            v-model="scope.row.checkResType"
+            v-model="scope.row.resultType"
             placeholder="请选择巡点检结果类型"
             clearable
           >
@@ -190,7 +190,7 @@
           </el-select> -->
           <span
             v-html="
-              findName(dict.type.mro_s_check_res_type, scope.row.checkResType)
+              findName(dict.type.mro_s_check_res_type, scope.row.resultType)
             "
           ></span>
         </template>
@@ -202,7 +202,7 @@
         min-width="140"
       >
         <!-- <template slot-scope="scope">
-          <template v-if="scope.row.checkResType == '模拟'">
+          <template v-if="scope.row.resultType == '模拟'">
             <el-input
               v-model="scope.row.checkResult"
               placeholder="请输入巡点检标准"
@@ -220,7 +220,7 @@
         min-width="100"
       >
         <!-- <template slot-scope="scope">
-          <template v-if="scope.row.checkResType == '数字'">
+          <template v-if="scope.row.resultType == '数字'">
             <el-input
               v-model="scope.row.quotaUpper"
               type="number"
@@ -239,7 +239,7 @@
         min-width="100"
       >
         <!-- <template slot-scope="scope">
-          <template v-if="scope.row.checkResType == '数字'">
+          <template v-if="scope.row.resultType == '数字'">
             <el-input
               v-model="scope.row.quotaLower"
               type="number"
@@ -258,7 +258,7 @@
         min-width="100"
       >
         <!-- <template slot-scope="scope">
-          <template v-if="scope.row.checkResType == '数字'">
+          <template v-if="scope.row.resultType == '数字'">
             <el-input
               v-model="scope.row.quotaUnit"
               placeholder="请输入定量下限"
@@ -274,7 +274,7 @@
         prop="quotaValue"
         min-width="150"
       >
-        <template slot-scope="scope" v-if="scope.row.checkResType == '数字'">
+        <template slot-scope="scope" v-if="scope.row.resultType == '数字'">
           <template v-if="carryValue.i == false ? false : true">
             <el-input
               v-hasPermi="['work:quest:edit']"
@@ -296,7 +296,7 @@
         min-width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.dealResult == 1 ? "OK" : "NG" }}</span>
+          <span>{{ scope.row.dealResult === 1 ? "OK" : "" }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -684,6 +684,19 @@ export default {
     },
   },
   methods: {
+    UpperFun(e, quotaLower) {
+      console.log(e);
+      if (e.target.value - quotaLower < 0) {
+        e.target.value = quotaLower;
+        this.standardList.splice(1, 0);
+      }
+    },
+    LowerFun(event, quotaUpper) {
+      if (event.target.value - quotaUpper > 0) {
+        event.target.value = quotaUpper;
+        this.standardList.splice(1, 0);
+      }
+    },
     handlerBack() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       this.$router.go(-1); //跳回上页

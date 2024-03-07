@@ -51,6 +51,15 @@
             :formData="formData"
             :isTask="col.isTask"
           ></Relevance>
+              <AppraisalReport
+            ref="relevance"
+            v-else-if="col.formType == 'appraisalReport'"
+            @fileResourceList="fileResourceList"
+            @delFileList="delFileList"
+            :formData="formData"
+            :disabled="disabled"
+            :isTask="col.isTask"
+          ></AppraisalReport>
           <SpareRecord
             v-else-if="col.formType == 'spareRecord'"
             @spareRecord="spareRecord"
@@ -313,6 +322,7 @@
               :readonly="col.readonly"
               :disabled="col.formDisabled || disabled"
               @click.native="col.clickFn ? col.clickFn() : (() => {})()"
+              clearable
             />
           </el-form-item>
         </el-col>
@@ -360,6 +370,7 @@ import Schema from "async-validator";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Relevance from "@/components/FaultTable/Relevance";
+import AppraisalReport from "@/components/FaultTable/AppraisalReport";
 import EquipArr from "@/components/FaultTable/EquipArr";
 import EquipOne from "@/components/FaultTable/EquipOne";
 import SpareRecord from "@/components/FaultTable/SpareRecord";
@@ -388,6 +399,7 @@ export default {
     MaintenanceContent,
     InspectContent,
     ExpenseInspect,
+    AppraisalReport
   },
   props: {
     columns: {

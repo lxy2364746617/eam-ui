@@ -530,7 +530,7 @@ export default {
       arr.forEach((item) => {
         item.value = item.deptId;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? false : true;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
         if (item.children && item.children.length > 0) {
           this.getTree(item.children);
         }

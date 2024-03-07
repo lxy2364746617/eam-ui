@@ -287,6 +287,7 @@ export default {
           span: 22,
           formType: "number",
           required: true,
+          min: 1,
         },
         {
           label: "单位",
@@ -301,7 +302,7 @@ export default {
           label: "需求日期",
           prop: "demandDate",
           span: 22,
-          formType: "date",
+          formType: "afterDate",
           required: true,
         },
         {
@@ -318,12 +319,11 @@ export default {
   methods: {
     // ! 提交审批流
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "spare_requirement", {}).then(
+      definitionStart2(val.id, this.reviewCode, "attachment_demand", {}).then(
         (res) => {
           if (res.code == 200) {
             this.$message.success(res.msg);
             this.subopen = false;
-            this.clear();
             this.cancel();
           }
         }
@@ -333,7 +333,7 @@ export default {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "spare_requirement",
+        category: "attachment_demand",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -345,7 +345,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "spare_requirement",
+        category: "attachment_demand",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;

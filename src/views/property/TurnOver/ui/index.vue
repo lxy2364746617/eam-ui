@@ -40,7 +40,7 @@
         <!-- <el-button
           type="primary"
           v-if="isChoose"
-          icon="el-icon-plus"
+          icon="el-icon-download"
           size="mini"
           style="margin-left: 5px"
           v-hasPermi="['property:receive:download']"
@@ -115,6 +115,19 @@
         @close="addItem.choosedrawer = false"
       ></parentdevice>
     </el-drawer>
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
@@ -438,12 +451,11 @@ export default {
     },
     // ! 提交审批流
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "device_back", {}).then(
+      definitionStart2(val.id, this.reviewCode, "device_transfer", {}).then(
         (res) => {
           if (res.code == 200) {
             this.$message.success(res.msg);
             this.subopen = false;
-            this.clear();
             this.cancel();
           }
         }
@@ -453,7 +465,7 @@ export default {
       let data = {
         pageNum: val.page,
         pageSize: val.limit,
-        category: "device_back",
+        category: "device_transfer",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -465,7 +477,7 @@ export default {
       let data = {
         pageNum: 1,
         pageSize: 10,
-        category: "device_back",
+        category: "device_transfer",
       };
       listDefinition1(data).then((res) => {
         this.tableData = res.data.records;
@@ -529,7 +541,7 @@ export default {
       arr.forEach((item) => {
         item.id = item.deptCode;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? false : true;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
         if (item.children && item.children.length > 0) {
           this.locationTree(item.children);
         }

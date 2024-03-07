@@ -4,8 +4,8 @@
       <i class="el-icon-caret-right"
         ><span class="icon-text"
           >费用核算 合计：{{
-            standardList instanceof Array &&
-            standardList.reduce(
+            standardList2 instanceof Array &&
+            standardList2.reduce(
               (v, t) => v + (t.num * ~~(t.unitPrice * 100)) / 100,
               0
             )
@@ -26,7 +26,7 @@
       <el-table
         class="table"
         v-loading="loading"
-        :data="standardList"
+        :data="standardList2"
         @selection-change="handleSelectionChange"
         ref="queryTable"
       >
@@ -38,10 +38,10 @@
           prop="costItem"
           min-width="150"
         />
-        <el-table-column label="单位" align="center" prop="costUnit">
+        <el-table-column label="单位" align="center" prop="unit">
           <template slot-scope="scope">
             <span>{{
-              findName(dict.type.expense_accounting, scope.row.costUnit)
+              findName(dict.type.expense_accounting, scope.row.unit)
             }}</span>
           </template>
         </el-table-column>
@@ -148,6 +148,7 @@ export default {
   data() {
     return {
       standardList: [],
+      standardList2: [],
       loading: false,
       btnLoading: false,
       drawer: false,
@@ -164,27 +165,20 @@ export default {
             allPrice: item.unitPrice * item.num,
           }))
         );
+        this.standardList2 = val;
+      },
+      deep: true,
+      immediate: true,
+    },
+    "formData.checkCosts": {
+      handler(val) {
+        this.standardList2 = val;
       },
       deep: true,
       immediate: true,
     },
   },
-  created() {
-    if (this.formData.checkCosts) {
-      this.standardList = this.formData.checkCosts;
-    }
-    // if (this.formData.orderCode && this.disabled) {
-    //   request({
-    //     url: "/wom/repair/getWomFaultCostInfo",
-    //     method: "get",
-    //     params: { orderCode: this.formData.orderCode,deviceCode: this.formData.deviceCode },
-    //   }).then((res) => {
-    //     if (res.code === 200) {
-    //       this.standardList = res.data.costList;
-    //     }
-    //   });
-    // }
-  },
+  created() {},
   mounted() {},
   computed: {
     columns2() {
@@ -192,7 +186,7 @@ export default {
         { label: "材料费用及名称", prop: "costItem", required: true, span: 22 },
         {
           label: "单位",
-          prop: "costUnit",
+          prop: "unit",
           required: true,
           span: 22,
           formType: "select",

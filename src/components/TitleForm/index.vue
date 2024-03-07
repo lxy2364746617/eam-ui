@@ -49,6 +49,16 @@
             :disabled="disabled"
             :isTask="col.isTask"
           ></Relevance>
+          <AppraisalReport
+            ref="relevance"
+            v-else-if="col.formType == 'appraisalReport'"
+            @fileResourceList="fileResourceList"
+            @delFileList="delFileList"
+            :formData="formData"
+            :disabled="disabled"
+            :isTask="col.isTask"
+          ></AppraisalReport>
+
           <SparePart
             v-else-if="col.formType == 'sparePart'"
             @standardList="standardList"
@@ -352,6 +362,7 @@
               :readonly="col.readonly"
               :disabled="col.formDisabled || disabled"
               @click.native="col.clickFn ? col.clickFn() : (() => {})()"
+              clearable
             />
           </el-form-item>
         </el-col>
@@ -417,6 +428,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Request from "@/components/FaultTable/index";
 import Relevance from "@/components/FaultTable/Relevance";
+import AppraisalReport from "@/components/FaultTable/AppraisalReport";
 import SparePart from "@/components/FaultTable/SparePart";
 import DotRoute from "@/components/FaultTable/DotRoute";
 import MaintenanceRoute from "@/components/FaultTable/MaintenanceRoute";
@@ -446,6 +458,7 @@ export default {
     Personnel,
     PersonnelUpkeep,
     Equip,
+    AppraisalReport
   },
   props: {
     columns: {

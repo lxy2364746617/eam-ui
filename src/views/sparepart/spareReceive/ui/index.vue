@@ -313,7 +313,6 @@ export default {
           if (res.code == 200) {
             this.$message.success(res.msg);
             this.subopen = false;
-            this.clear();
             this.cancel();
           }
         }

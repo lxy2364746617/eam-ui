@@ -177,7 +177,7 @@
         <template slot-scope="scope">
           <span
             v-html="
-              findName(dict.type.em_abnormal_status, scope.row.deviceStatus3)
+              findName(dict.type.em_abnormal_status, scope.row.errorStatus)
             "
           ></span>
         </template>

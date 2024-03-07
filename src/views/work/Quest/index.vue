@@ -39,8 +39,7 @@
           <el-button
             v-if="
               scope.row.orderStatus !== '待验收' &&
-              scope.row.orderStatus !== '已关闭' &&
-              scope.row.orderStatus !== '执行中'
+              scope.row.orderStatus !== '已关闭'
             "
             size="mini"
             type="text"
@@ -49,6 +48,16 @@
             @click="goCarryOut(scope.row, 'edit')"
             v-hasPermi="['work:quest:carry']"
             >执行</el-button
+          >
+          <el-button
+            v-if="scope.row.orderStatus === '待验收'"
+            size="mini"
+            type="text"
+            icon="el-icon-document-checked"
+            :loading="btnLoading"
+            @click="goCheck(scope.row, 'check')"
+            v-hasPermi="['work:quest:check']"
+            >验收</el-button
           >
           <el-button
             size="mini"
@@ -60,11 +69,7 @@
             >详情</el-button
           >
           <el-button
-            v-if="
-              scope.row.orderStatus !== '待验收' &&
-              scope.row.orderStatus !== '已关闭' &&
-              scope.row.orderStatus !== '执行中'
-            "
+            v-if="scope.row.orderStatus === '待执行'"
             size="mini"
             type="text"
             icon="el-icon-delete"
@@ -73,7 +78,10 @@
             >转派</el-button
           >
           <el-button
-            v-if="scope.row.orderStatus !== '已关闭'"
+            v-if="
+              scope.row.orderStatus !== '已关闭' &&
+              scope.row.orderStatus !== '待验收'
+            "
             size="mini"
             type="text"
             icon="el-icon-document-add"
@@ -156,10 +164,10 @@ import {
   getAllocationClose,
   updateAllocation,
   getWorkOrderSchedule,
+  checkWomInfo,
 } from "@/api/work/schedule";
 import JmTable from "@/components/JmTable/index.vue";
 import ContTable from "@/components/ContTable";
-import { v4 as uuidv4 } from "uuid";
 import Wrapper from "@/components/wrapper";
 import { orderTemplate } from "@/api/work/template";
 import { listUser } from "@/api/system/user";
@@ -401,9 +409,18 @@ export default {
   },
   mounted() {
     this.wrapperTitle = this.$route.meta.title;
-    const uniqueId = uuidv4();
   },
   methods: {
+    goCheck(row) {
+      checkWomInfo(row.id).then((res) => {
+        if (res.data.code == 200) {
+          this.getList();
+          this.$message.success("验收成功！");
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
     // ! 提供下载列表字段
     convertToDefaultObject(columns) {
       const defaultObject = {};

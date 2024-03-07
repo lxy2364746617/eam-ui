@@ -126,6 +126,7 @@ export default {
           span: 8,
           prop: "phonenumber",
           required: true,
+          formDisabled: true,
         },
         {
           label: "执行班组",
@@ -192,8 +193,9 @@ export default {
       this.drawersupplier = false;
     },
     submitRadio(row) {
-      console.log("========================", row);
       this.$set(this.form, "unit", row.supplierName);
+      this.$set(this.form, "director", row.contacts);
+      this.$set(this.form, "phonenumber", row.phone);
       this.closesupplier();
     },
     dateDiffInHours(date1, date2) {
@@ -209,8 +211,6 @@ export default {
     changeGroupId(val, flag) {
       if (!val) val = 1;
       getGroup(val).then((response) => {
-        this.form.executor = response.data.leaderId;
-        console.log("========================", this.form.executor);
         response.data.sysUserGroupList.forEach((item) => {
           item.label = item.nickName;
           item.value = item.userId;

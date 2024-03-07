@@ -40,7 +40,7 @@
         <!-- <el-button
           type="primary"
           v-if="isChoose"
-          icon="el-icon-plus"
+          icon="el-icon-download"
           size="mini"
           style="margin-left: 5px"
           v-hasPermi="['property:receive:download']"
@@ -115,16 +115,28 @@
         @close="addItem.choosedrawer = false"
       ></parentdevice>
     </el-drawer>
+
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
 import Wrapper from "@/components/wrapper";
 import PropertyOperation from "@/views/property/PropertyOperation/index.vue";
 import { listUser } from "@/api/system/user";
-import { v4 as uuidv4 } from "uuid";
 import { listDept } from "@/api/system/dept";
 import parentdevice from "@/views/device/book/device";
-
 import {
   getProjectList,
   setProject,
@@ -221,14 +233,14 @@ export default {
         });
 
         this.reviewCode = this.formData.backNo;
+      } else {
+        this.formData = {
+          applyDeptPerson: this.$store.state.user.standing.nickName,
+          applyDeptId: this.$store.state.user.standing.deptId,
+          affDeptId: this.$store.state.user.standing.deptId,
+        };
+        this.isShowCard = 0;
       }
-    } else {
-      this.formData = {
-        applyDeptPerson: this.$store.state.user.standing.nickName,
-        applyDeptId: this.$store.state.user.standing.deptId,
-        affDeptId: this.$store.state.user.standing.deptId,
-      };
-      this.isShowCard = 0;
     }
   },
   mounted() {},
@@ -444,7 +456,6 @@ export default {
           if (res.code == 200) {
             this.$message.success(res.msg);
             this.subopen = false;
-            this.clear();
             this.cancel();
           }
         }
@@ -530,7 +541,7 @@ export default {
       arr.forEach((item) => {
         item.id = item.deptCode;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? false : true;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
         if (item.children && item.children.length > 0) {
           this.locationTree(item.children);
         }

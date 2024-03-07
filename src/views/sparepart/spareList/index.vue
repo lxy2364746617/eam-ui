@@ -220,6 +220,7 @@ export default {
           span: 22,
           formType: "number",
           formDisabled: this.title === "新增备件" ? false : true,
+          min: 1,
         },
         {
           label: "单位",
@@ -323,7 +324,7 @@ export default {
       arr.forEach((item) => {
         item.id = item.deptCode;
         item.label = item.deptName;
-        item.isDisabled = item.locationFlag == "N" ? false : true;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
         if (item.children && item.children.length > 0) {
           this.getTree(item.children);
         }

@@ -35,7 +35,7 @@ export function updateProject(data) {
   });
 }
 // 报废删除
-export function deleteProjectId(id) {
+export function delProject(id) {
   return request({
     url: "/property/scrapped/del/" + id,
     method: "post",

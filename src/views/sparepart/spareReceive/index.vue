@@ -205,9 +205,9 @@ export default {
           tableVisible: true,
         },
         {
-          label: "请求时间",
+          label: "请求日期",
           prop: "createTime",
-          formType: "datetime",
+          formType: "date",
           tableVisible: true,
           width: 180,
         },

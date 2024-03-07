@@ -215,7 +215,13 @@ export default {
           ],
           tableVisible: true,
         },
-        { label: "年度", prop: "annual", tableVisible: true },
+        {
+          label: "年度",
+          prop: "annual",
+          tableVisible: true,
+          formType: "dateYear",
+          width: 150,
+        },
         { label: "计划需求数量", prop: "planDemandNum", tableVisible: true },
         {
           label: "计划金额(万元)",

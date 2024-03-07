@@ -241,7 +241,7 @@ export default {
         {
           prop: "contacts2",
           span: 24,
-          formType: "document",
+          formType: "appraisalReport",
         },
       ];
     },

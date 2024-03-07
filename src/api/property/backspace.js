@@ -53,7 +53,7 @@ export function download(data) {
 }
 
 // 回退删除
-export function delId(id) {
+export function delProject(id) {
   return request({
     url: "/device/back/delDeviceBack?id=" + id,
     method: "post",

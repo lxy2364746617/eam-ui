@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div :class="[isTask ? 'subtitle' : 'title']">
+    <div class="subtitle">
       <i v-if="isTask" class="el-icon-caret-right"
-        ><span class="icon-text">关联文档</span></i
+        ><span class="icon-text">鉴定材料</span></i
       >
-      <span v-else class="icon-text">关联文档</span>
       <el-button
+        style="opacity: 0"
         type="text"
         icon="el-icon-plus"
         class="add-btn-file"
@@ -17,7 +17,7 @@
     </div>
 
     <ContTable
-      :tableData.sync="fileResourceList"
+      :tableData.sync="fileResourceList2"
       ref="jmtable2"
       :columns="columns"
       :showSearch="false"
@@ -94,10 +94,22 @@ export default {
       type: Boolean,
     },
   },
+  data() {
+    return {
+      //文档
+      fileList: [],
+      filedrawer: false,
+      fileType: ["png", "jpg", "bmp", "jpeg", "pdf", "gif"],
+      fileResourceList: [],
+      fileResourceList2: [],
+      delFileList: [],
+    };
+  },
   watch: {
     fileResourceList: {
       handler(val) {
         this.$emit("fileResourceList", val);
+        this.fileResourceList2 = val;
       },
       deep: true,
       immediate: true,
@@ -111,26 +123,23 @@ export default {
       deep: true,
       immediate: true,
     },
+    "formData.sysFileResources": {
+      handler(val) {
+        this.fileResourceList2 = val;
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   created() {
-    if (this.formData.orderCode) {
-      getRelevanceInfo({ busId: this.formData.orderCode }).then((res) => {
-        this.fileResourceList = res.rows;
-      });
-    }
-    // if (this.formData.sysFileResources) {
-    //   this.fileResourceList = this.formData.sysFileResources;
+    // if (this.formData.orderCode) {
+    //   getRelevanceInfo({ busId: this.formData.orderCode }).then((res) => {
+    //     this.fileResourceList = res.rows;
+    //   });
     // }
-  },
-  data() {
-    return {
-      //文档
-      fileList: [],
-      filedrawer: false,
-      fileType: ["png", "jpg", "bmp", "jpeg", "pdf", "gif"],
-      fileResourceList: [],
-      delFileList: [],
-    };
+    if (this.formData.sysFileResources) {
+      this.fileResourceList = this.formData.sysFileResources;
+    }
   },
   mounted() {},
   computed: {

@@ -33,7 +33,7 @@
         <el-button
           type="primary"
           v-else
-          icon="el-icon-plus"
+          icon="el-icon-download"
           size="mini"
           style="margin-left: 5px"
           v-hasPermi="['property:scrapping:download']"
@@ -104,6 +104,19 @@
         @close="addItem.choosedrawer = false"
       ></parentdevice>
     </el-drawer>
+    <!-- 提交 -->
+    <el-dialog
+      :title="subtitle"
+      :visible.sync="subopen"
+      width="60%"
+      append-to-body
+    >
+      <subprocess
+        :tableData="tableData"
+        @submit="sub"
+        @getTableData="getTableData"
+      ></subprocess>
+    </el-dialog>
   </Wrapper>
 </template>
 <script>
@@ -471,7 +484,6 @@ export default {
           if (res.code == 200) {
             this.$message.success(res.msg);
             this.subopen = false;
-            this.clear();
             this.cancel();
           }
         }
@@ -649,7 +661,7 @@ export default {
           // if (!(val["addList"].length >=0))
           setProject(val).then((res) => {
             if (res.code === 200) {
-              this.reviewCode = res.msg;
+              this.reviewCode = res.data;
               this.handleSubmit();
             }
           });

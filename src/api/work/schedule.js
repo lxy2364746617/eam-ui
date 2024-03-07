@@ -385,3 +385,11 @@ export const getWorkOrderSchedule = (query) => {
     params: query,
   });
 };
+
+// 加入故障案例库
+export const checkWomInfo = (id) => {
+  return request({
+    url: "/wom/repair/checkWomInfo?id=" + id,
+    method: "get",
+  });
+};

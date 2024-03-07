@@ -170,7 +170,7 @@
 import { listDept } from "@/api/system/dept";
 import ContTable from "@/components/ContTable";
 import request from "@/utils/request";
-import { getAssociatedPlan } from '@/api/property/receive';
+import { getAssociatedPlan } from "@/api/property/receive";
 export default {
   components: { ContTable },
   props: {
@@ -291,13 +291,11 @@ export default {
               }
             });
           } else {
-            if (res.code === 200) {
-              that.fileResourceList.forEach((item, index) => {
-                if (item.url == row.url) {
-                  that.fileResourceList.splice(index, 1);
-                }
-              });
-            }
+            that.fileResourceList.forEach((item, index) => {
+              if (item.url == row.url) {
+                that.fileResourceList.splice(index, 1);
+              }
+            });
           }
         })
         .catch(() => {});
