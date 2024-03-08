@@ -158,9 +158,9 @@ export default {
         { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.XDJ, },
         { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
         { label: '创建人', prop: 'createBy' },
-        { label: '创建时间', prop: 'createTime', formType: 'date' },
+        { label: '创建时间', prop: 'createTime', formType: 'datetime' },
         { label: '修改人', prop: 'updateBy' },
-        { label: '修改时间', prop: 'updateTime', formType: 'date' }
+        { label: '修改时间', prop: 'updateTime', formType: 'datetime' }
       ]
     },
   },

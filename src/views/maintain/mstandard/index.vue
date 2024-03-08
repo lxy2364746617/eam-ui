@@ -114,9 +114,9 @@ export default {
         { label: '状态', prop: 'standardStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
         // { label: '备注', prop: 'remark' },
         { label: '创建人', prop: 'createBy' },
-        { label: '创建时间', prop: 'createTime', formType: 'date' },
+        { label: '创建时间', prop: 'createTime', formType: 'datetime' },
         { label: '更新人', prop: 'updateBy' },
-        { label: '更新时间', prop: 'updateTime', formType: 'date' },
+        { label: '更新时间', prop: 'updateTime', formType: 'datetime' },
       ]
     },
   },

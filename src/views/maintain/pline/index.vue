@@ -45,9 +45,9 @@ export default {
         { label: '巡点检路线名称', prop: 'lineName', },
         { label: '启用状态', prop: 'lineStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
         { label: '创建人', prop: 'createBy', },
-        { label: '创建时间', prop: 'createTime', formType: 'date' },
+        { label: '创建时间', prop: 'createTime', formType: 'datetime' },
         { label: '更新者', prop: 'updateBy' },
-        { label: '更新时间', prop: 'updateTime', formType: 'date' },
+        { label: '更新时间', prop: 'updateTime', formType: 'datetime' },
       ]
     },
   },
