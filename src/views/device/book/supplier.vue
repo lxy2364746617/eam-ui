@@ -154,7 +154,7 @@ export default {
         { label: '启用状态', prop: 'supplierStatue', formType: 'switch', options: this.dict.type.system_supplier_statue, span:24, formVisible: false, },
         { label: '所属组织', prop: 'supplierOrganization', span:24, formVisible: false, },
         { label: '更新人', prop: 'updateBy', span:24, formVisible: false, },
-        { label: '更新时间', prop: 'updateTime', span:24, formVisible: false, formType: 'date' },
+        { label: '更新时间', prop: 'updateTime', span:24, formVisible: false, formType: 'datetime' },
       ]
     },
     // 列信息
@@ -176,7 +176,7 @@ export default {
         { label: '启用状态', prop: 'supplierStatue', formType: 'switch', options: this.dict.type.system_supplier_statue, span:24, formVisible: false, },
         { label: '所属组织', prop: 'supplierOrganization', span:24, formVisible: false, },
         { label: '更新人', prop: 'updateBy', span:24, formVisible: false, },
-        { label: '更新时间', prop: 'updateTime', span:24, formVisible: false, formType: 'date' },
+        { label: '更新时间', prop: 'updateTime', span:24, formVisible: false, formType: 'datetime' },
       ]
     },
   },

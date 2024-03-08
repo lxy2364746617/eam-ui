@@ -158,7 +158,7 @@ export default {
         { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
         { label: '备注', prop: 'remark' },
         { label: '创建者', prop: 'createBy' },
-        { label: '创建时间', prop: 'createTime', formType: 'date' },
+        { label: '创建时间', prop: 'createTime', formType: 'datetime' },
       ]
     },
   },

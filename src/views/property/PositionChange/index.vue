@@ -195,7 +195,7 @@ export default {
           label: "创建时间",
           prop: "createTime",
           tableVisible: true,
-          formType: "date",
+          formType: "datetime",
           width: 150,
         },
         { label: "变动单号", prop: "changeNo", tableVisible: true, width: 150 },

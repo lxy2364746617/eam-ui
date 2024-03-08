@@ -52,7 +52,7 @@ export default {
           formVisible: false,
         },
         { label: "备注", prop: "remark" },
-        { label: "创建时间", prop: "createTime", formType: "date" },
+        { label: "创建时间", prop: "createTime", formType: "datetime" },
       ];
     },
   },
