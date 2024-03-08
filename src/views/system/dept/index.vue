@@ -8,6 +8,9 @@
           :treeData="deptOptions"
           @handleNodeClick="handleNodeClick"
           style=" height:78vh;width:100%"
+          :defaultExpIds="defaultExpIds"
+          ref="jmUserTree"
+          :currentNodeKey='currentNodeKey'
         >
           <template slot="middle-pos">
             <el-button
@@ -39,7 +42,8 @@
             :formData="formData"
             @submitForm="submitForm"
             @close="close"
-            :disabled="disabled"
+            :disabled="!isEdit"
+            :rules="rules"
           >
           </jm-form>
         </el-card>
@@ -51,7 +55,7 @@
             :tableData="deptList"
             @getList="getList"
             :total="total"
-            :columns="columns"
+            :columns="columns"  
           >
             <template slot="headerLeft">
               <el-col :span="1.5">
@@ -119,12 +123,14 @@ export default {
       showSearch: true,
       // 部门树选项
       deptOptions: [],
+      defaultExpIds:[],
       // 弹出层标题
       title: "",
       // 部门名称
       deptName: undefined,
       columns: [
         { label: "部门编码", prop: "deptCode", formDisabled: true, width: 120 },
+        { label: "部门名称", prop: "deptName", width: 100, required: true },
         {
           label: "是否产权组织",
           prop: "prtOrg",
@@ -133,7 +139,7 @@ export default {
           width: 100,
           required: true,
         },
-        { label: "部门名称", prop: "deptName", width: 100, required: true },
+        
         {
           label: "是否二级单位",
           prop: "secondUnit",
@@ -163,7 +169,8 @@ export default {
         { label: "地址", prop: "address", width: 200 },
         { label: "传真", prop: "fax", width: 200 },
       ],
-      disabled: true,
+      disabled: true,//显示下级信息
+      isEdit:false,
       // 是否显示弹出层
       open: false,
       // 是否展开，默认全部展开
@@ -175,6 +182,7 @@ export default {
       formDataInit: "",
       nowClickTreeItem: "",
       rightTitle: "基本信息",
+      currentNodeKey:0,
       // 点击树的表格详情
       deptList: [],
       // 点击树的表格详情
@@ -196,8 +204,13 @@ export default {
           {
             type: "email",
             message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"],
+            trigger: [ "change"],
           },
+          {
+            pattern:/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            message: "请输入正确的邮箱地址",
+            trigger: [ "change"],
+          }
         ],
         phone: [
           {
@@ -207,6 +220,7 @@ export default {
           },
         ],
       },
+      parentArr:[]
     };
   },
   async created() {
@@ -218,8 +232,9 @@ export default {
       if (b.prop == "secondUnit")
         this.$set(b, "options", this.dict.type.sys_second_unit);
       if (b.prop == "lease") this.$set(b, "options", this.dict.type.sys_lease);
-      if (b.prop == "parentId") this.$set(b, "options", this.deptOptions);
+      if (b.prop == "parentId") this.$set(b, "options", this.deptOptions.concat([{id:0,label:'无上级组织'}]));
     });
+    this.parentArr=this.hasChildArr(this.deptOptions)
   },
   mounted() {},
   methods: {
@@ -227,7 +242,27 @@ export default {
     async getDeptTree() {
       await listDept().then((response) => {
         this.deptOptions = response.data;
+         //展开一二级
+          let arr=[]
+          this.deptOptions.forEach(item=>{
+            arr.push(item.id)
+          })
+          this.defaultExpIds=arr
       });
+      
+    },
+    hasChildArr(arr){
+      let arr1=[]
+      function traverse(items){
+        items.forEach(item=>{
+        if(item.children&&item.children.length>0){
+          arr1.push(item.id)
+          traverse(item.children)
+          }
+        })
+      }
+      traverse(arr)
+    return arr1
     },
     /** 查询部门列表 */
     getList(queryParams) {
@@ -263,19 +298,35 @@ export default {
         parentId: this.nowClickTreeItem.id,
       };
       this.disabled = false;
+      this.isEdit=true
     },
 
     editTreeItem2(row) {
-      this.formData = JSON.parse(JSON.stringify(row));
-      this.rightTitle = "编辑";
-      this.disabled = false;
+      if(this.isEdit){
+        this.$message.warning('请退出当前编辑')
+      }else{
+        console.log(row)
+        this.formData = JSON.parse(JSON.stringify(row));
+        this.rightTitle = "编辑";
+        this.$refs.jmUserTree.setCurrentKey(row.deptId)
+        this.isEdit=true
+        this.disabled = this.parentArr.some(item=>{
+        return item==row.deptId
+      });
+      getDeptChild({parentId:row.deptId,}).then(res=>{
+        this.deptList = res.data;
+      })
+      }
+      
     },
     editTreeItem() {
       this.rightTitle = "编辑";
-      this.disabled = false;
+      this.isEdit=true
+      //this.disabled = false;
     },
     close() {
       this.rightTitle = "基本信息";
+      this.isEdit=false
       this.disabled = true;
       this.formData = JSON.parse(this.formDataInit);
     },
@@ -315,7 +366,8 @@ export default {
     },
     // 点击树
     handleNodeClick(row) {
-      if (!this.disabled) {
+      console.log(row)
+      if (this.isEdit) {
         this.$message("请退出当前编辑");
       } else {
         this.nowClickTreeItem = row;
@@ -360,15 +412,19 @@ export default {
         updateDept(formdata).then((response) => {
           this.rightTitle = "基本信息";
           this.$modal.msgSuccess("修改成功");
+          this.isEdit=false
           this.disabled = true;
           this.getDeptFn();
           this.getDeptTree()
+          this.currentNodeKey=formdata.deptId
+
         });
       } else {
         addDept(formdata).then((response) => {
           this.rightTitle = "基本信息";
           this.$modal.msgSuccess("新增成功");
           this.disabled = true;
+          this.isEdit=false
           this.getDeptTree();
         });
       }

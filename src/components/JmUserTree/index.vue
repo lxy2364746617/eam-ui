@@ -4,12 +4,15 @@
       <el-input v-model="deptName" placeholder="请输入名称" clearable size="small" prefix-icon="el-icon-search" style="margin-bottom: 10px" />
     </div>
     <slot name="middle-pos"></slot>
-    <slot v-if="$slots['middle-pos']">
+    <slot ><!-- v-if="$slots['middle-pos']" -->
       <el-button v-if="expanded" type="text" icon="el-icon-arrow-up" @click="expandTreeNodeStatus($refs.tree.root)"></el-button>
       <el-button v-else type="text" icon="el-icon-arrow-down" @click="shrinkTreeNodeStatus($refs.tree.root)"></el-button>
     </slot>
     <div class="head-container">
-      <el-tree :data="treeData" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" ref="tree" node-key="id" default-expand-all highlight-current @node-click="handleNodeClick" />
+      <el-tree :data="treeData" :props="defaultProps" 
+      :expand-on-click-node="false" :filter-node-method="filterNode" ref="tree" 
+      node-key="id" :default-expand-all='false' highlight-current :current-node-key="currentNodeKey"
+      :default-expanded-keys="defaultExpIds" @node-click="handleNodeClick" />
     </div>
   </div>
 </template>
@@ -22,6 +25,15 @@ export default {
       type: Array,
       default: () => [],
     },
+    //默认展开
+    defaultExpIds:{
+      type:Array,
+      default:()=>[]
+    },
+    currentNodeKey:{
+      type:Number,
+      default:0
+    }
   },
   data() {
     return {
@@ -39,10 +51,11 @@ export default {
     deptName(val) {
       this.$refs.tree.filter(val);
     },
+    
     treeData(val) {
       this.$nextTick(() => {
-        this.$refs.tree.setCurrentKey(val[0].id);
-        this.$emit("handleNodeClick", val[0]);
+        this.$refs.tree.setCurrentKey(this.currentNodeKey||val[0].id);
+        !this.currentNodeKey&&this.$emit("handleNodeClick", val[0]);
         // const firstNode = document.querySelector('.el-tree-node');
         // if(firstNode){
         //   firstNode.click();
@@ -53,8 +66,12 @@ export default {
   created() {},
   mounted() {},
   methods: {
+    setCurrentKey(id) {
+        this.$refs.tree.setCurrentKey(id);
+      },
     expandTreeNodeStatus(node) {
       this.expanded=false
+      this.defaultExpIds=[]
       for (let i = 0; i < node.childNodes.length; i++) {
         // 改变节点的自身expanded状态
         node.childNodes[i].expanded = false;
