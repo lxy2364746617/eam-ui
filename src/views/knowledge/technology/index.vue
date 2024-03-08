@@ -204,7 +204,7 @@ import { listDept } from '@/api/system/dept'
           { label: "设备类别", prop: "categoryId",options:this.categoryOptions,formType: 'selectTree',width: 180, },/*  */
           { label: "规格型号", prop: "specs", },
           { label: "上传人员", prop: "createBy", },
-          { label: "上传时间", prop: "createTime", formType: "date", formType: "daterange",width:200},
+          { label: "上传时间", prop: "createTime", formType: "datetime", formType: "daterange",width:200},
         ]
     },
     tablecolumns1(){
