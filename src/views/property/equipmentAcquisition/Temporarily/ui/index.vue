@@ -13,6 +13,7 @@
       :isShowCard="isShowCard"
       :isChoose="isChoose"
       :busId="formData.purchasePlanNo"
+      :handleSelectionChange="handleSelectionChange"
       :busString="'busId'"
       @addFileList="handlerAddFileList"
       @delFileList="handlerDelFileList"
@@ -164,6 +165,8 @@ export default {
       subtitle: "",
       subopen: false,
       tableData: [],
+      ids: [],
+      radioRow: null,
     };
   },
   created() {
@@ -271,6 +274,8 @@ export default {
           tableVisible: true,
           width: 250,
           span: 23,
+          formType: "textarea",
+          rows: 4,
         },
         {
           label: "必要性分析",
@@ -279,6 +284,8 @@ export default {
           width: 250,
           span: 23,
           required: true,
+          formType: "textarea",
+          rows: 4,
         }, //(1 设备、2 部件)
         {
           label: "项目分类",
@@ -340,6 +347,18 @@ export default {
     },
   },
   methods: {
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = null;
+        }
+      });
+
+      return defaultObject;
+    },
     // ! 提交审批流
     sub(val) {
       definitionStart2(val.id, this.reviewCode, "purchase_plan", {}).then(
@@ -480,11 +499,15 @@ export default {
           .catch(() => {});
         return;
       } else if (act === "download") {
-        downDetailLoad({ ids: this.ids }).then((res) => {
+        downDetailLoad({
+          ids: this.ids.length > 0 ? this.ids : null,
+          ...this.convertToDefaultObject(this.columns),
+          purchasePlanNo: this.formData.purchasePlanNo,
+        }).then((res) => {
           const blob = new Blob([res], {
             type: "application/vnd.ms-excel;charset=utf-8",
           });
-          saveAs(blob, `sparePart_${new Date().getTime()}`);
+          saveAs(blob, `purchaseDetail_${new Date().getTime()}`);
         });
       } else {
         // ! 其他
@@ -562,6 +585,11 @@ export default {
           });
         }
       }
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.id);
+      this.radioRow = selection[0];
     },
     // ! 查询表格数据
     getList(queryParams) {
