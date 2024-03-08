@@ -7,6 +7,7 @@
         <jm-user-tree
           :treeData="deptOptions"
           @handleNodeClick="handleNodeClick"
+          :defaultExpIds="defaultExpIds"
           style=" height:78vh;width:100%"
         >
           <!-- <template slot="middle-pos">
@@ -110,6 +111,7 @@ export default {
       showSearch: true,
       // 部门树选项
       deptOptions: [],
+      defaultExpIds:[],
       // 弹出层标题
       title: "",
       // 部门名称
@@ -210,7 +212,7 @@ export default {
       if (b.prop == "secondUnit")
         this.$set(b, "options", this.dict.type.sys_second_unit);
       if (b.prop == "lease") this.$set(b, "options", this.dict.type.sys_lease);
-      if (b.prop == "parentId") this.$set(b, "options", this.deptOptions);
+      if (b.prop == "parentId") this.$set(b, "options", this.deptOptions.concat([{id:0,label:'无上级组织'}]));
     });
   },
   methods: {
@@ -218,13 +220,19 @@ export default {
     async getDeptTree() {
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;
+        //展开一二级
+          let arr=[]
+          this.deptOptions.forEach(item=>{
+            arr.push(item.id)
+          })
+          this.defaultExpIds=arr
       });
     },
     /** 查询部门列表 */
     getList(queryParams) {
       var obj = {
         parentId: this.nowClickTreeItem.id,
-        queryParams,
+        ...queryParams,
         ...this.formParams,
       };
       getDeptChild(obj).then((response) => {

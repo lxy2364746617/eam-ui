@@ -59,7 +59,7 @@
     </jm-table>
 
     <!-- 添加或修改公告对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="1080px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1080px" :close-on-click-modal='false' append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24"  >
@@ -92,8 +92,9 @@
           
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+      <div slot="footer" class="dialog-footer" >
+        <el-button type="primary" @click="submitForm(0)">保存草稿</el-button>
+        <el-button type="primary" @click="submitForm(1)">保存并发布</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -102,7 +103,7 @@
 
 <script>
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
-import JmTable from "@/components/JmTable";
+import JmTable from "@/components/JmTable1";
 export default {
   name: "Notice",
   dicts: ['sys_notice_status', 'sys_notice_type'],
@@ -129,11 +130,11 @@ export default {
       open: false,
       // 表格列
       columns: [
-        { label: '创建时间', prop: 'createTime', width: '120', formType: 'datetime', },
-        { label: '发布人', prop: 'issUser', width: '100',  },
-        { label: '标题', prop: 'noticeTitle', width: '100',  },
-        { label: '简介', prop: 'noticeIntro', width: '100',  },
-        { label: '内容', prop: 'noticeContent', width: '200', formType: 'editor', span: 24 },
+        { label: '创建时间', prop: 'createTime', formType: 'datetime',formType: "daterange" },
+        { label: '发布人', prop: 'issUser',  },
+        { label: '标题', prop: 'noticeTitle',  },
+        { label: '简介', prop: 'noticeIntro',   },
+        { label: '内容', prop: 'noticeContent', formType: 'editor', showOverflowTooltip:false},
         // { label: '公告类型', prop: 'noticeType', width: '200',  },
         // { label: '状态', prop: 'status', width: '200',  },
         // { label: '创建者', prop: 'createBy', width: '200',  },
@@ -225,17 +226,17 @@ export default {
       });
     },
     /** 提交按钮 */
-    submitForm: function() {
+    submitForm: function(status) {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.noticeId != undefined) {
-            updateNotice(this.form).then(response => {
+            updateNotice({...this.form,status:status}).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addNotice(this.form).then(response => {
+            addNotice({...this.form,status:status}).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -247,7 +248,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const noticeIds = row.noticeId || this.ids
-      this.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除公告标题为"' + row.noticeTitle + '"的数据项？').then(function() {
         return delNotice(noticeIds);
       }).then(() => {
         this.getList();

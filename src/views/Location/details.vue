@@ -8,7 +8,7 @@
       <!-- 基本信息 -->
       <div class="details_baseData">
         <div class="details_baseData_img">
-          <el-image :src="src||require('@/assets/images/noImg.png')" style="width: 120px;height:100px;">
+          <el-image :src="src||require('@/assets/images/noImg.png')" style="width: 120px;height:100px;" :key="src">
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline" style="font-size:30px;color:#909399"></i>
             </div>
@@ -31,16 +31,18 @@
               <el-row>
                 <el-col :span="16">
                   <el-form-item label="功能位置名称:" label-width="120px" prop="deptName" :rules="[{required:true}]">
-                <el-input v-model="formData.deptName" disabled></el-input>
+                <el-input v-model="formData.deptName" disabled style="width:206px"></el-input>
               </el-form-item>
               <el-form-item label="所属组织:" label-width="120px" prop="orgName" :rules="[{required:true}]">
-                <el-input v-model="formData.orgName" disabled></el-input>
+                <el-input v-model="formData.orgName" disabled style="width:206px"></el-input>
               </el-form-item>
               <el-form-item label="功能位置编码:" label-width="120px" prop="deptCode" :rules="[{required:true}]">
-                <el-input v-model="formData.deptCode" disabled></el-input>
+                <el-input v-model="formData.deptCode" disabled style="width:206px"></el-input>
               </el-form-item>
               <el-form-item label="设备位置属性:" label-width="120px" prop="funAttr" :rules="[{required:true}]">
-                <el-input v-model="formData.funAttr" disabled></el-input>
+                <el-select v-model="formData.funAttr" disabled style="width:206px">
+                  <el-option v-for="item in funAttrOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
               </el-form-item>
                 </el-col>
                 <el-col :span="8">
@@ -101,25 +103,22 @@
           </jm-table>
         </el-tab-pane>
         <el-tab-pane label="位置图片" name="third">
-          <!-- <draggable v-model="sysFileResources" >
+           <draggable v-model="sysFileResources" @change='imgMove'>
             <transition-group>
               <div class="el-upload-list__item" v-for="item in sysFileResources" :key="item.id">
-                  <img :src="item.url" style="width:100%;height:100%">
-                  <span class="img_btn" >
-                    <span
-                      class="el-upload-list__item-preview"
+                  <img :src="item.url" style="width:100%">
+                  <div class="img_btn" >
+                      <span
                       @click="handlePictureCardPreview(item)"
                     >
                       <i class="el-icon-zoom-in"></i>
-                    </span>
+                    </span> 
                     <span
-                      v-if="!disabled"
-                      class="el-upload-list__item-delete"
                       @click="handleRemove(item)"
                     >
                       <i class="el-icon-delete"></i>
-                    </span>
-              </span>
+                    </span> 
+                  </div>
               </div>    
             </transition-group>
             <div slot="footer" class="el-upload-list__item" style="display:inline-block;width:148px;height:148px">
@@ -137,8 +136,8 @@
             <i slot="default" class="el-icon-plus"></i>
         </el-upload>
             </div>
-        </draggable> -->
-         <el-upload
+        </draggable> 
+         <!-- <el-upload
             :action="action"
             :headers="headers"
             list-type="picture-card"
@@ -168,7 +167,7 @@
                 </span>
               </span>
             </div>
-         </el-upload>
+         </el-upload> -->
         <el-dialog :visible.sync="dialogVisible">
           <img width="100%" :src="dialogImageUrl" alt="">
         </el-dialog>
@@ -207,7 +206,7 @@ import JmTable from "@/components/JmTable1";
 import JmForm from "@/components/JmForm1";
 import { getToken } from "@/utils/auth";
 import draggable from 'vuedraggable'
-import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,getDeviceStatus,getDeviceAtt,uploadSave,locationDetailFileDelete } from '@/api/Location'
+import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,getDeviceStatus,getDeviceAtt,uploadSave,locationDetailFileDelete,updateSortNum } from '@/api/Location'
   export default {
     name:'locationDetails',
     components: {
@@ -289,6 +288,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         headers: {
           Authorization: "Bearer " + getToken(),
         },
+        funAttrOption:[],
         sysFileResources:[], // 图片集合
         dialogImageUrl: '',
         dialogVisible: false,
@@ -310,6 +310,15 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       this.getAtt()
     },
     methods:{
+      imgMove(e){
+        let arr = this.sysFileResources.map(item=>item.id)
+        updateSortNum(arr).then(res=>{
+          this.getBaseInfo()
+        }
+          
+          
+        )
+      },
       // 获取路由参数
       getRouteData(){
         let BreadcrumbArr = JSON.parse(this.$route.query.BreadcrumbArr)
@@ -319,6 +328,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
           let id = this.breadcrumbArr[this.breadcrumbArr.length-1].id
            this.busId = this.$route.query.i
           //this.busId = id
+          console.log(BreadcrumbArr,id,this.busId)
           this.getBaseInfo()
           this.getDevice()
           this.getFile()
@@ -360,9 +370,10 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         })
       },
       // 获取设备列表
-      getDevice(){
+      getDevice(query){
         let params = {
-          location:this.busId
+          location:this.busId,
+          ...query
         }
         locationDetailDevice(params).then(res=>{
           /* console.log(res,'设备列表') */
@@ -414,9 +425,12 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
               item.label= item.dictLabel
               item.value = item.dictValue
             })
+            this.funAttrOption =res.data
+              console.log('this.funAttrOption',this.funAttrOption)
             this.columns.forEach(item=>{
               if(item.prop =='funAttr'){
                 item.options = res.data
+                
               }
             })
           }
@@ -428,6 +442,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       },
       // 获取基本信息
       getBaseInfo(){
+        console.log('getbaseInfo',this.busId)
         locationDetail({id:this.busId}).then(res=>{
           /* console.log(res,'基本信息') */
           this.columns.forEach(item=>{
@@ -438,6 +453,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
 0          })
           this.src = res.data.bannerUrl?`${process.env.VUE_APP_BASE_API}${res.data.bannerUrl}`:false
           this.src1 = res.data.qrCode?`${process.env.VUE_APP_BASE_API}${res.data.qrCode}`:false
+          console.log(this.src)
         })
       },
       // 获取表格数据
@@ -628,7 +644,7 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
   .upload_box{
     min-height: 400px;
   }
- /* .el-upload-list__item {
+  .el-upload-list__item {
     overflow: hidden;
     background-color: #fff;
     border: 1px solid #c0ccda;
@@ -640,14 +656,26 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
     margin: 0 8px 8px 0;
     display: inline-block;
     position: relative;
-    
-} */
-/* .img_btn{
+    &:hover{
+      .img_btn{
+        text-align: center;
+        line-height: 148px;
+        font-size: 22px;
+        display: flex;
+        color: white;
+        justify-content: space-evenly;
+        span{
+          cursor: pointer;
+        }
+      }
+    }
+} 
+ .img_btn{
   width:100%;
   height: 100%;
    background-color: rgba(0,0,0,.5);
    position: absolute;
    top: 0;
    display: none;
-} */
+} 
 </style>

@@ -226,11 +226,12 @@
                 v-else-if="col.formType == 'selectTree'"
                 v-html="findTreeName(col.options, scope.row[col.prop])"
               ></span>
-              <span
+              <div
                 v-else
                 v-html="scope.row[col.prop]"
                 :class="{ active: col.class }"
-              ></span>
+                :style="col.formType=='editor'?'max-height:50px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;':''"
+              ></div>
             </template>
           </el-table-column>
         </template>

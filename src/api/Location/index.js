@@ -95,3 +95,11 @@ export function uploadSave(query) {
     data: query
   })
 }
+// 图片排序
+export function updateSortNum(query) {
+  return request({
+    url: '/system/location/updateSortNum',
+    method: 'post',
+    data: query
+  })
+}

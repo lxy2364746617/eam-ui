@@ -234,13 +234,16 @@ export default {
     /* 添加备品备件 */
     getList2(queryParams) {
       this.loading = true;
-      selectPage(queryParams).then(response => {
-          let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
+      let ids = this.equipmentList.map(item=>{return item.id})
+      queryParams.exportIds = ids.join(',')      
+      selectPage( queryParams).then(response => {
+          /* let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
           let arr= response.data.records.filter(item=>{
             return list_id.indexOf(item.partCode) == -1;
-          })
-          this.$set(this,'partsData',arr);
-          this.total2 = response.data.total;
+          })*/
+          this.$set(this,'partsData',response.rows); 
+          
+          this.total2 = response.total;
           this.pushList=[]
         }
       );

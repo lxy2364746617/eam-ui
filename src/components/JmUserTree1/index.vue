@@ -10,7 +10,7 @@
     </slot>
     <div class="head-container">
       <el-tree :data="treeData" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" 
-      ref="tree" node-key="id" :default-expand-all="false" highlight-current @node-click="handleNodeClick" :default-expanded-keys="defaultExpId" />
+      ref="tree" node-key="id" :default-expand-all="false" highlight-current @node-click="handleNodeClick" :default-expanded-keys="defaultExpIds" />
        
     </div>
   </div>
@@ -25,13 +25,17 @@ export default {
       type: Array,
       default: () => [],
     },
+    //默认展开
+    defaultExpIds:{
+      type:Array,
+      default:()=>[]
+    }
   },
   data() {
     return {
       // 部门名称
       deptName: undefined,
       expanded:true,
-      defaultExpId:['1'],
       defaultProps: {
         children: "children",
         label: "deptName",
@@ -59,7 +63,7 @@ export default {
   methods: {
     expandTreeNodeStatus(node) {
       this.expanded=false
-      this.defaultExpId=[]
+      this.defaultExpIds=[]
       for (let i = 0; i < node.childNodes.length; i++) {
         // 改变节点的自身expanded状态
         node.childNodes[i].expanded = false;

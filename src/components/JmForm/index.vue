@@ -182,6 +182,10 @@ export default {
     forceUpdate:{
       default:false,
       type:Boolean
+    },
+    rules:{
+      default:()=>{},
+      type:Object
     }
   },
   // watch:{
@@ -202,10 +206,11 @@ export default {
   data() {
     return {
       // form: {},
-      rules: {},
+      /* rules: {}, */
     }
   },
-  created() {},
+  created() {
+  },
   mounted() {
     this.clearValidate()
   },
