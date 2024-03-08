@@ -51,7 +51,7 @@
             :formData="formData"
             :isTask="col.isTask"
           ></Relevance>
-              <AppraisalReport
+          <AppraisalReport
             ref="relevance"
             v-else-if="col.formType == 'appraisalReport'"
             @fileResourceList="fileResourceList"
@@ -284,6 +284,7 @@
               :disabled="col.formDisabled || disabled"
               :zIndex="9999"
               style="height: 32px; line-height: 32px"
+              :flat="true"
             />
             <el-input
               v-else-if="col.formType == 'textarea'"
@@ -399,7 +400,7 @@ export default {
     MaintenanceContent,
     InspectContent,
     ExpenseInspect,
-    AppraisalReport
+    AppraisalReport,
   },
   props: {
     columns: {

@@ -13,7 +13,7 @@
       :isShowCard="isShowCard"
       :isChoose="isChoose"
       :busId="formData.purchasePlanNo"
-      :busString="'busNo'"
+      :busString="'busId'"
       @addFileList="handlerAddFileList"
       @delFileList="handlerDelFileList"
       ref="spareForm"
@@ -77,7 +77,7 @@
         :formData="formDataNow"
         @submitForm="submitForm"
         ref="titleform"
-        :labelWidth="'100px'"
+        :labelWidth="'130px'"
         :disabled="disabledForm"
       >
         <template #footer>
@@ -334,7 +334,6 @@ export default {
           prop: "remark",
           tableVisible: true,
           span: 23,
-          required: true,
         },
         { label: "行号", prop: "lineNum", tableVisible: true, span: 23 },
       ];
@@ -392,10 +391,20 @@ export default {
     submit() {
       this.$refs.spareForm.submitForm();
     },
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.id = item.label;
+        item.label = item.label;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     // ! 部门树数据
     getTreeSelect() {
       listDept().then((response) => {
-        this.deptOptions = response.data;
+        this.deptOptions = this.getTree(response.data);
         if (this.$route.query.formData.id) {
           getProjectList({
             purchasePlanNo: this.$route.query.formData.purchasePlanNo,
@@ -515,8 +524,9 @@ export default {
           if (this.updateList && this.updateList.length > 0)
             val["updateList"] = this.updateList;
 
-          if (val["delFileList"] && val["delFileList"].length > 0)
+          if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
+          console.log("========================", this.delFileList);
           updateProject(val).then((res) => {
             if (res.code === 200) {
               this.handleSubmit();
@@ -542,7 +552,7 @@ export default {
             val["delList"] = this.delList;
           if (this.updateList && this.updateList.length > 0)
             val["updateList"] = this.updateList;
-          if (val["delFileList"] && val["delFileList"].length > 0)
+          if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
           updateProject(val).then((res) => {
             if (res.code === 200) {

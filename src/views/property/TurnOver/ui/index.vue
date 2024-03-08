@@ -684,7 +684,7 @@ export default {
           if (this.updateList && this.updateList.length > 0)
             val["updateList"] = this.updateList;
 
-          if (val["delFileList"] && val["delFileList"].length > 0)
+          if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
           updateProject(val).then((res) => {
             if (res.code === 200) {
@@ -711,7 +711,7 @@ export default {
             val["delList"] = this.delList;
           if (this.updateList && this.updateList.length > 0)
             val["updateList"] = this.updateList;
-          if (val["delFileList"] && val["delFileList"].length > 0)
+          if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
           updateProject(val).then((res) => {
             if (res.code === 200) {

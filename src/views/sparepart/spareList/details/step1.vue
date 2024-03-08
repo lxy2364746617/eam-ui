@@ -52,7 +52,7 @@ export default {
         {
           label: "存储位置",
           prop: "locationCode",
-          width: 150,
+          width: 230,
           options: this.locationOptions,
           formType: "selectTree",
         },

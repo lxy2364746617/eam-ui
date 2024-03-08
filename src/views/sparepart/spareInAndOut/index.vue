@@ -110,7 +110,7 @@
                 label="存储位置"
                 align="center"
                 prop="locationCode"
-                width="150"
+                width="230"
                 ><template slot-scope="scope">
                   <span
                     v-html="
@@ -413,7 +413,7 @@ export default {
           label: "存储位置",
           prop: "locationCode",
           span: 22,
-          width: 150,
+          width: 230,
           options: this.locationOptions,
           formType: "selectTree",
         },

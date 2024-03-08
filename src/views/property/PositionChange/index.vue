@@ -321,7 +321,7 @@ export default {
           .confirm('是否确认删除单号为"' + row.changeNo + '"的数据项？')
           .then(() => {
             // return delParts(ids);
-            return delProject(row.id);
+            return delProject(row.changeNo);
           })
           .then(() => {
             this.getList(this.queryParams);

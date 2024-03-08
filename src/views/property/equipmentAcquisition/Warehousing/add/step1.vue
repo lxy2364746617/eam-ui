@@ -333,7 +333,7 @@ export default {
           options: this.dict.type.em_rent_out,
         },
         {
-          label: "是否跨子公司调剂",
+          label: "是否跨公司调剂",
           prop: "isRelieve",
           tableVisible: false,
           span: 8,

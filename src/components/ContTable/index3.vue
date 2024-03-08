@@ -159,6 +159,7 @@
                     :normalizer="normalizer"
                     :append-to-body="true"
                     :zIndex="9999"
+                    :flat="true"
                   />
                   <el-input
                     v-else
