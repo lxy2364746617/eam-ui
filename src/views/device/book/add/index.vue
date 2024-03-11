@@ -85,7 +85,9 @@ export default {
     return {
       stepActive: 0,
       formTitle: '',
-      formData: {},
+      formData: {
+        deviceStatus: '备用'
+      },
       isEdit:false
     };
   },

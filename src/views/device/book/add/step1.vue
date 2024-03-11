@@ -75,7 +75,7 @@ export default {
     isEdit:{
       default:false,
       type:Boolean
-    }
+    },
   },
   watch:{
     'formData.categoryId':{
@@ -122,7 +122,7 @@ export default {
       return [
         { label:"设备名称", prop:"deviceName", span: 8, required: true, },
         { label:"设备编码", prop:"deviceCode", span: 8, required: true,formDisabled:this.isEdit },
-        { label:"设备状态", prop:"deviceStatus", formType: 'selectTag', options: this.dict.type.em_device_state, span: 8, required: true, },
+        { label:"设备状态", prop:"deviceStatus", formType: 'selectTag', options: this.dict.type.em_device_state, span: 8, required: true},
         { label:"运行状态", prop:"runStatus", formType: 'select', options: this.dict.type.device_run_state, span: 8, },
         { label:"设备类别", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, span: 8, required: true, },
         { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 8, formDisabled:true, required: true, }, //(Y 是、N 否)
@@ -184,8 +184,6 @@ export default {
       locationOptions:[],
       // 是否显示弹出层
       open: false,
-      // 默认密码
-      initPassword: undefined,
       // 日期范围
       dateRange: [],
       // 岗位选项
