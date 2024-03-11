@@ -197,7 +197,7 @@ export default {
     columns() {
       return [
         {
-          label: "创建时间",
+          label: "创建日期",
           prop: "createTime",
           tableVisible: true,
           width: 150,

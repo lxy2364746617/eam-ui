@@ -12,7 +12,7 @@
       :isShowCard="isShowCard"
       :isChoose="isChoose"
       :busId="formData.transferNo"
-      :busString="'busNo'"
+      :busString="'busId'"
       @addFileList="handlerAddFileList"
       @delFileList="handlerDelFileList"
       :handleSelectionChange="handleSelectionChange"

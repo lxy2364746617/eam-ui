@@ -331,7 +331,7 @@ export default {
         cc["fieldValue"] = JSON.stringify(cc["fieldValue"]);
         cc["componentContent"] = JSON.stringify(cc["componentContent"]);
       }
-
+      formData["archivesBase"] = JSON.parse(JSON.stringify(formData));
       return formData;
     },
   },

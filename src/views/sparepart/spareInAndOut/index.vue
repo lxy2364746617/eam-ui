@@ -764,6 +764,7 @@ export default {
     },
     close() {
       this.drawer = false;
+      this.inOutList = null;
     },
     /** 提交按钮 */
     submitForm(formVal) {

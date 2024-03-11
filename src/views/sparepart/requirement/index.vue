@@ -218,8 +218,7 @@ export default {
         },
         {
           label: "申报人员",
-          prop: "userName",
-
+          prop: "createBy",
           tableVisible: true,
         },
 
