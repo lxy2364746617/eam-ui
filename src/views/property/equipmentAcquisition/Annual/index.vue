@@ -371,6 +371,7 @@ export default {
         download({
           ids: this.ids.length > 0 ? this.ids : null,
           ...this.convertToDefaultObject(this.columns),
+          purchasePlanType: 1,
         }).then((res) => {
           const blob = new Blob([res], {
             type: "application/vnd.ms-excel;charset=utf-8",

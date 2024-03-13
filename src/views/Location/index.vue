@@ -3,15 +3,15 @@
     <!--部门数据-->
     <div class="location_left">
       <el-card shadow="never" style="margin-right:10px;height:100%">
-        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick">
+        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" :defaultExpIds="defaultExpIds">
           <template slot="middle-pos">
             <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"
                        v-hasPermi="['system:location:add']"
             ></el-button>
-            <el-button type="text" icon="el-icon-edit-outline" @click="editTreeItem"
+            <el-button type="text" icon="el-icon-edit-outline" @click="editTreeItem" v-if="locationFlag=='Y'"
                        v-hasPermi="['system:location:add']"
             ></el-button>
-            <el-button type="text" icon="el-icon-delete" @click="deleteTreeItem(nowClickTreeItem)"
+            <el-button type="text" icon="el-icon-delete" @click="deleteTreeItem(nowClickTreeItem)" v-if="locationFlag=='Y'"
                        v-hasPermi="['system:location:remove']"
             ></el-button>
           </template>
@@ -109,6 +109,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       return {
         // 部门树选项
         deptOptions: [],
+        defaultExpIds:[],
         nowClickTreeItem: "",
         rightTitle: '基本信息',
         columns:[
@@ -128,6 +129,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           parentDeptName:'',
           remark:''
         },
+        locationFlag:'Y',
         src:'', // 二维码路径
         isBaseData: true, // 是否为基本信息
         // 表格数据
@@ -217,6 +219,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           this.$message('请保存或退出当前编辑')
         }else{
           this.nowClickTreeItem = row
+          this.locationFlag=row.locationFlag
           this.getBaseInfo()
         }
       },
@@ -271,6 +274,17 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         getLocationTree().then(res=>{
           console.log(res,'tree-data')
           this.deptOptions = res.data
+          //展开一二级
+          let arr=[]
+          this.deptOptions.forEach(item=>{
+            arr.push(item.id)
+            /* if(item.children.length>0){
+              item.children.forEach(item2=>{
+            arr.push(item2.id)
+              })
+            } */
+          })
+          this.defaultExpIds=arr
         })
       },
       // 树节点新增
@@ -358,7 +372,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       // 点击详情
       detailsClick(){
         let BreadcrumbArr = this.flatFn(this.nowClickTreeItem.deptId)
-        this.$router.push({name:'LocationDetails',query:{BreadcrumbArr:JSON.stringify(BreadcrumbArr)}})
+        this.$router.push({name:'LocationDetails',query:{BreadcrumbArr:JSON.stringify(BreadcrumbArr),i:this.nowClickTreeItem.id}})
       },
       // 点击表格删除
       handleDelete(row){

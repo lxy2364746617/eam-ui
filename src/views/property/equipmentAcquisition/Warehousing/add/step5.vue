@@ -267,12 +267,12 @@ export default {
       // 当前路由
       let obj = this.$route;
       if (formData.deviceId != undefined) {
-        updateBASE({ ...formData, archivesBase: formData }).then((response) => {
+        updateBASE({ ...formData}).then((response) => {
           this.$modal.msgSuccess("修改成功");
           if (typeof fn == "function") fn();
         });
       } else {
-        addBASE({ ...formData, archivesBase: formData }).then((response) => {
+        addBASE({ ...formData}).then((response) => {
           this.$modal.msgSuccess("保存成功");
           if (typeof fn == "function") fn();
         });

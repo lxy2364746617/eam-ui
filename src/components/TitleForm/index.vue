@@ -333,6 +333,7 @@
               :disabled="col.formDisabled || disabled"
               :zIndex="9999"
               style="height: 32px; line-height: 32px"
+              :flat="true"
             />
             <el-input
               v-else-if="col.formType == 'textarea'"
@@ -458,7 +459,7 @@ export default {
     Personnel,
     PersonnelUpkeep,
     Equip,
-    AppraisalReport
+    AppraisalReport,
   },
   props: {
     columns: {

@@ -192,10 +192,10 @@ export default {
     columns() {
       return [
         {
-          label: "创建时间",
+          label: "创建日期",
           prop: "createTime",
           tableVisible: true,
-          formType: "datetime",
+          formType: "date",
           width: 150,
         },
         { label: "变动单号", prop: "changeNo", tableVisible: true, width: 150 },
@@ -321,7 +321,7 @@ export default {
           .confirm('是否确认删除单号为"' + row.changeNo + '"的数据项？')
           .then(() => {
             // return delParts(ids);
-            return delProject(row.id);
+            return delProject(row.changeNo);
           })
           .then(() => {
             this.getList(this.queryParams);

@@ -174,7 +174,7 @@ export default {
           options: this.statusArr,
         },
         { label: "创建人", prop: "createBy" },
-        { label: "创建时间", prop: "createTime", formType: "datetime" },
+        { label: "创建时间", prop: "createTime", formType: "date" },
       ];
     },
   },

@@ -13,7 +13,8 @@
       :isShowCard="isShowCard"
       :isChoose="isChoose"
       :busId="formData.purchasePlanNo"
-      :busString="'busNo'"
+      :handleSelectionChange="handleSelectionChange"
+      :busString="'busId'"
       @addFileList="handlerAddFileList"
       @delFileList="handlerDelFileList"
       ref="spareForm"
@@ -77,7 +78,7 @@
         :formData="formDataNow"
         @submitForm="submitForm"
         ref="titleform"
-        :labelWidth="'100px'"
+        :labelWidth="'130px'"
         :disabled="disabledForm"
       >
         <template #footer>
@@ -164,6 +165,8 @@ export default {
       subtitle: "",
       subopen: false,
       tableData: [],
+      ids: [],
+      radioRow: null,
     };
   },
   created() {
@@ -271,6 +274,8 @@ export default {
           tableVisible: true,
           width: 250,
           span: 23,
+          formType: "textarea",
+          rows: 4,
         },
         {
           label: "必要性分析",
@@ -279,6 +284,8 @@ export default {
           width: 250,
           span: 23,
           required: true,
+          formType: "textarea",
+          rows: 4,
         }, //(1 设备、2 部件)
         {
           label: "项目分类",
@@ -334,13 +341,24 @@ export default {
           prop: "remark",
           tableVisible: true,
           span: 23,
-          required: true,
         },
         { label: "行号", prop: "lineNum", tableVisible: true, span: 23 },
       ];
     },
   },
   methods: {
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = null;
+        }
+      });
+
+      return defaultObject;
+    },
     // ! 提交审批流
     sub(val) {
       definitionStart2(val.id, this.reviewCode, "purchase_plan", {}).then(
@@ -392,10 +410,20 @@ export default {
     submit() {
       this.$refs.spareForm.submitForm();
     },
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.id = item.label;
+        item.label = item.label;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     // ! 部门树数据
     getTreeSelect() {
       listDept().then((response) => {
-        this.deptOptions = response.data;
+        this.deptOptions = this.getTree(response.data);
         if (this.$route.query.formData.id) {
           getProjectList({
             purchasePlanNo: this.$route.query.formData.purchasePlanNo,
@@ -471,11 +499,15 @@ export default {
           .catch(() => {});
         return;
       } else if (act === "download") {
-        downDetailLoad({ ids: this.ids }).then((res) => {
+        downDetailLoad({
+          ids: this.ids.length > 0 ? this.ids : null,
+          ...this.convertToDefaultObject(this.columns),
+          purchasePlanNo: this.formData.purchasePlanNo,
+        }).then((res) => {
           const blob = new Blob([res], {
             type: "application/vnd.ms-excel;charset=utf-8",
           });
-          saveAs(blob, `sparePart_${new Date().getTime()}`);
+          saveAs(blob, `purchaseDetail_${new Date().getTime()}`);
         });
       } else {
         // ! 其他
@@ -515,8 +547,9 @@ export default {
           if (this.updateList && this.updateList.length > 0)
             val["updateList"] = this.updateList;
 
-          if (val["delFileList"] && val["delFileList"].length > 0)
+          if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
+          console.log("========================", this.delFileList);
           updateProject(val).then((res) => {
             if (res.code === 200) {
               this.handleSubmit();
@@ -542,7 +575,7 @@ export default {
             val["delList"] = this.delList;
           if (this.updateList && this.updateList.length > 0)
             val["updateList"] = this.updateList;
-          if (val["delFileList"] && val["delFileList"].length > 0)
+          if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
           updateProject(val).then((res) => {
             if (res.code === 200) {
@@ -552,6 +585,11 @@ export default {
           });
         }
       }
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.id);
+      this.radioRow = selection[0];
     },
     // ! 查询表格数据
     getList(queryParams) {

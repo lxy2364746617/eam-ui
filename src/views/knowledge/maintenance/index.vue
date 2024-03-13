@@ -106,7 +106,7 @@ import JmTable from "@/components/JmTable1";
           { label: "计划编码", prop: "planCode" },
           { label: "计划名称", prop: "planName", },
           { label: "上传人员", prop: "createBy", },
-          { label: "上传时间", prop: "createTime",formType: "date", formType: "daterange",width:200 },
+          { label: "上传时间", prop: "createTime",formType: "datetime", formType: "daterange",width:200 },
         ],
         // 表格数据
         templateList: [],

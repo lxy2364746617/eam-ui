@@ -105,7 +105,7 @@
       </div>
 
       <div class="submit">
-        <el-button type="primary" @click="save">保存</el-button>
+        <el-button type="primary" @click="save">确定</el-button>
         <el-button @click="close">取消</el-button>
       </div>
     </el-drawer>
@@ -149,6 +149,7 @@ import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 import fileImport from "@/components/FileImport";
+import { equipmentTree } from "@/api/equipment/category";
 export default {
   components: {
     ContTable,
@@ -205,6 +206,7 @@ export default {
 
       radioRow: {},
       deptOptions: null,
+      categoryOptions: null,
     };
   },
   computed: {
@@ -219,7 +221,14 @@ export default {
         { label: "设备编码", prop: "deviceCode", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
         { label: "规格型号", prop: "sModel", tableVisible: true },
-        { label: "设备类别", prop: "deviceType", tableVisible: true },
+        {
+          label: "设备类别",
+          prop: "deviceType",
+          formType: "selectTree",
+          options: this.categoryOptions,
+          width: 280,
+          tableVisible: true,
+        },
         {
           label: "设备状态",
           prop: "deviceStatus",
@@ -351,11 +360,11 @@ export default {
           tableVisible: true,
           options: [
             {
-              label: "年度计划",
+              label: "年度采购",
               value: 1,
             },
             {
-              label: "临时计划",
+              label: "临时采购",
               value: 2,
             },
           ],
@@ -416,8 +425,25 @@ export default {
     handleFileSuccess() {
       this.getList();
     },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        });
+        node.children = this.loops(children, node);
+        return node;
+      });
+    },
     /** 查询部门下拉树结构 */
     async getDeptTree() {
+      equipmentTree().then((response) => {
+        this.categoryOptions = response.data;
+        // 方便获取父级tree
+        this.loops(this.categoryOptions);
+      });
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;
         this.getList();

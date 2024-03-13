@@ -147,7 +147,7 @@ export default {
         {
           label: "上传时间",
           prop: "createTime",
-          formType: "data",
+          formType: "datetime",
           tableVisible: true,
         },
         { label: "上传人员", prop: "createBy", tableVisible: true },

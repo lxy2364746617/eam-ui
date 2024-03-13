@@ -92,8 +92,10 @@ export default {
       showButton: true,
       groupMembers: [],
       groupOptions: [],
+      checkCosts: [],
     };
   },
+
   async created() {
     this.carryValue = JSON.parse(localStorage.getItem("carryValue"));
     this.fileShow = this.carryValue.i;
@@ -103,6 +105,7 @@ export default {
     this.routerForm = this.carryValue.l;
     this.formData["workOrderCode"] = this.carryValue.l.orderCode;
     this.formData["orderCode"] = this.carryValue.l.orderCode;
+    this.formData["deviceCode"] = this.form.deviceCode;
     // await this.getDetails(this.queryParams);
     findAll({ groupType: this.carryValue.l.orderType }).then((res) => {
       res.data.forEach((item) => {
@@ -110,26 +113,25 @@ export default {
         item.value = item.id;
       });
       this.groupOptions = res.data;
-
-      goExecutorDetail({
-        workOrderCode: this.formData.workOrderCode,
-        deviceCode: this.form.deviceCode,
-      }).then((res) => {
-        this.formData = {
-          ...this.formData,
-          ...res.data,
-          checkResult: "" + res.data.checkResult,
-          checkUnit: res.data.checkUnit
-            ? Number(res.data.checkUnit)
-            : this.carryValue.l.groupId,
-          recorder:
-            res.data.recorder ?? this.$store.state.user.standing.nickName,
-          recordTime: res.data.recordTime ?? new Date(),
-        };
-      });
-
-      this.$set(this.formData, "checkUnit", this.carryValue.l.groupId);
     });
+    goExecutorDetail({
+      workOrderCode: this.formData.workOrderCode,
+      deviceCode: this.form.deviceCode,
+    }).then((res) => {
+      this.formData = {
+        ...this.formData,
+        ...res.data,
+        checkResult: "" + res.data.checkResult,
+        checkUnit: res.data.checkUnit
+          ? Number(res.data.checkUnit)
+          : this.carryValue.l.groupId,
+        recorder: res.data.recorder ?? this.$store.state.user.standing.nickName,
+        recordTime: res.data.recordTime ?? new Date(),
+      };
+      this.checkCosts = res.data.checkCosts;
+    });
+
+    this.$set(this.formData, "checkUnit", this.carryValue.l.groupId);
   },
   mounted() {
     this.wrapperTitle = this.$route.meta.title;

@@ -13,7 +13,7 @@
       :isShowCard="isShowCard"
       :isChoose="isChoose"
       :busId="formData.neckNo"
-      :busString="'busNo'"
+      :busString="'busId'"
       @addFileList="handlerAddFileList"
       @delFileList="handlerDelFileList"
       ref="spareForm"
@@ -321,6 +321,7 @@ export default {
           prop: "createTime",
           tableVisible: true,
           width: 200,
+          formType: "date",
         },
         {
           label: "设备名称",
@@ -509,7 +510,7 @@ export default {
 
         this.selectIndex = scope.index - 1;
         this.$modal
-          .confirm('是否确认删除设备编码为"' + row.deviceCode + '"的数据项？')
+          .confirm('是否确认删除设备为"' + row.deviceName + '"的数据项？')
           .then(() => {
             // return delList(ids);
 
@@ -544,6 +545,9 @@ export default {
     },
     // ! 信息提交
     spareSubmitForm(val, review) {
+      for (const key in val) {
+        if (val[key] === undefined) val[key] = null;
+      }
       delete val.time;
       // * 新增
       if (review) {
@@ -566,7 +570,7 @@ export default {
           if (this.updateList && this.updateList.length > 0)
             val["updateList"] = this.updateList;
 
-          if (val["delFileList"] && val["delFileList"].length > 0)
+          if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
           updateProject(val).then((res) => {
             if (res.code === 200) {
@@ -593,7 +597,7 @@ export default {
             val["delList"] = this.delList;
           if (this.updateList && this.updateList.length > 0)
             val["updateList"] = this.updateList;
-          if (val["delFileList"] && val["delFileList"].length > 0)
+          if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
           updateProject(val).then((res) => {
             if (res.code === 200) {

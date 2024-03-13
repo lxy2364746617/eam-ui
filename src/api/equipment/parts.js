@@ -47,9 +47,9 @@ export function delParts(deviceId) {
 //备品备件
 export function selectPage(data) {
   return request({
-    url: '/attachment/selectPage',
+    url: '/attachment/list',
     method: 'post',
-    data: data
+    params: data
   })
 }
 

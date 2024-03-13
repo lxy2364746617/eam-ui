@@ -355,7 +355,7 @@
           </el-col>
           
           <el-col :span="12">
-            <el-form-item prop="postId" label="岗位">
+            <el-form-item prop="postIds" label="岗位">
               <el-select
                 v-model="form.postIds"
                 multiple
@@ -743,7 +743,7 @@ export default {
         nickName: [
           { required: true, message: "用户昵称不能为空", trigger: "blur" },
         ],
-        postId: [
+        postIds: [
           { required: true, message: "岗位不能为空", trigger: "blur" },
         ],
         sex: [

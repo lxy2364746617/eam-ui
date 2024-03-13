@@ -13,7 +13,7 @@
       :isChoose="isChoose"
       :busId="formData.scrapNo"
       :handleSelectionChange="handleSelectionChange"
-      :busString="'busNo'"
+      :busString="'busId'"
       @addFileList="handlerAddFileList"
       @delFileList="handlerDelFileList"
       ref="spareForm"

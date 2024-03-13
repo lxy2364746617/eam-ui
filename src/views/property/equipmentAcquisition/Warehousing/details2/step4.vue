@@ -107,7 +107,7 @@ export default {
       fileType: ['png','jpg','bmp','jpeg','pdf','gif'],
       columns: [
         { label:"文件名称", prop:"originalFileName", span: 12, required: true, },
-        { label:"上传时间", prop:"createTime", formType: 'date', span: 12, required: true, },
+        { label:"上传时间", prop:"createTime", formType: 'datetime', span: 12, required: true, },
         { label:"上传人员", prop:"createBy", span: 12, required: true, },
         { label:"文件大小", prop:"fileSize", span: 12, required: true, },
       ],

@@ -355,7 +355,7 @@ export default {
           .confirm('是否确认删除单号为"' + row.scrapNo + '"的数据项？')
           .then(() => {
             // return delParts(ids);
-            return delProject(row.id);
+            return delProject(row.scrapNo);
           })
           .then(() => {
             this.getList(this.queryParams);

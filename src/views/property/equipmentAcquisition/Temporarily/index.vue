@@ -211,7 +211,7 @@ export default {
             // },
             {
               value: 2,
-              label: "临时计划",
+              label: "临时采购",
             },
           ],
           tableVisible: true,
@@ -366,6 +366,7 @@ export default {
         download({
           ids: this.ids.length > 0 ? this.ids : null,
           ...this.convertToDefaultObject(this.columns),
+          purchasePlanType: 2,
         }).then((res) => {
           const blob = new Blob([res], {
             type: "application/vnd.ms-excel;charset=utf-8",
