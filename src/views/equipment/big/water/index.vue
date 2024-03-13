@@ -30,10 +30,10 @@
                   </el-col> -->
         </template>
         <template #end_handle="scope">
-          <el-button 
-                    size="mini" 
-                    type="text" 
-                    icon="el-icon-edit" 
+          <el-button
+                    size="mini"
+                    type="text"
+                    icon="el-icon-edit"
                     @click="handleUpdate(scope.row, 'edit')"
                     v-hasPermi="['equipment:water:edit']"
                     >编辑</el-button>
@@ -61,7 +61,7 @@
     </div>
   </div>
 </template>
-        
+
 <script>
 import { listWater, getWater, delWater, addWater, updateWater, importWater } from "@/api/equipment/big/water";
 import JmTable from "@/components/JmTable";
@@ -74,7 +74,7 @@ export default {
   dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue'],
   components: { JmTable, JmForm, child, fileImport },
   computed: {
-    
+
     // 列信息
     tablecolumns() {
       return [
@@ -172,7 +172,7 @@ export default {
     getList(queryParams) {
       this.loading = true;
       listWater(queryParams).then(response => {
-        this.templateList = response.data;
+        this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -270,4 +270,3 @@ export default {
   }
 };
 </script>
-        

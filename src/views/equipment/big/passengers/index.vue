@@ -30,10 +30,10 @@
                   </el-col> -->
         </template>
         <template #end_handle="scope">
-          <el-button 
-                    size="mini" 
-                    type="text" 
-                    icon="el-icon-edit" 
+          <el-button
+                    size="mini"
+                    type="text"
+                    icon="el-icon-edit"
                     @click="handleUpdate(scope.row, 'edit')"
                     v-hasPermi="['equipment:passengers:edit']"
                     >编辑</el-button>
@@ -75,7 +75,7 @@
     </div>
   </div>
 </template>
-        
+
 <script>
 import { listPassengers, getPassengers, delPassengers, addPassengers, updatePassengers, importPassengers } from "@/api/equipment/big/passengers";
 import JmTable from "@/components/JmTable";
@@ -88,13 +88,13 @@ export default {
   dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue'],
   components: { JmTable, JmForm, child, fileImport },
   computed: {
-    
+
     // 列信息
     tablecolumns() {
       return [
         { label:"矿井名称", prop:"mineName", span: 8, required: true, },
         { label:"使用地点", prop:"useAddress", span: 8, },
-        { label:"设备型号", prop:"deviceModel", span: 8, },    
+        { label:"设备型号", prop:"deviceModel", span: 8, },
         { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
         { label:"钢丝绳型号", prop:"wireRopeModel", span: 8, },
         { label:"轮边制动器型号", prop:"wheelModel", span: 8, },
@@ -179,7 +179,7 @@ export default {
     getList(queryParams) {
       this.loading = true;
       listPassengers(queryParams).then(response => {
-        this.templateList = response.data;
+        this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -277,4 +277,3 @@ export default {
   }
 };
 </script>
-        

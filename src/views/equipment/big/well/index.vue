@@ -30,10 +30,10 @@
                   </el-col> -->
         </template>
         <template #end_handle="scope">
-          <el-button 
-                    size="mini" 
-                    type="text" 
-                    icon="el-icon-edit" 
+          <el-button
+                    size="mini"
+                    type="text"
+                    icon="el-icon-edit"
                     @click="handleUpdate(scope.row, 'edit')"
                     v-hasPermi="['equipment:well:edit']"
                     >编辑</el-button>
@@ -61,7 +61,7 @@
     </div>
   </div>
 </template>
-        
+
 <script>
 import { listWell, getWell, delWell, addWell, updateWell, importWell } from "@/api/equipment/big/well";
 import JmTable from "@/components/JmTable";
@@ -74,7 +74,7 @@ export default {
   dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue'],
   components: { JmTable, JmForm, child, fileImport },
   computed: {
-    
+
     // 列信息
     tablecolumns() {
       return [
@@ -84,7 +84,7 @@ export default {
         { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
         { label:"电压等级", prop:"vcc", span: 8, },
         { label:"控制方式", prop:"controlMode", span: 8, },
-        { label:"皮带机长度", prop:"length", span: 8, },   
+        { label:"皮带机长度", prop:"length", span: 8, },
         { label:"皮带宽度", prop:"width", span: 8, },
         { label:"提升设备功率", prop:"upPower", span: 8, },
         { label:"提升设备能力", prop:"upDevicePower", span: 8, },
@@ -173,7 +173,7 @@ export default {
     getList(queryParams) {
       this.loading = true;
       listWell(queryParams).then(response => {
-        this.templateList = response.data;
+        this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -271,4 +271,3 @@ export default {
   }
 };
 </script>
-        

@@ -30,10 +30,10 @@
                   </el-col> -->
         </template>
         <template #end_handle="scope">
-          <el-button 
-                    size="mini" 
-                    type="text" 
-                    icon="el-icon-edit" 
+          <el-button
+                    size="mini"
+                    type="text"
+                    icon="el-icon-edit"
                     @click="handleUpdate(scope.row, 'edit')"
                     v-hasPermi="['equipment:nitrogen:edit']"
                     >编辑</el-button>
@@ -75,7 +75,7 @@
     </div>
   </div>
 </template>
-        
+
 <script>
 import { listNitrogen, getNitrogen, delNitrogen, addNitrogen, updateNitrogen, importNitrogen } from "@/api/equipment/big/nitrogen";
 import JmTable from "@/components/JmTable";
@@ -88,7 +88,7 @@ export default {
   dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue','equipment_elevator_people'],
   components: { JmTable, JmForm, child, fileImport },
   computed: {
-    
+
     // 列信息
     tablecolumns() {
       return [
@@ -188,7 +188,7 @@ export default {
     getList(queryParams) {
       this.loading = true;
       listNitrogen(queryParams).then(response => {
-        this.templateList = response.data;
+        this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -286,4 +286,3 @@ export default {
   }
 };
 </script>
-        

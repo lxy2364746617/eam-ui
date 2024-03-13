@@ -37,10 +37,10 @@
                     @click="handleUpdate(scope.row,'view')"
                     v-hasPermi="['equipment:template:edit']"
                   >查看</el-button> -->
-          <el-button 
-                    size="mini" 
-                    type="text" 
-                    icon="el-icon-edit" 
+          <el-button
+                    size="mini"
+                    type="text"
+                    icon="el-icon-edit"
                     @click="handleUpdate(scope.row, 'edit')"
                     v-hasPermi="['equipment:strong:edit']"
                     >编辑</el-button>
@@ -68,7 +68,7 @@
     </div>
   </div>
 </template>
-        
+
 <script>
 import { listStrong, getStrong, delStrong, addStrong, updateStrong, importStrong } from "@/api/equipment/big/strong";
 import JmTable from "@/components/JmTable";
@@ -81,7 +81,7 @@ export default {
   dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue'],
   components: { JmTable, JmForm, child, fileImport },
   computed: {
-    
+
     // 列信息
     tablecolumns() {
       return [
@@ -91,7 +91,7 @@ export default {
         { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
         { label:"电机功率", prop:"elevatorPower", span: 8, },
         { label:"额定流量", prop:"ratedFlow", span: 8, },
-        { label:"管路直径", prop:"pipelineWidth", span: 8, },    
+        { label:"管路直径", prop:"pipelineWidth", span: 8, },
         { label:"管路数量", prop:"pipelineSum", span: 8, },
         { label:"管路-敷设长度", prop:"pipelineLength", span: 8, },
       ]
@@ -175,7 +175,7 @@ export default {
     getList(queryParams) {
       this.loading = true;
       listStrong(queryParams).then(response => {
-        this.templateList = response.data;
+        this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -273,4 +273,3 @@ export default {
   }
 };
 </script>
-        

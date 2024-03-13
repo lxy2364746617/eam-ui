@@ -39,7 +39,7 @@
         </div>
     </div>
 </template>
-          
+
 <script>
 import { listGas, getGas, delGas, addGas, updateGas, importGas } from "@/api/equipment/big/gas";
 import JmTable from "@/components/JmTable";
@@ -83,7 +83,7 @@ export default {
                 { label: "规格型号", prop: "specs", },
                 { label: "设备类别", prop: "categoryId", formType: 'selectTree', options: this.categoryOptions, },
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
-                { label: "功能位置", prop: "location", },
+                { label: "功能位置", prop: "locationName", },
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
                 { label: "所属子公司", prop: "111", },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
@@ -149,7 +149,7 @@ export default {
         if(this.$route.query.l){
             this.getDetails(this.$route.query.l);
         }
-        
+
     },
     methods: {
         close() {
@@ -361,4 +361,3 @@ export default {
     }
 };
 </script>
-          

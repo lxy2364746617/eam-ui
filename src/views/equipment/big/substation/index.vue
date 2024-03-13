@@ -37,10 +37,10 @@
                     @click="handleUpdate(scope.row,'view')"
                     v-hasPermi="['equipment:template:edit']"
                   >查看</el-button> -->
-          <el-button 
-                    size="mini" 
-                    type="text" 
-                    icon="el-icon-edit" 
+          <el-button
+                    size="mini"
+                    type="text"
+                    icon="el-icon-edit"
                     @click="handleUpdate(scope.row, 'edit')"
                     v-hasPermi="['equipment:substation:edit']"
                     >编辑</el-button>
@@ -68,7 +68,7 @@
     </div>
   </div>
 </template>
-        
+
 <script>
 import { listSubstation, getSubstation, delSubstation, addSubstation, updateSubstation, importSubstation } from "@/api/equipment/big/substation";
 import JmTable from "@/components/JmTable";
@@ -81,7 +81,7 @@ export default {
   dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue'],
   components: { JmTable, JmForm, child, fileImport },
   computed: {
-    
+
     // 列信息
     tablecolumns() {
       return [
@@ -177,7 +177,7 @@ export default {
     getList(queryParams) {
       this.loading = true;
       listSubstation(queryParams).then(response => {
-        this.templateList = response.data;
+        this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -275,4 +275,3 @@ export default {
   }
 };
 </script>
-        
