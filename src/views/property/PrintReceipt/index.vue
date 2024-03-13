@@ -52,7 +52,7 @@
             <th v-for="item in thead" :key="item">{{ item }}</th>
           </tr>
         </thead>
-        <tbody v-if="form.flag === 'LY' || form.flag === 'HT'">
+        <tbody v-if="form.flag === 'LY'">
           <tr v-for="item in dataSource.detailList" :key="item.id">
             <td>{{ item.deviceName }}</td>
             <td>{{ item.sModel }}</td>
@@ -60,6 +60,16 @@
             <td>{{ item.deviceNum }}</td>
             <td>{{ item.location ? item.location : "-" }}</td>
             <td>{{ item.remark ? item.remark : "-" }}</td>
+          </tr>
+        </tbody>
+        <tbody v-else-if="form.flag === 'HT'">
+          <tr v-for="item in dataSource.detailList" :key="item.id">
+            <td>{{ item.deviceName }}</td>
+            <td>{{ item.sModel }}</td>
+            <td>{{ "台" }}</td>
+            <td>1</td>
+            <td>{{ item.location ? item.location : "-" }}</td>
+            <td>{{ item.targetLocation ? item.targetLocation : "-" }}</td>
           </tr>
         </tbody>
         <tbody v-else-if="form.flag === 'YJ'">
@@ -88,14 +98,15 @@
       </table>
       <!-- 底部 -->
       <div v-if="form.flag !== 'BF'" class="basic">
-        <span>部门主管：-</span>
-        <span>设备管理员：-</span>
-        <span>树料员：-</span>
-        <span>保管员：-</span>
+        <span v-for="item in personnelOptions" :key="item.taskName"
+          >{{ item.taskName }}：{{ item.assigneeName }}</span
+        >
       </div>
       <div v-else class="basic">
         <span>报废人：{{ dataSource.scrapPerson }}</span>
-        <span>设备管理员：-</span>
+        <span v-for="item in personnelOptions" :key="item.taskName"
+          >{{ item.taskName }}：{{ item.assigneeName }}</span
+        >
       </div>
     </div>
   </div>
@@ -114,10 +125,11 @@ export default {
       isEdit: false,
       routeUrl: null,
       routeMethod: null,
-      dataSource: null,
+      dataSource: { deptName: " " },
       thead: [],
       form: {},
       categoryOptions: [],
+      personnelOptions: [],
     };
   },
   created() {
@@ -154,7 +166,14 @@ export default {
         scrapNo: this.$route.query.scrapForm.scrapNo,
       }).then((res) => {
         this.dataSource = { ...this.dataSource, detailList: res.data };
-        console.log("========================", this.dataSource);
+      });
+    }
+    if (this.form.procInsId && this.form.deployId) {
+      request({
+        url: `/flowable/task/flowRecord?procInsId=${this.form.procInsId}&deployId=${this.form.deployId}`,
+      }).then((res) => {
+        res.data.flowList.pop()
+        this.personnelOptions = res.data.flowList;
       });
     }
   },
@@ -223,7 +242,9 @@ export default {
       window.print();
     },
     handlerBack() {
-      this.$router.back();
+      // this.$router.back();
+      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+      this.$router.go(-1); //跳回上页
     },
   },
 };

@@ -46,7 +46,6 @@
             v-hasPermi="['work:request:view']"
             >详情</el-button
           >
-
           <el-button
             v-if="scope.row.orderStatus !== '已关闭'"
             size="mini"

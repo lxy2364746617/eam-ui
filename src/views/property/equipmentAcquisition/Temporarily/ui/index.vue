@@ -549,7 +549,6 @@ export default {
 
           if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
-          console.log("========================", this.delFileList);
           updateProject(val).then((res) => {
             if (res.code === 200) {
               this.handleSubmit();

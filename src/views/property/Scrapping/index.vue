@@ -278,6 +278,8 @@ export default {
             "功能位置",
             "设备状态",
           ],
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
         },
       });
     },

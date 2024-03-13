@@ -387,9 +387,14 @@ export const getWorkOrderSchedule = (query) => {
 };
 
 // 加入故障案例库
-export const checkWomInfo = (id) => {
+export const checkWomInfo = (data) => {
+  if (!data.caseFlag) return;
   return request({
-    url: "/wom/repair/checkWomInfo?id=" + id,
-    method: "get",
+    url:
+      "/wom/repair/checkWomInfo?id=" +
+      data.id +
+      "&caseFlag=" +
+      `${data.caseFlag}`,
+    method: "post",
   });
 };

@@ -316,6 +316,8 @@ export default {
           options: this.dict.type.em_is_lease,
           tableVisible: false,
           span: 8,
+          required: true,
+          formDisabled: true,
         }, //(Y 是、N 否)
         {
           label: "租赁设备到期日",

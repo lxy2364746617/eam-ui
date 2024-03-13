@@ -761,7 +761,6 @@ export default {
     },
     /** 提交按钮 */
     submitForm2: function (formdata) {
-      console.log("========================", formdata);
       // ! 成功了才会走这
       formdata["idList"] = this.itemIds;
       formdata.addAttachmentDTOList.forEach((item) => {

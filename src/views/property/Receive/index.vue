@@ -253,6 +253,8 @@ export default {
           flag: "LY",
           titleHeader: row.affDeptName + "领用单",
           thead: ["名称", "型号", "单位", "数量", "安装地点", "备注"],
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
         },
       });
     },

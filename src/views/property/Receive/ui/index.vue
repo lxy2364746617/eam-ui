@@ -138,6 +138,7 @@ import {
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
+import { getLocationTree } from "@/api/Location";
 export default {
   components: {
     PropertyOperation,
@@ -199,6 +200,8 @@ export default {
       form: {
         disIds: [],
       },
+      locationOptions: [],
+      locationOptions2: [],
     };
   },
   created() {
@@ -317,7 +320,7 @@ export default {
     columns() {
       return [
         {
-          label: "创建时间",
+          label: "创建日期",
           prop: "createTime",
           tableVisible: true,
           width: 200,
@@ -342,7 +345,6 @@ export default {
           tableVisible: true,
           span: 23,
           required: true,
-          formDisabled: true,
         },
 
         {
@@ -353,13 +355,20 @@ export default {
           span: 23,
           required: true,
         }, //(0 父级)
-
+        {
+          label: "安装地点",
+          prop: "location",
+          tableVisible: true,
+          span: 23,
+          required: true,
+          options: this.locationOptions,
+          formType: "selectTree",
+        },
         {
           label: "备注",
           prop: "remark",
           tableVisible: true,
           span: 23,
-          required: true,
           formType: "textarea",
           rows: 5,
         },
@@ -367,12 +376,23 @@ export default {
     },
   },
   methods: {
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.id = item.deptName;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     submitRadio2(row) {
       this.addItem.copyInputName = row.deviceName;
       this.addItem.copyInputId = row.deviceId;
       this.$set(this.addItem, "choosedrawer", false);
-      this.formDataNow = { ...row, ...this.formDataNow };
-      this.formDataNow["sModel"] = row.specs;
+      this.$set(this.formDataNow, "deviceName", row.deviceName);
+      this.$set(this.formDataNow, "sModel", row.specs);
     },
     /** 查询用户列表 */
     getUserList(id) {
@@ -449,6 +469,9 @@ export default {
     },
     // ! 部门树数据
     getTreeSelect() {
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTree(res.data);
+      });
       listDept().then((response) => {
         this.deptOptions = response.data;
         if (this.$route.query.formData.id) {

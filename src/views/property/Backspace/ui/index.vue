@@ -233,14 +233,14 @@ export default {
         });
 
         this.reviewCode = this.formData.backNo;
-      } else {
-        this.formData = {
-          applyDeptPerson: this.$store.state.user.standing.nickName,
-          applyDeptId: this.$store.state.user.standing.deptId,
-          affDeptId: this.$store.state.user.standing.deptId,
-        };
-        this.isShowCard = 0;
       }
+    } else {
+      this.formData = {
+        applyDeptPerson: this.$store.state.user.standing.nickName,
+        applyDeptId: this.$store.state.user.standing.deptId,
+        affDeptId: this.$store.state.user.standing.deptId,
+      };
+      this.isShowCard = 0;
     }
   },
   mounted() {},
@@ -334,10 +334,11 @@ export default {
     columns() {
       return [
         {
-          label: "创建时间",
+          label: "创建日期",
           prop: "createTime",
           tableVisible: true,
           width: 200,
+          formType: "date",
         },
         {
           label: "设备名称",

@@ -267,6 +267,10 @@ export default {
     };
   },
   created() {
+    if (this.$route.query) {
+      this.$set(this.formData, "makerNo", this.$route.query.purchasePlanNo);
+      this.$set(this.formData, "makerLn", this.$route.query.lineNum);
+    }
     if (!this.formData.archivesOther) {
       this.$set(this.formData, "archivesOther", {});
     }

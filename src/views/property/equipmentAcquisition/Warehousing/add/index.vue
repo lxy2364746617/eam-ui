@@ -85,11 +85,11 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
-import step1 from "@/views/device/book/add/step1";
-import step2 from "@/views/device/book/add/step2";
-import step3 from "@/views/device/book/add/step3";
-import step4 from "@/views/device/book/add/step4";
-import step5 from "@/views/device/book/add/step5";
+import step1 from "@/views/property/equipmentAcquisition/Warehousing/add/step1";
+import step2 from "@/views/property/equipmentAcquisition/Warehousing/add/step2";
+import step3 from "@/views/property/equipmentAcquisition/Warehousing/add/step3";
+import step4 from "@/views/property/equipmentAcquisition/Warehousing/add/step4";
+import step5 from "@/views/property/equipmentAcquisition/Warehousing/add/step5";
 
 export default {
   name: "bookadd",
@@ -176,66 +176,69 @@ export default {
     };
   },
   created() {
+    this.$set(this.formData, "isLease", "N");
+    this.$set(this.formData, "runStatus", "STOP");
+    this.$set(this.formData, "deviceStatus", "备用");
+    this.$set(this.formData, "specs", this.$route.query.smodel);
+    this.$set(this.formData, "deviceName", this.$route.query.deviceName);
     if (this.$route.query.i) {
-      // 编辑
+      // // 编辑
       const deviceId = this.$route.query.i;
       this.isEdit = this.$route.query.f == "edit";
       this.formTitle = "编辑设备";
-      getBASE(deviceId)
-        .then((response) => {
-          // 第一步  特种设备
-          if (response.data.emArchivesSpecial) {
-            response.data.emArchivesSpecial.componentContent = JSON.parse(
-              response.data.emArchivesSpecial.componentContent
-            );
-            response.data.emArchivesSpecial.fieldValue = JSON.parse(
-              response.data.emArchivesSpecial.fieldValue
-            );
-            // this.setFormLabel(response.data.emArchivesSpecial.componentContent)
-          }
-          // 第二步
-          if (response.data.archivesOther == null) {
-            response.data.archivesOther = {};
-          }
-          // 第二步  扩展数据
-          if (response.data.emArchivesExtendAtt) {
-            response.data.emArchivesExtendAtt.componentContent = JSON.parse(
-              response.data.emArchivesExtendAtt.componentContent
-            );
-            response.data.emArchivesExtendAtt.componentContent.forEach(
-              (item) => {
-                item.label = item.label || item.fieldName;
-                item.prop = item.prop || item.fieldCode;
-              }
-            );
-            response.data.emArchivesExtendAtt.fieldValue = JSON.parse(
-              response.data.emArchivesExtendAtt.fieldValue
-            );
-            // this.setFormLabel(response.data.emArchivesExtendAtt.componentContent)
-          }
-          // 第三步 主要指标
-          if (response.data.emArchivesIndex) {
-            response.data.emArchivesIndex.componentContent = JSON.parse(
-              response.data.emArchivesIndex.componentContent
-            );
-            response.data.emArchivesIndex.fieldValue = JSON.parse(
-              response.data.emArchivesIndex.fieldValue
-            );
-            // this.setFormLabel(response.data.emArchivesIndex.componentContent)
-          }
-
-          this.formData = response.data;
-          this.stepActive = this.formData.step;
-
-          // var obj = {
-          //   componentContent: [],
-          //   fieldValue: {},
-          // }
-          // if(this.formData.emArchivesExtendAtt==null) this.formData.emArchivesExtendAtt=obj
-          // if(this.formData.emArchivesIndex==null) this.formData.emArchivesIndex=obj
-          // if(this.formData.emArchivesSpecial==null) this.formData.emArchivesSpecial=obj
-        })
-        .catch((err) => {});
+      // getBASE(deviceId)
+      //   .then((response) => {
+      //     // 第一步  特种设备
+      //     if (response.data.emArchivesSpecial) {
+      //       response.data.emArchivesSpecial.componentContent = JSON.parse(
+      //         response.data.emArchivesSpecial.componentContent
+      //       );
+      //       response.data.emArchivesSpecial.fieldValue = JSON.parse(
+      //         response.data.emArchivesSpecial.fieldValue
+      //       );
+      //       // this.setFormLabel(response.data.emArchivesSpecial.componentContent)
+      //     }
+      //     // 第二步
+      //     if (response.data.archivesOther == null) {
+      //       response.data.archivesOther = {};
+      //     }
+      //     // 第二步  扩展数据
+      //     if (response.data.emArchivesExtendAtt) {
+      //       response.data.emArchivesExtendAtt.componentContent = JSON.parse(
+      //         response.data.emArchivesExtendAtt.componentContent
+      //       );
+      //       response.data.emArchivesExtendAtt.componentContent.forEach(
+      //         (item) => {
+      //           item.label = item.label || item.fieldName;
+      //           item.prop = item.prop || item.fieldCode;
+      //         }
+      //       );
+      //       response.data.emArchivesExtendAtt.fieldValue = JSON.parse(
+      //         response.data.emArchivesExtendAtt.fieldValue
+      //       );
+      //       // this.setFormLabel(response.data.emArchivesExtendAtt.componentContent)
+      //     }
+      //     // 第三步 主要指标
+      //     if (response.data.emArchivesIndex) {
+      //       response.data.emArchivesIndex.componentContent = JSON.parse(
+      //         response.data.emArchivesIndex.componentContent
+      //       );
+      //       response.data.emArchivesIndex.fieldValue = JSON.parse(
+      //         response.data.emArchivesIndex.fieldValue
+      //       );
+      //       // this.setFormLabel(response.data.emArchivesIndex.componentContent)
+      //     }
+      //     this.formData = response.data;
+      //     this.stepActive = this.formData.step;
+      //     // var obj = {
+      //     //   componentContent: [],
+      //     //   fieldValue: {},
+      //     // }
+      //     // if(this.formData.emArchivesExtendAtt==null) this.formData.emArchivesExtendAtt=obj
+      //     // if(this.formData.emArchivesIndex==null) this.formData.emArchivesIndex=obj
+      //     // if(this.formData.emArchivesSpecial==null) this.formData.emArchivesSpecial=obj
+      //   })
+      //   .catch((err) => {});
     } else {
       // 新增
       this.formTitle = "新增设备";
@@ -331,7 +334,8 @@ export default {
         cc["fieldValue"] = JSON.stringify(cc["fieldValue"]);
         cc["componentContent"] = JSON.stringify(cc["componentContent"]);
       }
-      formData["archivesBase"] = JSON.parse(JSON.stringify(formData));
+      formData["archivesBase"] = JSON.parse(JSON.stringify({ formData }));
+      formData["deviceType"] = formData.categoryId;
       return formData;
     },
   },

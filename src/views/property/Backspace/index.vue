@@ -94,7 +94,7 @@
         <el-button
           size="mini"
           type="text"
-          @click="handleSet"
+          @click="handleSet(scope.row)"
           v-if="
             scope.row.apvStatus == 'completed' ||
             scope.row.apvStatus == 'running'
@@ -201,6 +201,7 @@ export default {
           prop: "createTime",
           tableVisible: true,
           width: 150,
+          formType: "date",
         },
         { label: "回退单编号", prop: "backNo", tableVisible: true, width: 150 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
@@ -270,7 +271,10 @@ export default {
           id: row.id,
           titleHeader: row.affDept + "回退单",
           flag: "HT",
-          thead: ["名称", "型号", "单位", "数量", "安装地点", "备注"],
+          thead: ["名称", "型号", "单位", "数量", "安装地点", "退库地点"],
+          deptName: row.applyDeptName,
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
         },
       });
     },

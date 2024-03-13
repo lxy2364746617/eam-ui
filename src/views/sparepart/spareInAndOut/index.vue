@@ -751,7 +751,6 @@ export default {
         .confirm('是否确认删除备件编码为"' + partsCodes + '"的数据项？')
         .then(() => {
           // return delParts(ids);
-          console.log("========================", ids);
         })
         .then(() => {
           this.getList(this.queryParams);

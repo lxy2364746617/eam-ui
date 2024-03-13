@@ -26,7 +26,7 @@
           size="mini"
           style="margin-left: 5px"
           @click="handlerControls(null, 'add')"
-          v-hasPermi="['property:backspace:add']"
+          v-hasPermi="['property:turnOver:add']"
           >选取设备</el-button
         >
         <el-button
@@ -34,7 +34,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handlerControls(null, 'batchEdit')"
-          v-hasPermi="['property:backspace:batchEdit']"
+          v-hasPermi="['property:turnOver:batchEdit']"
           >批量设置</el-button
         >
         <!-- <el-button
@@ -55,14 +55,14 @@
           type="text"
           icon="el-icon-edit"
           @click="handlerControls(scope.row, 'edit', scope)"
-          v-hasPermi="['property:backspace:edit']"
+          v-hasPermi="['property:turnOver:edit']"
           >编辑</el-button
         >
         <el-button
           size="mini"
           type="text"
           icon="el-icon-delete"
-          v-hasPermi="['property:backspace:remove']"
+          v-hasPermi="['property:turnOver:remove']"
           @click="handlerControls(scope.row, 'delete', scope)"
           >删除</el-button
         >
@@ -334,10 +334,11 @@ export default {
     columns() {
       return [
         {
-          label: "创建时间",
+          label: "创建日期",
           prop: "createTime",
           tableVisible: true,
           width: 200,
+          formType: "date",
         },
         {
           label: "设备名称",

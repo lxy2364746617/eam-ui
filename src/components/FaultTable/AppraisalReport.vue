@@ -146,7 +146,7 @@ export default {
     columns() {
       return [
         { label: "文件名", prop: "originalFileName", class: true },
-        { label: "创建时间", prop: "createTime", formType: "datetime" },
+        { label: "创建日期", prop: "createTime", formType: "date" },
         { label: "创建人", prop: "createBy" },
         { label: "文件大小", prop: "fileSize" },
       ];
@@ -189,6 +189,9 @@ export default {
       });
     },
     uploadChange2(val) {
+      val.forEach((item, index) => {
+        item["createBy"] = this.$store.state.user.standing.nickName;
+      });
       this.fileResourceList = this.fileResourceList.concat(val);
       this.fileList = [];
       this.filedrawer = false;

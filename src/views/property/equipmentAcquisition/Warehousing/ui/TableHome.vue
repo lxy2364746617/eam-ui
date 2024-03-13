@@ -298,7 +298,7 @@ export default {
           ],
         },
         {
-          label: "创建时间",
+          label: "创建日期",
           prop: "createTime",
           tableVisible: true,
           formType: "date",
@@ -528,7 +528,10 @@ export default {
         return;
       }
       // this.btnLoading = true;
-      this.$router.push({ path: "/property/purchase/warehousingAdd" });
+      this.$router.push({
+        path: "/property/purchase/warehousingAdd",
+        query: this.radioRow2,
+      });
     },
 
     exportWarnLog(data) {

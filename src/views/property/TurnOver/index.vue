@@ -19,7 +19,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleControls(null, 'add')"
-            v-hasPermi="['property:receive:add']"
+            v-hasPermi="['property:turnOver:add']"
             >新增</el-button
           >
         </el-col>
@@ -30,7 +30,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleImport"
-            v-hasPermi="['property:receive:export']"
+            v-hasPermi="['property:turnOver:export']"
             >导入</el-button
           >
         </el-col>
@@ -41,7 +41,7 @@
             size="mini"
             :loading="btnLoading"
             @click="handleControls(null, 'download')"
-            v-hasPermi="['property:receive:download']"
+            v-hasPermi="['property:turnOver:download']"
             >下载</el-button
           >
         </el-col> -->
@@ -51,7 +51,7 @@
           size="mini"
           type="text"
           @click="handleControls(scope.row, 'view')"
-          v-hasPermi="['property:receive:view']"
+          v-hasPermi="['property:turnOver:view']"
           >详情</el-button
         >
         <el-button
@@ -64,7 +64,7 @@
           type="text"
           :loading="btnLoading"
           @click="handleControls(scope.row, 'edit')"
-          v-hasPermi="['property:receive:edit']"
+          v-hasPermi="['property:turnOver:edit']"
           >编辑</el-button
         >
         <el-button
@@ -76,14 +76,14 @@
           size="mini"
           type="text"
           @click="handleControls(scope.row, 'delete')"
-          v-hasPermi="['property:receive:delete']"
+          v-hasPermi="['property:turnOver:delete']"
           >删除</el-button
         >
         <el-button
           size="mini"
           type="text"
           @click="handleControls(null, 'submit')"
-          v-hasPermi="['property:receive:submit']"
+          v-hasPermi="['property:turnOver:submit']"
           v-if="
             scope.row.apvStatus == 'uncommitted' ||
             scope.row.apvStatus == 'reject' ||
@@ -99,8 +99,17 @@
             scope.row.apvStatus == 'completed' ||
             scope.row.apvStatus == 'running'
           "
-          v-hasPermi="['property:receive:review']"
+          v-hasPermi="['property:turnOver:review']"
           >审批流</el-button
+        >
+        <el-button
+          v-if="scope.row.apvStatus == 'completed'"
+          size="mini"
+          type="text"
+          icon="el-icon-printer"
+          @click="handlePrint(scope.row)"
+          v-hasPermi="['property:turnOver:print']"
+          >打印单据</el-button
         >
       </template>
     </ContTable>
@@ -192,6 +201,7 @@ export default {
           prop: "createTime",
           tableVisible: true,
           width: 150,
+          formType: "date",
         },
         {
           label: "移交单编号",
@@ -276,6 +286,8 @@ export default {
             "调入地点",
             "备注",
           ],
+          procInsId: row.processInstanceId,
+          deployId: row.deployId,
         },
       });
     },
@@ -283,7 +295,7 @@ export default {
     sub(val) {
       definitionStart2(
         val.id,
-        this.radioRow.backNo,
+        this.radioRow.transferNo,
         "device_transfer",
         {}
       ).then((res) => {
@@ -419,6 +431,28 @@ export default {
     // 文件上传成功处理
     handleFileSuccess() {
       this.getList();
+    },
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
     },
   },
 };

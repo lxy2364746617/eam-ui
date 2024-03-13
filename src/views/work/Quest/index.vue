@@ -152,6 +152,35 @@
           </el-form-item>
         </el-form>
       </el-dialog>
+      <!-- 验收工单是否加入故障案例库 -->
+      <el-dialog :visible.sync="drawer3" width="25%">
+        <template slot="title"
+          ><span class="custom-dialog-title">
+            <i class="el-icon-warning"></i>
+            验收工单是否加入故障案例库
+          </span></template
+        >
+
+        <el-form
+          ref="elForm3"
+          :model="formData3"
+          :rules="rules3"
+          size="medium"
+          label-width="40px"
+          class="from"
+        >
+          <el-form-item prop="caseFlag">
+            <el-radio-group v-model="formData3.caseFlag">
+              <el-radio label="true" :value="true">是</el-radio>
+              <el-radio label="false" :value="false">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item size="large">
+            <el-button type="primary" @click="submitFormAdd3">提交</el-button>
+            <el-button @click="resetForm3">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </div>
   </Wrapper>
 </template>
@@ -189,8 +218,10 @@ export default {
       isDrawer: false,
       drawer: false,
       drawer2: false,
+      drawer3: false,
       formData: {},
       formData2: {},
+      formData3: {},
 
       rules: {
         demandDate: [
@@ -206,6 +237,15 @@ export default {
           {
             required: true,
             message: "请输入关闭原因",
+            trigger: "blur",
+          },
+        ],
+      },
+      rules3: {
+        caseFlag: [
+          {
+            required: true,
+            message: "是否加入故障案例库",
             trigger: "blur",
           },
         ],
@@ -412,14 +452,8 @@ export default {
   },
   methods: {
     goCheck(row) {
-      checkWomInfo(row.id).then((res) => {
-        if (res.data.code == 200) {
-          this.getList();
-          this.$message.success("验收成功！");
-        } else {
-          this.$message.error(res.data.msg);
-        }
-      });
+      this.drawer3 = true;
+      this.formData3["id"] = row.id;
     },
     // ! 提供下载列表字段
     convertToDefaultObject(columns) {
@@ -614,11 +648,27 @@ export default {
         );
       });
     },
+    submitFormAdd3() {
+      this.$refs["elForm3"].validate(async (valid) => {
+        if (!valid) return;
+        checkWomInfo(this.formData3).then((res) => {
+          if (res.data.code == 200) {
+            this.getList();
+            this.$message.success("验收成功！");
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        });
+      });
+    },
     resetForm() {
       this.$refs["elForm"].resetFields();
     },
     resetForm2() {
       this.$refs["elForm2"].resetFields();
+    },
+    resetForm3() {
+      this.drawer2 = false;
     },
     handleDelete(row, f) {
       this.title = "关闭";
@@ -653,7 +703,6 @@ export default {
       this.title = "转派";
       this.itemValue = row;
       this.isDrawer = true;
-      console.log("========================");
     },
     handlerGetId() {},
 

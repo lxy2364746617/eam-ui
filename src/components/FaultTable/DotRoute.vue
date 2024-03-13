@@ -236,7 +236,7 @@ export default {
     columns2() {
       return [
         { label: "文件名", prop: "originalFileName", class: true },
-        { label: "创建时间", prop: "createTime", formType: "datetime" },
+        { label: "创建日期", prop: "createTime", formType: "date" },
         { label: "创建人", prop: "createBy" },
         { label: "文件大小", prop: "fileSize" },
       ];

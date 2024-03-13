@@ -309,7 +309,7 @@ export default {
     columns() {
       return [
         {
-          label: "创建时间",
+          label: "创建日期",
           prop: "createTime",
           tableVisible: true,
           width: 200,
@@ -362,6 +362,22 @@ export default {
           formType: "selectTag",
           options: this.dict.type.em_device_state,
         },
+        {
+          label: "目标使用组织",
+          prop: "orgId",
+          width: 150,
+          required: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+        },
+        {
+          label: "目标使用部门",
+          prop: "deptId",
+          width: 150,
+          formType: "selectTree",
+          options: this.deptOptions,
+          required: true,
+        },
       ];
     },
     columnsForm() {
@@ -385,7 +401,7 @@ export default {
           required: true,
         },
         {
-          label: "使用组织",
+          label: "目标使用组织",
           prop: "orgId",
           span: 23,
           required: true,
@@ -393,7 +409,7 @@ export default {
           options: this.deptOptions,
         },
         {
-          label: "使用部门",
+          label: "目标使用部门",
           prop: "deptId",
           span: 23,
           formType: "selectTree",
