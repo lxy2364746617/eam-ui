@@ -85,7 +85,7 @@ import fileImport from "@/components/FileImport";
 
 export default {
   name: "Template",
-  dicts: ['system_supplier_level', 'system_supplier_type', 'system_supplier_statue'],
+  dicts: ['equipment_common_yw', 'equipment_common_sf'],
   components: { JmTable, JmForm, child, fileImport },
   computed: {
 
@@ -102,8 +102,8 @@ export default {
         { label: "电压等级",prop: "vcc" },
         { label: "公称容积流量",prop: "common" },
         { label: "排气压力",prop: "pressure" },
-        { label: "风包有无",prop: "wind" },
-        { label: "风包容积",prop: "windBag" },
+        { label: "风包有无",prop: "wind" ,formType: "select", options: this.dict.type.equipment_common_yw,},
+        { label: "风包容积",prop: "windBag", formType: "select", options: this.dict.type.equipment_common_sf, },
       ]
     },
   },
@@ -278,7 +278,7 @@ export default {
     handleExport() {
       this.download('equipment/compressor/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `空压机_${new Date().getTime()}.xlsx`)
     }
   }
 };

@@ -100,7 +100,7 @@ export default {
     tablecolumns() {
       return [
         { label: "矿井名称", prop: "mineName" },
-        { label: "变电所名称", prop: "ssName" },
+        { label: "变电站(所)名称", prop: "ssName" },
         { label: "主变压器型号", prop: "motXh", },
         { label: "主变压器运行方式", prop: "motYxfs", },
         { label: "发电厂名称", prop: "powerName", },
@@ -108,7 +108,7 @@ export default {
         { label: "高压开关电压(KV)", prop: "psV", },
         { label: "高压开关设备型号", prop: "psXh", },
         { label: "高压开关台数", prop: "psTs", },
-        { label: "低压开关电压 (KV)", prop: "lvsV", },
+        { label: "低压开关电压(KV)", prop: "lvsV", },
         { label: "低压开关设备型号", prop: "lvsXh", },
         { label: "低压开关台数", prop: "lvsTs", },
         { label: "五防形式", prop: "wfXs", },

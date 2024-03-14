@@ -95,6 +95,7 @@ export default {
         { label:"矿井名称", prop:"mineName", span: 8, },
         { label:"泵房名称", prop:"waterName", span: 8, },
         { label:"排水/供水", prop:"water", span: 8, },
+        { label:"水泵型号", prop:"waterModel", span: 8, },
         { label:"电机功率", prop:"power", span: 8, },
         { label:"电机电压等级", prop:"vcc", span: 8, },
         { label:"额定流量", prop:"ratedFlow", span: 8, },
@@ -104,7 +105,7 @@ export default {
         { label:"管路-敷设长度", prop:"pipelineLength", span: 8, },
         { label:"台数", prop:"sum", span: 8, },
         { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-        { label:"无人值守", prop:"unmanned", span: 8, formType: "select", options: this.dict.type.equipment_elevator_people, }, //(是/否)
+        { label:"具备无人值守条件", prop:"unmanned", span: 8, formType: "select", options: this.dict.type.equipment_elevator_people, }, //(是/否)
       ]
     },
   },

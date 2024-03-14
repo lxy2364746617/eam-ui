@@ -343,7 +343,7 @@ export default {
         handleDelete(row) {
             var that = this
             const ids = row.deviceId?[row.deviceId]:this.ids;
-            this.$modal.confirm('是否确认删除？').then(function () {
+            this.$modal.confirm('确认要解除所选的'+ids.length+'条设备关联吗？').then(function () {
                 ids.forEach(b => {
                     that.formData.emArchivesParts.forEach((bb,ii) => {
                         if(b == bb.deviceId){

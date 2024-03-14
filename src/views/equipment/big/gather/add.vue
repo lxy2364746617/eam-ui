@@ -77,7 +77,7 @@ export default {
         columns() {
             return [
                 { label:"矿井名称", prop:"mineName", span: 8, required: true, },
-                { label:"泵房名称", prop:"waterName", span: 8, },
+                { label:"泵房名称", prop:"waterName", span: 8, required: true, },
                 { label:"排水/供水", prop:"water", span: 8, },
                 { label:"水泵型号", prop:"waterModel", span: 8, },
                 { label:"投运时间", prop:"putTime", span: 8, formType: "date", },
@@ -88,11 +88,9 @@ export default {
                 { label:"水泵标高(m)", prop:"waterHigh", span: 8, },
                 { label:"水泵出口压力(MPa)", prop:"waterPower", span: 8, },
                 { label:"用途", prop:"use", span: 8, },
-
                 { label:"管路直径(mm)", prop:"pipelineWidth", span: 8, },
                 { label:"管路数量(趟)", prop:"pipelineSum", span: 8, },
                 { label:"管路-敷设长度(m)", prop:"pipelineLength", span: 8, },
-
                 { label:"台数", prop:"sum", span: 8, },
                 { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
                 { label:"具备无人值守条件(是/否)", prop:"unmanned", span: 8, formType: "select", options: this.dict.type.equipment_common_sf, }, //(是/否)
@@ -361,7 +359,7 @@ export default {
         handleDelete(row) {
             var that = this
             const ids = row.deviceId?[row.deviceId]:this.ids;
-            this.$modal.confirm('是否确认删除？').then(function () {
+            this.$modal.confirm('确认要解除所选的'+ids.length+'条设备关联吗？').then(function () {
                 ids.forEach(b => {
                     that.formData.emArchivesParts.forEach((bb,ii) => {
                         if(b == bb.deviceId){

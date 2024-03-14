@@ -69,9 +69,9 @@ export default {
         columns() {
             return [
                 { label: "矿井名称", prop: "mineName", required: true, span: 8, },
-                { label: "变电所名称", prop: "ssName", required: true, span: 8, },
+                { label: "变电站(所)名称", prop: "ssName", required: true, span: 8, },
                 { label: "上级变电站", prop: "parentSsName", span: 8, },
-                { label: "供电电压等级", prop: "vcc", span: 8, },
+                { label: "供电电压等级(kV)", prop: "vcc", span: 8, },
                 { label: "供电距离(m)", prop: "vcm", span: 8, },
                 { label: "本回电源共几基塔杆", prop: "tb", span: 8, number: true},
                 { label: "是否过采区塌陷区", prop: "isTx", span: 8, formType: 'select', options: this.dict.type.equipment_large_base },//(Y 是、N 否)
@@ -79,27 +79,27 @@ export default {
                 { label: "有无地面备用发电机", prop: "isBg", span: 8, formType: 'select', options: this.dict.type.equipment_common_yw },//(0 有、1 无)
                 { label: "发电机数量", prop: "cenNo", span: 8, number: true },
                 { label: "发电机功率", prop: "cenPower", span: 8, },
-                { label: "站内母线形式", prop: "mxXs", span: 8,formType: 'select', options: this.dict.type.equipment_generatrix_form },
+                { label: "站内母线形式(母管/普通母线)", prop: "mxXs", span: 8,formType: 'select', options: this.dict.type.equipment_generatrix_form },
                 { label: "发电厂名称", prop: "powerName", span: 8, },
-                { label: "主变压器容量", prop: "hostCapacity", span: 8, },
                 { label: "主变压器型号", prop: "motXh", span: 8, },
+                { label: "主变压器容量", prop: "hostCapacity", span: 8, },
                 { label: "主变压客量(kvVA)", prop: "motKl", span: 8, },
                 { label: "主变压器运行方式", prop: "motYxfs", span: 8, },
-                { label: "主变有调压", prop: "motTy", span: 8,formType: 'select', options: this.dict.type.equipment_common_yw },//(有/无)
+                { label: "主变有载调压(有/无)", prop: "motTy", span: 8,formType: 'select', options: this.dict.type.equipment_common_yw },//(有/无)
                 { label: "主变设备厂家", prop: "motCj", span: 8, },
                 { label: "主变投运日期", prop: "motTyTime", formType: 'date', span: 8, },
                 { label: "高压开关电压(KV)", prop: "psV", span: 8, },
-                { label: "高压开关设备型号", prop: "psXh", span: 8, },
+                { label: "高压开关设备型号(110kV和35kV分别标出)", prop: "psXh", span: 8, },
                 { label: "高压开关台数", prop: "psTs", span: 8, number: true},
-                { label: "高压开关断路器", prop: "psDlq", span: 8, },
-                { label: "高压开关手车电动", prop: "psScdd", span: 8,formType: 'select', options: this.dict.type.equipment_common_sf },
+                { label: "高压开关断路器(GIS/SF6/真空)", prop: "psDlq", span: 8, },
+                { label: "高压开关手车电动(是/否)", prop: "psScdd", span: 8,formType: 'select', options: this.dict.type.equipment_common_sf },
                 { label: "高压开关设备厂家", prop: "psCj", span: 8, },
                 { label: "高压开关投运时间", prop: "psTyTime", formType: 'date', span: 8, },
-                { label: "低压开关电压 (KV)", prop: "lvsV", span: 8, },
+                { label: "低压开关电压(KV)", prop: "lvsV", span: 8, },
                 { label: "低压开关设备型号", prop: "lvsXh", span: 8, },
                 { label: "低压开关台数", prop: "lvsTs", span: 8, number: true},
-                { label: "低压开关断路器", prop: "lvsDlq", span: 8, },
-                { label: "低压开关手车电动", prop: "lvsScdd", span: 8, formType: 'select', options: this.dict.type.equipment_common_sf  },//(是/否)
+                { label: "低压开关断路器(GIS/SF6/真空)", prop: "lvsDlq", span: 8, },
+                { label: "低压开关手车电动(是/否)", prop: "lvsScdd", span: 8, formType: 'select', options: this.dict.type.equipment_common_sf  },//(是/否)
                 { label: "低压开关设备厂家", prop: "lvsCj", span: 8, },
                 { label: "低压开关投运时间", prop: "lvsTyTime", formType: 'date', span: 8, },
                 { label: "无功补偿形式", prop: "sVc", span: 8, },
@@ -110,8 +110,8 @@ export default {
                 { label: "综自保护型号", prop: "zzXh", span: 8, },
                 { label: "综自保护规约", prop: "zzGy", span: 8, },
                 { label: "综自保护厂家", prop: "zzCj", span: 8, },
-                { label: "五防形式", prop: "wfXs", span: 8, },
-                { label: "具备无人值守条件", prop: "wrTj", span: 8, formType: "select", options: this.dict.type.equipment_common_sf, },
+                { label: "五防形式(电子钥匙、机械锁)", prop: "wfXs", span: 8, },
+                { label: "具备无人值守条件(是/否)", prop: "wrTj", span: 8, formType: "select", options: this.dict.type.equipment_common_sf, },
             ]
         },
         // 列信息
@@ -375,8 +375,8 @@ export default {
         /** 删除按钮操作 */
         handleDelete(row) {
             var that = this
-            const ids = row.deviceId?[row.deviceId]:this.ids;
-            this.$modal.confirm('是否确认删除？').then(function () {
+            const ids = row.deviceId ? [row.deviceId] : this.ids;
+            this.$modal.confirm('确认要解除所选的'+ids.length+'条设备关联吗').then(function () {
                 ids.forEach(b => {
                     that.formData.emArchivesParts.forEach((bb,ii) => {
                         if(b == bb.deviceId){
