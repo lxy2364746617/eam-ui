@@ -65,7 +65,7 @@ export default {
                 { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
                 { label:"煤安标志证号", prop:"signCode", span: 8, },
                 { label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
-                { label:"投运日期", prop:"putTime", span: 8, formType: "date", },
+                { label:"投运日期", prop:"tyTime", span: 8, formType: "date", },
                 { label:"电压等级", prop:"vcc", span: 8, },
                 { label:"配电装置开关型号", prop:"turnModel", span: 8, },
                 { label:"配电装置设备厂家", prop:"powerEquipmentManufacturer", span: 8, },
