@@ -4,7 +4,7 @@
       <!--部门数据-->
       <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
-        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" style="height: calc(100vh - 201px);">
+        <jm-user-tree :treeData="categoryOptions" @handleNodeClick="handleNodeClick" :setCurrent="false" style="height: calc(100vh - 201px);">
         </jm-user-tree>
       </el-col>
       <!--用户数据-->
@@ -25,15 +25,14 @@
 </template>
 
 <script>
-import { listBASE } from "@/api/equipment/BASE";
-import { groupList,  deptTreeSelect } from "@/api/system/user";
-
+import { relationList } from "@/api/equipment/BASE";
 import { equipmentTree } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-
+import { getLocationTree} from '@/api/Location'
+import { listDept } from '@/api/system/dept'
 export default {
   name: "devicebook1",
   dicts: ['em_device_att', 'em_device_level'],
@@ -47,20 +46,26 @@ export default {
       default: () => { },
       type: Object,
     },
-    isFzrFlag:{
-      default:false,
-      type:Boolean
+    deviceAtt:{
+      default:'',
+      type:String
     }
   },
   computed: {
     // 列信息
     columns() {
       return [
-        { label: "用户名", prop: "userName", class: true },
-        { label: "姓名", prop: "nickName", class: true },
-        { label: "岗位", prop: "specs" },
-        { label: "联系方式", prop: "phonenumber" },
-        { label: "所属组织", prop: "deptName" },
+        { label: "设备编码", prop: "deviceCode", class: true},
+        { label: "设备名称", prop: "deviceName", },
+        { label: "规格型号", prop: "specs", },
+        { label: "设备类别", prop: "categoryId",options:this.categoryOptions,formType: 'selectTree',width: 180, },
+        { label: "设备属性", prop: "deviceAtt", formType: 'select', options: this.dict.type.em_device_att, },  //(1 设备、2 部件)
+        { label: "财务资产编码", prop: "propertyCode", },
+        { label: "功能位置", prop: "location",options:this.locationOptions,formType: 'selectTree',width: 180, },
+        { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
+        { label: "上级设备", prop: "parentDeviceName",  }, //(0 父级)
+        { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, width: 180, },
+        { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree',  options: this.deptOptions,  width: 180, },
       ]
     },
   },
@@ -84,6 +89,8 @@ export default {
       // 弹出层标题
       title: "",
       // 部门树选项
+      categoryOptions: undefined,
+      locationOptions:[],
       deptOptions: undefined,
       radioRow: {},
       // 查询参数
@@ -91,20 +98,58 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
-      
+      valueMap:{}
     };
   },
-  created() {
-    this.getTree();
+ async created() {
+  await this.getTree();
+    this.getList(this.queryParams);
   },
   methods: {
+     /** 查询设备档案下拉树结构 */
+   async getTree() {
+    await  equipmentTree().then((response) => {
+        this.categoryOptions = response.data
+        // 方便获取父级tree
+        this.loops(this.categoryOptions)
+      })
+      getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeName(res.data)
+      })
+      listDept().then((response) => {
+        this.deptOptions = response.data
+      })
+    },
+    // 递归获取treeselect父节点
+    loops(list, parent) {
+      return (list || []).map(({ children, id, label }) => {
+        const node = (this.valueMap[id] = {
+          parent,
+          label,
+          id,
+        })
+        node.children = this.loops(children, node)
+        return node
+      })
+    },
+    getTreeName(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeName(item.children)
+          }
+        })
+        return arr
+    },
     close() {
       this.$emit('close')
     },
     submitRadio() {
       if (this.isChoose) {
         // 单选
-        this.$emit('submitRadio2', this.radioRow)
+        this.$emit('submitRadio', this.radioRow)
       } else {
         // 多选
         this.$emit('submitRadio', this.checkBoxRows)
@@ -114,68 +159,50 @@ export default {
     getList(queryParams) {
       this.loading = true;
       var data = {
-        deptId: this.queryParams.deptId,
-        ...queryParams
-      }
-      this.isFzrFlag&&(
-        data = {
-        deptId: this.queryParams.deptId,
+        categoryId: this.queryParams.categoryId,
         ...queryParams,
-        
-        params:{
-          selectUserIds:this.formData.disIds.join(','), 
-          isFzrFlag:0,
-          groupId:this.formData.id,
-          selectDataUserIds:this.formData.selectDataUserIds
-        }
+        deviceAtt:this.deviceAtt,
+        currDeviceId:this.formData.deviceId
       }
-      )
-      groupList(data).then(response => {
+      relationList(data).then(response => {
+        response.rows.forEach(item=>{
+           item.archivesOther&&( item.propertyCode=item.archivesOther.propertyCode)
+          })
         // 不展示自身
-        /* if (this.formData) {
+        if (this.formData) {
           response.rows.forEach((b, i) => {
-            if (b.userId == this.formData.userId) {
+            if (b.deviceId == this.formData.deviceId) {
               response.rows.splice(i, 1)
             }
           });
           this.equipmentList = response.rows.filter(item => {
-            if (this.formData.disIds.includes(item.userId)) {
+            if (this.formData.disIds&&this.formData.disIds.includes(item.deviceId)) {
               return false
             } else {
               return true
             }
           })
-        }else{ */
+        }else{
           this.equipmentList = response.rows
-        /* } */
-       /*  this.equipmentList=this.equipmentList.filter(item=>{
-          return item.userGroup==""
-        }) */
+        }
         this.total = response.total;
         this.loading = false;
       }
       );
     },
-    /** 查询部门下拉树结构 */
-    getTree() {
-      deptTreeSelect().then(response => {
-        this.deptOptions = response.data;
-      });
-    },
     // 节点单击事件
     handleNodeClick(data) {
-      this.queryParams.deptId = data.id;
+      this.queryParams.categoryId = data.id;
       this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList(this.queryParams);
-      console.log('this.queryParams',this.queryParams)
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.userId);
+      this.ids = selection.map(item => item.deviceId);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.radioRow = selection[0]

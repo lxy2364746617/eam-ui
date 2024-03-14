@@ -259,9 +259,9 @@ export default {
       this.close()
     },
     /** 查询用户列表 */
-    getList() {
+    getList(queryParams) {
       this.loading = true;
-      listResource(this.queryParams).then(response => {
+      listResource({...this.queryParams,...queryParams}).then(response => {
           this.equipmentList = response.rows;
           this.total = response.total;
           this.loading = false;
@@ -280,4 +280,5 @@ export default {
       float: right;
     }
   }
+
 </style>

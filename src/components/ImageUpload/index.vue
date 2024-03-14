@@ -11,7 +11,7 @@
       :on-exceed="handleExceed"
       ref="imageUpload"
       :on-remove="handleDelete"
-      :show-file-list="true"
+      :show-file-list="showFileList"
       :headers="headers"
       :file-list="fileList"
       :disabled="disabled"
@@ -51,6 +51,10 @@ export default {
     isReadonly:{
       type:Boolean,
       default:false
+    },
+    showFileList:{
+      type:Boolean,
+      default:true
     },
     value: [String, Object, Array],
     // 图片数量限制
@@ -187,10 +191,13 @@ export default {
     // 删除图片
     handleDelete(file) {
       const findex = this.fileList.map(f => f.name).indexOf(file.name);
+
       if(findex > -1) {
-        this.fileList.splice(findex, 1);
+        this.$modal.confirm("是否确认删除？").then(()=>{
+          this.fileList.splice(findex, 1);
         this.$emit("uploadChange", this.fileList);
         this.$emit("input", this.listToString(this.fileList));
+        })
       }
     },
     // 上传失败

@@ -111,7 +111,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import childdevice from "@/views/device/book/device";
+import childdevice from "@/views/device/book/step7_device";
 import { getLocationTree} from '@/api/Location'
 export default {
   name: "bookadd",

@@ -116,16 +116,16 @@
               v-else-if="col.formType=='textarea'"
               type="textarea"
               v-model="formData[col.prop]"
-              placeholder="请输入"
+              :placeholder="(col.formDisabled || disabled)?'':'请输入'"
               :disabled="col.formDisabled || disabled"
             />
             <el-input
               v-else
               v-model="formData[col.prop]"
-              placeholder="请输入"
+              :placeholder="(col.formDisabled || disabled)?'':'请输入'"
               :readonly="col.readonly"
               :disabled="col.formDisabled || disabled"
-              @input.native="forceUpdate?$forceUpdate():(()=>{})()"
+              @input.native="forceUpdate?$forceUpdate():col.inputFn?col.inputFn():(()=>{})()"
               @click.native="col.clickFn?col.clickFn():(()=>{})()"
               :type= "col.number?'number':'text'"
             />
@@ -215,6 +215,7 @@ export default {
     this.clearValidate()
   },
   methods: {
+    
     /** 转换部门数据结构 */
     normalizer(node) {
       if (JSON.stringify(node.children) == '[]') {
@@ -228,7 +229,7 @@ export default {
     },
     clearValidate() {
       this.$nextTick(() => {
-        this.$refs['formform'].clearValidate()
+        this.$refs['formform']&&this.$refs['formform'].clearValidate()
       })
     },
     async submitForm() {

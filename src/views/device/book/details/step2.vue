@@ -186,6 +186,7 @@ export default {
   },
   created() {
     this.getTreeSelect()
+    console.log('主要指标：',this.formData)
   },
   methods: {
     async save(formref){

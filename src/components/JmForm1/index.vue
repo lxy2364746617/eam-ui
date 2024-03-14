@@ -112,13 +112,13 @@
                 v-else-if="col.formType=='textarea'"
                 type="textarea"
                 v-model="formData[col.prop]"
-                :placeholder="col.placeholder || '请输入'"
+                 :placeholder="col.placeholder?col.placeholder:(col.formDisabled || disabled)?'':'请输入'"
                 :disabled="col.formDisabled || disabled"
               />
               <el-input
                 v-else
                 v-model="formData[col.prop]"
-                :placeholder="col.placeholder || '请输入'"
+                :placeholder="col.placeholder?col.placeholder:(col.formDisabled || disabled)?'':'请输入'"
                 :readonly="col.readonly"
                 :disabled="col.formDisabled || disabled"
                 @click.native="col.clickFn?col.clickFn():(()=>{})()"
@@ -215,7 +215,7 @@ export default {
     },
     clearValidate() {
       this.$nextTick(() => {
-        this.$refs['formform'].clearValidate()
+        this.$refs['formform']&&this.$refs['formform'].clearValidate()
       })
     },
     resetField(){

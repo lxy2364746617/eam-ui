@@ -8,7 +8,14 @@ export function listBASE(query) {
     params: query
   })
 }
-
+// 查询设备平台_设备档案_关联备件
+export function relationList(query) {
+  return request({
+    url: '/equipment/base/relationList',
+    method: 'get',
+    params: query
+  })
+}
 // 查询设备平台_设备档案_设备指标列表
 export function listIndexBASE(query) {
   return request({

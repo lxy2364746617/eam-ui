@@ -135,10 +135,11 @@ export function deptTreeSelect() {
 }
 
 // 班组选择人员
-export function groupList() {
+export function groupList(query) {
   return request({
     url: '/system/user/groupList',
-    method: 'get'
+    method: 'get',
+    params: query
   })
 }
 // 查询用户详细

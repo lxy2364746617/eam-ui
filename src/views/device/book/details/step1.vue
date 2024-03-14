@@ -253,6 +253,7 @@ export default {
       disabled3: true,
       disabled4: true,
       disabled5: true,
+      locationOptions:[],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -300,7 +301,7 @@ export default {
         headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/user/importData",
-        locationOptions:[],
+        
       },
       // 查询参数
       queryParams: {
@@ -343,7 +344,6 @@ export default {
   },
   created() {
     this.getTreeSelect()
-    
   },
   methods: {
     getTree(arr){

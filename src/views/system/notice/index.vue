@@ -46,6 +46,7 @@
           type="text"
           icon="el-icon-edit"
           @click="handleUpdate(scope.row)"
+          v-if="scope.row.status==0"
           v-hasPermi="['system:notice:edit']"
         >修改</el-button>
         <el-button

@@ -8,6 +8,7 @@
           :treeData="deptOptions"
           @handleNodeClick="handleNodeClick"
           :defaultExpIds="defaultExpIds"
+          :showSlot='true'
           style=" height:78vh;width:100%"
         >
           <!-- <template slot="middle-pos">

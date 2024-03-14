@@ -106,9 +106,7 @@ export default {
     },
         radioInput(val){
             this.queryParams.categoryId = this.radioColumn[val].categoryId
-            this.getList({
-                ...this.queryParams,
-            })
+            this.getList()
         },
         isSmEmCategoryRadio(){
             isSmEmCategoryCategory().then(response => {
@@ -130,9 +128,9 @@ export default {
             this.$emit('back')
         },
         /** 查询部门列表 */
-        getList() {
+        getList(queryParams) {
             this.loading = true;
-            listIndexBASE(this.queryParams).then(response => {
+            listIndexBASE({...this.queryParams,...queryParams}).then(response => {
                 response.rows.forEach(b => {
                     Object.assign(
                         b,

@@ -123,10 +123,12 @@ export default {
         if(response.data.emArchivesIndex){
           response.data.emArchivesIndex.componentContent = JSON.parse(response.data.emArchivesIndex.componentContent)
           response.data.emArchivesIndex.fieldValue = JSON.parse(response.data.emArchivesIndex.fieldValue)
+          
           // this.setFormLabel(response.data.emArchivesIndex.componentContent)
         }
 
         this.formData = response.data;
+        console.log(this.formData)
         this.stepActive = this.formData.step;
 
         // var obj = {

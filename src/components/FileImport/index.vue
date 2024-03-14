@@ -62,7 +62,7 @@ export default {
       type: Boolean
     },
     autoUpload:{
-      default:true,
+      default:false,
       type:Boolean
     }
   },

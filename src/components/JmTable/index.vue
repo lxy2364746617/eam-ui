@@ -347,7 +347,7 @@ export default {
     tableData: {
       handler(val) {
         this.tableData2 = JSON.parse(JSON.stringify(this.tableData));
-        this.tableData2.forEach((item,index)=>{
+        this.tableData2&&this.tableData2.forEach((item,index)=>{
           item.index=10*(this.queryParams.pageNum-1)+index+1
         })
         if (this.showSearch && this.tableData2) {
@@ -444,6 +444,7 @@ export default {
       function changeName(n1, x) {
         n1.name = x;
       }
+      console.log(options)
       for (let i = 0; i < options.length; i++) {
         if (options[i].id == value) {
           changeName(name1, options[i].label);

@@ -85,9 +85,13 @@ export default {
     columns(){
       return [
         { label:"财务资产编码", prop:"propertyCode", span: 8, },
-        { label:"资产原值(元)", prop:"propertyOv", span: 8, },
+        { label:"资产原值(元)", prop:"propertyOv", span: 8, inputFn:()=>{
+         return this.formData.archivesOther.propertyOv=this.floatInput(this.formData.archivesOther.propertyOv)
+        } },
         { label:"资产权属占比", prop:"propertyOs", span: 8, },
-        { label:"资产净值(元)", prop:"propertyNv", span: 8, },
+        { label:"资产净值(元)", prop:"propertyNv", span: 8, inputFn:()=>{
+         return this.formData.archivesOther.propertyNv=this.floatInput(this.formData.archivesOther.propertyNv)
+        }},
         { label:"资产类别", prop:"propertyType", formType: 'select', options: this.dict.type.em_property_type, span: 8, },
       ]
     },
@@ -201,8 +205,31 @@ export default {
     this.getTreeSelect()
   },
   methods: {
+     //处理两位小数
+    floatInput(val) {
+      let checkPlan = "" + val;
+      checkPlan = checkPlan
+        .replace(/[^\d.]/g, "") // 清除“数字”和“.”以外的字符
+        .replace(/\.{2,}/g, ".") // 只保留第一个. 清除多余的
+        .replace(/^\./g, "") // 保证第一个为数字而不是.
+        .replace(/^\0/g, "") // 保证第一个为数字而不是0
+        .replace(".", "$#$")
+        .replace(/\./g, "")
+        .replace("$#$", ".");
+      if (checkPlan.indexOf(".") < 0 && checkPlan !== "") {
+        //此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+        checkPlan = parseFloat(checkPlan) + "";
+      } else if (checkPlan.indexOf(".") >= 0) {
+        checkPlan = checkPlan.replace(/^()*(\d+)\.(\d\d).*$/, "$1$2.$3"); // 只能输入两个小数
+      }
+      //this.$nextTick(() => (val = checkPlan * 1));
+      return checkPlan;
+    },
     closeform(){
-      this.$emit('closeform')
+      this.$modal
+        .confirm('是否确定不保存直接退出？').then(
+          ()=>{this.$emit('closeform')} 
+        )
     },
     prvstep(){
       this.$emit('prvstep')

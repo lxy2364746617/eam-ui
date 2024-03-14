@@ -83,9 +83,9 @@ export default {
         this.getTreeItem(val,this.categoryOptions)
         var b = this.treeItem
         if(b.isSm == 'Y' && b.smAttributes){
-          // this.$parent.elstep[2].visible = true
           if(this.formData.emArchivesIndex==null){
-            this.formData.emArchivesIndex = {}
+            //this.formData.emArchivesIndex = {}
+            this.$set(this.formData, 'emArchivesIndex', {})
           }
           this.setFormLabel(b.smAttributes)
           this.$set(this.formData.emArchivesIndex, 'componentContent', b.smAttributes)
@@ -109,7 +109,6 @@ export default {
           }
         }else{
           this.$set(this.formData, 'isSpecial', 'N')
-          
           this.$set(this.formData,'emArchivesSpecial',null)
         }
       },
@@ -133,7 +132,7 @@ export default {
         { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
         { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 8, formVisible: this.formData.deviceAtt==1  }, //(0 父级)
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 8, }, //(A、B、C)
-        { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, required: true, },
+        { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, required: true,formDisabled:true },
         { label:"自选设备编码", prop:"freeDeviceCode", span: 8, },
         { label:"14885类别", prop:"freeCategoryCode", span: 8, },
         ]
@@ -248,6 +247,8 @@ export default {
   },
   created() {
     this.getTreeSelect()
+    console.log(this.$store.state.user.standing.dept.deptId)//当前组织
+    this.formData.useDeptId=this.$store.state.user.standing.dept.deptId
   },
   methods: {
     getTreeItem(id,arr){
@@ -270,7 +271,10 @@ export default {
       });
     },
     closeform(){
-      this.$emit('closeform')
+      this.$modal
+        .confirm('是否确定不保存直接退出？').then(
+          ()=>{this.$emit('closeform')} 
+        )
     },
     prvstep(){
       this.$emit('prvstep')
@@ -315,7 +319,7 @@ export default {
       equipmentTrees_noParent().then(response => {
         this.categoryOptions = response.data;
       });
-      listDept().then(response => {
+      listDept({prtOrg:'Y'}).then(response => {
         this.deptOptions = response.data;
       });
       getLocationTree().then(res=>{

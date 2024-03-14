@@ -146,6 +146,7 @@ export default {
     },
     handleStartProcess(row) {
       this.open=true
+      this.nextUser=[]
       this.proData=row
       nextFlowNodeByStart({ deploymentId:row.deploymentId }).then(res=>{
         if(res.data){

@@ -12,9 +12,9 @@
         </el-col>
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px;">
-        <el-col :span="6">
-          <img v-if="mainImage.indexOf('null')==-1" :src="mainImage" alt="" srcset="" style="width: 50%;vertical-align: top;height: 100px;">
-          <img v-if="qrCode.indexOf('null')==-1" @click="opendrawer" class="qrcodeimg" :src="qrCode" alt="" srcset="">
+        <el-col :span="6" style="display:flex;justify-content: space-around">
+          <img  :src="mainImage||require('@/assets/images/noImg.png')" alt="" srcset="" style="width: 148.29px;vertical-align: top;height: 115.71px;">
+          <img  @click="opendrawer" class="qrcodeimg" :src="qrCode||require('@/assets/images/noImg.png')" alt="" srcset="" style="width:120.83px;vertical-align: top;height: 120px;">
         </el-col>
         <el-col :span="15" style="font-size: 12px;color: #888;padding-top: 4px;">
           <jm-form 
@@ -198,9 +198,14 @@ export default {
     this.getTreeSelect()
     // 编辑
     this.isReadonly=(this.$route.query.isReadonly||this.detailReadonly)?true:false
-    const deviceId = this.$route.query.i||this.detailId
+    
     this.formTitle = this.$route.query.t
-    getBASE(deviceId).then(response => {
+    this.getInfo()
+  },
+  methods: {
+    getInfo(){
+      const deviceId = this.$route.query.i||this.detailId
+      getBASE(deviceId).then(response => {
       
       // 第一步  特种设备
       if(response.data.emArchivesSpecial){
@@ -237,8 +242,7 @@ export default {
     })
     .catch(err => {
     });
-  },
-  methods: {
+    },
     findTreeName(options, value) {
       var name = "";
       function Name(name) {
@@ -348,12 +352,12 @@ export default {
     /** 提交按钮 */
     submitForm(callback) {
       var formData1 = this.getFormDataParams()
-      console.log('formData1',formData1)
       modifyBASE(formData1).then(response => {
         this.$modal.msgSuccess("修改成功");
         this.setSuccessData()
         this.disabled1 = true;
         if(callback) callback(formData1)
+        this.getInfo()
       });
     },
     setSuccessData(){
@@ -401,4 +405,9 @@ export default {
     box-shadow: 0 0 5px #007bfe;
   }
 } 
+ ::v-deep .el-card__body{
+    min-height: calc(100vh - 140px) !important;
+    overflow-y: auto;
+  }
+  
 </style>

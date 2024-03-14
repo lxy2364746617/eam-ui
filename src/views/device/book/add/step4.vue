@@ -1,7 +1,10 @@
 <template>
   <div>
     <el-card shadow="never" style="margin-top: 10px;">
-      <jm-table
+      <div style="height: calc(100vh - 422px);
+    overflow-y: auto;
+    overflow-x: hidden;">
+        <jm-table
          :tableData="equipmentList"
         @handleSelectionChange="handleSelectionChange"
         @getList="getList"
@@ -50,6 +53,8 @@
           >解除</el-button>
         </template>
       </jm-table>
+      </div>
+      
        <el-drawer
       :title="title"
       :visible.sync="drawer"
@@ -84,7 +89,7 @@
       </div>
     </el-drawer>
     </el-card>
-    <el-card shadow="never" style="margin-top: 10px;text-align: right;">
+    <el-card shadow="never" style="text-align: right;">
       <el-button size="mini" @click="closeform">取消</el-button>
       <el-button size="mini" @click="prvstep" type="primary" v-if="stepActive>=1">上一步</el-button>
       <el-button size="mini" @click="nextstep" type="primary" v-if="stepActive<=elstep.length-2">下一步</el-button>
@@ -109,7 +114,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "bookadd",
   dicts: [
-    'em_property_type', 
+    'em_property_type', 'spare_parts_type','spare_parts_unit'
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, supplier, 
@@ -136,8 +141,8 @@ export default {
           { label:"备件名称", prop:"partName", span: 24, },
         { label:"备件编码", prop:"partCode", span: 24, },
         { label:"规格型号", prop:"sModel", span: 24, },
-        { label:"备件类别", prop:"partType", span: 24, },
-        { label:"单位", prop:"unit", span: 24, },
+        { label:"备件类别", prop:"partType", span: 24,formType: 'select', options: this.dict.type.spare_parts_type, },
+        { label:"单位", prop:"unit", span: 24,formType: 'select', options: this.dict.type.spare_parts_unit, },
         { label:"当前库存", prop:"inventory", span: 24, },
         { label:"供应商名称", prop:"supplierName",  span: 24, },
         { label:"存储位置", prop:"locationName", span: 24, },
@@ -234,7 +239,7 @@ export default {
     /* 添加备品备件 */
     getList2(queryParams) {
       this.loading = true;
-      let ids = this.equipmentList.map(item=>{return item.id})
+      let ids = this.equipmentList.map(item=>{return item.partCode})
       queryParams.exportIds = ids.join(',')      
       selectPage( queryParams).then(response => {
           /* let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
@@ -249,7 +254,10 @@ export default {
       );
     },
     closeform(){
-      this.$emit('closeform')
+      this.$modal
+        .confirm('是否确定不保存直接退出？').then(
+          ()=>{this.$emit('closeform')} 
+        )
     },
     prvstep(){
       this.save(()=>{
@@ -286,7 +294,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.drawer = true;
-      this.title = "新增设备";
+      this.title = "添加备件";
       this.getList2(this.queryParams2)
       this.formDataNow = {}
     },

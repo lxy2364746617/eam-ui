@@ -59,9 +59,9 @@
       </template>
     </jm-table>
     <el-drawer :title="groupItemForm.leaderShow?'选择班组负责人':'选择班组成员'" :visible.sync="groupItemForm.drawer" direction="rtl" size="80%"
-                :wrapperClosable="false">
+                :wrapperClosable="false" >
         <group-item :isChoose="groupItemForm.leaderShow" :formData="groupItemForm" @submitRadio="submitRadio1" @submitRadio2="submitRadio2"
-                    @close="groupItemForm.drawer = false" ref="itemForm"  v-if="groupItemForm.drawer">
+                    @close="groupItemForm.drawer = false" ref="itemForm" :isFzrFlag='!groupItemForm.leaderShow' v-if="groupItemForm.drawer">
         </group-item>
     </el-drawer>
     <div style="width: 100%; height: 68px;"></div>
@@ -127,6 +127,8 @@ export default {
         
       },
       groupList:[],
+      selectDataUserIds:[],
+      selectDataUserIds1:[],
       // 表单校验
       rules: {
         groupName: [
@@ -145,7 +147,7 @@ export default {
     groupItemForm: {
         drawer: false,
         disIds: [],
-        leaderShow:false
+        leaderShow:false,
     },
     };
   },
@@ -170,7 +172,9 @@ export default {
                 sysUserGroupList.forEach(item=>{
                   item.deptName=item.dept.deptName
                 })
+                sysUserGroupList&&(this.selectDataUserIds1=sysUserGroupList)
                 this.groupList = sysUserGroupList || [];
+
                 this.loading = false;
             }).catch(() => {
                 this.loading = false;
@@ -223,26 +227,47 @@ export default {
         handleAdd() {
             let groupIds = this.groupList.map(item => item.userId) || [];
             this.$set(this.groupItemForm, 'disIds', groupIds)
+            this.$set(this.groupItemForm, 'id', this.form.id)
+            console.log(this.selectArr,this.selectDataUserIds)
+            
+            this.selectDataUserIds&&this.$set(this.groupItemForm, 'selectDataUserIds', this.selectDataUserIds.map(item=>item&&(item=item.userId)).join(','))
             this.$set(this.groupItemForm, 'drawer', true)
             this.$set(this.groupItemForm, 'leaderShow', false)
+            console.log(this.groupItemForm.leaderShow)
         },
         /** 删除按钮操作 */
         handleDelete(scope) {
             var that = this;
             this.$modal.confirm('是否确认删除？').then(function () {
-                that.groupList.splice(scope.index, 1);
-            }).catch(() => {this.selectArr=[]});
+               that.selectDataUserIds.push(that.selectDataUserIds1.find(item=>{
+                return item.id==scope.row.id
+              })) 
+              that.groupList.splice(scope.index, 1);
+            }).catch((msg) => {
+              console.error(msg);
+              this.selectArr=[]});
         },
         allDelete() {
             var that = this;
             if (this.selectArr.length == 0) {
                 this.$modal.msgSuccess("请至少选择一项");
             } else {
+              let arr = this.selectArr
                 this.$modal.confirm('是否确认删除？').then(function () {
+               setTimeout(() => {
+                 arr.forEach(item=>{
+                   that.selectDataUserIds1.forEach(item1=>{
+                      if(item.userId==item1.userId) that.selectDataUserIds.push(item)
+                   })
+            })
+               }, 0); 
                     that.groupList=that.groupList.filter(element=>{
                       return !that.selectArr.some(item=>item.userId===element.userId)
                     })
-                }).catch(() => { });
+                }).catch((msg) => { 
+                  console.error(msg)
+                });
+                
             }
         },
         submitRadio1(row) {
@@ -323,5 +348,8 @@ export default {
     color: #007bfe;
     cursor: pointer;
     text-decoration: underline;
+}
+.app-container {
+height: calc(100vh - 150px);
 }
 </style>

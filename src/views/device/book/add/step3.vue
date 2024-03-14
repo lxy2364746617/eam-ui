@@ -156,7 +156,10 @@ export default {
   },
   methods: {
     closeform(){
-      this.$emit('closeform')
+      this.$modal
+        .confirm('是否确定不保存直接退出？').then(
+          ()=>{this.$emit('closeform')} 
+        )
     },
     prvstep(){
       this.$emit('prvstep')

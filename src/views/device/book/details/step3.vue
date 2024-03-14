@@ -20,16 +20,41 @@
           </span>
         </p>
         <div>
-          <image-upload 
-          :class="{'hide':disabled1}"
+          <draggable v-model="formData.imgFileResourceList" :sort='!disabled1'>
+            <transition-group>
+               <div class="el-upload-list__item" v-for="item in formData.imgFileResourceList" :key="item.fileName">
+                  <img :src="baseUrl+item.fileName" style="width:100%">
+                  <div class="img_btn" >
+                      <span
+                      @click="handlePictureCardPreview(item)"
+                    >
+                      <i class="el-icon-zoom-in"></i>
+                    </span> 
+                    <span
+                      v-show="!disabled1"
+                      @click="handleRemove(item)"
+                    >
+                      <i class="el-icon-delete"></i>
+                    </span> 
+                  </div>
+              </div> 
+            </transition-group>
+            <div slot="footer">
+              <image-upload 
+              ref="imgUpload"
+            :class="{'hide':disabled1}"
             :fileType="['jpg','png']"
             @uploadChange="uploadChange1"
             :disabled="disabled1"
             :value="formData.imgFileResourceList"
             :extraData="{'category':1}"
             :listType="'picture-card'"
+            :showFileList='false'
             :isReadonly='isReadonly'>
           </image-upload>
+            </div>
+             
+          </draggable>
         </div>
       </el-col>
     </el-row>
@@ -45,6 +70,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
+import draggable from 'vuedraggable';
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
@@ -52,7 +78,7 @@ export default {
   dicts: [
   ],
   components: { 
-    Treeselect, JmUserTree, JmTable, JmForm, 
+    Treeselect, JmUserTree, JmTable, JmForm, draggable
   },
   props:{
     isReadonly:{
@@ -128,6 +154,7 @@ export default {
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/user/importData"
       },
+      baseUrl:process.env.VUE_APP_BASE_API,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -173,6 +200,10 @@ export default {
   methods: {
     uploadChange1(val){
       this.formData.imgFileResourceList = val
+      console.log(this.formData.imgFileResourceList)
+      this.formData.imgFileResourceList.forEach(item=>{
+        item.url=`${process.env.VUE_APP_BASE_API}${item.fileName}`
+      }) 
     },
     async save(formref){
       // var flag = await this.$refs['jmform'+formref].submitForm()
@@ -215,6 +246,13 @@ export default {
         }
       );
     },
+    handlePictureCardPreview(item){
+      this.$refs.imgUpload.handlePictureCardPreview(item)
+    },
+    handleRemove(item){
+      this.$refs.imgUpload.handleDelete(item)
+    }
+
   }
 };
 </script>
@@ -227,4 +265,38 @@ export default {
       float: right;
     }
   }
+  .el-upload-list__item {
+    overflow: hidden;
+    background-color: #fff;
+    border: 1px solid #c0ccda;
+    border-radius: 6px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 148px;
+    height: 148px;
+    margin: 0 8px 8px 0;
+    display: inline-block;
+    position: relative;
+    &:hover{
+      .img_btn{
+        text-align: center;
+        line-height: 148px;
+        font-size: 22px;
+        display: flex;
+        color: white;
+        justify-content: space-evenly;
+        span{
+          cursor: pointer;
+        }
+      }
+    }
+} 
+.img_btn{
+  width:100%;
+  height: 100%;
+   background-color: rgba(0,0,0,.5);
+   position: absolute;
+   top: 0;
+   display: none;
+} 
 </style>

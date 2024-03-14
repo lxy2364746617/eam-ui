@@ -164,7 +164,7 @@ export default {
       }
       listBASE(data).then(response => {
         response.rows.forEach(item=>{
-            item.propertyCode=item.archivesOther.propertyCode
+           item.archivesOther&&( item.propertyCode=item.archivesOther.propertyCode)
           })
         // 不展示自身
         if (this.formData) {

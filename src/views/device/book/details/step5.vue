@@ -1,6 +1,8 @@
 <template>
   <div>
-    <jm-table
+    <el-tabs v-model="activeName" type="border-card">
+      <el-tab-pane label="关联备件" name="first">
+        <jm-table
       v-show="radio3=='列表'"
       :tableData="equipmentList"
       @handleSelectionChange="handleSelectionChange"
@@ -9,8 +11,7 @@
       ref="jmtable"
       :initLoading="false"
       :handleWidth="130"
-      :columns="columns"
-      :paginationShow='false'>
+      :columns="columns">
       <!-- <template slot="right_end">
         <el-radio-group v-model="radio3" size="mini" style="margin-left: 10px;">
           <el-radio-button label="图示"></el-radio-button>
@@ -46,7 +47,23 @@
           @click="handleDelete(scope.row)"
         >解除</el-button>
       </template>
-    </jm-table>
+        </jm-table>
+      </el-tab-pane>
+      <el-tab-pane label="更换记录" name="second">
+        <jm-table  :tableData="equipmentList2"
+      
+      @getList="getList2"
+      :total="total1"
+      ref="jmtable2"
+      :initLoading="false"
+      :handleWidth="130"
+      :columns="columns2">
+          
+        </jm-table>
+
+      </el-tab-pane>
+    </el-tabs>
+    
     <!-- 添加或修改设备平台_表单模板对话框 -->
     <el-drawer
       :title="title"
@@ -127,7 +144,7 @@
 </template>
 
 <script>
-import { listParts, addParts, updateParts, delParts,selectPage } from "@/api/equipment/parts";
+import { listParts, addParts, updateParts, delParts,selectPage,getPartRecord } from "@/api/equipment/parts";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -136,11 +153,11 @@ import { listDept } from "@/api/system/dept";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import supplier from "@/views/device/book/supplier";
-
+import { getLocationTree} from '@/api/Location'
 export default {
   name: "bookadd",
   dicts: [
-    'em_property_type', 
+    'em_property_type', 'spare_parts_type','spare_parts_unit'
   ],
   components: { 
     Treeselect, JmUserTree, JmTable, JmForm, supplier, 
@@ -163,12 +180,25 @@ export default {
         { label:"备件名称", prop:"partName", span: 24, },
         { label:"备件编码", prop:"partCode", span: 24, },
         { label:"规格型号", prop:"sModel", span: 24, },
-        { label:"备件类别", prop:"partType", span: 24, },
-        { label:"单位", prop:"unit", span: 24, },
+        { label:"备件类别", prop:"partType", span: 24, formType:'select',options:this.dict.type.spare_parts_type },
+        { label:"单位", prop:"unit", span: 24,formType:'select',options:this.dict.type.spare_parts_unit },
         { label:"当前库存", prop:"inventory", span: 24, },
         { label:"供应商名称", prop:"supplierName",  span: 24, },
-        { label:"存储位置", prop:"locationName", span: 24, },
-        { label:"所属组织", prop:"affDeptName", span: 24,  },
+        { label:"存储位置", prop:"locationName", span: 24,formType:'selectTree',options:this.locationOptions,width:180},
+        { label:"所属组织", prop:"affDeptName", span: 24, formType:'selectTree',options:this.deptOptions,width:180 },
+      ]
+    },
+    columns2(){
+      return [
+        { label:"备件名称", prop:"partName", span: 24, },
+        { label:"备件编码", prop:"partCode", span: 24, },
+        { label:"规格型号", prop:"sModel", span: 24, },
+        { label:"备件类别", prop:"partType", span: 24, formType:'select',options:this.dict.type.spare_parts_type },
+        { label:"单位", prop:"unit", span: 24,formType:'select',options:this.dict.type.spare_parts_unit },
+        { label:"更换数量", prop:"inventory", span: 24, },
+        { label:"工单编号", prop:"supplierName",  span: 24, },
+        { label:"工单名称", prop:"locationName", span: 24,formType:'selectTree',options:this.locationOptions,width:180},
+        { label:"更换时间", prop:"affDeptName", span: 24, formType:'selectTree',options:this.deptOptions,width:180 },
       ]
     },
   },
@@ -177,6 +207,7 @@ export default {
   },
   data() {
     return {
+      activeName:'first',
       radio3:'列表',
       // 列信息
       // columns: [
@@ -203,9 +234,11 @@ export default {
       showSearch: true,
       // 表格数据
       equipmentList: null,
+      equipmentList2:[],
       partsData:[],
       // 总条数
       total: 0,
+      total1:0,
       total2: 0,
       formDataNow: {},
       drawer: false,
@@ -215,6 +248,7 @@ export default {
       // 部门树选项
       categoryOptions: [],
       deptOptions: [],
+      locationOptions:[],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -289,12 +323,24 @@ export default {
     
   },
   methods: {
-    getTreeSelect(){
-      this.deptOptions=[]
-      listDept().then(response => {
+  async  getTreeSelect(){
+     await listDept().then(response => {
         this.$set(this,'deptOptions',response.data)
-        this.$forceUpdate()
       });
+     await getLocationTree().then(res=>{
+        this.$set(this,'locationOptions',this.getTree(res.data))
+      })
+    },
+    getTree(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTree(item.children)
+          }
+        })
+        return arr
     },
     closesupplier(){
       this.drawersupplier = false
@@ -307,6 +353,7 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       queryParams.deviceId = this.queryParams.deviceId
+      queryParams.currDeviceId = this.queryParams.deviceId
       this.loading = true;
       listParts(queryParams).then(response => {
           this.$set(this,'equipmentList',response.rows)
@@ -315,16 +362,29 @@ export default {
         }
       );
     },
+    getList2(queryParams) {
+      queryParams.deviceId = this.queryParams.deviceId
+      queryParams.currDeviceId = this.queryParams.deviceId
+      this.loading = true;
+      getPartRecord(queryParams).then(response => {
+          this.$set(this,'equipmentList2',response.rows)
+          this.total1 = response.total;
+          this.loading = false;
+        }
+      );
+    },
     /* 添加备品备件 */
     getList2(queryParams) {
       this.loading = true;
+       let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
+      queryParams.exportIds = list_id.join(',') 
       selectPage(queryParams).then(response => {
-          let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
-          let arr= response.data.records.filter(item=>{
+         
+          /* let arr= response.rows.filter(item=>{
             return list_id.indexOf(item.partCode) == -1;
-          })
-          this.$set(this,'partsData',arr);
-          this.total2 = response.data.total;
+          }) */
+          this.$set(this,'partsData',response.rows);
+          this.total2 = response.total;
           this.pushList=[]
         }
       );
@@ -347,7 +407,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.drawer = true;
-      this.title = "新增设备";
+      this.title = "添加备件";
       this.formDataNow = {
         deviceId: this.queryParams.deviceId,
       }
@@ -398,3 +458,9 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+::v-deep .el-form .el-form--inline{
+  height: 35vh;
+  overflow-y: auto;
+}
+</style>

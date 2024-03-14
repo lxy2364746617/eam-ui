@@ -4,14 +4,14 @@
       <el-input v-model="deptName" placeholder="请输入名称" clearable size="small" prefix-icon="el-icon-search" style="margin-bottom: 10px" />
     </div>
     <slot name="middle-pos"></slot>
-    <slot ><!-- v-if="$slots['middle-pos']" -->
+    <slot v-if="$slots['middle-pos']||showSlot"> 
       <el-button v-if="expanded" type="text" icon="el-icon-arrow-up" @click="expandTreeNodeStatus($refs.tree.root)"></el-button>
       <el-button v-else type="text" icon="el-icon-arrow-down" @click="shrinkTreeNodeStatus($refs.tree.root)"></el-button>
     </slot>
     <div class="head-container">
       <el-tree :data="treeData" :props="defaultProps" 
       :expand-on-click-node="false" :filter-node-method="filterNode" ref="tree" 
-      node-key="id" :default-expand-all='false' highlight-current :current-node-key="currentNodeKey"
+      node-key="id" :default-expand-all='!($slots["middle-pos"]||showSlot)' highlight-current :current-node-key="currentNodeKey"
       :default-expanded-keys="defaultExpIds" @node-click="handleNodeClick" />
     </div>
   </div>
@@ -33,6 +33,15 @@ export default {
     currentNodeKey:{
       type:Number,
       default:0
+    },
+    showSlot:{
+      type:Boolean,
+      default:false
+    },
+    //默认点击节点
+    setCurrent:{
+        type:Boolean,
+      default:true
     }
   },
   data() {
@@ -53,7 +62,7 @@ export default {
     },
     
     treeData(val) {
-      this.$nextTick(() => {
+     this.setCurrent&& this.$nextTick(() => {
         this.$refs.tree.setCurrentKey(this.currentNodeKey||val[0].id);
         !this.currentNodeKey&&this.$emit("handleNodeClick", val[0]);
         // const firstNode = document.querySelector('.el-tree-node');

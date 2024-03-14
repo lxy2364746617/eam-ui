@@ -9,7 +9,14 @@ export function listParts(query) {
     params: query
   })
 }
-
+// 更换记录
+export function getPartRecord(query) {
+  return request({
+    url: '/workorder/getPartRecord',
+    method: 'get',
+    params: query
+  })
+}
 // 查询关联备件_表单模板详细
 export function getParts(deviceId) {
   return request({
