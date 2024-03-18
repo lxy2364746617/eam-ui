@@ -91,7 +91,7 @@
             <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="plineList" ref="jmtable1" :columns="columns1" :showSearch="false"
-            @radiochange="radiochange" style="margin-top:20px" :rightToolbarShow="false">
+            @radiochange="radiochange" style="margin-top:20px" :rightToolbarShow="false" @handleSelectionChange='handleSelectionChange'>
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:pline:remove']">查看</el-button>
@@ -118,7 +118,7 @@
         <!-- 添加巡点检路线 -->
         <el-drawer title="巡点检路线" :visible.sync="plineForm.choosedrawer" direction="rtl" size="50%" :wrapperClosable="false">
             <pline :isChoose="false" @submitRadio="submitRadio2" @close="plineForm.choosedrawer = false"
-                :formData="plineForm" v-if="plineForm.choosedrawer"></pline>
+                :formData="plineForm" v-if="plineForm.choosedrawer" ></pline>
         </el-drawer>
         <el-drawer title="关联巡点检项" :visible.sync="deviceForm.choosedrawer" direction="rtl" size="80%"
             :wrapperClosable="false">
@@ -594,6 +594,7 @@ export default {
             })
         },
         handleSelectionChange(selection) {
+            console.log('plan',selection)
             this.selectArr = selection;
         },
         viewFun(itemType, deviceId, num) {

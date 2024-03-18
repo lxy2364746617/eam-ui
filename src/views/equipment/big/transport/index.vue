@@ -53,7 +53,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/transport/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/transport/importData'">
+        :importUrl="'/equipment/transport/importData'" :isUpdate='false' :templateName='"主要辅助运输设备(模板)"'>
       </file-import>
     </div>
   </div>
@@ -262,7 +262,7 @@ export default {
     handleExport() {
       this.download('equipment/transport/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `主要辅助运输设备_${new Date().getTime()}.xlsx`)
     }
   }
 };

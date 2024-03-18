@@ -63,7 +63,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/substation/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/substation/importData'">
+        :importUrl="'/equipment/substation/importData'" :isUpdate='false' :templateName='"井下变电所(模板)"'>
       </file-import>
     </div>
   </div>
@@ -270,7 +270,7 @@ export default {
     handleExport() {
       this.download('equipment/substation/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `井下变电所_${new Date().getTime()}.xlsx`)
     }
   }
 };

@@ -77,7 +77,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/gas/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/gas/importData'">
+        :importUrl="'/equipment/gas/importData'" :isUpdate='false' :templateName='"瓦斯抽放泵(模板)"'>
       </file-import>
     </div>
   </div>
@@ -283,7 +283,7 @@ export default {
     handleExport() {
       this.download('equipment/gas/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `瓦斯抽放泵_${new Date().getTime()}.xlsx`)
     }
   }
 };

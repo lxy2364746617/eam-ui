@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <jm-table v-if="showstate" :tableData="standardList" @getList="getList" @handleSelectionChange="handleSelectionChange"
-      :total="total" ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
+      :total="total" ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange" @rowClick='rowClick'>
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
@@ -27,6 +27,31 @@
           v-hasPermi="['maintain:standard:edit']">复制到</el-button>
       </template>
     </jm-table>
+    <el-dialog :visible='checkVisible'  :before-close="()=>checkVisible=false" width="80%" :close-on-click-modal='false'>
+      <el-tabs v-model="activeName">
+      <el-tab-pane label='日常点检' name='RCDJ'> </el-tab-pane>
+      <el-tab-pane label='精密点检' name='JMDJ'> </el-tab-pane>
+      <el-tab-pane label='专职点检' name='ZZDJ'> </el-tab-pane>
+    </el-tabs>
+    <el-table :data="tableData">
+      <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="序号" align="center" type="index" />
+        <el-table-column label="巡点检项目编码" align="center" prop="itemCode" min-width="150" />
+        <el-table-column label="部件" align="center" prop="partsName" min-width="200"></el-table-column>
+        <el-table-column label="巡点检内容" align="center" prop="itemContent" min-width="150" />
+        <el-table-column label="巡点检点数" align="center" prop="checkNum" min-width="150"></el-table-column>
+        <el-table-column label="巡点检状态" align="center" prop="checkStatus" min-width="150"></el-table-column>
+        <el-table-column label="巡点检标准" align="center" prop="checkStandard" min-width="150"></el-table-column>
+        <el-table-column label="巡点检方法" align="center" prop="itemMethod" min-width="150" />
+        <el-table-column label="巡点检结果类型" align="center" prop="checkResType" min-width="150"></el-table-column>
+        <el-table-column label="巡点检结果设置" align="center" prop="checkResult" min-width="150"></el-table-column>
+        <el-table-column label="定量值" align="center" prop="quotaValue" min-width="150"></el-table-column>
+        <el-table-column label="定量上限" align="center" prop="quotaUpper" min-width="150"></el-table-column>
+        <el-table-column label="定量下限" align="center" prop="quotaLower" min-width="150"></el-table-column>
+        <el-table-column label="定量单位" align="center" prop="quotaUnit" min-width="150"></el-table-column>
+    </el-table>
+    </el-dialog>
+    
   </div>
 </template>
 
@@ -36,8 +61,10 @@ import {
   delStandard,
   addStandard,
   updateStandard,
-  changeItemStatus
+  changeItemStatus,
+  scheckList
 } from '@/api/maintain/standard'
+import mixin from '@/utils/mixin.js'
 import JmTable from '@/components/JmTable';
 import JmForm from "@/components/JmForm";
 import { equipmentTree } from '@/api/equipment/category';
@@ -48,6 +75,7 @@ export default {
   name: "Template",
   dicts: ['em_is_special', 'sys_normal_disable'],
   components: { JmTable, JmForm },
+  mixins:[mixin],
   computed: {
     // 列信息
     columns() {
@@ -134,19 +162,36 @@ export default {
         updateBy: null,
         updateTime: null,
       },
+      checkQueryParams:{
+        pageNum: 1,
+        pageSize: 10,
+      },
       // 表单校验
       valueMap: {},
       // 部门树选项
       deptOptions: [],
       categoryOptions: [],
       locationOptions:[],
-      showstate: true
+      showstate: true,
+      tableData:[],
+      activeName:'RCDJ',
+      checkVisible:false
+    }
+  },
+  watch:{
+    activeName(newval){
+      this.checkQueryParams.itemType=newval
+      scheckList(this.checkQueryParams).then(res=>{
+          this.tableData=res.rows
+        })
     }
   },
   created() {
     this.getTree()
     this.getTreeSelect()
     this.getList(this.queryParams)
+  },
+  mounted(){
   },
   methods: {
     /** 查询设备档案下拉树结构 */
@@ -200,6 +245,14 @@ export default {
         this.total = response.total
         this.loading = false
       })
+    },
+      rowClick(row){
+        this.checkQueryParams.itemType='RCDJ'
+        this.checkQueryParams.standardId=row.standardId
+        scheckList(this.checkQueryParams).then(res=>{
+          this.tableData=res.rows
+          this.checkVisible=true
+        })
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -265,3 +318,14 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+::v-deep .el-dialog:not(.is-fullscreen){
+    margin: 15vh auto !important;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+::v-deep .el-dialog__wrapper{
+  position: fixed;
+  left:200px !important;
+}
+</style>

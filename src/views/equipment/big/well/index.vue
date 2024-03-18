@@ -56,7 +56,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/well/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/well/importData'">
+        :importUrl="'/equipment/well/importData'" :isUpdate='false' :templateName='"主井集中皮带(模板)"'>
       </file-import>
     </div>
   </div>
@@ -266,7 +266,7 @@ export default {
     handleExport() {
       this.download('equipment/well/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `主井集中皮带_${new Date().getTime()}.xlsx`)
     }
   }
 };

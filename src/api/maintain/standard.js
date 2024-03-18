@@ -65,3 +65,28 @@ export function copyStandard(data) {
     data: data
   })
 }
+
+// 巡点检标准
+export function scheckList(data) {
+  return request({
+    url: '/maintain/scheck/list',
+    method: 'get',
+    params: data
+  })
+}
+// 选择巡点检项目列表
+export function relationItem(query) {
+  return request({
+    url: "/maintain/standard/relationItem",
+    method: "get",
+    params: query,
+  });
+}
+// 选择设备
+export function relationList(query) {
+  return request({
+    url: "/maintain/standard/relationList",
+    method: "get",
+    params: query,
+  });
+}

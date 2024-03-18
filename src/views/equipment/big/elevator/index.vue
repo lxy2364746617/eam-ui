@@ -77,7 +77,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/elevator/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/elevator/importData'">
+        :importUrl="'/equipment/elevator/importData'" :isUpdate='false' :templateName='"提升机(模板)"'>
       </file-import>
     </div>
   </div>
@@ -287,7 +287,7 @@ export default {
     handleExport() {
       this.download('equipment/elevator/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `提升机_${new Date().getTime()}.xlsx`)
     }
   }
 };

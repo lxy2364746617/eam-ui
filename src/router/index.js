@@ -254,11 +254,11 @@ export const constantRoutes = [
         component: () => import("@/views/equipment/big/transport/add"),
         name: "bigTransport",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? "主要辅助运/编辑" : "主要辅助运/新增";
-          to.query.d == "true" ? (to.meta.title = "主要辅助运/查看") : "";
+          to.meta.title = to.query.l ? "主要辅助运输设备/编辑" : "主要辅助运输设备/新增";
+          to.query.d == "true" ? (to.meta.title = "主要辅助运输设备/查看") : "";
           next();
         },
-        meta: { title: "主要辅助运", icon: "" },
+        meta: { title: "主要辅助运输设备", icon: "" },
       },
       {
         path: "ventilator/add",
@@ -318,7 +318,7 @@ export const constantRoutes = [
         component: () => import("@/views/device/book/details/index.vue"),
         name: "bookDetails",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.i ? "设备档案/编辑" : "设备档案/新增";
+          to.meta.title =to.query.title|| (to.query.i ? "设备档案/编辑" : "设备档案/新增");
           to.query.d == "true" ? (to.meta.title = "设备档案/查看") : "";
           next();
         },

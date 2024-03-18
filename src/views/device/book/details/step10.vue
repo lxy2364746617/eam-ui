@@ -219,6 +219,13 @@ export default {
       ],
     };
   },
+  watch: {
+    time(val) {
+      this.searchForm.startTime = val ? val[0] : "";
+      this.searchForm.endTime = val ? val[1] : "";
+      this.getList();
+    },
+  },
   created() {
     this.getTreeSelect();
     //this.getList();

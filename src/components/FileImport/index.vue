@@ -64,6 +64,10 @@ export default {
     autoUpload:{
       default:false,
       type:Boolean
+    },
+    templateName:{
+      default:'',
+      type:String
     }
   },
   computed:{
@@ -122,7 +126,7 @@ export default {
     /** 下载模板操作 */
     importTemplate() {
       this.download(this.downloadTemplateUrl, {
-      }, `template_${new Date().getTime()}.xlsx`)
+      }, this.templateName?`${this.templateName}_${new Date().getTime()}.xlsx`:`template_${new Date().getTime()}.xlsx`)
     },
     // 提交上传文件
     submitFileForm() {

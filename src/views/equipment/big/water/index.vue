@@ -56,7 +56,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/water/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/water/importData'">
+        :importUrl="'/equipment/water/importData'" :isUpdate='false' :templateName='"水泵房(模板)"'>
       </file-import>
     </div>
   </div>
@@ -265,7 +265,7 @@ export default {
     handleExport() {
       this.download('equipment/water/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `水泵房_${new Date().getTime()}.xlsx`)
     }
   }
 };

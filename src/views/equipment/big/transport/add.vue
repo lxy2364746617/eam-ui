@@ -34,7 +34,7 @@
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择上级设备" :visible.sync="drawer" direction="rtl" :destroy-on-close="true" size="80%"
                 :wrapperClosable="false">
-                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false"></parentdevice>
+                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false" :formData='formData.emArchivesParts'></parentdevice>
             </el-drawer>
 
             <!-- 导入 -->
@@ -51,14 +51,14 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/device/book/device";
+import parentdevice from "@/views/equipment/big/selectDevice";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['em_device_state', 'em_device_level','equipment_large_have','equipment_large_base','equipment_large_switch','equipment_transport_statue',
-    'equipment_transport_type','equipment_transport_power'],
+    'equipment_transport_type','equipment_transport_power','equipment_transport_command_system'],
     components: { JmTable, JmForm, child, fileImport, parentdevice },
     computed: {
         // 列信息
@@ -66,7 +66,7 @@ export default {
             return [
                 { label:"阿巴阿巴", subTitle:true, span: 24, },
                 { label:"矿井名称", prop:"mineName", span: 8, required: true, },
-                { label:"设备类型", prop:"deviceType", span: 8,formType: "select", options: this.dict.type.equipment_transport_type, },
+                { label:"设备类型", prop:"deviceType", span: 8,formType: "select",required: true, options: this.dict.type.equipment_transport_type, },
 
                 { label:"基本信息", subTitle:true, span: 24, },
                 { label:"产品名称", prop:"productName", span: 8, },
@@ -98,7 +98,7 @@ export default {
                 { label:"无极绳", prop:"noRope", span: 8, },
                 { label:"调度绞车", prop:"winch", span: 8, },
                 { label:"回往绞车", prop:"backWinch", span: 8, },
-                { label:"指挥系统", prop:"system", span: 8, },
+                { label:"指挥系统", prop:"system", span: 8,formType: "select", options: this.dict.type.equipment_transport_command_system, },
             ]
         },
         // 列信息
@@ -111,7 +111,7 @@ export default {
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
                 { label: "功能位置", prop: "location",formType: 'selectTree', options: this.locationOptions,width:180 },
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-                { label: "所属子公司", prop: "111", },
+                { label: "所属子公司", prop: "subCompanyId",formType: 'selectTree', options: this.deptOptions, },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
                 { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, },
                 { label: "购置日期", prop: "makerAoTime", formType: 'date', },

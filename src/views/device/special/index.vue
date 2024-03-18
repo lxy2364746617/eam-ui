@@ -20,6 +20,16 @@
                           @click="handleExport" v-hasPermi="['equipment:special:export']">下载</el-button>
                   </el-col>
               </template>
+              <template #end_handle="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-view"
+              :loading="btnLoading"
+              @click="handleUpdate(scope.row,'view')"
+              v-hasPermi="['equipment:base:query']"
+            >详情</el-button>
+              </template>
           </jm-table>
       </div>
   </div>
@@ -46,10 +56,10 @@ export default {
   computed: {
     obj(){
         return {
-            location: { formType: 'selectTree', options: this.locationOptions,width:180 },
-            categoryId: { formType: 'selectTree', options: this.categoryOptions, },
-            currDeptId: { formType: 'selectTree', options: this.deptOptions, },
-            affDeptId: { formType: 'selectTree',  options: this.deptOptions, },
+            location: { formType: 'selectTree', options: this.locationOptions,width:230 },
+            categoryId: { formType: 'selectTree', options: this.categoryOptions,width:230 },
+            currDeptId: { formType: 'selectTree', options: this.deptOptions,width:230 },
+            affDeptId: { formType: 'selectTree',  options: this.deptOptions, width:230},
             makerAoTime: { formType: 'date', },
             deviceStatus:{formType: 'selectTag', options: this.dict.type.em_device_state, },
         }
@@ -59,6 +69,7 @@ export default {
       return {
           radio: 0,
           radioColumn: [],
+          btnLoading:false,
           deptList: [],
           total: 0,
           // 遮罩层
@@ -124,7 +135,6 @@ export default {
                           bb.prop = bb.fieldCode
                           bb.formType = bb.fieldType
                           bb.tableVisible = !bb.custom
-                          bb.width=(bb.fieldName=='设备类别'||bb.fieldName=='所属组织')?180:''
                           for (const key in that.obj) {
                             if(key==bb.prop){
                                 Object.assign(bb,that.obj[key])
@@ -168,6 +178,35 @@ export default {
                 obj,
                 `特种设备_${new Date().getTime()}.xlsx`)
       },
+      handleUpdate(row, f) {
+      // this.btnLoading = true
+      const deviceId = row.deviceId
+      if (f == 'edit') {
+        // this.addEdit = true;
+        this.$router.push({ path: '/device/book/add?i=' + deviceId+'&f=edit' })
+      } else if (f == 'view') {
+        /* this.title =
+          this.getTreeParent(row.categoryId).join(' > ') +
+          ' > ' +
+          row.deviceName */
+        this.$router.push({
+          path: '/device/book/details?i=' + deviceId + '&t=' + row.deviceName+'&isReadonly=true',
+          query:{
+              title:row.deviceName+'详情'
+          }
+        })
+        // this.addDetails = true;
+      }
+    },
+    getTreeParent(id) {
+      const path = []
+      let current = this.valueMap[id]
+      while (current) {
+        path.unshift(current.label)
+        current = current.parent
+      }
+      return path
+    },
   }
 };
 </script>

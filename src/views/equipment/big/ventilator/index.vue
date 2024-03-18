@@ -45,7 +45,7 @@
       </jm-table>
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/ventilator/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/ventilator/importData'">
+        :importUrl="'/equipment/ventilator/importData'" :isUpdate='false' :templateName='"主通风机(模板)"'>
       </file-import>
     </div>
   </div>
@@ -249,7 +249,7 @@ export default {
     handleExport() {
       this.download('equipment/ventilator/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `主通风机_${new Date().getTime()}.xlsx`)
     }
   }
 };

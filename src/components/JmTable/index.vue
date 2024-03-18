@@ -34,7 +34,7 @@
           type="selection"
           width="55"
           align="center"
-          :selectable="(row, index) => index != 0 || !showSearch"
+          :selectable="(row, index) => ((index != 0 || !showSearch) && !row.selectDisable)"
         />
         <el-table-column v-if="isRadio" width="50">
           <template slot-scope="scope">
@@ -230,6 +230,7 @@
                 v-else
                 v-html="scope.row[col.prop]"
                 :class="{ active: col.class }"
+                @click="col.class?rowClick(scope.row):()=>{}"
                 :style="col.formType=='editor'?'max-height:50px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;':''"
               ></div>
             </template>
@@ -386,6 +387,9 @@ export default {
     };
   },
   methods: {
+    rowClick(row){
+      this.$emit("rowClick", row);
+      },
     switchchange($event, prop, row) {
       this.$emit("switchchange", $event, prop, row);
     },
@@ -444,7 +448,6 @@ export default {
       function changeName(n1, x) {
         n1.name = x;
       }
-      console.log(options)
       for (let i = 0; i < options.length; i++) {
         if (options[i].id == value) {
           changeName(name1, options[i].label);
@@ -475,6 +478,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      console.log('table',selection)
       this.$emit("handleSelectionChange", selection);
 
       // this.ids = selection.map(item => item.noticeId)

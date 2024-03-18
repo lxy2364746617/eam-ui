@@ -70,7 +70,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/compressor/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/compressor/importData'">
+        :importUrl="'/equipment/compressor/importData'" :isUpdate='false' :templateName='"空压机(模板)"'>
       </file-import>
     </div>
   </div>

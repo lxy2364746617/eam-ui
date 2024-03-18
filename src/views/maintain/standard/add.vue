@@ -69,7 +69,11 @@
                 <el-table-column label="巡点检项目编码" align="center" prop="itemCode" min-width="150" />
                 <el-table-column label="部件" align="center" prop="partsName" min-width="200">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.partsName" placeholder="请输入部件" v-if="scope.row.editType" />
+                        <el-input v-model="scope.row.partsName" placeholder="请输入部件" v-if="scope.row.editType" @input="changePart(scope.row)">
+                            <template slot="append">
+                                <el-button @click="selectPart(scope.row,scope.$index)"><i class="el-icon-search"/></el-button>
+                            </template>
+                        </el-input>
                         <span v-else v-html="scope.row.partsName"></span>
                     </template>
                 </el-table-column>
@@ -147,8 +151,8 @@
                 <el-table-column label="定量单位" align="center" prop="quotaUnit" min-width="150">
                     <template slot-scope="scope">
                         <template v-if="scope.row.checkResType == '数字'">
-                            <el-input v-model="scope.row.quotaUnit" placeholder="请输入定量下限" v-if="scope.row.editType" />
-                            <span v-else v-html="scope.row.quotaLower"></span>
+                            <el-input v-model="scope.row.quotaUnit" placeholder="请输入定量单位" v-if="scope.row.editType" />
+                            <span v-else v-html="scope.row.quotaUnit"></span>
                         </template>
                     </template>
                 </el-table-column>
@@ -165,15 +169,20 @@
 
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择设备" :visible.sync="form.choosedrawer" direction="rtl" size="80%" :wrapperClosable="false">
-                <parentdevice :isChoose="true" @submitRadio="submitRadio2" @close="form.choosedrawer = false">
+                <parentdevice :isChoose="true" @submitRadio="submitRadio2" @close="form.choosedrawer = false" :formData='form' :deviceAtt='"0"'>
                 </parentdevice>
             </el-drawer>
 
             <el-drawer :title="title" :visible.sync="pointItemForm.drawer" direction="rtl" size="60%"
                 :wrapperClosable="false">
-                <pointItem :isChoose="false" :itemType='itemType' :formData="pointItemForm" @submitRadio="submitRadio1"
+                <pointItem :isChoose="false" :itemType='itemType'  :formData="pointItemForm" @submitRadio="submitRadio1"
                     @close="pointItemForm.drawer = false" ref="itemForm" v-if="pointItemForm.drawer">
                 </pointItem>
+            </el-drawer>
+            <el-drawer title="选择部件" :visible='isSelectPart' size="60%"  :wrapperClosable="false" @close='isSelectPart=false'>
+                <partItem :isChoose="true"  @submitRadio="submitRadio3" :formData='form'
+                    @close="isSelectPart = false" ref="itemForm" v-if="isSelectPart">
+                </partItem>
             </el-drawer>
         </div>
 
@@ -190,14 +199,15 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
-import parentdevice from '@/views/device/book/device'
+import parentdevice from '@/views/maintain/standard/selectDevice'
 import pointItem from '@/views/maintain/standard/pointItem'
+import partItem from '@/views/maintain/standard/partItem'
 import { number } from 'echarts';
 import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_is_special', 'mro_s_check_res_type', 'mro_s_check_status'],
-    components: { JmTable, JmForm, parentdevice, pointItem },
+    components: { JmTable, JmForm, parentdevice, pointItem,partItem },
     computed: {
         // 列信息
         columns() {
@@ -263,7 +273,7 @@ export default {
             // 总条数
             total: 0,
             // 弹出层标题
-            title: "关键点检测",
+            title: "关联点检项",
             // 是否显示弹出层
             // 查询参数
             queryParams: {
@@ -325,6 +335,8 @@ export default {
                     { required: true, message: '是否特种设备不能为空', trigger: 'blur' },
                 ],
             },
+            isSelectPart:false,
+            partIndex:0
         };
     },
     created() {
@@ -379,6 +391,15 @@ export default {
                 node.children = this.loops(children, node);
                 return node;
             });
+        },
+        changePart(row){
+            row.deviceId=''
+        },
+        submitRadio3(row){
+            this.standardList[this.partIndex].partsName=row.deviceName
+            this.standardList[this.partIndex].deviceId=row.deviceId
+            console.log(this.standardList)
+            this.isSelectPart=false
         },
         submitRadio2(row) {
             this.form = {
@@ -441,7 +462,7 @@ export default {
     },
         /** 新增按钮操作 */
         handleAdd() {
-            let disIds = this.standardList.length == 0 ? [] : this.standardList.map(item => { return item.itemCode })
+            let disIds = this.standardList.length == 0 ? [] : this.standardList.map(item => { return item.itemId })
             this.pointItemForm = {
                 drawer: true,
                 type: 'add',
@@ -524,7 +545,13 @@ export default {
                 }
             })
         },
-        handleSelectionChange() { },
+        handleSelectionChange() { 
+            
+        },
+        selectPart(row,index){
+            this.partIndex=index
+            this.isSelectPart=true
+        },
         findName(options, value) {
             var name = ''
             for (let i = 0; i < options.length; i++) {
@@ -600,6 +627,13 @@ export default {
     font-size: 18px;
     background: rgba(0, 116, 217, 0.08);
     justify-content: space-between;
+}
+::v-deep .el-input.is-disabled .el-input__inner,
+::v-deep .el-radio__input.is-disabled+span.el-radio__label{
+    color:#303133,
+}
+::v-deep .el-radio__input.is-disabled.is-checked .el-radio__inner::after{
+    background-color:#303133 ;
 }
 </style>
           

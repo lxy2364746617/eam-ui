@@ -77,7 +77,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/lbase/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/lbase/importData'">
+        :importUrl="'/equipment/lbase/importData'" :isUpdate='false' :templateName='"供电设备(模板)"'>
       </file-import>
     </div>
   </div>

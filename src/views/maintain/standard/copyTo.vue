@@ -88,7 +88,7 @@
             </el-table>
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择设备" :visible.sync="drawer" direction="rtl" size="80%" :wrapperClosable="false">
-                <parentdevice :isChoose="false" @submitRadio="submitRadio2"  :formData="deviceForm" @close="drawer = false" v-if="drawer">
+                <parentdevice :isChoose="false" @submitRadio="submitRadio2"  :formData="deviceForm.disIds" @close="drawer = false" v-if="drawer">
                 </parentdevice>
             </el-drawer>
         </div>
@@ -103,7 +103,7 @@
 import { getStandard, copyStandard } from "@/api/maintain/standard";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
-import parentdevice from '@/views/device/book/device'
+import parentdevice from '@/views/maintain/standard/selectDevice'
 import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",
@@ -207,7 +207,7 @@ export default {
         handleAdd() {
             this.drawer = true;
             let disIds = this.itemList.length == 0 ? [] : this.itemList.map(item => { return item.deviceId })
-            disIds.push(this.$route.query.deviceId)
+            //disIds.push(this.$route.query.deviceId)
             this.deviceForm = {
                 disIds: disIds
             }

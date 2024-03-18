@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="padding-top: 0;">
     <jm-table :tableData="itemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" :isRadio="isChoose">
+      ref="jmtable" :handleWidth="230" :columns="columns" :isRadio="isChoose" >
     </jm-table>
     <div style="width: 100%; height: 68px;"></div>
     <div
@@ -95,6 +95,9 @@ export default {
     getList(queryParams) {
       this.loading = true
       listPline(queryParams).then((response) => {
+        response.rows.forEach(item=>{
+          item.lineStatus=='1'&&(item.selectDisable=true)
+        })
         this.itemList = response.rows.filter(item => {
           if (this.formData.disIds.includes(item.lineId)) {
             return false

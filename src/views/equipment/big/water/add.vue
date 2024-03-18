@@ -3,7 +3,7 @@
         <div>
             <div class="mb20" style="background-color: #fff;">基本信息</div>
             <jm-form class="mr20" :showButton="false" :columns="columns" :formData="formData" @submitForm="submitForm"
-                ref="jmform" :disabled="disabled">
+                ref="jmform" :disabled="disabled" :labelWidth='"170px"'>
             </jm-form>
             <div class="mb20" style="background-color: #fff;">详细设备信息</div>
             <jm-table :tableData="formData.emArchivesParts" @getList="getList"
@@ -40,7 +40,7 @@
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择上级设备" :visible.sync="drawer" direction="rtl" :destroy-on-close="true" size="80%"
                 :wrapperClosable="false">
-                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false"></parentdevice>
+                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false" :formData='formData.emArchivesParts'></parentdevice>
             </el-drawer>
         </div>
     </div>
@@ -52,7 +52,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/device/book/device";
+import parentdevice from "@/views/equipment/big/selectDevice";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 import { getLocationTree} from '@/api/Location'
@@ -89,9 +89,9 @@ export default {
 
 { label:"排水出口点标高(m)", prop:"waterHigh", span: 8, },
 { label:"水仓总容量", prop:"waterSum", span: 8, },
-{ label:"水仓主水仓", prop:"hostWater", span: 8, },
+{ label:"水仓主水仓(m³)", prop:"hostWater", span: 8, },
 
-{ label:"水仓副水仓", prop:"secondWater", span: 8, },
+{ label:"水仓副水仓(m³)", prop:"secondWater", span: 8, },
 { label:"管路-直径(mm)", prop:"pipelineWidth", span: 8, },
 { label:"管路-数量(台)", prop:"waterRanks", span: 8, },
 
@@ -111,7 +111,7 @@ export default {
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
                 { label: "功能位置", prop: "location", formType: 'selectTree', options: this.locationOptions,width:180},
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-                { label: "所属子公司", prop: "111", },
+                { label: "所属子公司", prop: "subCompanyId",formType: 'selectTree', options: this.deptOptions, },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
                 { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, },
                 { label: "购置日期", prop: "makerAoTime", formType: 'date', },

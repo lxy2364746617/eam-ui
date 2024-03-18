@@ -13,14 +13,15 @@
 </template>
 
 <script>
-import {
-  relationItem,
-} from '@/api/maintain/standard'
+import { listAssembly } from "@/api/equipment/assembly";
+import { listDept } from "@/api/system/dept";
+import { getLocationTree} from '@/api/Location';
+import { equipmentTree } from "@/api/equipment/category";
 import JmTable from "@/components/JmTable";
 
 export default {
-  name: "pointItem",
-  dicts: ['mro_item_method', 'XDJ', 'sys_normal_disable'],
+  name: "partItem",
+  dicts: ['mro_item_method', 'XDJ', 'sys_normal_disable','em_device_state','em_device_level'],
   components: { JmTable },
   props: {
     isChoose: {
@@ -40,11 +41,15 @@ export default {
     // 列信息
     columns() {
       return [
-        { label: '巡点检项目编码', prop: 'itemCode' },
-        { label: '巡点检内容', prop: 'itemContent' },
-        { label: '巡点检方法', prop: 'itemMethod', formType: 'select', options: this.dict.type.mro_item_method, },
-        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.XDJ, },
-        { label: '状态', prop: 'itemStatus', formType: 'selectTag', options: this.dict.type.sys_normal_disable, span: 24 },
+         { label:"设备编码", prop:"deviceCode", },
+        { label:"设备名称", prop:"deviceName", },
+        { label:"规格型号", prop:"specs", },
+        { label:"设备类型", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, width:220  },
+        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
+        { label:"功能位置", prop:"location", options:this.locationOptions,formType: 'selectTree', width:220},
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
+        // { label:"所属子公司", prop:"",  },
+        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, width:220 },
       ]
     },
   },
@@ -70,22 +75,36 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        itemCode: null,
-        itemContent: null,
-        itemMethod: null,
-        itemType: this.itemType,
-        itemStatus: null,
       },
+      locationOptions:[],
+      deptOptions: [],
+      categoryOptions: [],
     };
   },
-  created() {
-    setTimeout(() => {
-          console.log(this.itemType,this.queryParams)
-
-    }, 0);
+ async created() {
+    await getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeData(res.data)
+      });
+    await equipmentTree().then(response => {
+        this.categoryOptions = response.data;
+      });
+    await listDept().then(response => {
+        this.deptOptions = response.data;
+      });
     this.getList(this.queryParams)
   },
   methods: {
+     getTreeData(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeData(item.children)
+          }
+        })
+        return arr
+    },
     close() {
       this.$emit('close')
     },
@@ -100,9 +119,9 @@ export default {
     },
     /** 查询用户列表 */
     getList(queryParams) {
+      queryParams.deviceId=this.formData.deviceId
       this.loading = true
-      queryParams.exportIds=this.formData.disIds.join(',')
-      relationItem(queryParams).then((response) => {
+      listAssembly(queryParams).then((response) => {
         this.itemList = response.rows
         this.total = response.total;
         this.loading = false;

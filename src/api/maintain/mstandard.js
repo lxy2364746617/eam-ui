@@ -65,3 +65,11 @@ export function copyStandard(data) {
     data: data
   })
 }
+// 保养标准
+export function mcheckList(data) {
+  return request({
+    url: '/maintain/mcheck/list',
+    method: 'get',
+    params: data
+  })
+}

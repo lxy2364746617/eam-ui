@@ -16,6 +16,14 @@ export function relationList(query) {
     params: query
   })
 }
+// 大型设备选择设备
+export function largeRelationList(query) {
+  return request({
+    url: '/equipment/base/largeRelationList',
+    method: 'get',
+    params: query
+  })
+}
 // 查询设备平台_设备档案_设备指标列表
 export function listIndexBASE(query) {
   return request({

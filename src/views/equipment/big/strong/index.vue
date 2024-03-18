@@ -63,7 +63,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/strong/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/strong/importData'">
+        :importUrl="'/equipment/strong/importData'" :isUpdate='false' :templateName='"强排泵(模板)"'>
       </file-import>
     </div>
   </div>
@@ -268,7 +268,7 @@ export default {
     handleExport() {
       this.download('equipment/strong/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `强排泵_${new Date().getTime()}.xlsx`)
     }
   }
 };

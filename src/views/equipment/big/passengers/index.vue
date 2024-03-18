@@ -70,7 +70,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/passengers/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/passengers/importData'">
+        :importUrl="'/equipment/passengers/importData'" :isUpdate='false' :templateName='"架空乘人装置(模板)"'>
       </file-import>
     </div>
   </div>
@@ -272,7 +272,7 @@ export default {
     handleExport() {
       this.download('equipment/passengers/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `架空乘人装置_${new Date().getTime()}.xlsx`)
     }
   }
 };

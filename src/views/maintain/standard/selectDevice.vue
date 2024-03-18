@@ -4,13 +4,13 @@
       <!--部门数据-->
       <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
-        <jm-user-tree :treeData="categoryOptions" @handleNodeClick="handleNodeClick" style="height: calc(100vh - 201px);">
+        <jm-user-tree :treeData="categoryOptions" :setCurrent='false' @handleNodeClick="handleNodeClick" style="height: calc(100vh - 201px);">
         </jm-user-tree>
       </el-col>
       <!--用户数据-->
       <el-col :span="18" :xs="24">
         <jm-table :tableData="equipmentList" @getList="getList" @handleSelectionChange="handleSelectionChange"
-          :total="total" ref="jmtable" :isRadio="isChoose" :handleWidth="130" :columns="columns">
+          :total="total" ref="jmtable" :isRadio="isChoose" :handleWidth="130" :columns="columns" :showSearch='false'>
         </jm-table>
       </el-col>
 
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { listBASE } from "@/api/equipment/BASE";
+import { relationList } from "@/api/maintain/standard";
 import { equipmentTree } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -43,8 +43,8 @@ export default {
       type: Boolean,
     },
     formData: {
-      default: () => { },
-      type: Object,
+      default: () => [],
+      type: Array,
     },
     deviceAtt:{
       default:'',
@@ -101,21 +101,23 @@ export default {
       valueMap:{}
     };
   },
-  created() {
-    this.getTree();
+ async created() {
+   console.log(this.formData)
+   await this.getTree();
+   await this.getList(this.queryParams)
   },
   methods: {
      /** 查询设备档案下拉树结构 */
-    getTree() {
-      equipmentTree().then((response) => {
+   async getTree() {
+     await equipmentTree().then((response) => {
         this.categoryOptions = response.data
         // 方便获取父级tree
         this.loops(this.categoryOptions)
       })
-      getLocationTree().then(res=>{
+     await getLocationTree().then(res=>{
         this.locationOptions=this.getTreeName(res.data)
       })
-      listDept().then((response) => {
+     await listDept().then((response) => {
         this.deptOptions = response.data
       })
     },
@@ -160,14 +162,14 @@ export default {
       var data = {
         categoryId: this.queryParams.categoryId,
         ...queryParams,
-        deviceAtt:this.deviceAtt,
+        exportIds:this.formData.join(',')
       }
-      listBASE(data).then(response => {
+      relationList(data).then(response => {
         response.rows.forEach(item=>{
            item.archivesOther&&( item.propertyCode=item.archivesOther.propertyCode)
           })
         // 不展示自身
-        if (this.formData) {
+        /* if (this.formData) {
           response.rows.forEach((b, i) => {
             if (b.deviceId == this.formData.deviceId) {
               response.rows.splice(i, 1)
@@ -180,9 +182,9 @@ export default {
               return true
             }
           })
-        }else{
+        }else{ */
           this.equipmentList = response.rows
-        }
+        /* } */
         this.total = response.total;
         this.loading = false;
       }

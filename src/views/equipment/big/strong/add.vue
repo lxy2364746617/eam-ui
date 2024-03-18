@@ -33,7 +33,7 @@
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择上级设备" :visible.sync="drawer" direction="rtl" :destroy-on-close="true" size="80%"
                 :wrapperClosable="false">
-                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false"></parentdevice>
+                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false" :formData='formData.emArchivesParts'></parentdevice>
             </el-drawer>
         </div>
     </div>
@@ -45,7 +45,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/device/book/device";
+import parentdevice from "@/views/equipment/big/selectDevice";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 import { getLocationTree} from '@/api/Location'
@@ -61,7 +61,7 @@ export default {
                 { label:"泵房名称", prop:"waterName", span: 8, },
                 { label:"水泵型号", prop:"waterModel", span: 8, },
 
-                { label:"台数", prop:"sum", span: 8, },
+                { label:"台数", prop:"sum", span: 8,formDisabled:true },
                 { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
                 { label:"煤安标志证号", prop:"signCode", span: 8, },
                 { label:"生产日期", prop:"produceTime", span: 8, formType: "date",  },
@@ -90,7 +90,7 @@ export default {
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
                 { label: "功能位置", prop: "location", formType: 'selectTree', options: this.locationOptions,width:180},
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-                { label: "所属子公司", prop: "111", },
+                { label: "所属子公司", prop: "subCompanyId",formType: 'selectTree', options: this.deptOptions, },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
                 { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, },
                 { label: "购置日期", prop: "makerAoTime", formType: 'date', },
@@ -110,6 +110,7 @@ export default {
             // 非多个禁用
             multiple: true,
             formData: {
+                sum:0,
                 emArchivesParts:[]
             },
             nowclickitem: '',
@@ -153,8 +154,16 @@ export default {
         await this.getTreeSelect();
         if(this.$route.query.l){
             this.getDetails(this.$route.query.l);
-        }
-        
+        } 
+    },
+    watch:{
+        'formData.emArchivesParts':{
+            handler(val){
+                this.formData.sum=val.length
+            }
+        },
+        immediate:true,
+        deep:true
     },
     methods: {
         close() {

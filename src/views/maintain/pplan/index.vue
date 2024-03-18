@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <jm-table :tableData="pplanList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
+      ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange" >
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
@@ -148,6 +148,7 @@ export default {
         this.loading = false
       })
     },
+
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.planId)

@@ -29,7 +29,7 @@
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择上级设备" :visible.sync="drawer" direction="rtl" :destroy-on-close="true" size="80%"
                 :wrapperClosable="false">
-                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false"></parentdevice>
+                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false" :formData='formData.emArchivesParts'></parentdevice>
             </el-drawer>
 
             <!-- 导入 -->
@@ -46,7 +46,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/device/book/device";
+import parentdevice from "@/views/equipment/big/selectDevice";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 import { getLocationTree} from '@/api/Location'
@@ -69,11 +69,11 @@ export default {
                 { label: "投运时间", prop: "putTime", formType: 'date', span: 8, },
                 { label: "电压", prop: "voltage", span: 8, },
                 { label: "控制方式", prop: "controlMode", span: 8, },
-                { label: "滚筒个数", prop: "rollerSum", span: 8, },
+                { label: "滚筒个数", prop: "rollerSum", span: 8, formDisabled:true },
                 { label: "滚筒直径(m)", prop: "rollerDiameter", span: 8, },
                 { label: "滚筒宽度(m)", prop: "rollerWidth", span: 8, },
                 { label: "最大静张力(KN)", prop: "maxTension", span: 8, },
-                { label: "最大静张力差(KN)", prop: "maxTension", span: 8, },
+                { label: "最大静张力差(KN)", prop: "maxTensionDiff", span: 8, },
                 { label: "最大提升速度(m/s)", prop: "maxSpeed", span: 8, },
                 { label: "是否有专用备用信号", prop: "hava", formType: 'select', options: this.dict.type.equipment_common_yw, span: 8, },//0-有,1-没有
                 { label: "闸间隙保护是否闭锁下次开车是否闭锁", prop: "isLock", formType: 'select', options: this.dict.type.equipment_common_sf, span: 8, }, //0=是,1=否
@@ -99,7 +99,7 @@ export default {
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
                 { label: "功能位置", prop: "location",formType: 'selectTree', options: this.locationOptions,width:180 },
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-                { label: "所属子公司", prop: "111", },
+                { label: "所属子公司", prop: "subCompanyId",formType: 'selectTree', options: this.deptOptions, },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions,width:160 },
                 { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions,width:160 },
                 { label: "购置日期", prop: "makerAoTime", formType: 'date', },
@@ -119,6 +119,7 @@ export default {
             // 非多个禁用
             multiple: true,
             formData: {
+                rollerSum:0,
                 emArchivesParts:[]
             },
             nowclickitem: '',
@@ -154,6 +155,15 @@ export default {
             rules: {
             },
         };
+    },
+    watch:{
+        'formData.emArchivesParts':{
+            handler(val){
+                this.formData.rollerSum=val.length
+            }
+        },
+        immediate:true,
+        deep:true
     },
     async created() {
         this.queryParams.largeId = this.$route.query.l;

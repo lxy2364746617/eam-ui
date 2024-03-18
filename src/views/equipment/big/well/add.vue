@@ -54,7 +54,7 @@
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择上级设备" :visible.sync="drawer" direction="rtl" :destroy-on-close="true" size="80%"
                 :wrapperClosable="false">
-                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false" :formData='deviceData'></parentdevice>
+                <parentdevice @submitRadio="submitRadio" @close="close" :isChoose="false" :formData='formData.emArchivesParts'></parentdevice>
             </el-drawer>
 
             <!-- 导入 -->
@@ -71,7 +71,7 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import child from "@/views/formTemplate/child";
 import fileImport from "@/components/FileImport";
-import parentdevice from "@/views/device/book/device";
+import parentdevice from "@/views/equipment/big/selectDevice";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
 import { getLocationTree} from '@/api/Location'
@@ -85,30 +85,30 @@ export default {
             return [
                 { label:"矿井名称", prop:"mineName", span: 8,  required: true, },
                 { label:"使用地点", prop:"useAddress", span: 8,required: true, },
-                { label:"设备型号", prop:"deviceModel", span: 8, required: true,},
-                { label:"设备厂家", prop:"equipmentManufacturer", span: 8,required: true, },
-                { label:"煤安标志证号", prop:"signCode", span: 8,required: true, },
-                { label:"生产日期", prop:"produceTime", span: 8, formType: "date", required: true, },
+                { label:"设备型号", prop:"deviceModel", span: 8, },
+                { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
+                { label:"煤安标志证号", prop:"signCode", span: 8, },
+                { label:"生产日期", prop:"produceTime", span: 8, formType: "date",  },
 
-                { label:"投运日期", prop:"putTime", span: 8, formType: "date", required: true, },
-                { label:"电压等级", prop:"vcc", span: 8,required: true, },
-                { label:"控制方式", prop:"controlMode", span: 8, required: true,},
+                { label:"投运日期", prop:"putTime", span: 8, formType: "date",  },
+                { label:"电压等级", prop:"vcc", span: 8, },
+                { label:"控制方式", prop:"controlMode", span: 8, },
 
-                { label:"皮带机长度", prop:"length", span: 8,required: true, },   
-                { label:"皮带宽度", prop:"width", span: 8,required: true, },
-                { label:"最大坡度", prop:"maxSlope", span: 8, required: true,},
+                { label:"皮带机长度", prop:"length", span: 8, },   
+                { label:"皮带宽度", prop:"width", span: 8, },
+                { label:"最大坡度", prop:"maxSlope", span: 8, },
 
-                { label:"平均坡度", prop:"slope", span: 8,required: true, },
-                { label:"提升设备功率", prop:"upPower", span: 8,required: true, },
-                { label:"提升设备能力", prop:"upDevicePower", span: 8, required: true,},
+                { label:"平均坡度", prop:"slope", span: 8, },
+                { label:"提升设备功率", prop:"upPower", span: 8, },
+                { label:"提升设备能力", prop:"upDevicePower", span: 8, },
 
-                { label:"提升设备速度", prop:"upSpeed", span: 8,required: true, },
-                { label:"逆止器型号", prop:"backstopModel", span: 8, required: true,},
-                { label:"逆止器台数", prop:"backstop", span: 8,required: true,number:true },
+                { label:"提升设备速度", prop:"upSpeed", span: 8, },
+                { label:"逆止器型号", prop:"backstopModel", span: 8, },
+                { label:"逆止器台数", prop:"backstop", span: 8,number:true },
 
-                { label:"制动器型号", prop:"brakesModel", span: 8,required: true, },
-                { label:"制动器台数", prop:"brakesSum", span: 8, required: true,number:true},
-                { label:"地面远程集控", prop:"isRemote", span: 8, formType: "select", options: this.dict.type.equipment_common_sf,required: true, },
+                { label:"制动器型号", prop:"brakesModel", span: 8, },
+                { label:"制动器台数", prop:"brakesSum", span: 8, number:true},
+                { label:"地面远程集控", prop:"isRemote", span: 8, formType: "select", options: this.dict.type.equipment_common_sf, },
 
             ]
         },
@@ -122,7 +122,7 @@ export default {
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
                 { label: "功能位置", prop: "location", formType: 'selectTree', options: this.locationOptions,width:180},
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-                { label: "所属子公司", prop: "111", },
+                { label: "所属子公司", prop: "subCompanyId",formType: 'selectTree', options: this.deptOptions, },
                 { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
                 { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, },
                 { label: "购置日期", prop: "makerAoTime", formType: 'date', },

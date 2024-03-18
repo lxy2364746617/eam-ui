@@ -70,7 +70,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/nitrogen/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/nitrogen/importData'">
+        :importUrl="'/equipment/nitrogen/importData'" :isUpdate='false' :templateName='"制氮机(模板)"'>
       </file-import>
     </div>
   </div>
@@ -281,7 +281,7 @@ export default {
     handleExport() {
       this.download('equipment/nitrogen/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `制氮机_${new Date().getTime()}.xlsx`)
     }
   }
 };

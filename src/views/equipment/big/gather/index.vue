@@ -70,7 +70,7 @@
 
       <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/equipment/gather/importTemplate'" ref="fileImport"
-        :importUrl="'/equipment/gather/importData'">
+        :importUrl="'/equipment/gather/importData'" :isUpdate='false' :templateName='"采区排水/加压泵房(模板)"'>
       </file-import>
     </div>
   </div>
@@ -280,7 +280,7 @@ export default {
     handleExport() {
       this.download('equipment/gather/export', {
         ...this.queryParams
-      }, `供电设备_${new Date().getTime()}.xlsx`)
+      }, `采区排水/加压泵房_${new Date().getTime()}.xlsx`)
     }
   }
 };
