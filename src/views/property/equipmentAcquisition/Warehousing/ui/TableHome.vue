@@ -95,11 +95,10 @@
           :total="total2"
           ref="jmtable"
           :isRadio="isChoose2"
-          :handleWidth="230"
+          :handleWidth="120"
           :columns="columns2"
           :isEdit="false"
           v-if="!addEdit2"
-          :showOperate="false"
         >
         </ContTable2>
       </div>
@@ -205,8 +204,8 @@ export default {
       form: {},
 
       radioRow: {},
-      deptOptions: null,
-      categoryOptions: null,
+      deptOptions: [],
+      categoryOptions: [],
     };
   },
   computed: {
@@ -354,36 +353,36 @@ export default {
           tableVisible: true,
           width: 200,
         },
-        {
-          label: "计划类型",
-          prop: "purchasePlanType",
-          tableVisible: true,
-          options: [
-            {
-              label: "年度采购",
-              value: 1,
-            },
-            {
-              label: "临时采购",
-              value: 2,
-            },
-          ],
-        },
-        {
-          label: "申报单位",
-          prop: "declarationDeptId",
-          tableVisible: true,
-          formType: "selectTree",
-          options: this.deptOptions,
-          width: 150,
-        },
+        // {
+        //   label: "计划类型",
+        //   prop: "purchasePlanType",
+        //   tableVisible: true,
+        //   options: [
+        //     {
+        //       label: "年度采购",
+        //       value: 1,
+        //     },
+        //     {
+        //       label: "临时采购",
+        //       value: 2,
+        //     },
+        //   ],
+        // },
+        // {
+        //   label: "申报单位",
+        //   prop: "declarationDeptId",
+        //   tableVisible: true,
+        //   formType: "selectTree",
+        //   options: this.deptOptions,
+        //   width: 150,
+        // },
 
-        {
-          label: "申报日期",
-          prop: "declarationDate",
-          tableVisible: true,
-          formType: "date",
-        },
+        // {
+        //   label: "申报日期",
+        //   prop: "declarationDate",
+        //   tableVisible: true,
+        //   formType: "date",
+        // },
       ];
     },
   },

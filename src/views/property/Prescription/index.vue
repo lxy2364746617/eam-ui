@@ -132,7 +132,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Wrapper from "@/components/wrapper";
 import BarChart from "./ui/BarChart.vue";
 import BarChartBar from "./ui/BarChartBar.vue";
-
+import { getLocationTree } from "@/api/Location";
 export default {
   name: "devicebook",
   dicts: [
@@ -176,7 +176,13 @@ export default {
           options: this.dict.type.em_device_state,
         },
         { label: "财务资产编码", prop: "propertyCode", width: 200 },
-        { label: "功能位置", prop: "location" },
+        {
+          label: "功能位置",
+          prop: "location",
+          options: this.locationOptions,
+          formType: "selectTree",
+          width: 230,
+        },
         {
           label: "重要等级",
           prop: "level",
@@ -266,6 +272,7 @@ export default {
       },
       deviceIndexVisible: false,
       flag: false,
+      locationOptions: [],
     };
   },
   created() {
@@ -287,6 +294,20 @@ export default {
         // 方便获取父级tree
         this.loops(this.categoryOptions);
       });
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTreeName(res.data);
+      });
+    },
+    getTreeName(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTreeName(item.children);
+        }
+      });
+      return arr;
     },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
@@ -436,18 +457,32 @@ export default {
         })
         .catch(() => {});
     },
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
 
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = null;
+        }
+      });
+
+      return defaultObject;
+    },
     handleExport() {
       var obj = {
+        ids: this.ids.length > 0 ? this.ids : null,
+        ...this.convertToDefaultObject(this.columns),
         categoryId: this.queryParams.categoryId,
       };
-      this.download(
-        "equipment/base/export",
-        {
-          ...obj,
-        },
-        `device_${new Date().getTime()}.xlsx`
-      );
+
+      // this.download(
+      //   "equipment/base/export",
+      //   {
+      //     ...obj,
+      //   },
+      //   `device_${new Date().getTime()}.xlsx`
+      // );
     },
     /** 下载模板操作 */
     importTemplate() {

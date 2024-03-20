@@ -170,7 +170,7 @@ export default {
             }
           }
         );
-        this.reviewCode = this.formData.demandCode;
+        this.reviewCode = this.formData.receiptCode;
       }
     } else {
       this.formData = {

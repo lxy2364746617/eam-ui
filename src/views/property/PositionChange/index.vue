@@ -158,6 +158,7 @@ import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 import fileImport from "@/components/FileImport";
+import { listUser } from "@/api/system/user";
 export default {
   components: { Wrapper, ContTable, subprocess, fileImport },
   dicts: ["wf_process_status"],
@@ -182,6 +183,7 @@ export default {
       tableData: [],
       subtitle: "",
       subopen: false,
+      userList: [],
     };
   },
   async created() {
@@ -224,9 +226,11 @@ export default {
         },
         {
           label: "申请部门负责人",
-          prop: "applyPersonName",
+          prop: "applyPersonId",
+          formType: "selectTree",
+          options: this.userList,
           tableVisible: true,
-          width: 120,
+          width: 150,
         },
         {
           label: "审批状态",
@@ -350,6 +354,14 @@ export default {
     // 下载
     handleDownload() {},
     async getTreeSelect() {
+      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
+        this.userList = res.rows.map((item) => {
+          return {
+            id: item.userId,
+            label: item.nickName,
+          };
+        });
+      });
       await listDept().then(async (response) => {
         this.deptOptions = response.data;
         await this.getList(this.queryParams);

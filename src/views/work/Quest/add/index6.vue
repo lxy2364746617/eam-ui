@@ -1198,7 +1198,7 @@ export default {
   background-color: #fff;
   overflow: hidden;
   width: 100%;
-  height: auto;
+  height: auto;padding-bottom: 20px;
   .title {
     color: #55566d;
     font-weight: bold;

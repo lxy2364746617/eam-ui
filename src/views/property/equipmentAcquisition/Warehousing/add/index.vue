@@ -334,7 +334,7 @@ export default {
         cc["fieldValue"] = JSON.stringify(cc["fieldValue"]);
         cc["componentContent"] = JSON.stringify(cc["componentContent"]);
       }
-      formData["archivesBase"] = JSON.parse(JSON.stringify({ formData }));
+      formData["archivesBase"] = JSON.parse(JSON.stringify(formData));
       formData["deviceType"] = formData.categoryId;
       return formData;
     },

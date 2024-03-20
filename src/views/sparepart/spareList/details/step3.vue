@@ -74,7 +74,7 @@ export default {
   },
   data() {
     return {
-      categoryOptions: null,
+      categoryOptions: [],
       disabled1: true,
       // 遮罩层
       loading: true,
@@ -95,7 +95,6 @@ export default {
   },
   created() {
     this.getTree();
-    this.getList(this.queryParams);
   },
   methods: {
     // 递归获取treeselect父节点
@@ -115,6 +114,7 @@ export default {
       equipmentTree().then((response) => {
         this.categoryOptions = response.data;
         // 方便获取父级tree
+        this.getList(this.queryParams);
         this.loops(this.categoryOptions);
       });
     },

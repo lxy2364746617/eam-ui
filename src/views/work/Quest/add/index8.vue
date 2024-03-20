@@ -618,6 +618,7 @@ export default {
   overflow: hidden;
   width: 100%;
   height: auto;
+  padding-bottom: 20px;
   .title {
     color: #55566d;
     font-weight: bold;

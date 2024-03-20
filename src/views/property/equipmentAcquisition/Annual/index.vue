@@ -12,7 +12,7 @@
       :columns="columns"
     >
       <template slot="headerLeft">
-        <el-col :span="1.5">
+        <el-col :span="1.5" v-if="dict.type.is_declare[0].value === 'Y'">
           <el-button
             type="primary"
             icon="el-icon-plus"
@@ -23,7 +23,7 @@
             >新增</el-button
           >
         </el-col>
-        <el-col :span="1.5">
+        <el-col :span="1.5" v-if="dict.type.is_declare[0].value === 'Y'">
           <el-button
             type="primary"
             icon="el-icon-upload2"
@@ -45,6 +45,13 @@
             >下载</el-button
           >
         </el-col>
+        <el-col
+          style="padding-top: 2px"
+          :span="1.5"
+          v-if="dict.type.is_declare[0].value === 'N'"
+        >
+          <span>提示：当前为非申报时间</span></el-col
+        >
       </template>
       <template #end_handle="scope">
         <el-button
@@ -156,7 +163,7 @@ import { definitionStart2 } from "@/api/flowable/definition";
 import fileImport from "@/components/FileImport";
 export default {
   components: { Wrapper, ContTable, subprocess, fileImport },
-  dicts: ["wf_process_status"],
+  dicts: ["wf_process_status", "is_declare"],
   data() {
     return {
       equipmentList: [],

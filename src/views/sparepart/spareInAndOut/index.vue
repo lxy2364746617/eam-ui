@@ -663,17 +663,17 @@ export default {
     },
     // ! 选择备件
     submitPartCoder(row) {
+      this.formDataNow = {};
       this.$set(this.formDataNow, "partCode", row.partCode);
       this.$set(this.formDataNow, "partName", row.partName);
       this.$set(this.formDataNow, "partType", row.partType);
       this.$set(this.formDataNow, "sModel", row.sModel);
       this.$set(this.formDataNow, "unit", String(row.unit));
-
-      this.formDataNow = {
-        ...JSON.parse(JSON.stringify(row)),
-        ...this.formDataNow,
-      };
-
+      if (this.title === "备件入库") {
+        this.$set(this.formDataNow, "locationCode", row.locationCode);
+        this.$set(this.formDataNow, "supplierName", row.supplierName);
+        this.$set(this.formDataNow, "supplierId", row.supplierId);
+      }
       getStockInOutCondition(row.partCode).then((res) => {
         this.inOutList = res.data.filter((item) => item.inventory !== 0);
       });

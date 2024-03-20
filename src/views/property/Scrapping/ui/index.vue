@@ -194,7 +194,7 @@ export default {
       form: {
         disIds: [],
       },
-      categoryOptions: null,
+      categoryOptions: [],
       ids: [],
       radioRow: null,
     };
@@ -345,6 +345,7 @@ export default {
           formType: "selectTag",
           options: this.dict.type.em_device_state,
           tableVisible: true,
+          formDisabled: true,
           span: 23,
           required: true,
         },
@@ -356,7 +357,6 @@ export default {
           tableVisible: true,
           width: 150,
           span: 23,
-          required: true,
         }, //(A、B、C)
         {
           label: "单价",
@@ -452,6 +452,8 @@ export default {
         sModel: row.specs,
         deviceType: row.categoryId,
         location: row.location,
+        deviceStatus: row.deviceStatus,
+        propertyType: row.archivesOther.propertyType,
       };
       this.$set(this.addItem, "choosedrawer", false);
     },
@@ -615,7 +617,7 @@ export default {
 
             if (row.id) {
               this.equipmentList.splice(this.selectIndex, 1);
-              this.delList.push(row);
+              this.delList.push(row.id);
             } else this.equipmentList.splice(this.selectIndex, 1);
           })
           .then(() => {

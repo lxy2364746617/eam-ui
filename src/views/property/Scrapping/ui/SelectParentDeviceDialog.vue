@@ -132,7 +132,7 @@ export default {
       title: "",
       // 部门树选项
       deptOptions: undefined,
-      categoryOptions: null,
+      categoryOptions: [],
       radioRow: {},
       // 查询参数
       queryParams: {

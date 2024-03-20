@@ -17,22 +17,38 @@
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px">
         <el-col :span="4" style="display: flex">
-          <img
-            v-if="mainImage.indexOf('null') == -1"
-            :src="mainImage"
-            alt=""
-            srcset=""
-            style="width: 50%; vertical-align: top; height: 100px"
-          />
-          <div v-else class="noImg"></div>
-          <img
-            v-if="qrCode.indexOf('null') == -1"
-            class="qrcodeimg"
-            :src="qrCode"
-            alt=""
-            srcset=""
-            style="width: 100px; vertical-align: top; height: 100px margin-left:15px;"
-          />
+          <el-col :span="6">
+            <img
+              v-if="formData.fileResource"
+              :src="mainImage"
+              alt=""
+              srcset=""
+              style="vertical-align: top; height: 100px"
+            />
+            <img
+              v-else
+              class="noImg"
+              style="
+                width: 120px;
+                vertical-align: top;
+                height: 100px;
+                border: 0;
+              "
+            />
+            <img
+              v-if="qrCode.indexOf('null') == -1"
+              class="qrcodeimg"
+              :src="qrCode"
+              alt=""
+              srcset=""
+              style="
+                width: 100px;
+                vertical-align: top;
+                height: 100px;
+                margin-left: 10px;
+              "
+            />
+          </el-col>
         </el-col>
         <el-col
           :span="19"
@@ -1029,9 +1045,6 @@ export default {
   align-items: center;
 }
 .noImg {
-  width: 140px;
-  vertical-align: top;
-  height: 100px;
   background: url("../../../../assets/images/noImg.png") no-repeat;
 }
 ::v-deep .el-table th.el-table__cell {

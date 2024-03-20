@@ -21,7 +21,7 @@
       ></el-col>
       <el-col :span="8">
         <el-form-item label="主要执行人" prop="executor">
-          <el-select v-model="formData.executor" :disabled="disabled">
+          <el-select v-model="formData.executor" :disabled="disabled" clearable>
             <el-option
               v-for="item in groupMembers"
               :key="item.userId"

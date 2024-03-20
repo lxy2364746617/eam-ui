@@ -186,7 +186,7 @@ export default {
       }
     } else {
       this.formData = {
-        userName: this.$store.state.user.standing.nickName,
+        createBy: this.$store.state.user.standing.nickName,
         userId: this.$store.state.user.standing.userId,
         // recruiterId: this.$store.state.user.standing.userId,
         applyDept: this.$store.state.user.standing.deptId,
@@ -230,7 +230,7 @@ export default {
 
         {
           label: "申报人员",
-          prop: "userName",
+          prop: "createBy",
           span: 4,
           required: true,
           formDisabled: true,

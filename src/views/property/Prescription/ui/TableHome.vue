@@ -40,14 +40,14 @@ export default {
   components: {
     JmTable,
   },
-  dicts: ["em_device_state", "em_device_att",  "em_device_level"],
+  dicts: ["em_device_state", "em_device_att", "em_device_level"],
   props: {},
   data() {
     return {
       field101fileList: [],
       btnLoading: false,
-      categoryOptions: null,
-      deptOptions: null,
+      categoryOptions: [],
+      deptOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,

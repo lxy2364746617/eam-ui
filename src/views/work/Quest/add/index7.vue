@@ -618,6 +618,17 @@ export default {
     padding-left: 40px;
   }
 }
+.title {
+  padding: 0 20px;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  border-bottom: 1px solid #eaeaea;
+  margin-bottom: 20px;
+}
 .subtitle {
   border-bottom: 1px solid #ddd;
   background-color: #ebf4fc;
@@ -716,21 +727,27 @@ export default {
   margin-bottom: 10px;
 }
 .box-header {
-  margin-bottom: 20px;
-  // .title {
-  //   color: #55566d;
-  //   font-weight: bold;
-  //   height: 30px;
-  //   text-align: left;
-  //   font-size: 16px;
-  //   padding-left: 20px;
-  //   border-bottom: 1px solid #ececec;
-  // }
+  background-color: #fff;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+  padding-bottom: 20px;
+  .title {
+    color: #55566d;
+    font-weight: bold;
+    height: 30px;
+    text-align: left;
+    font-size: 16px;
+    padding-left: 20px;
+    border-bottom: 1px solid #ececec;
+  }
   ::v-deep .el-step__head.is-success {
     color: #0c7de0;
     border-color: #0c7de0;
   }
-
+  ::v-deep .el-steps--horizontal {
+    width: 100%;
+  }
   ::v-deep .el-step__description.is-success {
     color: #adadad;
   }
@@ -763,3 +780,4 @@ export default {
   height: 100% !important;
 }
 </style>
+

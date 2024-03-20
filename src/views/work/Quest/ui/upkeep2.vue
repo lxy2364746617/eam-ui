@@ -18,20 +18,29 @@
       <el-row :gutter="12" style="margin-top: 10px">
         <el-col :span="4" style="display: flex">
           <img
-            v-if="mainImage.indexOf('null') == -1"
+            v-if="formData.fileResource"
             :src="mainImage"
             alt=""
             srcset=""
-            style="width: 50%; vertical-align: top; height: 100px"
+            style="vertical-align: top; height: 100px"
           />
-          <div v-else class="noImg"></div>
+          <img
+            v-else
+            class="noImg"
+            style="width: 120px; vertical-align: top; height: 100px; border: 0"
+          />
           <img
             v-if="qrCode.indexOf('null') == -1"
             class="qrcodeimg"
             :src="qrCode"
             alt=""
             srcset=""
-            style="width: 100px; vertical-align: top; height: 100px margin-left:15px;"
+            style="
+              width: 100px;
+              vertical-align: top;
+              height: 100px;
+              margin-left: 10px;
+            "
           />
         </el-col>
         <el-col
@@ -170,7 +179,7 @@
         </template>
       </el-table-column>
     </el-table>
-   
+
     <el-row>
       <el-col :span="24" class="submit" v-if="carryValue.i">
         <el-button @click="handlerBack">取消</el-button>
@@ -527,9 +536,8 @@ export default {
       // this.formData = { supplierName: "" };
     },
     handleCancel() {
-    
-        this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-        this.$router.go(-1); //跳回上页
+      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+      this.$router.go(-1); //跳回上页
     },
     handelerGenerate() {},
     handlerSelf() {
@@ -742,9 +750,6 @@ export default {
   align-items: center;
 }
 .noImg {
-  width: 140px;
-  vertical-align: top;
-  height: 100px;
   background: url("../../../../assets/images/noImg.png") no-repeat;
 }
 ::v-deep .el-table th.el-table__cell {

@@ -228,7 +228,7 @@ export default {
       // 选中行
       ids: [],
       ids2: [],
-      orderTypes: [],
+      groupIds: [],
 
       equipmentList: null,
       equipmentList2: null,
@@ -506,8 +506,8 @@ export default {
         this.$message.warning("请先选择要分派的工单！");
         return;
       }
-      if (this.orderTypes.size >= 2) {
-        this.$message.warning("请先选择工单类型相同的工单！");
+      if (this.groupIds.size >= 2) {
+        this.$message.warning("请先选择执行班组相同的工单！");
         return;
       }
       this.isDrawer = true;
@@ -627,7 +627,7 @@ export default {
         this.title !== "分派"
       ) {
         this.ids = selection.map((item) => item.id);
-        this.orderTypes = new Set(selection.map((item) => item.orderType));
+        this.groupIds = new Set(selection.map((item) => item.groupId));
         this.itemArr = selection;
       }
 

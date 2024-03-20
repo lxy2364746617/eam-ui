@@ -672,7 +672,7 @@ export default {
           // if (!(val["addList"].length >=0))
           setProject(val).then((res) => {
             if (res.code === 200) {
-              this.reviewCode = res.msg;
+              this.reviewCode = res.data;
               this.handleSubmit();
             }
           });

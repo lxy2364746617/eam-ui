@@ -77,7 +77,9 @@
                       findTreeName(categoryOptions, item.deviceType)
                     }}
                   </p>
-                  <p>功能位置:{{ item.location }}</p>
+                  <p>
+                    功能位置:{{ findTreeName(locationOptions, item.location) }}
+                  </p>
                   <p>
                     所属子公司:{{
                       findTreeName(deptOptions, item.subCompanyId)
@@ -122,6 +124,7 @@ import {
 import parentdevice from "@/views/device/book/device";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
+import { getLocationTree } from "@/api/Location";
 
 export default {
   dicts: ["em_device_state"],
@@ -139,8 +142,8 @@ export default {
   data() {
     return {
       checkedValue: [],
-      categoryOptions: null,
-      deptOptions: null,
+      categoryOptions: [],
+      deptOptions: [],
       processEnv: process.env.VUE_APP_BASE_API,
       ids: [],
       partsCodes: [],
@@ -161,6 +164,7 @@ export default {
       // 关联设备
       drawer: false,
       form: [],
+      locationOptions: [],
     };
   },
   created() {
@@ -168,6 +172,17 @@ export default {
     this.getList(this.queryParams);
   },
   methods: {
+    getTreeName(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTreeName(item.children);
+        }
+      });
+      return arr;
+    },
     findName(options, value) {
       var name = "";
       for (let i = 0; i < options.length; i++) {
@@ -238,6 +253,8 @@ export default {
         })
         .then(() => {
           this.getList(this.queryParams);
+          this.multiple = true;
+          (this.ids = []), (this.checkedValue = []);
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {});
@@ -252,6 +269,9 @@ export default {
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
+      });
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTreeName(res.data);
       });
     },
 

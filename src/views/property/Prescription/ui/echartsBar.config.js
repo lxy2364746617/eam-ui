@@ -42,7 +42,7 @@ export function chartOption() {
       case 5:
         return "21%";
       default:
-        return "21%";
+        return "20%";
     }
   }
 

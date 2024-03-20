@@ -123,6 +123,7 @@ export default {
       drawer2: false,
       typeAll: [],
       loading: false,
+      queryParams: { pageNum: 1, pageSize: 10 },
       rules2: {
         closeReason: [
           {
@@ -217,6 +218,22 @@ export default {
     },
   },
   methods: {
+    // 获取路由参数
+    getRouteData() {
+      let routeData = this.$route.query?.data
+        ? JSON.parse(this.$route.query.data)
+        : null;
+      if (routeData) {
+        let params = {
+          ...routeData,
+          pageNum: 1,
+          pageSize: 10,
+        };
+        this.getList(params);
+      } else {
+        this.getList();
+      }
+    },
     // ! 提供下载列表字段
     convertToDefaultObject(columns) {
       const defaultObject = {};
@@ -237,7 +254,7 @@ export default {
             label: item.groupName,
           };
         });
-        this.getList();
+        this.getRouteData();
       });
     },
     async getOrderTree() {

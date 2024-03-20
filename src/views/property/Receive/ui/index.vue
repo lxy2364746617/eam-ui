@@ -344,7 +344,6 @@ export default {
           prop: "sModel",
           tableVisible: true,
           span: 23,
-          required: true,
         },
 
         {

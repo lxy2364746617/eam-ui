@@ -483,7 +483,7 @@ export default {
 
         this.selectIndex = scope.index - 1;
         this.$modal
-          .confirm('是否确认删除备件编码为"' + row.deviceName + '"的数据项？')
+          .confirm('是否确认删除设备名称为"' + row.deviceName + '"的数据项？')
           .then(() => {
             // return delList(ids);
 

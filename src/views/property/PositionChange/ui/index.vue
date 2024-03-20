@@ -631,7 +631,7 @@ export default {
 
             if (row.id) {
               this.equipmentList.splice(this.selectIndex, 1);
-              this.delList.push(row);
+              this.delList.push(row.id);
             } else this.equipmentList.splice(this.selectIndex, 1);
           })
           .then(() => {
@@ -672,6 +672,11 @@ export default {
       });
       if (review) {
         if (!this.formData.id) {
+          if (!this.equipmentList.some((item) => item.targetLocation in item))
+            return this.$message.warning(
+              "已选取设备的位置状态变动信息不能为空，请核查!"
+            );
+
           val["addDetails"] = this.equipmentList;
           // if (!(val["addList"].length >=0))
           setProject(val).then((res) => {
@@ -696,6 +701,10 @@ export default {
         }
       } else {
         if (!this.formData.id) {
+          if (!this.equipmentList.some((item) => item.targetLocation in item))
+            return this.$message.warning(
+              "已选取设备的位置状态变动信息不能为空，请核查!"
+            );
           val["addDetails"] = this.equipmentList;
           // if (!(val["addList"].length >=0))
           setProject(val).then((res) => {
