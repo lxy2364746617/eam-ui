@@ -354,6 +354,9 @@ export default {
     // 下载
     handleDownload() {},
     async getTreeSelect() {
+      await listDept().then(async (response) => {
+        this.deptOptions = response.data;
+      });
       listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
         this.userList = res.rows.map((item) => {
           return {
@@ -361,10 +364,7 @@ export default {
             label: item.nickName,
           };
         });
-      });
-      await listDept().then(async (response) => {
-        this.deptOptions = response.data;
-        await this.getList(this.queryParams);
+        this.getList(this.queryParams);
       });
     },
     // ! 上传文件

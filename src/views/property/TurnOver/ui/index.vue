@@ -215,6 +215,7 @@ export default {
       categoryOptions: [],
       locationOptions: [],
       ids: [],
+      approvalContent:null
     };
   },
   created() {
@@ -452,15 +453,37 @@ export default {
     },
     // ! 提交审批流
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "device_transfer", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
+     if (!this.formData.id) {
+        setProject(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(val.id, res.data, "device_transfer", {}).then(
+              (res) => {
+                if (res.code == 200) {
+                  this.approvalContent = null;
+                  this.$message.success(res.msg);
+                  this.subopen = false;
+                }
+              }
+            );
             this.cancel();
           }
-        }
-      );
+        });
+      } else {
+        updateProject(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(val.id, this.reviewCode, "device_transfer", {}).then(
+              (res) => {
+                if (res.code == 200) {
+                  this.approvalContent = null;
+                  this.$message.success(res.msg);
+                  this.subopen = false;
+                }
+              }
+            );
+            this.cancel();
+          }
+        });
+      }
     },
     getTableData(val) {
       let data = {
@@ -670,12 +693,8 @@ export default {
           val["addList"] = this.equipmentList;
           val["addFileList"] = this.addFileList;
           // if (!(val["addList"].length >=0))
-          setProject(val).then((res) => {
-            if (res.code === 200) {
-              this.reviewCode = res.data;
-              this.handleSubmit();
-            }
-          });
+         this.approvalContent = val;
+          this.handleSubmit();
         } else {
           // * 编辑
           val["addList"] = this.equipmentList.filter((item) => !item.id);
@@ -687,11 +706,8 @@ export default {
 
           if (this.delFileList && this.delFileList.length > 0)
             val["delFileList"] = this.delFileList;
-          updateProject(val).then((res) => {
-            if (res.code === 200) {
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         }
       } else {
         if (!this.formData.id) {

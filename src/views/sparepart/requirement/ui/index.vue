@@ -152,6 +152,7 @@ export default {
       subtitle: "",
       subopen: false,
       tableData: [],
+      approvalContent: null,
     };
   },
   created() {
@@ -320,15 +321,40 @@ export default {
   methods: {
     // ! 提交审批流
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "attachment_demand", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
+      if (!this.formData.id) {
+        addAttachment(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(val.id, res.msg, "attachment_demand", {}).then(
+              (res) => {
+                if (res.code == 200) {
+                  this.approvalContent = null;
+                  this.$message.success(res.msg);
+                  this.subopen = false;
+                }
+              }
+            );
             this.cancel();
           }
-        }
-      );
+        });
+      } else {
+        updateAttachment(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(
+              val.id,
+              this.reviewCode,
+              "attachment_demand",
+              {}
+            ).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
+              }
+            });
+            this.cancel();
+          }
+        });
+      }
     },
     getTableData(val) {
       let data = {
@@ -455,12 +481,8 @@ export default {
         if (!this.formData.id) {
           val["addDetailList"] = this.equipmentList;
           // if (!(val["addDetailList"].length >=0))
-          addAttachment(val).then((res) => {
-            if (res.code === 200) {
-              this.reviewCode = res.msg;
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         } else {
           // * 编辑
           val["addDetailList"] = this.equipmentList.filter((item) => !item.id);
@@ -468,11 +490,8 @@ export default {
             val["delDetailList"] = this.delDetailList;
           if (this.updateDetailList && this.updateDetailList.length > 0)
             val["updateDetailList"] = this.updateDetailList;
-          updateAttachment(val).then((res) => {
-            if (res.code === 200) {
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         }
       } else {
         if (!this.formData.id) {

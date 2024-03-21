@@ -75,7 +75,7 @@
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'contain',
               }"
-              v-for="item in topMenus"
+              v-for="item in commonNavigation"
               :key="item.name"
               @click="
                 () => {
@@ -85,9 +85,9 @@
             >
               <svg-icon
                 style="color: #226efc; font-size: 20px"
-                :icon-class="item.meta.icon"
+                :icon-class="item.icon"
               />
-              <span style="margin-top: 40px">{{ item.meta.title }}</span>
+              <span style="margin-top: 40px">{{ item.name }}</span>
             </li>
           </ul>
         </div>
@@ -193,7 +193,7 @@
             </li>
           </ul>
         </div>
-        <div class="no-forewarning" v-else>
+        <div class="no-information" v-else>
           <span>暂无预警</span>
         </div>
       </div>
@@ -201,12 +201,15 @@
         <div class="border-title">
           <span>系统公告</span>
         </div>
-        <ul class="system">
+        <ul class="system" v-if="noticeList">
           <li v-for="item in noticeList" :key="item.createTime">
             <span>{{ item.noticeTitle }}</span>
             <span>{{ item.createTime }}</span>
           </li>
         </ul>
+        <div class="no-information" v-else>
+          <span>暂无公告</span>
+        </div>
       </div>
       <div class="border" style="height: 315px; width: 530px">
         <div class="border-title">知识管理</div>
@@ -402,6 +405,28 @@ export default {
         monthCount: 223,
         yearCount: 223,
       },
+      commonNavigation: [
+        {
+          id: "1",
+          menuId: 1,
+          userId: 1,
+          delFlag: null,
+          total: 0,
+          name: "系统管理",
+          icon: "system",
+          path: "system",
+        },
+        {
+          id: "2",
+          menuId: 2,
+          userId: 1,
+          delFlag: null,
+          total: 0,
+          name: "系统监控",
+          icon: "monitor",
+          path: "monitor",
+        },
+      ],
       todoCount: {},
     };
   },
@@ -472,6 +497,7 @@ export default {
           label: "业务编码",
           prop: "businessCode",
           tableVisible: true,
+          type: "link",
         },
         {
           label: "任务创建时间",
@@ -540,21 +566,21 @@ export default {
         backgroundSize: "contain",
       });
     },
-    // 顶部显示菜单
-    topMenus() {
-      let topMenus = [];
-      this.routers.map((menu) => {
-        if (menu.hidden !== true) {
-          // 兼容顶部栏一级菜单内部跳转
-          if (menu.path === "/") {
-            topMenus.push(menu.children[0]);
-          } else {
-            topMenus.push(menu);
-          }
-        }
-      });
-      return topMenus;
-    },
+    // // 顶部显示菜单
+    // topMenus() {
+    //   let topMenus = [];
+    //   this.routers.map((menu) => {
+    //     if (menu.hidden !== true) {
+    //       // 兼容顶部栏一级菜单内部跳转
+    //       if (menu.path === "/") {
+    //         topMenus.push(menu.children[0]);
+    //       } else {
+    //         topMenus.push(menu);
+    //       }
+    //     }
+    //   });
+    //   return topMenus;
+    // },
     // 所有的路由信息
     routers() {
       return this.$store.state.permission.topbarRouters;
@@ -565,7 +591,6 @@ export default {
     this.getOrderTree();
     this.getTypeList();
     this.getNoticeList();
-    // this.initChart();
     this.getInfoAll();
     this.getChart(this.queryParams);
   },
@@ -588,8 +613,19 @@ export default {
     },
     linkClick(row, item) {
       // console.log(row,item)
-      if (item.label == "故障设备编码") {
-        this.$router.push({ name: "bookDetails", query: { i: row.deviceId } });
+      if (item.label == "业务编码") {
+        this.$router.push({
+          path: "/flowable/task/todo/detail/index",
+          query: {
+            procInsId: row.procInsId,
+            executionId: row.executionId,
+            deployId: row.deployId,
+            taskId: row.taskId,
+            taskName: row.taskName,
+            startUser: row.startUserName + "-" + row.startDeptName,
+            businessId: row.businessId,
+          },
+        });
       } else if (item.label == "工单编码") {
         this.$router.push({
           name: "Request",
@@ -610,13 +646,12 @@ export default {
         this.flag = true;
       });
     },
-    initChart() {
-      this.myChart = echarts.init(document.querySelector("#chart"));
-    },
     // 获取表头所有信息
     getInfoAll() {
       getMenuList({ pageNum: 1, pageSize: 10 }).then((res) => {
-        console.log("========================常用功能导航", res);
+        if (res.code === 200) {
+          this.commonNavigation = res.data;
+        }
       });
       getWomStatusCount({ type: 1 }).then((res) => {
         if (res.code === 200) {
@@ -724,13 +759,6 @@ export default {
         this.noticeList = response.rows;
         this.noticeLoading = false;
       });
-    },
-    beforeDestroy() {
-      if (!this.myChart) return;
-
-      this.myChart.dispose();
-
-      this.myChart = null;
     },
   },
 };
@@ -920,6 +948,7 @@ export default {
     justify-content: space-between;
     flex-wrap: wrap;
     li {
+      cursor: pointer;
       width: 100px;
       height: 100px;
       display: flex;
@@ -979,7 +1008,7 @@ export default {
     }
   }
 }
-.no-forewarning {
+.no-information {
   width: 100%;
   height: 100%;
   display: flex;

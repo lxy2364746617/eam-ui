@@ -197,6 +197,7 @@ export default {
       categoryOptions: [],
       ids: [],
       radioRow: null,
+      approvalContent: null,
     };
   },
   created() {
@@ -481,15 +482,40 @@ export default {
     },
     // ! 提交审批流
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "device_scrapped", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
+      if (!this.formData.id) {
+        setProject(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(val.id, res.msg, "device_scrapped", {}).then(
+              (res) => {
+                if (res.code == 200) {
+                  this.approvalContent = null;
+                  this.$message.success(res.msg);
+                  this.subopen = false;
+                }
+              }
+            );
             this.cancel();
           }
-        }
-      );
+        });
+      } else {
+        updateProject(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(
+              val.id,
+              this.reviewCode,
+              "device_scrapped",
+              {}
+            ).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
+              }
+            });
+            this.cancel();
+          }
+        });
+      }
     },
     getTableData(val) {
       let data = {
@@ -661,12 +687,8 @@ export default {
         if (!this.formData.id) {
           val["addDetails"] = this.equipmentList;
           // if (!(val["addList"].length >=0))
-          setProject(val).then((res) => {
-            if (res.code === 200) {
-              this.reviewCode = res.data;
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         } else {
           // * 编辑
           val["addDetails"] = this.equipmentList.filter((item) => !item.id);
@@ -675,11 +697,8 @@ export default {
           if (this.updateList && this.updateList.length > 0)
             val["updateDetails"] = this.updateList;
 
-          updateProject(val).then((res) => {
-            if (res.code === 200) {
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         }
       } else {
         if (!this.formData.id) {

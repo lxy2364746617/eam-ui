@@ -4,31 +4,31 @@ export function chartOption() {
   let list = JSON.parse(JSON.stringify(this.datas));
   let nameArray = [];
   let data = [];
-  if (list.stateList) {
-    data = list?.stateList?.map((item) => {
-      const key = Object.keys(item)[0];
-      const value = item[key];
-      nameArray.push(key + "\t\t\t" + value + "个");
-      return {
-        name: key + "\t\t\t" + value + "个",
-        value,
-        itemStyle: { borderWidth: 2 },
-      };
-    });
-  } else if (list.womStatusCount) {
-    data = list?.womStatusCount?.map((item) => {
-      nameArray.push(item.ORDERSTATUS + "\t\t\t" + item.COUNT + "个");
-      return {
-        name: item.ORDERSTATUS + "\t\t\t" + item.COUNT + "个",
-        value: item.COUNT,
-        itemStyle: { borderWidth: 2 },
-      };
-    });
-    list["total"] = list?.womStatusCount?.reduce(
-      (sum, item) => sum + item.COUNT,
-      0
-    );
-  }
+  // if (list.stateList) {
+  data = list?.stateList?.map((item) => {
+    const key = Object.keys(item)[0];
+    const value = item[key];
+    nameArray.push(key + "\t\t\t" + value);
+    return {
+      name: key + "\t\t\t" + value,
+      value,
+      itemStyle: { borderWidth: 2 },
+    };
+  });
+  // } else if (list.womStatusCount) {
+  //   data = list?.womStatusCount?.map((item) => {
+  //     nameArray.push(item.ORDERSTATUS + "\t\t\t" + item.COUNT + "个");
+  //     return {
+  //       name: item.ORDERSTATUS + "\t\t\t" + item.COUNT + "个",
+  //       value: item.COUNT,
+  //       itemStyle: { borderWidth: 2 },
+  //     };
+  //   });
+  //   list["total"] = list?.womStatusCount?.reduce(
+  //     (sum, item) => sum + item.COUNT,
+  //     0
+  //   );
+  // }
   const myBarChart = echarts.init(this.$refs.chart);
   myBarChart.setOption({
     tooltip: {
@@ -36,7 +36,8 @@ export function chartOption() {
     },
     title: {
       text: "总数量" + "\n\n" + list.total,
-      subtext: list.stateList && "今日新增" + list.today + "台",
+      subtext: "今日新增" + list.today,
+      // subtext: list.stateList && "今日新增" + list.today + "台",
       left: "40%",
       top: "30%",
       textAlign: "center",

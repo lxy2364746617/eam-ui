@@ -214,6 +214,7 @@ export default {
       categoryOptions: [],
       locationOptions: [],
       ids: [],
+      approvalContent: null,
     };
   },
   created() {
@@ -313,6 +314,7 @@ export default {
           prop: "createTime",
           tableVisible: true,
           width: 200,
+          formType: "date",
         },
         {
           label: "设备名称",
@@ -458,15 +460,40 @@ export default {
     },
     // ! 提交审批流
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "position_change", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
+      if (!this.formData.id) {
+        setProject(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(val.id, res.msg, "position_change", {}).then(
+              (res) => {
+                if (res.code == 200) {
+                  this.approvalContent = null;
+                  this.$message.success(res.msg);
+                  this.subopen = false;
+                }
+              }
+            );
             this.cancel();
           }
-        }
-      );
+        });
+      } else {
+        updateProject(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(
+              val.id,
+              this.reviewCode,
+              "position_change",
+              {}
+            ).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
+              }
+            });
+            this.cancel();
+          }
+        });
+      }
     },
     getTableData(val) {
       let data = {
@@ -670,41 +697,30 @@ export default {
           return item;
         }
       });
+      if (!this.equipmentList.every((item) => item.targetLocation))
+        return this.$message.error(
+          "已选取设备的位置状态变动信息不能为空，请核查!"
+        );
       if (review) {
         if (!this.formData.id) {
-          if (!this.equipmentList.some((item) => item.targetLocation in item))
-            return this.$message.warning(
-              "已选取设备的位置状态变动信息不能为空，请核查!"
-            );
-
           val["addDetails"] = this.equipmentList;
           // if (!(val["addList"].length >=0))
-          setProject(val).then((res) => {
-            if (res.code === 200) {
-              this.reviewCode = res.msg;
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         } else {
           // * 编辑
+
           val["addDetails"] = this.equipmentList.filter((item) => !item.id);
           if (this.delList && this.delList.length > 0)
             val["delDetails"] = this.delList;
           if (this.updateList && this.updateList.length > 0)
             val["updateDetails"] = this.updateList;
 
-          updateProject(val).then((res) => {
-            if (res.code === 200) {
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         }
       } else {
         if (!this.formData.id) {
-          if (!this.equipmentList.some((item) => item.targetLocation in item))
-            return this.$message.warning(
-              "已选取设备的位置状态变动信息不能为空，请核查!"
-            );
           val["addDetails"] = this.equipmentList;
           // if (!(val["addList"].length >=0))
           setProject(val).then((res) => {

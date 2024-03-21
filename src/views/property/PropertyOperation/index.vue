@@ -306,9 +306,9 @@ export default {
       this.filedrawer = true;
     },
     uploadChange2(val) {
-      val.forEach((item, index) => {
-        item["createBy"] = this.$store.state.user.standing.nickName;
-      });
+      // val.forEach((item, index) => {
+      //   item["createBy"] = this.$store.state.user.standing.nickName;
+      // });
       this.fileResourceList = this.fileResourceList.concat(val);
       this.fileList = [];
       this.filedrawer = false;

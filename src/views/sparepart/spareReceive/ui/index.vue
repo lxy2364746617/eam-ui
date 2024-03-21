@@ -151,6 +151,7 @@ export default {
       subtitle: "",
       subopen: false,
       tableData: [],
+      approvalContent: null,
     };
   },
   created() {
@@ -308,15 +309,37 @@ export default {
   methods: {
     // ! 提交审批流
     sub(val) {
-      definitionStart2(val.id, this.reviewCode, "spare_receive", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
+      if (!this.formData.id) {
+        addAttachment(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(val.id, res.msg, "spare_receive", {}).then(
+              (res) => {
+                if (res.code == 200) {
+                  this.approvalContent = null;
+                  this.$message.success(res.msg);
+                  this.subopen = false;
+                }
+              }
+            );
             this.cancel();
           }
-        }
-      );
+        });
+      } else {
+        updateAttachment(this.approvalContent).then((res) => {
+          if (res.code === 200) {
+            definitionStart2(val.id, this.reviewCode, "spare_receive", {}).then(
+              (res) => {
+                if (res.code == 200) {
+                  this.approvalContent = null;
+                  this.$message.success(res.msg);
+                  this.subopen = false;
+                }
+              }
+            );
+            this.cancel();
+          }
+        });
+      }
     },
     getTableData(val) {
       let data = {
@@ -439,12 +462,8 @@ export default {
       if (review) {
         if (!this.formData.id) {
           val["addParts"] = this.equipmentList;
-          addAttachment(val).then((res) => {
-            if (res.code === 200) {
-              this.reviewCode = res.msg;
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         } else {
           // * 编辑
           val["addParts"] = this.equipmentList.filter((item) => !item.id);
@@ -452,11 +471,8 @@ export default {
             val["delParts"] = this.delParts;
           if (this.updateParts && this.updateParts.length > 0)
             val["updateParts"] = this.updateParts;
-          updateAttachment(val).then((res) => {
-            if (res.code === 200) {
-              this.handleSubmit();
-            }
-          });
+          this.approvalContent = val;
+          this.handleSubmit();
         }
       } else {
         if (!this.formData.id) {

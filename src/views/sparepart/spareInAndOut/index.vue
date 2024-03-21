@@ -201,6 +201,7 @@
       :wrapperClosable="false"
     >
       <requirement
+      v-if="drawerRequirement"
         @submitRadio="submitRequirement"
         :isRadio="true"
         :searchValue="[
@@ -220,6 +221,7 @@
       :wrapperClosable="false"
     >
       <spareReceive
+        v-if="drawerSpareReceive"
         @submitRadio="submitSpareReceive"
         :isRadio="true"
         :searchValue="[
@@ -485,7 +487,7 @@ export default {
                 this.$message.warning("请先选择备件编码");
                 return;
               }
-              this.drawerSpareReceive = true;
+            this.drawerSpareReceive = true;
 
               // this.drawerRequirement = true;
             },
@@ -663,7 +665,7 @@ export default {
     },
     // ! 选择备件
     submitPartCoder(row) {
-      this.formDataNow = {};
+      this.formDataNow = { operationType: this.formDataNow.operationType };
       this.$set(this.formDataNow, "partCode", row.partCode);
       this.$set(this.formDataNow, "partName", row.partName);
       this.$set(this.formDataNow, "partType", row.partType);
