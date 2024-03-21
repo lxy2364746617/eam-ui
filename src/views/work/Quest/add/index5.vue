@@ -138,7 +138,7 @@
       <el-table-column
         label="功能位置"
         align="center"
-        prop="location"
+        prop="locationName"
         min-width="150"
       />
       <el-table-column label="是否拍照" align="center" prop="photoFlag">
@@ -328,9 +328,9 @@ export default {
   async created() {
     await this.getTree();
     await this.getOrderTree();
-    if (localStorage.getItem("item")) {
-      let row = JSON.parse(localStorage.getItem("item"));
-      // this.$route.query.item = null;
+    if (this.$route.query) {
+      let row = this.$route.query;
+      // this.$route.query = null;
       this.formData = row.item;
       this.disabled = row.disabled;
       getWomDevice({ orderCode: this.formData.orderCode, lineCode: "" }).then(
@@ -555,22 +555,6 @@ export default {
       this.loadingRelevance = true;
       this.loadingRelevance = false;
     },
-    getList() {
-      this.equipmentList = [
-        {
-          deviceCode: "123123123",
-          deviceName: "123123123",
-          specs: "123123123",
-          location: "123123123",
-          isPhoto: "Y",
-          categoryNum: "123123123",
-          deviceStatus: "123123123",
-          deviceStatus2: "123123123",
-        },
-      ];
-      this.total = 1;
-      this.loading = false;
-    },
   },
 };
 </script>
@@ -651,7 +635,8 @@ export default {
   background-color: #fff;
   overflow: hidden;
   width: 100%;
-  height: auto;padding-bottom: 20px;
+  height: auto;
+  padding-bottom: 20px;
   .title {
     color: #55566d;
     font-weight: bold;

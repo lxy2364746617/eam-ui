@@ -317,23 +317,16 @@ export default {
           case "JMDJ1":
             this.$router.push({
               path: "/work/questAdd7",
+              query: { item: row, disabled: true },
             });
-            localStorage.setItem(
-              "item",
-              JSON.stringify({ item: row, disabled: true })
-            );
             break;
           case "RCDJ2":
           case "ZZDJ2":
           case "JMDJ2":
             this.$router.push({
               path: "/work/questAdd5",
+              query: { item: row, disabled: true },
             });
-
-            localStorage.setItem(
-              "item",
-              JSON.stringify({ item: row, disabled: true })
-            );
             break;
           // ! 设备维修
           case "DZWX2":
@@ -361,11 +354,8 @@ export default {
           case "DQJY2":
             this.$router.push({
               path: "/work/questAdd8",
+              query: { item: row, disabled: true },
             });
-            localStorage.setItem(
-              "item",
-              JSON.stringify({ item: row, disabled: true })
-            );
             break;
           // ! 保养
           case "RCBY1":
@@ -374,12 +364,8 @@ export default {
           case "CGRH1":
             this.$router.push({
               path: "/work/questAdd6",
+              query: { item: row, disabled: true },
             });
-
-            localStorage.setItem(
-              "item",
-              JSON.stringify({ item: row, disabled: true })
-            );
             break;
           case "RCBY2":
           case "YJBY2":
@@ -387,12 +373,8 @@ export default {
           case "CGRH2":
             this.$router.push({
               path: "/work/questAdd4",
+              query: { item: row, disabled: true },
             });
-
-            localStorage.setItem(
-              "item",
-              JSON.stringify({ item: row, disabled: true })
-            );
             break;
           default:
             break;

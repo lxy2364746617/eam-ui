@@ -16,7 +16,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px">
-        <el-col :span="4" style="display: flex">
+        <el-col :span="5">
           <img
             v-if="formData.fileResource"
             :src="mainImage"
@@ -24,15 +24,10 @@
             srcset=""
             style="vertical-align: top; height: 100px"
           />
-          <div
+          <img
             v-else
             class="noImg"
-            style="
-              width: 120px;
-              vertical-align: top;
-              height: 100px;
-              display: inline-block;
-            "
+            style="width: 120px; vertical-align: top; height: 100px; border: 0"
           />
           <img
             v-if="qrCode.indexOf('null') == -1"
@@ -95,6 +90,9 @@ import {
   addCheckExpense,
 } from "@/api/work/schedule";
 import { findAll, getGroup } from "@/api/system/group";
+import { listUser } from "@/api/system/user";
+import { listSupplier } from "@/api/system/supplier";
+import { removeStore } from "@/utils/property.js";
 export default {
   components: { Wrapper, CarryForm, JmForm },
   dicts: ["em_is_special", "em_device_state", "em_device_check"],
@@ -107,6 +105,8 @@ export default {
       groupMembers: [],
       groupOptions: [],
       checkCosts: [],
+      userList: [],
+      formTitle: null,
     };
   },
 
@@ -120,14 +120,7 @@ export default {
     this.formData["workOrderCode"] = this.carryValue.l.orderCode;
     this.formData["orderCode"] = this.carryValue.l.orderCode;
     this.formData["deviceCode"] = this.form.deviceCode;
-    // await this.getDetails(this.queryParams);
-    findAll({ groupType: this.carryValue.l.orderType }).then((res) => {
-      res.data.forEach((item) => {
-        item.label = item.groupName;
-        item.value = item.id;
-      });
-      this.groupOptions = res.data;
-    });
+    this.getUserList();
     goExecutorDetail({
       workOrderCode: this.formData.workOrderCode,
       deviceCode: this.form.deviceCode,
@@ -144,8 +137,6 @@ export default {
       };
       this.checkCosts = res.data.checkCosts;
     });
-
-    this.$set(this.formData, "checkUnit", this.carryValue.l.groupId);
   },
   mounted() {
     this.wrapperTitle = this.$route.meta.title;
@@ -183,7 +174,7 @@ export default {
           span: 8,
           prop: "checkUnit",
           formType: "select",
-          options: this.groupOptions,
+          options: this.userList,
           required: true,
           formDisabled: true,
         },
@@ -268,17 +259,40 @@ export default {
       return process.env.VUE_APP_BASE_API + this.form.qrCode;
     },
   },
-  watch: {
-    "formData.checkUnit": {
-      handler(val) {
-        if (val) {
-          this.changeGroupId(val, 2);
-        }
-      },
-      deep: true,
-    },
-  },
+  watch: {},
   methods: {
+    findName(options, value, label) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i][label];
+        }
+      }
+      return name || value;
+    },
+    getUserList() {
+      listSupplier({ pageNum: 1, pageSize: 10000 }).then((res) => {
+        this.userList = res.rows.map((item) => {
+          return {
+            value: item.id,
+            label: item.supplierName,
+            phone: item.phone,
+            contacts: item.contacts,
+          };
+        });
+        this.$set(this.formData, "checkUnit", this.carryValue.l.groupId);
+        this.$set(
+          this.formData,
+          "checkUnitHead",
+          this.findName(this.userList, this.formData.checkUnit, "contacts")
+        );
+        this.$set(
+          this.formData,
+          "headPhonenum",
+          this.findName(this.userList, this.formData.checkUnit, "phone")
+        );
+      });
+    },
     dateDiffInHours(date1, date2) {
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
       const firstDate = new Date(date1);
@@ -288,29 +302,7 @@ export default {
         Math.round(Math.abs((firstDate - secondDate) / oneDay)) * 24
       );
     },
-    //选择班组
-    changeGroupId(val, flag) {
-      if (!val) val = 1;
-      getGroup(val).then((response) => {
-        this.$set(this.formData, "checkUnitHead", response.data.leaderName);
-        this.$set(this.formData, "director", response.data.leaderId);
 
-        // this.formData.director = response.data.leaderId;
-
-        this.$set(
-          this.formData,
-          "headPhonenum",
-          response.data.sysUserGroupList[0].phonenumber
-        );
-
-        response.data.sysUserGroupList.forEach((item) => {
-          item.label = item.nickName;
-          item.value = item.userId;
-        });
-
-        this.groupMembers = response.data.sysUserGroupList;
-      });
-    },
     getList() {},
     /** 查询部门下拉树结构 */
     async getDeptTree() {
@@ -362,6 +354,13 @@ export default {
     saveHandle() {
       this.$refs.titleform.submitForm();
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    // 保存上一个路由信息
+    this.$store.dispatch("tagsView/delView", from); // 关闭当前页
+    // this.$router.go(-1);
+    removeStore("carryValue");
+    next();
   },
 };
 </script>

@@ -42,7 +42,7 @@
                 <div class="user-bottom">
                   <ul>
                     <li>
-                      <p>10</p>
+                      <p>{{ orderCount ? orderCount : "-" }}</p>
                       <span>工单代办</span>
                     </li>
                     <li>
@@ -68,7 +68,7 @@
       <div class="border" style="height: 300px; width: 617px">
         <div class="border-title">常用功能导航</div>
         <div class="use">
-          <ul>
+          <ul v-if="commonNavigation.length">
             <li
               :style="{
                 backgroundImage: `url(${useIcon})`,
@@ -90,6 +90,9 @@
               <span style="margin-top: 40px">{{ item.name }}</span>
             </li>
           </ul>
+          <div class="no-information" v-else>
+            <span>暂无公告</span>
+          </div>
         </div>
       </div>
       <div class="border" style="height: 655px; width: 617px">
@@ -146,10 +149,7 @@
         </div>
         <div class="work-order">
           <div style="height: 48%; width: 85%; margin-bottom: 20px">
-            <Bar
-              v-if="flagOrder2"
-              :data="{ womStatusCount: womStatusCount, total: 0 }"
-            ></Bar>
+            <Bar v-if="flagOrder2" :data="womStatusCount"></Bar>
           </div>
 
           <div style="height: 48%; width: 100%">
@@ -428,6 +428,7 @@ export default {
         },
       ],
       todoCount: {},
+      orderCount: null,
     };
   },
   computed: {
@@ -597,13 +598,137 @@ export default {
   methods: {
     handlerRadioChange(value) {
       this.flagOrder1 = false;
-      this.flagOrder2 = false;
-      getWomTypeList({ type: value }).then((res) => {
-        if (res.code === 200) {
-          this.womTypeList = res.data;
-          this.flagOrder1 = true;
-        }
-      });
+      // this.flagOrder2 = false;
+      // getWomTypeList({ type: value }).then((res) => {
+      //   if (res.code === 200) {
+      //     this.womTypeList = res.data;W
+      //     this.flagOrder1 = true;
+      //   }
+      // });
+      this.womTypeList = {
+        定期检验: [
+          {
+            maintenanceType: "定期检验",
+            count: 9,
+            date: "2024-03-20",
+          },
+          {
+            maintenanceType: "定期检验",
+            count: 0,
+            date: "2024-03-14",
+          },
+          {
+            maintenanceType: "定期检验",
+            count: 0,
+            date: "2024-03-15",
+          },
+          {
+            maintenanceType: "定期检验",
+            count: 0,
+            date: "2024-03-16",
+          },
+          {
+            maintenanceType: "定期检验",
+            count: 0,
+            date: "2024-03-17",
+          },
+          {
+            maintenanceType: "定期检验",
+            count: 0,
+            date: "2024-03-18",
+          },
+          {
+            maintenanceType: "定期检验",
+            count: 0,
+            date: "2024-03-19",
+          },
+        ],
+        巡点检: [
+          {
+            maintenanceType: "巡点检",
+            count: 15,
+            date: "2024-03-20",
+          },
+          {
+            maintenanceType: "巡点检",
+            count: 22,
+            date: "2024-03-21",
+          },
+          {
+            maintenanceType: "巡点检",
+            count: 0,
+            date: "2024-03-14",
+          },
+          {
+            maintenanceType: "巡点检",
+            count: 0,
+            date: "2024-03-15",
+          },
+          {
+            maintenanceType: "巡点检",
+            count: 0,
+            date: "2024-03-16",
+          },
+          {
+            maintenanceType: "巡点检",
+            count: 0,
+            date: "2024-03-17",
+          },
+          {
+            maintenanceType: "巡点检",
+            count: 0,
+            date: "2024-03-18",
+          },
+          {
+            maintenanceType: "巡点检",
+            count: 0,
+            date: "2024-03-19",
+          },
+        ],
+        设备修理: [
+          {
+            maintenanceType: "设备修理",
+            count: 16,
+            date: "2024-03-20",
+          },
+          {
+            maintenanceType: "设备修理",
+            count: 17,
+            date: "2024-03-21",
+          },
+          {
+            maintenanceType: "设备修理",
+            count: 0,
+            date: "2024-03-14",
+          },
+          {
+            maintenanceType: "设备修理",
+            count: 0,
+            date: "2024-03-15",
+          },
+          {
+            maintenanceType: "设备修理",
+            count: 0,
+            date: "2024-03-16",
+          },
+          {
+            maintenanceType: "设备修理",
+            count: 0,
+            date: "2024-03-17",
+          },
+          {
+            maintenanceType: "设备修理",
+            count: 0,
+            date: "2024-03-18",
+          },
+          {
+            maintenanceType: "设备修理",
+            count: 0,
+            date: "2024-03-19",
+          },
+        ],
+      };
+      this.flagOrder1 = true;
       getWomStatusCount({ type: value }).then((res) => {
         if (res.code === 200) {
           this.womStatusCount = res.data;
@@ -656,6 +781,7 @@ export default {
       getWomStatusCount({ type: 1 }).then((res) => {
         if (res.code === 200) {
           this.womStatusCount = res.data;
+          this.orderCount = res.data.total;
           this.flagOrder2 = true;
         }
       });

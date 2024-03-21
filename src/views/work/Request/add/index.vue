@@ -276,7 +276,8 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",isTask: false,
+                    formType: "document",
+                    isTask: false,
                   },
                 ];
                 break;
@@ -410,7 +411,8 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",isTask: false,
+                    formType: "document",
+                    isTask: false,
                   },
                 ];
                 break;
@@ -475,7 +477,8 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",isTask: false,
+                    formType: "document",
+                    isTask: false,
                   },
                 ];
                 break;
@@ -517,14 +520,16 @@ export default {
                   // ! 人员配置
                   {
                     span: 24,
-                    formType: "personnel",
+                    formType: "personnelDetection",
+                    // formType: "personnel",
                     required: true,
                   },
                   // ! 关联附件
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",isTask: false,
+                    formType: "document",
+                    isTask: false,
                   },
                 ];
                 break;
@@ -587,7 +592,8 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",isTask: false,
+                    formType: "document",
+                    isTask: false,
                   },
                 ];
                 break;
@@ -650,7 +656,8 @@ export default {
                   {
                     prop: "contacts2",
                     span: 24,
-                    formType: "document",isTask: false,
+                    formType: "document",
+                    isTask: false,
                   },
                 ];
                 break;
@@ -909,6 +916,8 @@ export default {
           break;
         // ! 定期检验
         case "DQJY2":
+          delete formdata.supplierName;
+          formdata["director"] = formdata.executor;
           addPeriodic(formdata).then((res) => {
             if ((res.code = 200)) {
               this.$message.success("添加成功");

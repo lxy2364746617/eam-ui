@@ -56,7 +56,7 @@
 
           <el-col :span="6" class="mb20"
             ><span class="show">内部负责人:</span
-            >{{ formData.executorName }}</el-col
+            >{{ findName(userList, formData.director) }}</el-col
           >
           <el-col :span="6" class="mb20"
             ><span class="show">检验设备数量:</span
@@ -264,6 +264,8 @@ import {
 } from "@/api/work/schedule";
 import { findAll, getGroup } from "@/api/system/group";
 import { orderTemplate } from "@/api/work/template";
+import { userList } from "@/api/flowable/todo";
+import { listUser } from "@/api/system/user";
 export default {
   components: {
     Wrapper,
@@ -286,7 +288,7 @@ export default {
       drawer: false,
       valueMap: {},
       equipmentList: [],
-      formData: { executorName: "", deptName: "" },
+      formData: { director: "", deptName: "" },
       equipmentListRelevance: [],
       total: 0,
 
@@ -307,13 +309,16 @@ export default {
       groupOptions: [],
       orderOptions: [],
       disabled: false,
+      userList: [],
     };
   },
   async created() {
     await this.getTree();
     await this.getOrderTree();
-    if (localStorage.getItem("item")) {
-      let row = JSON.parse(localStorage.getItem("item"));
+    await this.getUserList();
+
+    if (this.$route.query) {
+      let row = this.$route.query;
       // this.$route.query.item = null;
       this.formData = row.item;
       this.disabled = row.disabled;
@@ -326,14 +331,6 @@ export default {
       );
       getWomInfo({ orderCode: this.formData.orderCode }).then((res) => {
         this.formData = { ...res.data, ...this.formData };
-      });
-      findAll({ groupType: this.formData.orderType }).then((res) => {
-        res.data.forEach((item) => {
-          item.label = item.groupName;
-          item.value = item.id;
-        });
-        this.groupOptions = res.data;
-        this.changeGroupId(this.formData.groupId, 2);
       });
       await this.getList2();
     }
@@ -355,6 +352,16 @@ export default {
     },
   },
   methods: {
+    getUserList() {
+      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
+        this.userList = res.rows.map((item) => {
+          return {
+            value: item.userId,
+            label: item.nickName,
+          };
+        });
+      });
+    },
     async getOrderTree() {
       await orderTemplate().then((response) => {
         this.orderOptions = response.data.map((item) => {
@@ -373,22 +380,6 @@ export default {
         });
       });
     },
-    changeGroupId(val, flag) {
-      if (!val) val = 1;
-      getGroup(val).then((response) => {
-        this.formData.directorName = response.data.leaderName;
-
-        this.formData.director = response.data.leaderId;
-        this.groupMembers = response.data.sysUserGroupList;
-        let arr = response.data.sysUserGroupList.filter(
-          (item) => item.userId == this.formData.executor
-        )[0];
-
-        this.$set(this.formData, "executorName", arr.nickName);
-        this.$set(this.formData, "deptName", arr.dept.deptName);
-      });
-    },
-
     handlerPreview(row) {
       window.open(process.env.VUE_APP_BASE_API + row.fileName);
     },
@@ -523,22 +514,6 @@ export default {
       this.loadingRelevance = true;
       this.loadingRelevance = false;
     },
-    // getList() {
-    //   this.equipmentList = [
-    //     {
-    //       deviceCode: "123123123",
-    //       deviceName: "123123123",
-    //       specs: "123123123",
-    //       location: "123123123",
-    //       isPhoto: "Y",
-    //       categoryNum: "123123123",
-    //       deviceStatus: "123123123",
-    //       deviceStatus2: "123123123",
-    //     },
-    //   ];
-    //   this.total = 1;
-    //   this.loading = false;
-    // },
   },
 };
 </script>

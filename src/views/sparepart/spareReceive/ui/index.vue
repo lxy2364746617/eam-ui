@@ -177,7 +177,7 @@ export default {
       this.formData = {
         recruiterName: this.$store.state.user.standing.nickName,
         recruiterId: this.$store.state.user.standing.userId,
-        receiptDate: new Date(),
+        receiptDate: this.parseTime(new Date(), "{y}-{m}-{d}"),
       };
       this.isShowCard = 0;
     }

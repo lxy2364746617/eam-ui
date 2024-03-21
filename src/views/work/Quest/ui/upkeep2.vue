@@ -16,7 +16,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px">
-        <el-col :span="4" style="display: flex">
+        <el-col :span="5">
           <img
             v-if="formData.fileResource"
             :src="mainImage"
@@ -44,7 +44,7 @@
           />
         </el-col>
         <el-col
-          :span="19"
+          :span="18"
           style="font-size: 12px; color: #888; padding-top: 4px"
         >
           <jm-form

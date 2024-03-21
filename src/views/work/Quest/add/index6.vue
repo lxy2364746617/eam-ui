@@ -155,7 +155,7 @@
           <el-table-column
             label="功能位置"
             align="center"
-            prop="location"
+            prop="locationName"
             min-width="150"
           />
           <el-table-column label="是否拍照" align="center" prop="photoFlag">
@@ -524,9 +524,9 @@ export default {
   async created() {
     await this.getOrderTree();
     await this.getTree();
-    if (localStorage.getItem("item")) {
-      let row = JSON.parse(localStorage.getItem("item"));
-      // this.$route.query.item = null;
+    if (this.$route.query) {
+      let row = this.$route.query
+      // this.$route.query = null;
       this.formData = row.item;
       this.disabled = row.disabled;
       getWomLine({ orderCode: this.formData.orderCode }).then((res) => {
@@ -1198,7 +1198,8 @@ export default {
   background-color: #fff;
   overflow: hidden;
   width: 100%;
-  height: auto;padding-bottom: 20px;
+  height: auto;
+  padding-bottom: 20px;
   .title {
     color: #55566d;
     font-weight: bold;
