@@ -62,7 +62,9 @@
     </PropertyOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
+      <el-button type="primary" v-if="isDeclare === 'Y'" @click="submitReview"
+        >保存并提交审批</el-button
+      >
       <el-button @click="cancel">取消</el-button>
     </div>
     <!-- 对表格的操作 -->
@@ -133,6 +135,7 @@ export default {
     "em_device_att",
     "em_device_level",
     "acquisition_plan",
+    "is_declare",
   ],
 
   data() {
@@ -222,6 +225,9 @@ export default {
     },
   },
   computed: {
+    isDeclare() {
+      return this.dict.type.is_declare[0]?.value;
+    },
     columnsInfo() {
       return [
         {

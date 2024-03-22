@@ -637,6 +637,7 @@ export default {
           if (res.data.code == 200) {
             this.getList();
             this.$message.success("验收成功！");
+            this.drawer3 = false;
           } else {
             this.$message.error(res.data.msg);
           }
@@ -650,7 +651,7 @@ export default {
       this.$refs["elForm2"].resetFields();
     },
     resetForm3() {
-      this.drawer2 = false;
+      this.drawer3 = false;
     },
     handleDelete(row, f) {
       this.title = "关闭";

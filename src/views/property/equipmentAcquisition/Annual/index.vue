@@ -12,7 +12,7 @@
       :columns="columns"
     >
       <template slot="headerLeft">
-        <el-col :span="1.5" v-if="dict.type.is_declare[0].value === 'Y'">
+        <el-col :span="1.5" v-if="isDeclare === 'Y'">
           <el-button
             type="primary"
             icon="el-icon-plus"
@@ -23,7 +23,7 @@
             >新增</el-button
           >
         </el-col>
-        <el-col :span="1.5" v-if="dict.type.is_declare[0].value === 'Y'">
+        <el-col :span="1.5" v-if="isDeclare === 'Y'">
           <el-button
             type="primary"
             icon="el-icon-upload2"
@@ -45,12 +45,8 @@
             >下载</el-button
           >
         </el-col>
-        <el-col
-          style="padding-top: 2px"
-          :span="1.5"
-          v-if="dict.type.is_declare[0].value === 'N'"
-        >
-          <span>提示：当前为非申报时间</span></el-col
+        <el-col style="padding-top: 2px" :span="1.5" v-if="isDeclare === 'N'">
+          <span>提示：当前为非申报时间,不可提交</span></el-col
         >
       </template>
       <template #end_handle="scope">
@@ -92,9 +88,10 @@
           @click="handleControls(null, 'submit')"
           v-hasPermi="['property:purchase:submit']"
           v-if="
-            scope.row.apvStatus == 'uncommitted' ||
-            scope.row.apvStatus == 'reject' ||
-            scope.row.apvStatus == 'canceled'
+            isDeclare === 'Y' &&
+            (scope.row.apvStatus == 'uncommitted' ||
+              scope.row.apvStatus == 'reject' ||
+              scope.row.apvStatus == 'canceled')
           "
           >提交</el-button
         >
@@ -192,6 +189,9 @@ export default {
   },
   mounted() {},
   computed: {
+    isDeclare() {
+      return this.dict.type.is_declare[0]?.value;
+    },
     columns() {
       return [
         {

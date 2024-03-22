@@ -775,7 +775,7 @@ export default {
     getInfoAll() {
       getMenuList({ pageNum: 1, pageSize: 10 }).then((res) => {
         if (res.code === 200) {
-          this.commonNavigation = res.data;
+          this.commonNavigation = res.rows;
         }
       });
       getWomStatusCount({ type: 1 }).then((res) => {
