@@ -57,7 +57,8 @@
 </template>
 
 <script>
-import { addBASE, updateBASE } from "@/api/property/warehousing";
+import { updateBASE } from "@/api/equipment/BASE";
+import { addBASE } from "@/api/property/warehousing";
 import { listDept } from "@/api/system/dept";
 import {
   equipmentTree,
@@ -501,9 +502,16 @@ export default {
           if (typeof fn == "function") fn();
         });
       } else {
+        if (window.sessionStorage.getItem("purchaseValue")) {
+          formData["purchasePlanDetailId"] = JSON.parse(
+            window.sessionStorage.getItem("purchaseValue")
+          ).id;
+        }
+        formData["archivesBase"] = JSON.parse(JSON.stringify(formData));
+        formData["deviceType"] = formData.categoryId;
         addBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
-          this.formData.id = response.data;
+          // this.formData.id = response.data;
           this.formData.deviceId = response.data;
           if (typeof fn == "function") fn();
         });

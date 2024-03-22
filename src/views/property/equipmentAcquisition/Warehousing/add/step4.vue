@@ -128,7 +128,8 @@
 </template>
 
 <script>
-import { addBASE, updateBASE } from "@/api/property/warehousing";
+import { updateBASE } from "@/api/equipment/BASE";
+import { addBASE} from "@/api/property/warehousing";
 import {
   listParts,
   addParts,

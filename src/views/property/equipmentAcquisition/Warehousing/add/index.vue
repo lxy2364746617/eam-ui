@@ -311,12 +311,7 @@ export default {
     getFormDataParams() {
       this.formData.step = this.stepActive;
       var formData = JSON.parse(JSON.stringify(this.formData));
-      if (window.sessionStorage.getItem("purchaseValue")) {
-        formData = {
-          ...formData,
-          ...JSON.parse(window.sessionStorage.getItem("purchaseValue")),
-        };
-      }
+
       var aa = formData.emArchivesExtendAtt;
       if (aa) {
         aa["fieldValue"] = JSON.stringify(aa["fieldValue"]);
@@ -334,8 +329,7 @@ export default {
         cc["fieldValue"] = JSON.stringify(cc["fieldValue"]);
         cc["componentContent"] = JSON.stringify(cc["componentContent"]);
       }
-      formData["archivesBase"] = JSON.parse(JSON.stringify(formData));
-      formData["deviceType"] = formData.categoryId;
+
       return formData;
     },
   },

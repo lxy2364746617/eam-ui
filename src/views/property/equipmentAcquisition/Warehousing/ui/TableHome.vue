@@ -312,7 +312,7 @@ export default {
           tableVisible: true,
           width: 150,
         },
-        { label: "规格型号", prop: "smodel", tableVisible: true, width: 300 },
+        { label: "规格型号", prop: "sModel", tableVisible: true, width: 300 },
         {
           label: "技术参数",
           prop: "technologyParam",

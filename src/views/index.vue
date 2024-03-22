@@ -46,7 +46,7 @@
                       <span>工单代办</span>
                     </li>
                     <li>
-                      <p>{{ todoCount.flow ? todoCount.flow : 0 }}</p>
+                      <p>{{ todoCount.flow ? todoCount.flow : "-" }}</p>
                       <span>流程代办</span>
                     </li>
                   </ul>
@@ -68,7 +68,7 @@
       <div class="border" style="height: 300px; width: 617px">
         <div class="border-title">常用功能导航</div>
         <div class="use">
-          <ul v-if="commonNavigation.length">
+          <ul v-if="commonNavigation.length > 0">
             <li
               :style="{
                 backgroundImage: `url(${useIcon})`,
@@ -79,7 +79,7 @@
               :key="item.name"
               @click="
                 () => {
-                  $router.push(item.path);
+                  $router.push({ name: item.path });
                 }
               "
             >
@@ -414,7 +414,7 @@ export default {
           total: 0,
           name: "系统管理",
           icon: "system",
-          path: "system",
+          path: "User",
         },
         {
           id: "2",
@@ -424,7 +424,7 @@ export default {
           total: 0,
           name: "系统监控",
           icon: "monitor",
-          path: "monitor",
+          path: "Monitor",
         },
       ],
       todoCount: {},
@@ -464,31 +464,31 @@ export default {
           tableVisible: true,
           formType: "date",
         },
-        {
-          label: "执行班组",
-          prop: "groupId",
-          formType: "selectTree",
-          options: this.typeAll,
-          tableVisible: true,
-        },
-        {
-          label: "执行人员",
-          prop: "executor",
-          formType: "selectTree",
-          options: this.userList,
-          tableVisible: true,
-        },
-        {
-          label: "请求人员",
-          prop: "createBy",
-          tableVisible: true,
-        },
-        {
-          label: "请求时间",
-          prop: "createTime",
-          formType: "date",
-          width: 150,
-        },
+        // {
+        //   label: "执行班组",
+        //   prop: "groupId",
+        //   formType: "selectTree",
+        //   options: this.typeAll,
+        //   tableVisible: true,
+        // },
+        // {
+        //   label: "执行人员",
+        //   prop: "executor",
+        //   formType: "selectTree",
+        //   options: this.userList,
+        //   tableVisible: true,
+        // },
+        // {
+        //   label: "请求人员",
+        //   prop: "createBy",
+        //   tableVisible: true,
+        // },
+        // {
+        //   label: "请求时间",
+        //   prop: "createTime",
+        //   formType: "date",
+        //   width: 150,
+        // },
       ];
     },
 
@@ -567,22 +567,6 @@ export default {
         backgroundSize: "contain",
       });
     },
-    // // 顶部显示菜单
-    // topMenus() {
-    //   let topMenus = [];
-    //   this.routers.map((menu) => {
-    //     if (menu.hidden !== true) {
-    //       // 兼容顶部栏一级菜单内部跳转
-    //       if (menu.path === "/") {
-    //         topMenus.push(menu.children[0]);
-    //       } else {
-    //         topMenus.push(menu);
-    //       }
-    //     }
-    //   });
-    //   return topMenus;
-    // },
-    // 所有的路由信息
     routers() {
       return this.$store.state.permission.topbarRouters;
     },
@@ -598,140 +582,17 @@ export default {
   methods: {
     handlerRadioChange(value) {
       this.flagOrder1 = false;
-      // this.flagOrder2 = false;
-      // getWomTypeList({ type: value }).then((res) => {
-      //   if (res.code === 200) {
-      //     this.womTypeList = res.data;W
-      //     this.flagOrder1 = true;
-      //   }
-      // });
-      this.womTypeList = {
-        定期检验: [
-          {
-            maintenanceType: "定期检验",
-            count: 9,
-            date: "2024-03-20",
-          },
-          {
-            maintenanceType: "定期检验",
-            count: 0,
-            date: "2024-03-14",
-          },
-          {
-            maintenanceType: "定期检验",
-            count: 0,
-            date: "2024-03-15",
-          },
-          {
-            maintenanceType: "定期检验",
-            count: 0,
-            date: "2024-03-16",
-          },
-          {
-            maintenanceType: "定期检验",
-            count: 0,
-            date: "2024-03-17",
-          },
-          {
-            maintenanceType: "定期检验",
-            count: 0,
-            date: "2024-03-18",
-          },
-          {
-            maintenanceType: "定期检验",
-            count: 0,
-            date: "2024-03-19",
-          },
-        ],
-        巡点检: [
-          {
-            maintenanceType: "巡点检",
-            count: 15,
-            date: "2024-03-20",
-          },
-          {
-            maintenanceType: "巡点检",
-            count: 22,
-            date: "2024-03-21",
-          },
-          {
-            maintenanceType: "巡点检",
-            count: 0,
-            date: "2024-03-14",
-          },
-          {
-            maintenanceType: "巡点检",
-            count: 0,
-            date: "2024-03-15",
-          },
-          {
-            maintenanceType: "巡点检",
-            count: 0,
-            date: "2024-03-16",
-          },
-          {
-            maintenanceType: "巡点检",
-            count: 0,
-            date: "2024-03-17",
-          },
-          {
-            maintenanceType: "巡点检",
-            count: 0,
-            date: "2024-03-18",
-          },
-          {
-            maintenanceType: "巡点检",
-            count: 0,
-            date: "2024-03-19",
-          },
-        ],
-        设备修理: [
-          {
-            maintenanceType: "设备修理",
-            count: 16,
-            date: "2024-03-20",
-          },
-          {
-            maintenanceType: "设备修理",
-            count: 17,
-            date: "2024-03-21",
-          },
-          {
-            maintenanceType: "设备修理",
-            count: 0,
-            date: "2024-03-14",
-          },
-          {
-            maintenanceType: "设备修理",
-            count: 0,
-            date: "2024-03-15",
-          },
-          {
-            maintenanceType: "设备修理",
-            count: 0,
-            date: "2024-03-16",
-          },
-          {
-            maintenanceType: "设备修理",
-            count: 0,
-            date: "2024-03-17",
-          },
-          {
-            maintenanceType: "设备修理",
-            count: 0,
-            date: "2024-03-18",
-          },
-          {
-            maintenanceType: "设备修理",
-            count: 0,
-            date: "2024-03-19",
-          },
-        ],
-      };
-      this.flagOrder1 = true;
+      this.flagOrder2 = false;
+      getWomTypeList({ type: value }).then((res) => {
+        if (res.code === 200) {
+          this.womTypeList = res.data;
+          this.flagOrder1 = true;
+        }
+      });
       getWomStatusCount({ type: value }).then((res) => {
         if (res.code === 200) {
           this.womStatusCount = res.data;
+          this.orderCount = res.data.total;
           this.flagOrder2 = true;
         }
       });

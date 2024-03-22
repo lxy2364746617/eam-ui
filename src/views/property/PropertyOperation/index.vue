@@ -212,7 +212,7 @@ export default {
     if (this.isShowCard) {
       this.listValue = this.formData;
     }
-    if (this.attachmentsTitle) {
+    if (this.attachmentsTitle && this.formData.id) {
       getAssociatedPlan({
         [this.busString]: this.busId ? this.busId : 1,
         pageNum: 1,

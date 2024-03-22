@@ -45,7 +45,8 @@
 </template>
 
 <script>
-import { addBASE, updateBASE } from "@/api/property/warehousing";
+import { updateBASE } from "@/api/equipment/BASE";
+import { addBASE} from "@/api/property/warehousing";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";

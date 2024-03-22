@@ -26,7 +26,7 @@ export function chartOption() {
       data: legend,
     },
     grid: {
-      left: "1%",
+      left: "4%",
       right: "4%",
       bottom: "1%",
       containLabel: true,
