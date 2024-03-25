@@ -13,7 +13,7 @@ export function listParts(query) {
 export function getPartRecord(query) {
   return request({
     url: '/workorder/getPartRecord',
-    method: 'get',
+    method: 'post',
     params: query
   })
 }

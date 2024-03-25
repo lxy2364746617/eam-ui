@@ -84,3 +84,10 @@ export function changeItemStatus(lineId, lineStatus) {
     data: data,
   });
 }
+//保养检修路线设备查询选择
+export function relationList(query) {
+  return request({
+    url: '/maintain/mline/relationList',
+    params: query
+  })
+}

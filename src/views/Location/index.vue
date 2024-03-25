@@ -305,7 +305,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       editTreeItem(){
         this.rightTitle = '编辑基本信息'
         this.isBaseData=false
-        let arr = ['deptName','funAttr','remark']
+        let arr = ['funAttr','remark']
         this.setShowParentLocation(false)
         this.columns.forEach(item=>{
           if(arr.includes(item.prop)){

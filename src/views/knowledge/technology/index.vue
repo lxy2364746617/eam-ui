@@ -30,6 +30,7 @@
                 @click="handleDownload(scope.row)"
               >下载</el-button>
               <el-button
+                v-if="viewType.includes(scope.row.fileType)"
                 size="mini"
                 type="text"
                 icon="el-icon-view"
@@ -116,7 +117,8 @@
               :columns="tablecolumns2"
               @handleSelectionChange="handleSelectionChange"
               :total="total2"
-              @getList="getListDevice">
+              @getList="getListDevice"
+              >
             </jm-table>
         </div>
         <div slot="footer" class="dialog-footer">
@@ -193,6 +195,7 @@ import { listDept } from '@/api/system/dept'
           children: 'children',
           label: 'label'
         },
+        viewType:['jpg','bmp', 'gif', 'jpg', 'jpeg', 'png','pdf' ]
       }
     },
     computed:{
@@ -201,7 +204,7 @@ import { listDept } from '@/api/system/dept'
           { label: "文件名称", prop: "fileName" },
           { label: "设备编码", prop: "deviceCode" },
           { label: "设备名称", prop: "deviceName", },
-          { label: "设备类别", prop: "categoryId",options:this.categoryOptions,formType: 'selectTree',width: 180, },/*  */
+          { label: "设备类别", prop: "categoryId",options:this.categoryOptions,formType: 'selectTree',width: 230, },/*  */
           { label: "规格型号", prop: "specs", },
           { label: "上传人员", prop: "createBy", },
           { label: "上传时间", prop: "createTime", formType: "datetime", formType: "daterange",width:200},
@@ -297,14 +300,16 @@ import { listDept } from '@/api/system/dept'
       },
       // 点击删除
       handleDelete(row){
-        // console.log(row)
-        techListDel({id:row.id,fileId:row.fileId}).then(res=>{
+        this.$confirm('是否确定删除文件名为'+row.fileName+'的数据？').then(()=>{
+          techListDel({id:row.id,fileId:row.fileId}).then(res=>{
           this.getList()
           this.$message({
           message: '操作成功！',
           type: 'success'
         })
         })
+        })
+        
       },
       // 点击下载
       handleDownload(row){
@@ -349,18 +354,22 @@ import { listDept } from '@/api/system/dept'
       // 点击选择设备
       sbDialog(){
         this.treeId = ''
+        this.searchText=''
         this.templateList2 = []
         this.getEquipmentTree()
       },
       // 上传成功回调
       onSuccess(res,file,fileList){
-        console.log(res,'上传成功~')
-        let keys = Object.keys(res)
-        fileList.forEach(item=>{
+       // console.log(res,'上传成功~')
+       if(res.code==200){
+         let keys = Object.keys(res)
           keys.forEach(key=>{
-            item[key] = res[key]
+            file[key] = res[key]
           })
-        })
+       }else{
+         fileList.pop()
+         this.$message.error(res.msg)
+       }
         this.ruleForm.sysFileResources = fileList;
       },
       // 上传失败回调
@@ -431,6 +440,7 @@ import { listDept } from '@/api/system/dept'
       // 获取设备表格数据
       getListDevice(queryParams) {
         this.loading = true;
+        queryParams.exportIds=this.templateList1.map(item=>item.deviceId).join(',')
         equipmentTreeList(queryParams).then(response => {
           this.templateList2 = response.rows;
           this.total2 = response.total;
@@ -463,13 +473,13 @@ import { listDept } from '@/api/system/dept'
       },
       // 点击设备确认按钮
       confirmDeviceClick(){
-        this.templateList1 =  this.deviceCheckboxData
+        this.templateList1 = this.templateList1.concat(this.deviceCheckboxData) 
         this.dialogSbVisible = false
         console.log('this.templateList1:',this.templateList1)
-        this.$message({
+        /* this.$message({
           message: '操作成功！',
           type: 'success'
-        })
+        }) */
       },
       // 点击设备搜索按钮
       searchClick(){
@@ -492,8 +502,10 @@ import { listDept } from '@/api/system/dept'
 }
 .dialog_left{
   width: 70%;
-  height: 100%;
+  height:calc( 100vh - 121px);
   border-right: 1px solid #D8D8D8;
+  overflow-y:auto;
+  overflow-x:hidden;
 }
 .dialog_right{
   width: 30%;
@@ -511,8 +523,10 @@ import { listDept } from '@/api/system/dept'
 }
 .dialog_right1{
   width: 75%;
-  height: 100%;
+  height:calc(100vh - 121px) ;
   padding: 20px 0 20px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .btn_box{
   margin-bottom: 20px;

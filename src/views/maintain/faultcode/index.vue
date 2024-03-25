@@ -87,7 +87,7 @@
 
     <!-- 添加或修改故障代码管理对话框 -->
     <el-drawer :title="title" :visible.sync="open" size="30%" append-to-body>
-      <el-form ref="form" :model="form"  label-width="120px" style="padding-right:30px;height:calc(100vh - 140px)">
+      <el-form ref="form" :model="form"  label-width="120px" style="padding-right:30px;height:calc(100vh - 140px);overflow-y:auto">
         <el-form-item v-if="isEdit" label="故障代码" prop="faultCode" >
           <el-input v-model="form.faultCode"  disabled />
         </el-form-item>
@@ -113,14 +113,15 @@
           <el-radio v-model="form.status" label="1">停用</el-radio>
         </el-form-item>
       </el-form>
-      <div  class="dialog-footer" style="text-align:center">
+      <div  class="dialog-footer" style="text-align:center;border-top: 1px solid #ccc;padding-top: 10px;">
+    
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-drawer>
     <!-- 导入 -->
       <file-import @handleFileSuccess="handleFileSuccess" :downloadTemplateUrl="'/maintain/faultCode/importTemplate'" ref="fileImport"
-        :importUrl="'/maintain/faultCode/importData'">
+        :importUrl="'/maintain/faultCode/importData'" :isUpdate='false'>
       </file-import>
   </div>
 </template>
@@ -313,7 +314,7 @@ export default {
     /** 下载模板操作 */
     importTemplate() {
       this.download(
-        '/maintain/faultCode/importTemplate',
+        '/maintain/faultCode/export',
         {},
         `faultCode${new Date().getTime()}.xlsx`
       )

@@ -31,6 +31,7 @@ import {
   updateGroup,
   changeItemStatus
 } from '@/api/system/group';
+import { maintainType} from '@/api/knowledge'
 import JmTable from "@/components/JmTable";
 export default {
   name: "Template",
@@ -40,7 +41,7 @@ export default {
     columns() {
       return [
         { label: "班组名称", prop: "groupName",  },
-        { label: "班组类型", prop: "groupType", formType: 'select', options: this.dict.type.system_group_type, },
+        { label: "班组类型", prop: "groupType", formType: 'selectTree', options: this.typeOptions,disableBranchNode:true },
         { label: "班组负责人", prop: "leaderName",  },
         { label: "班组成员", prop: "userVar", showOverflowTooltip:true  },
         {
@@ -82,17 +83,20 @@ export default {
         remark:null,
         createTime:null,
       },
+      typeOptions:[]
     };
   },
-  created() {
-      console.log(this.dict.type.sys_normal_disable)
-     this.getList(this.queryParams) 
+ async created() {
+    await  maintainType().then(res=>{
+        this.typeOptions=res.data
+      })
+    await this.getList(this.queryParams) 
   },
   methods:{
       /** 列表 */
-    getList(queryParams) {
+   async getList(queryParams) {
       this.loading = true
-      listGroup(queryParams).then((response) => {
+     await listGroup(queryParams).then((response) => {
         this.groupList = response.rows
         this.total = response.total
         this.loading = false

@@ -70,7 +70,7 @@
                     <div class="wd_box" >
                       <p class="el-icon-folder-opened icon_top"></p>
                       <p class="name" >{{item.fileName}}</p>
-                      <p class="type">{{item.type}}</p>
+                      <p class="type">类型:{{item.kdbValue}}</p>
                       <el-divider></el-divider>
                       <p class="icon_bottom"><span class="el-icon-right" @click="ywwdClick(item)"></span></p>
                     </div>
@@ -204,8 +204,10 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       // 获取运维文档
       getYwwdList(){
         navMaintainList().then(res=>{
+          this.ywwdData.list = res.rows
+          console.log(this.ywwdData.list)
           // 获取运维文档类型
-          maintainType().then(ress=>{
+          /* maintainType().then(ress=>{
             if(res.rows && ress.data){
               res.rows.forEach(item=>{
                 ress.data.forEach(items=>{
@@ -218,7 +220,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
               })
               this.ywwdData.list = res.rows
             }
-          })
+          }) */
         })
       },
       // 获取规章制度

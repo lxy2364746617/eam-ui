@@ -151,7 +151,7 @@ export default {
           return delPline(lineIds)
         })
         .then(() => {
-          this.getList()
+          this.$refs.JmTable.getList()
           this.$modal.msgSuccess('删除成功')
         })
         .catch(() => {this.ids=[]})

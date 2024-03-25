@@ -55,3 +55,11 @@ export function changeItemStatus(planId, planStatus) {
     data: data,
   });
 }
+// 巡点检计划巡点检路线选择列表
+export function lineList(data) {
+  return request({
+    url: '/maintain/pplan/lineList',
+    method: 'get',
+    params:data
+  })
+}

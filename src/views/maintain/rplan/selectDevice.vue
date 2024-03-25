@@ -10,7 +10,7 @@
       <!--用户数据-->
       <el-col :span="18" :xs="24">
         <jm-table :tableData="equipmentList" @getList="getList" @handleSelectionChange="handleSelectionChange"
-          :total="total" ref="jmtable" :isRadio="isChoose" :handleWidth="130" :columns="columns" >
+          :total="total" ref="jmtable" :isRadio="isChoose" :handleWidth="130" :columns="columns">
         </jm-table>
       </el-col>
 
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { relationList } from "@/api/maintain/standard";
+import { relationList } from "@/api/maintain/rplan";
 import { equipmentTree } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -43,14 +43,13 @@ export default {
       type: Boolean,
     },
     formData: {
-      default: () => [],
-      type: Array,
+      default: () => { },
+      type: Object,
     },
     deviceAtt:{
       default:'',
       type:String
-    },
-    
+    }
   },
   computed: {
     // 列信息
@@ -103,14 +102,13 @@ export default {
     };
   },
  async created() {
-   console.log(111111,this.formData)
    await this.getTree();
-   await this.getList(this.queryParams)
+    this.getList(this.queryParams)
   },
   methods: {
      /** 查询设备档案下拉树结构 */
    async getTree() {
-     await equipmentTree().then((response) => {
+    await  equipmentTree().then((response) => {
         this.categoryOptions = response.data
         // 方便获取父级tree
         this.loops(this.categoryOptions)
@@ -163,14 +161,14 @@ export default {
       var data = {
         categoryId: this.queryParams.categoryId,
         ...queryParams,
-        exportIds:this.formData&&this.formData.join(',')
+        exportIds:this.formData&&this.formData.disIds.join(',')
       }
       relationList(data).then(response => {
         response.rows.forEach(item=>{
            item.archivesOther&&( item.propertyCode=item.archivesOther.propertyCode)
           })
         // 不展示自身
-        /* if (this.formData) {
+        if (this.formData) {
           response.rows.forEach((b, i) => {
             if (b.deviceId == this.formData.deviceId) {
               response.rows.splice(i, 1)
@@ -183,9 +181,9 @@ export default {
               return true
             }
           })
-        }else{ */
+        }else{
           this.equipmentList = response.rows
-        /* } */
+        }
         this.total = response.total;
         this.loading = false;
       }

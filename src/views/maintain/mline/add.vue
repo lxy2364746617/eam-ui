@@ -20,13 +20,12 @@
                     </el-form-item></el-col>
             </el-row>
         </el-form>
-        <div class="title">设备列表</div>
-        <div style="margin:10px 0">
-            <el-button type="primary" plain size="small" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="primary" plain size="small" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
+        <div class="title">设备列表
+            <el-button type="primary"  size="mini" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
+            <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <el-table v-loading="loading" :data="lineList" @selection-change="handleSelectionChange" ref="queryTable"
-            row-key="deviceCode">
+            row-key="deviceCode"  :header-cell-style="{'background-color':'#e7f3ff'}">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column label="序号" align="center" type="index" />
             <el-table-column label="设备编码" align="center" prop="deviceCode" min-width="150">
@@ -83,19 +82,19 @@
 
         <!-- 添加或修改设备平台_表单模板对话框 -->
         <el-drawer title="选择设备" :visible.sync="form.choosedrawer" direction="rtl" size="80%" :wrapperClosable="false">
-            <parentdevice :isChoose="false" @submitRadio="submitRadio2" @close="form.choosedrawer = false" :formData="form"
+            <parentdevice :isChoose="false" @submitRadio="submitRadio2" @close="form.choosedrawer = false" :formData="form.disIds"
                 v-if="form.choosedrawer">
             </parentdevice>
         </el-drawer>
 
         <el-drawer :title="title" :visible.sync="drawer" direction="rtl" size="80%" :wrapperClosable="false">
-            <jm-table :tableData="plineList" ref="jmtable" :columns="columns">
+            <jm-table :tableData="plineList" ref="jmtable" :columns="columns"  :showSearch='false'>
             </jm-table>
         </el-drawer>
 
         <div style="width: 100%; height: 68px;"></div>
         <div
-            style="position: absolute;bottom: 0px;width: calc(100% - 40px);background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;z-index: 2;">
+            style="position: absolute;bottom: 0px;width: calc(100% - 40px);background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;z-index: 9;">
             <el-button size="mini" @click="submitForm" type="primary" :loading="btnLoading">提交</el-button>
             <el-button size="mini" @click="goback">取消</el-button>
         </div>
@@ -106,7 +105,7 @@
 import { getMline, addMline, updateMline, findByDeviceId, findByDeviceIdAndItemType, larchivesList } from "@/api/maintain/mline";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
-import parentdevice from '@/views/device/book/device'
+import parentdevice from '@/views/maintain/pline/selectDevice'
 import Sortable from 'sortablejs'
 import { getLocationTree} from '@/api/Location'
 export default {
@@ -398,6 +397,7 @@ export default {
     font-size: 18px;
     background: rgba(0, 116, 217, 0.08);
     justify-content: space-between;
+    margin-bottom: 10px;
 }
 
 .viewSpan {

@@ -84,3 +84,12 @@ export function changeItemStatus(lineId, lineStatus) {
     data: data,
   });
 }
+
+// 巡点检路线设备选择
+export function relationList(query) {
+  return request({
+    url: '/maintain/pline/relationList',
+    method: 'get',
+    params: query
+  })
+}

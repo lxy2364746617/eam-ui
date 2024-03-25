@@ -58,3 +58,12 @@ export function delMenu(menuId) {
     method: 'delete'
   })
 }
+
+// 菜单点击
+export function hotAdd(data) {
+  return request({
+    url: '/system/hot/add',
+    method: 'post',
+    data: data
+  })
+}

@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { relationList } from "@/api/maintain/standard";
+import { relationList } from "@/api/maintain/pline";
 import { equipmentTree } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -103,7 +103,6 @@ export default {
     };
   },
  async created() {
-   console.log(111111,this.formData)
    await this.getTree();
    await this.getList(this.queryParams)
   },
@@ -169,23 +168,7 @@ export default {
         response.rows.forEach(item=>{
            item.archivesOther&&( item.propertyCode=item.archivesOther.propertyCode)
           })
-        // 不展示自身
-        /* if (this.formData) {
-          response.rows.forEach((b, i) => {
-            if (b.deviceId == this.formData.deviceId) {
-              response.rows.splice(i, 1)
-            }
-          });
-          this.equipmentList = response.rows.filter(item => {
-            if (this.formData.disIds&&this.formData.disIds.includes(item.deviceId)) {
-              return false
-            } else {
-              return true
-            }
-          })
-        }else{ */
-          this.equipmentList = response.rows
-        /* } */
+        this.equipmentList = response.rows
         this.total = response.total;
         this.loading = false;
       }

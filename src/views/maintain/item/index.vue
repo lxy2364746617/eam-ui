@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <jm-table :tableData="itemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
+      ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange" >
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"
@@ -178,11 +178,13 @@ export default {
     },
     /** 查询维护计划_巡点检项目列表 */
     getList(queryParams) {
+      !queryParams&&this.$refs.jmtable.resetPage()
       this.loading = true
       listItem(queryParams).then((response) => {
         this.itemList = response.rows
         this.total = response.total
         this.loading = false
+        
       })
     },
     // 巡点检项目状态修改

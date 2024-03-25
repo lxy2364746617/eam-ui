@@ -170,6 +170,7 @@
                     :append-to-body="true"
                     :zIndex="9999"
                     :flat='true'
+                    :disable-branch-nodes='col.disableBranchNode'
                   />
                   <el-input
                     v-else
@@ -343,6 +344,7 @@ export default {
       default: true,
       type: Boolean,
     }
+    
   },
   watch: {
     tableData: {
@@ -465,6 +467,9 @@ export default {
     getList() {
       this.$emit("getList", this.queryParams);
     },
+    resetPage(num){
+      this.$set(this.queryParams, "pageNum", num||1);
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -478,7 +483,6 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      console.log('table',selection)
       this.$emit("handleSelectionChange", selection);
 
       // this.ids = selection.map(item => item.noticeId)

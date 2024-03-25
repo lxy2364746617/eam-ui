@@ -64,11 +64,11 @@ export default {
         // 列信息
         columns() {
             return [
-                { label:"阿巴阿巴", subTitle:true, span: 24, },
+                { label:"基本信息", subTitle:true, span: 24, },
                 { label:"矿井名称", prop:"mineName", span: 8, required: true, },
                 { label:"设备类型", prop:"deviceType", span: 8,formType: "select",required: true, options: this.dict.type.equipment_transport_type, },
 
-                { label:"基本信息", subTitle:true, span: 24, },
+                { label:"产品信息", subTitle:true, span: 24, },
                 { label:"产品名称", prop:"productName", span: 8, },
                 { label:"型号", prop:"model", span: 8, },
                 { label:"数量(台)", prop:"sum", span: 8, },

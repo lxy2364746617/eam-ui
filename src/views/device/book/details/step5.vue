@@ -52,7 +52,7 @@
       <el-tab-pane label="更换记录" name="second">
         <jm-table  :tableData="equipmentList2"
       
-      @getList="getList2"
+      @getList="getList3"
       :total="total1"
       ref="jmtable2"
       :initLoading="false"
@@ -184,8 +184,8 @@ export default {
         { label:"单位", prop:"unit", span: 24,formType:'select',options:this.dict.type.spare_parts_unit },
         { label:"当前库存", prop:"inventory", span: 24, },
         { label:"供应商名称", prop:"supplierName",  span: 24, },
-        { label:"存储位置", prop:"locationName", span: 24,formType:'selectTree',options:this.locationOptions,width:180},
-        { label:"所属组织", prop:"affDeptName", span: 24, formType:'selectTree',options:this.deptOptions,width:180 },
+        { label:"存储位置", prop:"location", span: 24,formType:'selectTree',options:this.locationOptions,width:180},
+        { label:"所属组织", prop:"affDept", span: 24, formType:'selectTree',options:this.deptOptions,width:180 },
       ]
     },
     columns2(){
@@ -362,7 +362,8 @@ export default {
         }
       );
     },
-    getList2(queryParams) {
+    //更换记录
+    getList3(queryParams) {
       queryParams.deviceId = this.queryParams.deviceId
       queryParams.currDeviceId = this.queryParams.deviceId
       this.loading = true;
