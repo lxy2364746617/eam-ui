@@ -457,9 +457,9 @@ export default {
         deviceName: row.deviceName,
         sModel: row.specs,
         deviceType: row.categoryId,
-        location: row.location,
+        location: row.locationName,
         deviceStatus: row.deviceStatus,
-        propertyType: row.archivesOther.propertyType,
+        propertyType: row?.archivesOther?.propertyType,
       };
       this.$set(this.addItem, "choosedrawer", false);
     },
