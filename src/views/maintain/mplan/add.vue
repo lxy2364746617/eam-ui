@@ -38,12 +38,12 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划开始时间" prop="planBeginTime">
-                        <el-date-picker clearable v-model="form.planBeginTime" type="date" value-format="yyyy-MM-dd"
+                        <el-date-picker clearable v-model="form.planBeginTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="请选择计划开始时间" :picker-options="startDatePicker"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划结束时间" prop="planEndTime">
-                        <el-date-picker clearable v-model="form.planEndTime" type="date" value-format="yyyy-MM-dd"
+                        <el-date-picker clearable v-model="form.planEndTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="请选择计划结束时间" :picker-options="endDatePicker"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
@@ -93,10 +93,9 @@
                     </el-form-item></el-col>
             </el-row>
         </el-form>
-        <div class="title">保养路线</div>
-        <div style="margin:10px 0">
-            <el-button type="primary" plain size="small" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="primary" plain size="small" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
+        <div class="title">保养路线
+            <el-button type="primary"  size="mini" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
+            <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false"
             @radiochange="radiochange"  :rightToolbarShow='false'>
@@ -108,7 +107,7 @@
             </template>
         </jm-table>
         <div class="title" style="margin-top: 20px;">关联文档
-            <el-button type="text" @click="AddFile" v-hasPermi="['maintain:mplan:add']">上传</el-button>
+            <el-button type="primary" size="mini" @click="AddFile" v-hasPermi="['maintain:mplan:add']">上传</el-button>
         </div>
 
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
@@ -176,7 +175,7 @@
             </el-table>
         </el-drawer>
         <el-drawer :title="title" :visible.sync="drawer" direction="rtl" size="60%" :wrapperClosable="false">
-            <jm-table :tableData="lineList1" ref="jmtable" :columns="columns">
+            <jm-table :tableData="lineList1" ref="jmtable" :columns="columns" :showSearch='false' :showOperate='false'>
             </jm-table>
         </el-drawer>
 

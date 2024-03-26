@@ -26,6 +26,7 @@
               v-hasPermi="['kdb:maintain:remove']"
             >下载</el-button>
             <el-button
+              v-if="viewType.includes(scope.row.fileType)"
               size="mini"
               type="text"
               icon="el-icon-view"
@@ -35,13 +36,13 @@
         </jm-table>
       </el-card>
       <!-- 上传弹窗 -->
-      <el-dialog title="上传" v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="500px"
+      <el-drawer title="上传" :visible.sync="dialogTableVisible" width="500px"
                  v-hasPermi="['kdb:maintain:add']"
       >
         <div class="body_box">
           <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
             <el-form-item label="类型" prop="kdbType">
-              <el-select v-model="ruleForm.kdbType" placeholder="请选择">
+              <!-- <el-select v-model="ruleForm.kdbType" placeholder="请选择">
                 <el-option-group
                   v-for="group in options"
                   :key="group.label"
@@ -53,7 +54,22 @@
                     :value="item.value">
                   </el-option>
                 </el-option-group>
-              </el-select>
+              </el-select> -->
+              <treeselect
+              size="small"
+              v-model="ruleForm.kdbType"
+              :options="typeOptions"
+              clear-value-text="清除"
+              no-options-text="暂无数据"
+              clearValueText="清除"
+              noOptionsText="暂无数据"
+              placeholder="请选择"
+              :default-expand-level="4"
+              :appendToBody="true"
+              :zIndex="9999"
+              style="height: 32px;line-height: 32px;"
+              :disable-branch-nodes='true'
+            />
             </el-form-item>
             <el-form-item label="运维文档" prop="fileResources">
               <el-upload
@@ -68,11 +84,11 @@
             </el-form-item>
           </el-form>
         </div>
-        <div slot="footer" class="dialog-footer">
+        <div  class="dialog-footer">
           <el-button type="primary" @click="confirmClick" style="margin-right:100px;">确 认</el-button>
           <el-button @click="dialogTableVisible = false">取 消</el-button>
         </div>
-      </el-dialog>
+      </el-drawer>
     </div>
   </div>
 </template>
@@ -81,28 +97,21 @@
 import { maintainList,maintainType,maintainAdd,maintainListDel } from '@/api/knowledge'
 import { download } from '@/utils'
 import { getToken } from "@/utils/auth";
-import JmTable from "@/components/JmTable1";
+import JmTable from "@/components/JmTable";
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
   export default {
     name:'maintenance',
     components: {
-      JmTable
+      JmTable,Treeselect
     },
     data(){
       return {
+        typeOptions:[],
         // 表单头部
         tablecolumns:[
           { label: "文件名称", prop: "fileName" },
-          { label: "类型", prop: "kdbType", formType: "selectF",options:[],type:'template',template(row,item){
-            let text = ''
-            item.options.forEach(items=>{
-              items.options.forEach(itemss=>{
-                if(row[item.prop] == itemss.value){
-                  text = itemss.label
-                }
-              })
-            })
-            return `<span>${text}</span>`
-          }},
+          { label: "类型", prop: "kdbType", formType: "selectTree",options:[],disableBranchNode:true},
           { label: "计划编码", prop: "planCode" },
           { label: "计划名称", prop: "planName", },
           { label: "上传人员", prop: "createBy", },
@@ -116,7 +125,6 @@ import JmTable from "@/components/JmTable1";
         loading: true,
         dialogTableVisible:false, // 是否显示弹窗
         ruleForm: {
-          kdbType: '',
           fileResources:[],
         },
         rules: {
@@ -133,6 +141,7 @@ import JmTable from "@/components/JmTable1";
         headers: {
           Authorization: "Bearer " + getToken(),
         },
+        viewType:['jpg','bmp', 'gif', 'jpg', 'jpeg', 'png','pdf' ]
       }
     },
     mounted(){
@@ -153,6 +162,7 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击新增
       addClick(){
+        this.$refs['ruleForm']&&this.$refs['ruleForm'].clearValidate()
         let keys = Object.keys(this.ruleForm)
         keys.forEach(item=>{
           if(item == 'fileResources'){
@@ -177,6 +187,7 @@ import JmTable from "@/components/JmTable1";
         maintainType().then(res=>{
           // console.log(res.data)
           this.options = res.data
+          this.typeOptions=res.data
           this.tablecolumns.forEach(item=>{
             if(item.prop == 'kdbType'){
               item.options = res.data
@@ -187,13 +198,17 @@ import JmTable from "@/components/JmTable1";
       // 上传成功回调
       onSuccess(res,file,fileList){
         // console.log(res,'上传成功~')
-        let keys = Object.keys(res)
-        fileList.forEach(item=>{
-          keys.forEach(key=>{
-            item[key] = res[key]
-          })
-        })
+        if(res.code==200){
+          let keys = Object.keys(res)
+            keys.forEach(key=>{
+              file[key] = res[key]
+            })
+        }else{
+          fileList.pop()
+          this.$message.error(res.msg)
+        }
         this.ruleForm.fileResources = fileList;
+        console.log(fileList)
       },
       // 上次失败回调
       onError(err,file){
@@ -227,13 +242,14 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击删除
       handleDelete(row){
-        // console.log(row)
-        maintainListDel({id:row.id,fileId:row.fileId}).then(res=>{
+        this.$confirm('是否确定删除文件名为'+row.fileName+'的数据？').then(()=>{
+          maintainListDel({id:row.id,fileId:row.fileId}).then(res=>{
           this.getList()
           this.$message({
             message: '操作成功！',
             type: 'success'
           })
+        })
         })
       },
       // 点击下载
@@ -257,7 +273,7 @@ import JmTable from "@/components/JmTable1";
 <style lang="scss" scoped>
 .body_box{
   width: 100%;
-  height: 600px;
+  height: calc(100% - 66px);
   padding-top:20px;
 }
 .dialog-footer{

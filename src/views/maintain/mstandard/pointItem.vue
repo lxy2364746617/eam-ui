@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="padding-top: 0;">
     <jm-table :tableData="itemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" :isRadio="isChoose">
+      ref="jmtable" :handleWidth="230" :columns="columns" :isRadio="isChoose" :showOperate='false'>
     </jm-table>
     <div style="width: 100%; height: 68px;"></div>
     <div
@@ -13,9 +13,7 @@
 </template>
 
 <script>
-import {
-  listMitem,
-} from '@/api/maintain/mitem';
+import { relationItem } from "@/api/maintain/mstandard";
 import JmTable from "@/components/JmTable";
 
 export default {
@@ -98,14 +96,9 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true
-      listMitem(queryParams).then((response) => {
-        this.itemList = response.rows.filter(item => {
-          if (this.formData.disIds.includes(item.itemCode)) {
-            return false
-          } else {
-            return true
-          }
-        });
+      queryParams.exportIds=this.formData.disIds.join(',')
+      relationItem(queryParams).then((response) => {
+        this.itemList = response.rows
         this.total = response.total;
         this.loading = false;
       })

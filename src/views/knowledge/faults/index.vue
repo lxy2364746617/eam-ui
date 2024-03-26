@@ -199,11 +199,14 @@ import * as echarts from "echarts";
         ]
       },
     },
+    created(){
+      this.getFaultsType()
+    },
     mounted(){
       this.getRouteData()
       this.initChart();
       this.getInfoAll()
-      this.getFaultsType()
+      
     },
     methods:{
       // 获取路由参数

@@ -35,7 +35,7 @@
               :sortable="false"
               :prop="col.prop" 
               :min-width="col.width||150" 
-              :show-overflow-tooltip="true" 
+              :show-overflow-tooltip="false" 
               v-if="tableVisible[col.prop]">
               <template slot-scope="scope">
                 <div v-if="scope.$index == 0 && showSearch">

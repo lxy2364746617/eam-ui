@@ -252,6 +252,9 @@ export default {
     },
     submitFiles(row){
       // 发送 this.fileList
+     this.fileList&& this.fileList.forEach(item=>{
+        item.origin='ER'
+      })
       addResource(this.fileList).then(response => {
         this.$modal.msgSuccess("上传成功");
         this.$refs.jmtable.getList()

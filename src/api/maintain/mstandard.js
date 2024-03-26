@@ -73,3 +73,19 @@ export function mcheckList(data) {
     params: data
   })
 }
+// 保养检修标准选择巡点检项目
+export function relationItem(data) {
+  return request({
+    url: '/maintain/mstandard/relationItem',
+    method: 'get',
+    params: data
+  })
+}
+// 保养检修标准选择设备
+export function relationList(data) {
+  return request({
+    url: '/maintain/mstandard/relationList',
+    method: 'get',
+    params: data
+  })
+}

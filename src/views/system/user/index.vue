@@ -549,7 +549,6 @@
                 v-model="form.level"
                 :max="5"
                 :disabled='readOnly'
-                style="margin-top: 4%"
                 :colors="[
                   '#02b606',
                   '#02b606',
@@ -712,6 +711,7 @@ export default {
         phonenumber: undefined,
         status: undefined,
         deptId: undefined,
+        exportIds:undefined
       },
       // 列信息
       columns: [
@@ -891,6 +891,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.userId);
+      this.queryParams.exportIds=selection.map((item) => item.userId).join(',')
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -1086,5 +1087,7 @@ export default {
 ::v-deep .el-form-item__content,.vue-treeselect{
   height: 36px !important;
 }
-
+::v-deep .el-form .el-rate__icon{
+  line-height:36px !important
+}
 </style>

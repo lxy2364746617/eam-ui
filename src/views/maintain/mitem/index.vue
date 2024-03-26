@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <jm-table v-if="hasgetData" :tableData="mitemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
+    <jm-table  :tableData="mitemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
       ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
       <template slot="headerLeft">
         <el-col :span="1.5">
@@ -140,7 +140,7 @@ export default {
         itemArea: [{ required: true, message: '保养部位不能为空', trigger: 'blur' }],
         itemContent: [{ required: true, message: '保养内容不能为空', trigger: 'blur' }],
         itemType: [{ required: true, message: '保养类型不能为空', trigger: 'blur' }],
-        itemTool: [{ required: true, message: '保养工具不能为空', trigger: 'blur' }],
+        //itemTool: [{ required: true, message: '保养工具不能为空', trigger: 'blur' }],
         itemStatus: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
       },
     }
@@ -156,24 +156,25 @@ export default {
         { label: '保养内容', prop: 'itemContent', showOverflowTooltip:true},
         { label: '保养工具', prop: 'itemTool', },
         { label: '状态', prop: 'itemStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, },
-        { label: '备注', prop: 'remark' },
+        //{ label: '备注', prop: 'remark' },
         { label: '创建者', prop: 'createBy' },
         { label: '创建时间', prop: 'createTime', formType: 'datetime' },
       ]
     },
   },
    created() {
-    this.getList()
+    this.getList(this.queryParams)
   },
   methods: {
     /** 查询保养检修项目列表 */
     getList(queryParams) {
+      !queryParams&&this.$refs.jmtable.resetPage()
       this.loading = true
       listMitem(queryParams).then((response) => {
         this.mitemList = response.rows
         this.total = response.total
         this.loading = false
-        this.hasgetData=true
+        
       })
     },
     // 取消按钮
@@ -273,7 +274,7 @@ export default {
     handleStatusChange(event, prop, row) {
       let text = row.itemStatus === '0' ? '启用' : '停用'
       this.$modal
-        .confirm('确认要' + text + '"' + row.itemContent + '"吗？')
+        .confirm('确认要' + text + '"' + row.itemCode + '"吗？')
         .then(function () {
           return changeItemStatus(row.itemId, row.itemStatus)
         })

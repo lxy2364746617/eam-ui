@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="padding-top: 0;">
     <jm-table :tableData="itemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" :isRadio="isChoose" >
+      ref="jmtable" :handleWidth="230" :columns="columns" :isRadio="isChoose">
     </jm-table>
     <div style="width: 100%; height: 68px;"></div>
     <div
@@ -13,14 +13,15 @@
 </template>
 
 <script>
-import {
-  lineList,
-} from '@/api/maintain/pplan'
+import { listAssembly } from "@/api/equipment/assembly";
+import { listDept } from "@/api/system/dept";
+import { getLocationTree} from '@/api/Location';
+import { equipmentTree } from "@/api/equipment/category";
 import JmTable from "@/components/JmTable";
 
 export default {
-  name: "pointItem",
-  dicts: ['mro_item_method', 'mro_item_type', 'sys_normal_disable'],
+  name: "partItem",
+  dicts: ['mro_item_method', 'XDJ', 'sys_normal_disable','em_device_state','em_device_level'],
   components: { JmTable },
   props: {
     isChoose: {
@@ -31,15 +32,24 @@ export default {
       default: () => { },
       type: Object,
     },
-
+    itemType:{
+      default:'',
+      type:String
+    }
   },
   computed: {
     // 列信息
     columns() {
       return [
-        { label: '巡点检路线编码', prop: 'lineCode', class: true },
-        { label: '巡点检路线名称', prop: 'lineName', },
-        { label: '启用状态', prop: 'lineStatus', formType: 'select', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
+         { label:"设备编码", prop:"deviceCode", },
+        { label:"设备名称", prop:"deviceName", },
+        { label:"规格型号", prop:"specs", },
+        { label:"设备类型", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, width:220  },
+        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
+        { label:"功能位置", prop:"location", options:this.locationOptions,formType: 'selectTree', width:220},
+        { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
+        // { label:"所属子公司", prop:"",  },
+        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, width:220 },
       ]
     },
   },
@@ -65,20 +75,36 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        lineCode: null,
-        lineName: null,
-        lineStatus: null,
-        createBy: null,
-        createTime: null,
-        updateBy: null,
-        updateTime: null,
       },
+      locationOptions:[],
+      deptOptions: [],
+      categoryOptions: [],
     };
   },
-  created() {
+ async created() {
+    await getLocationTree().then(res=>{
+        this.locationOptions=this.getTreeData(res.data)
+      });
+    await equipmentTree().then(response => {
+        this.categoryOptions = response.data;
+      });
+    await listDept().then(response => {
+        this.deptOptions = response.data;
+      });
     this.getList(this.queryParams)
   },
   methods: {
+     getTreeData(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTreeData(item.children)
+          }
+        })
+        return arr
+    },
     close() {
       this.$emit('close')
     },
@@ -93,14 +119,10 @@ export default {
     },
     /** 查询用户列表 */
     getList(queryParams) {
+      queryParams.deviceId=this.formData.deviceId
       this.loading = true
-      queryParams.exportIds=this.formData.disIds&&this.formData.disIds.join(',')
-      lineList(queryParams).then((response) => {
-        response.rows.forEach(item=>{
-          item.lineStatus=='1'&&(item.selectDisable=true)
-        })
+      listAssembly(queryParams).then((response) => {
         this.itemList = response.rows
-        
         this.total = response.total;
         this.loading = false;
       })

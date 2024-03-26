@@ -45,7 +45,7 @@ import JmForm from "@/components/JmForm";
 
 export default {
   name: "Dept",
-  dicts: ['em_is_special','em_is_sm'],
+  dicts: ['em_is_special','em_is_sm','category_attribute'],
   components: { Treeselect, JmUserTree, JmForm, },
   computed: {
     columns(){
@@ -53,7 +53,9 @@ export default {
         { label: '类别名称', prop: 'categoryName',width: 100, required: true, span:24, },
         { label: '类别编码', prop: 'categoryCode', formDisabled: true,width: 100, span:24,  },
         { label: '上级编码', prop: 'parentCode', formDisabled: true, width: 200, span:24, },
+        { label: '设备类别属性', prop: 'categoryAtt', formType: 'select',options:this.dict.type.category_attribute, width: 200, span:24, },
         { label: '是否为主要指标设备类型', prop: 'isSm', formVisible: this.formData.parentId!=0, formType: 'radio', options: this.dict.type.em_is_sm ,width: 100, required: true, span:24, },
+        { label: '是否设备指标显示', prop: 'isDisplay', formVisible: this.formData.isSm=="Y", formType: 'radio', options: this.dict.type.em_is_sm ,width: 100,  span:24, },
         { label: '主要指标项模板', prop: 'sm', formVisible: this.formData.isSm=="Y",formDisabled: this.formData.isSm=="N",formType: 'select', options: this.sm ,width: 100, span:24, },
         { label: '是否为特种设备类别', prop: 'isSpecial',formVisible: this.formData.parentId!=0, formType: 'radio', options: this.dict.type.em_is_special ,width: 100, required: true, span:24, },
         { label: '特种信息项模板', prop: 'special', formVisible: this.formData.isSpecial=="Y",  formDisabled: this.formData.isSpecial=="N",formType: 'select', options: this.special ,width: 100, span:24, },

@@ -307,6 +307,7 @@ export default {
         type: 'html',
         header: '设备二维码',
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+        style: '@page { size: auto;  margin: 0mm; }' ,
       })
     },
     setFormLabel(arr){

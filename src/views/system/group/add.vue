@@ -12,10 +12,26 @@
       <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
         <el-col :span="12">
           <el-form-item label="班组类型" prop="groupType">
-            <el-select v-model="form.groupType">
+            <!-- <el-select v-model="form.groupType">
               <el-option v-for="dict in this.dict.type.system_group_type" :key="dict.value" :label="dict.label"
               :value="dict.value"></el-option>
-            </el-select>
+            </el-select> -->
+            <treeselect
+              size="small"
+              v-model="form.groupType"
+              :options="typeOptions"
+              clear-value-text="清除"
+              no-options-text="暂无数据"
+              clearValueText="清除"
+              noOptionsText="暂无数据"
+              placeholder="请选择"
+              :default-expand-level="4"
+              :appendToBody="true"
+              
+              :zIndex="9999"
+              style="height: 32px;line-height: 32px;"
+              :disable-branch-nodes='true'
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -81,11 +97,14 @@ import {
   updateGroup,
   changeItemStatus
 } from '@/api/system/group';
+import { maintainType} from '@/api/knowledge'
 import JmTable from "@/components/JmTable";
 import groupItem from '@/views/system/group/groupItem'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 export default {
-    name: "Template",
-    components:{JmTable,groupItem},
+    name: "groupAdd",
+    components:{JmTable,groupItem,Treeselect},
   dicts: [
     "sys_normal_disable",
     "system_group_type",
@@ -119,7 +138,7 @@ export default {
       // 表单参数
       form: {
         groupName:'',
-        groupType:'',
+        
         leaderId:'',
         leaderName:'',
         groupStatue:'0',
@@ -149,9 +168,13 @@ export default {
         disIds: [],
         leaderShow:false,
     },
+    typeOptions:[]
     };
   },
   created() {
+         maintainType().then(res=>{
+        this.typeOptions=res.data
+      })
         this.disabled = this.$route.query.d == 'true';
         if (this.$route.query.l) {
             this.id=this.$route.query.l

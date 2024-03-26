@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <jm-table :tableData="plineList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange">
+      ref="jmtable" :handleWidth="230" :columns="columns" @switchchange="handleStatusChange" >
       <template slot="headerLeft">
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd"

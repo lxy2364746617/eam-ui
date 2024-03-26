@@ -71,3 +71,11 @@ export function changeItemStatus(planId, planStatus) {
     data: data,
   });
 }
+//定期检验计划设备查询选择
+export function relationList(query) {
+  return request({
+    url: '/maintain/rplan/relationList',
+    method: 'get',
+    params: query
+  })
+}

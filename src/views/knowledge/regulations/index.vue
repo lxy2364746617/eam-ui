@@ -34,6 +34,7 @@
                 @click="handleDownload(scope.row)"
               >下载</el-button>
               <el-button
+                v-if="viewType.includes(scope.row.fileType)"
                 size="mini"
                 type="text"
                 icon="el-icon-view"
@@ -43,9 +44,9 @@
         </jm-table>
       </el-card>
       <!-- 上传弹窗 -->
-      <el-dialog title="上传" v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="600px" :destroy-on-close="true" @close="close">
+      <el-drawer title="上传"  :visible.sync="dialogTableVisible" width="600px" :destroy-on-close="true" @close="close">
         <div class="body_box">
-          <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+          <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" >
             <el-form-item label="规则类型" prop="ruleType">
               <el-select v-model="ruleForm.ruleType" placeholder="请选择">
                 <el-option v-for="(item,index) in options" :key="index" :label="item.dictLabel" :value="item.dictValue"></el-option>
@@ -59,10 +60,10 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="发布日期" prop="releaseDate">
-              <el-date-picker type="date" placeholder="发布日期" value-format="yyyy-MM-dd HH:mm:ss" v-model="ruleForm.releaseDate"></el-date-picker>
+              <el-date-picker type="date" placeholder="发布日期" value-format="yyyy-MM-dd" v-model="ruleForm.releaseDate" disabled></el-date-picker>
             </el-form-item>
-            <el-form-item label="实施日期" prop="effectiveDate">
-              <el-date-picker type="date" placeholder="实施日期" value-format="yyyy-MM-dd HH:mm:ss" v-model="ruleForm.effectiveDate"></el-date-picker>
+            <el-form-item label="实施时间" prop="effectiveDate">
+              <el-date-picker type="datetime" placeholder="实施时间" value-format="yyyy-MM-dd HH:mm:ss" v-model="ruleForm.effectiveDate"></el-date-picker>
             </el-form-item>
             <el-form-item label="文件描述" prop="content">
               <el-input type="textarea" v-model="ruleForm.content"></el-input>
@@ -80,11 +81,11 @@
             </el-form-item>
           </el-form>
         </div>
-        <div slot="footer" class="dialog-footer">
+        <div  class="dialog-footer">
           <el-button type="primary" @click="confirmClick" style="margin-right:100px;">确 认</el-button>
           <el-button @click="dialogTableVisible = false">取 消</el-button>
         </div>
-      </el-dialog>
+      </el-drawer>
     </div>
   </div>
 </template>
@@ -163,6 +164,7 @@ import JmTable from "@/components/JmTable1";
             { type: 'array',required: true, message: '请上传规章制度', trigger: 'change' }
           ],
         },
+        viewType:['jpg','bmp', 'gif', 'jpg', 'jpeg', 'png','pdf' ]
       }
     },
     mounted(){
@@ -210,12 +212,15 @@ import JmTable from "@/components/JmTable1";
       // 上传成功回调
       onSuccess(res,file,fileList){
         // console.log(res,'上传成功~')
-        let keys = Object.keys(res)
-        fileList.forEach(item=>{
-          keys.forEach(key=>{
-            item[key] = res[key]
-          })
-        })
+        if(res.code==200){
+          let keys = Object.keys(res)
+            keys.forEach(key=>{
+              file[key] = res[key]
+            })
+        }else{
+          fileList.pop()
+          this.$message.error(res.msg)
+        }
         this.ruleForm.fileResources = fileList;
       },
       // 上次失败回调
@@ -269,14 +274,17 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击删除
       handleDelete(row){
-        // console.log(row)
-        ruleListDel({id:row.id,fileId:row.fileId}).then(res=>{
-          this.getList()
-          this.$message({
-            message: '操作成功！',
-            type: 'success'
+        this.$confirm('是否确定删除文件名为'+row.fileName+'的数据？').then(
+          ()=>{
+            ruleListDel({id:row.id,fileId:row.fileId}).then(res=>{
+              this.getList()
+              this.$message({
+              message: '操作成功！',
+              type: 'success'
+            })
           })
-        })
+        }
+        )
       },
       // 点击下载
       handleDownload(row){
@@ -291,6 +299,14 @@ import JmTable from "@/components/JmTable1";
       },
       // 点击上传按钮(新增)
       uploadDialog(text){
+        let date = new Date();  
+        let year = date.getFullYear();  
+        let month = date.getMonth() + 1;   
+        let day = date.getDate(); 
+        month = month < 10 ? '0' + month : month;  
+        day = day < 10 ? '0' + day : day;
+        console.log(year + '-' + month + '-' + day)
+        
         this.typeText = text
         let keys = Object.keys(this.ruleForm)
         keys.forEach(item=>{
@@ -302,6 +318,7 @@ import JmTable from "@/components/JmTable1";
             this.ruleForm[item] = ''
           }
         })
+        this.ruleForm.releaseDate=year + '-' + month + '-' + day
         this.dialogTableVisible = true
       },
       // 弹窗关闭回调
@@ -315,10 +332,11 @@ import JmTable from "@/components/JmTable1";
 <style lang="scss" scoped>
 .body_box{
   width: 100%;
-  height: 600px;
+  height: calc(100% - 66px);
   padding-top:20px;
 }
 .dialog-footer{
+  width:100%;
   height: 66px;
   line-height: 66px;
   box-shadow: 0px 4px 10px 0px;

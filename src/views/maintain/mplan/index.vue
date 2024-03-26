@@ -43,8 +43,8 @@ export default {
       return [
         { label: '保养计划编码', prop: 'planCode', class: true },
         { label: '保养计划名称', prop: 'planName', class: true },
-        { label: '计划开始时间', prop: 'planBeginTime', formType: 'date' },
-        { label: '计划结束时间', prop: 'planEndTime', formType: 'date' },
+        { label: '计划开始时间', prop: 'planBeginTime', formType: 'datetime' },
+        { label: '计划结束时间', prop: 'planEndTime', formType: 'datetime' },
         { label: '下次执行日期', prop: 'nextExecuteTime',  },
         { label: '状态', prop: 'planStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
         { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.BYJX, },

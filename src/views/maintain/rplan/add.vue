@@ -38,12 +38,12 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划开始时间" prop="planBeginTime">
-                        <el-date-picker clearable v-model="form.planBeginTime" type="date" value-format="yyyy-MM-dd"
+                        <el-date-picker clearable v-model="form.planBeginTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="请选择计划开始时间" :picker-options="startDatePicker"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划结束时间" prop="planEndTime">
-                        <el-date-picker clearable v-model="form.planEndTime" type="date" value-format="yyyy-MM-dd"
+                        <el-date-picker clearable v-model="form.planEndTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="请选择计划结束时间" :picker-options="endDatePicker"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
@@ -82,10 +82,9 @@
                     </el-form-item></el-col>
             </el-row>
         </el-form>
-        <div class="title">设备信息   </div>
-        <div style="margin:10px 0">
-            <el-button type="primary" plain size="small" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="primary" plain size="small" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
+        <div class="title">设备信息   
+            <el-button type="primary"  size="mini" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
+            <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false" 
               :rightToolbarShow="false" @handleSelectionChange="handleSelectionChange">
@@ -97,7 +96,7 @@
             </template>
         </jm-table>
         <div class="title" style="margin-top: 20px;">关联文档
-            <el-button type="text" @click="AddFile" v-hasPermi="['maintain:rplan:add']">上传</el-button>
+            <el-button type="primary" size="mini" @click="AddFile" v-hasPermi="['maintain:rplan:add']">上传</el-button>
         </div>
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
             style="margin-top:20px" :rightToolbarShow="false">
@@ -140,7 +139,7 @@ import { larchivesList, findByDeviceIdAndItemType } from "@/api/maintain/mline";
 import { listResource, addResource, delResource } from "@/api/system/resource";
 import JmTable from "@/components/JmTable";
 import { login, logout, getInfo } from '@/api/login'
-import parentdevice from '@/views/device/book/device'
+import parentdevice from '@/views/maintain/rplan/selectDevice'
 import { getLocationTree} from '@/api/Location'
 export default {
     name: "Template",

@@ -61,7 +61,7 @@
                 <el-tab-pane label="专职点检" name="third"></el-tab-pane>
             </el-tabs>
             <div class="title">关联巡点检项
-                <el-button type="text" icon="el-icon-edit" @click="handleAdd">添加</el-button>
+                <el-button type="primary" size="mini"  @click="handleAdd">添加</el-button>
             </div>
             <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
                 <el-table-column type="selection" width="55" align="center" />
@@ -169,7 +169,7 @@
 
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择设备" :visible.sync="form.choosedrawer" direction="rtl" size="80%" :wrapperClosable="false">
-                <parentdevice :isChoose="true" @submitRadio="submitRadio2" @close="form.choosedrawer = false" :formData='form' :deviceAtt='"0"'>
+                <parentdevice :isChoose="true" @submitRadio="submitRadio2" @close="form.choosedrawer = false"   :deviceAtt='"0"'>
                 </parentdevice>
             </el-drawer>
 
@@ -398,7 +398,6 @@ export default {
         submitRadio3(row){
             this.standardList[this.partIndex].partsName=row.deviceName
             this.standardList[this.partIndex].deviceId=row.deviceId
-            console.log(this.standardList)
             this.isSelectPart=false
         },
         submitRadio2(row) {

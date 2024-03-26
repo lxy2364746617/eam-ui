@@ -64,7 +64,6 @@ import {
   changeItemStatus,
   scheckList
 } from '@/api/maintain/standard'
-import mixin from '@/utils/mixin.js'
 import JmTable from '@/components/JmTable';
 import JmForm from "@/components/JmForm";
 import { equipmentTree } from '@/api/equipment/category';
@@ -75,7 +74,6 @@ export default {
   name: "Template",
   dicts: ['em_is_special', 'sys_normal_disable'],
   components: { JmTable, JmForm },
-  mixins:[mixin],
   computed: {
     // 列信息
     columns() {

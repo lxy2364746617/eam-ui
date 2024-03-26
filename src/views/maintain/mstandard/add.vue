@@ -62,14 +62,18 @@
                 <el-tab-pane label="常规润滑" name="fourth"></el-tab-pane>
             </el-tabs>
             <div class="title">关联保养检修项
-                <el-button type="text" icon="el-icon-edit" @click="handleAdd">添加</el-button>
+                <el-button type="primary" size="mini" @click="handleAdd">添加</el-button>
             </div>
             <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column label="序号" align="center" type="index" />
                 <el-table-column label="部件" align="center" prop="partsName" min-width="150">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.partsName" placeholder="请输入部件" v-if="scope.row.editType" />
+                        <el-input v-model="scope.row.partsName" placeholder="请输入部件" v-if="scope.row.editType" @input="changePart(scope.row)">
+                            <template slot="append">
+                                <el-button @click="selectPart(scope.row,scope.$index)"><i class="el-icon-search"/></el-button>
+                            </template>
+                        </el-input>
                         <span v-else v-html="scope.row.partsName"></span>
                     </template>
                 </el-table-column>
@@ -132,6 +136,11 @@
                     @close="pointItemForm.drawer = false" ref="itemForm" v-if="pointItemForm.drawer">
                 </pointItem>
             </el-drawer>
+            <el-drawer title="选择部件" :visible='isSelectPart' size="60%"  :wrapperClosable="false" @close='isSelectPart=false'>
+                <partItem :isChoose="true"  @submitRadio="submitRadio3" :formData='form'
+                    @close="isSelectPart = false" ref="itemForm" v-if="isSelectPart">
+                </partItem>
+            </el-drawer>
         </div>
 
         <div class="container-box2">
@@ -147,14 +156,15 @@ import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import { equipmentTree } from "@/api/equipment/category";
 import { listDept } from "@/api/system/dept";
-import parentdevice from '@/views/device/book/device'
+import parentdevice from '@/views/maintain/mstandard/selectDevice'
 import pointItem from '@/views/maintain/mstandard/pointItem'
 import { number } from 'echarts';
 import { getLocationTree} from '@/api/Location'
+import partItem from '@/views/maintain/standard/partItem'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_is_special', 'mro_m_cycle_type'],
-    components: { JmTable, JmForm, parentdevice, pointItem },
+    components: { JmTable, JmForm, parentdevice, pointItem ,partItem},
     computed: {
         // 列信息
         columns() {
@@ -222,7 +232,7 @@ export default {
             // 总条数
             total: 0,
             // 弹出层标题
-            title: "关键点检测",
+            title: "关联保养项",
             // 是否显示弹出层
             // 查询参数
             queryParams: {
@@ -285,6 +295,8 @@ export default {
                     { required: true, message: '是否特种设备不能为空', trigger: 'blur' },
                 ],
             },
+            isSelectPart:false,
+            partIndex:0
         };
     },
     created() {
@@ -338,6 +350,18 @@ export default {
                 node.children = this.loops(children, node);
                 return node;
             });
+        },
+        selectPart(row,index){
+            this.partIndex=index
+            this.isSelectPart=true
+        },
+        changePart(row){
+            row.deviceId=''
+        },
+        submitRadio3(row){
+            this.standardList[this.partIndex].partsName=row.deviceName
+            this.standardList[this.partIndex].deviceId=row.deviceId
+            this.isSelectPart=false
         },
         submitRadio2(row) {
             this.form = {
@@ -407,7 +431,7 @@ export default {
         },
         /** 新增按钮操作 */
         handleAdd() {
-            let disIds = this.standardList.length == 0 ? [] : this.standardList.map(item => { return item.itemCode })
+            let disIds = this.standardList.length == 0 ? [] : this.standardList.map(item => { return item.itemId })
             this.pointItemForm = {
                 drawer: true,
                 type: 'add',
@@ -419,12 +443,27 @@ export default {
         },
         /** 修改按钮操作 */
         handleUpdate(scope) {
+            let requireObj={
+                checkCycle:'周期',
+                checkCycleType:'保养周期类别'
+            }
+            let words='请填写'
+            let arr=[]
+            if(scope.row.editType){
+                for(let key in requireObj){
+                   !scope.row[key]&&arr.push(requireObj[key])
+                }
+               if(arr.length>0){
+                    return this.$message.error(words+arr.join('、'))
+               }
+            }
             this.$set(this.standardList[scope.$index], 'editType', this.standardList[scope.$index].editType ? false : true)
             this.tableEdit  =   this.standardList1.some(item=>item.editType==true)||
                                 this.standardList2.some(item=>item.editType==true)||
                                 this.standardList3.some(item=>item.editType==true)||
                                 this.standardList4.some(item=>item.editType==true)
-
+            
+            
         },
         /** 删除按钮操作 */
         handleDelete(scope) {

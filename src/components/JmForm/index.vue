@@ -111,6 +111,7 @@
               :zIndex="9999"
               style="height: 32px;line-height: 32px;"
               :flat="true"
+              :disable-branch-nodes='col.disableBranchNode'
             />
             <el-input
               v-else-if="col.formType=='textarea'"

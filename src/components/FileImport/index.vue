@@ -98,7 +98,6 @@ export default {
   methods: {
     beforeUpload(file){
       let fileType=file.name&&file.name.split('.')[file.name.split('.').length-1] //获取文件后缀名
-  console.log(fileType)
                 if (!(fileType=='xlsx'||fileType=='xls')) {
                     this.$message({
                         message: '仅允许导入xls、xlsx格式文件',

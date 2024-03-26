@@ -55,3 +55,11 @@ export function changeItemStatus(planId, planStatus) {
     data: data,
   });
 }
+// 保养检修计划保养路线选择列表
+export function lineList(data) {
+  return request({
+    url: '/maintain/mplan/lineList',
+    method: 'get',
+    params:data
+  })
+}

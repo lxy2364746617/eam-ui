@@ -2,7 +2,7 @@
   <div v-if="!item.hidden">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path, onlyOneChild.query)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
+        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}" @click="itemClick(item)">
           <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
         </el-menu-item>
       </app-link>
@@ -18,6 +18,7 @@
         :is-nest="true"
         :item="child"
         :base-path="resolvePath(child.path)"
+        
         class="nest-menu"
       />
     </el-submenu>
@@ -30,7 +31,7 @@ import { isExternal } from '@/utils/validate'
 import Item from './Item'
 import AppLink from './Link'
 import FixiOSBug from './FixiOSBug'
-
+import {hotAdd} from '@/api/system/menu'
 export default {
   name: 'SidebarItem',
   components: { Item, AppLink },
@@ -55,6 +56,12 @@ export default {
     return {}
   },
   methods: {
+    itemClick(route){
+      if(route.path==this.$route.path) {}
+      else{
+        hotAdd({menuId:route.meta.menuId})
+      }
+    },
     hasOneShowingChild(children = [], parent) {
       if (!children) {
         children = [];

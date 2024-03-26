@@ -20,7 +20,7 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="巡点检类型" prop="itemType">
-                        <el-select v-model="form.itemType" placeholder="请选择巡点检类型">
+                        <el-select v-model="form.itemType" placeholder="请选择巡点检类型" @change="tablekey++">
                             <el-option v-for="dict in dict.type.XDJ" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
@@ -38,12 +38,12 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划开始时间" prop="planBeginTime">
-                        <el-date-picker clearable v-model="form.planBeginTime" type="date" value-format="yyyy-MM-dd"
+                        <el-date-picker clearable v-model="form.planBeginTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="请选择计划开始时间" :picker-options="startDatePicker"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划结束时间" prop="planEndTime">
-                        <el-date-picker clearable v-model="form.planEndTime" type="date" value-format="yyyy-MM-dd"
+                        <el-date-picker clearable v-model="form.planEndTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="请选择计划结束时间" :picker-options="endDatePicker"></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
@@ -87,10 +87,10 @@
             </el-row>
         </el-form>
         <div class="title">巡点检路线
-            <el-button type="text" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="text" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
+            <el-button type="primary" size="mini" @click="handleAdd" style="margin-left: auto;">添加</el-button>
+            <el-button type="primary" size="mini" @click="allDelete">批量删除</el-button>
         </div>
-        <jm-table :tableData.sync="plineList" ref="jmtable1" :columns="columns1" :showSearch="false"
+        <jm-table :tableData.sync="plineList" ref="jmtable1" :columns="columns1" :showSearch="false" :key="tablekey"
             @radiochange="radiochange" style="margin-top:20px" :rightToolbarShow="false" @handleSelectionChange='handleSelectionChange'>
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
@@ -100,7 +100,7 @@
             </template>
         </jm-table>
         <div class="title" style="margin-top: 20px;">关联文档
-            <el-button type="text" @click="AddFile" v-hasPermi="['maintain:pplan:add']">上传</el-button>
+            <el-button type="primary" size="mini" @click="AddFile" v-hasPermi="['maintain:pplan:add']">上传</el-button>
         </div>
 
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
@@ -199,10 +199,12 @@ export default {
     computed: {
         columns1() {
             return [
-                { label: '巡点检路线编码', prop: 'lineCode', class: true },
-                { label: '巡点检路线名称', prop: 'lineName', class: true },
+                { label: '巡点检路线编码', prop: 'lineCode',  },
+                { label: '巡点检路线名称', prop: 'lineName',  },
                 { label: '巡点检设备数量', prop: 'deviceNum', },
-                { label: '日常巡点检', prop: 'sCheckNum', },
+                { label: '日常巡点检', prop: 'RCDJ', tableVisible:this.form.itemType=='RCDJ'},
+                { label: '精密巡点检', prop: 'JMDJ', tableVisible:this.form.itemType=='JMDJ'},
+                { label: '专职巡点检', prop: 'ZZDJ', tableVisible:this.form.itemType=='ZZDJ'},
                 { label: '是否拍照', prop: 'isPhoto', formType: 'radioSelect', options: this.dict.type.mro_is_photo, span: 18, },
             ]
         },
@@ -236,6 +238,7 @@ export default {
     },
     data() {
         return {
+            tablekey:0,
             // 遮罩层
             planId: '',
             loading: true,
@@ -258,7 +261,7 @@ export default {
                 planCode: null,
                 planName: null,
                 planStatus: '0',
-                itemType: null,
+                itemType: 'RCDJ',
                 planCycle: null,
                 planCycleType: null,
                 planBeginTime: null,
@@ -389,6 +392,12 @@ export default {
                 
             }
         },
+        plineList(newval){
+            newval&&newval.forEach(item=>{
+                item=Object.assign(item,{'RCDJ':0,'JMDJ':0,'ZZDJ':0,},item.itemMap)
+            })
+            console.log(newval)
+        },
         immediate: true,
         deep: true
     },
@@ -503,11 +512,11 @@ export default {
             obj=this.groupOptions.find(item=>{
                 return item.id==val
             })
-            this.form.director=obj.leaderId
-            this.form.directorName=obj.leaderName
             this.form.executor=''
             getGroup(val).then(response=>{
-               this.groupMembers= response.data.sysUserGroupList    
+               this.groupMembers= response.data.sysUserGroupList 
+                this.form.director=response.data.leaderId
+                this.form.directorName=response.data.leaderName
             })
         },       
         /** 查询设备平台_表单模板列表 */
@@ -517,10 +526,11 @@ export default {
                 getGroup(response.data.groupId).then(res=>{
                 this.groupMembers= res.data.sysUserGroupList
                 let { mroPatrolPlanLineList, fileResourceList, ...other } = response.data;
-                this.form = other;
+                this.$set(this, 'form', other);
                 this.plineList = mroPatrolPlanLineList || [];
                 this.fileResourceList = fileResourceList || [];
                 this.loading = false;
+                this.tablekey++
                 //this.form.executors=response.data.executor.split(',').map(item=>Number(item))
                 })
                 
