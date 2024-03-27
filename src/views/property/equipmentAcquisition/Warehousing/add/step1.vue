@@ -503,12 +503,15 @@ export default {
         });
       } else {
         if (window.sessionStorage.getItem("purchaseValue")) {
-          formData["purchasePlanDetailId"] = JSON.parse(
-            window.sessionStorage.getItem("purchaseValue")
-          ).id;
+          formData = {
+            ...formData,
+            ...JSON.parse(window.sessionStorage.getItem("purchaseValue")),
+          };
         }
         formData["archivesBase"] = JSON.parse(JSON.stringify(formData));
         formData["deviceType"] = formData.categoryId;
+        formData["sModel"] = formData.specs;
+        formData["affDept"] = formData.affDeptId;
         addBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
           // this.formData.id = response.data;

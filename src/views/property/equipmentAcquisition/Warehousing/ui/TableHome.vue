@@ -149,6 +149,7 @@ import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 import fileImport from "@/components/FileImport";
 import { equipmentTree } from "@/api/equipment/category";
+import { getLocationTree } from '@/api/Location';
 export default {
   components: {
     ContTable,
@@ -206,6 +207,7 @@ export default {
       radioRow: {},
       deptOptions: [],
       categoryOptions: [],
+       locationOptions: [],
     };
   },
   computed: {
@@ -236,6 +238,9 @@ export default {
         {
           label: "功能位置",
           prop: "location",
+           options: this.locationOptions,
+          formType: "selectTree",
+          width: 180,
           tableVisible: true,
         },
         {
@@ -312,7 +317,7 @@ export default {
           tableVisible: true,
           width: 150,
         },
-        { label: "规格型号", prop: "sModel", tableVisible: true, width: 300 },
+        { label: "规格型号", prop: "smodel", tableVisible: true, width: 300 },
         {
           label: "技术参数",
           prop: "technologyParam",
@@ -353,36 +358,36 @@ export default {
           tableVisible: true,
           width: 200,
         },
-        // {
-        //   label: "计划类型",
-        //   prop: "purchasePlanType",
-        //   tableVisible: true,
-        //   options: [
-        //     {
-        //       label: "年度采购",
-        //       value: 1,
-        //     },
-        //     {
-        //       label: "临时采购",
-        //       value: 2,
-        //     },
-        //   ],
-        // },
-        // {
-        //   label: "申报单位",
-        //   prop: "declarationDeptId",
-        //   tableVisible: true,
-        //   formType: "selectTree",
-        //   options: this.deptOptions,
-        //   width: 150,
-        // },
+        {
+          label: "计划类型",
+          prop: "purchasePlanType",
+          tableVisible: true,
+          options: [
+            {
+              label: "年度采购",
+              value: 1,
+            },
+            {
+              label: "临时采购",
+              value: 2,
+            },
+          ],
+        },
+        {
+          label: "申报单位",
+          prop: "declarationDeptId",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.deptOptions,
+          width: 150,
+        },
 
-        // {
-        //   label: "申报日期",
-        //   prop: "declarationDate",
-        //   tableVisible: true,
-        //   formType: "date",
-        // },
+        {
+          label: "申报日期",
+          prop: "declarationDate",
+          tableVisible: true,
+          formType: "date",
+        },
       ];
     },
   },
@@ -436,12 +441,26 @@ export default {
         return node;
       });
     },
+     getTreeName(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTreeName(item.children);
+        }
+      });
+      return arr;
+    },
     /** 查询部门下拉树结构 */
     async getDeptTree() {
       equipmentTree().then((response) => {
         this.categoryOptions = response.data;
         // 方便获取父级tree
         this.loops(this.categoryOptions);
+      });
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTreeName(res.data);
       });
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;

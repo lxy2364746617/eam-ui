@@ -129,7 +129,7 @@
 
 <script>
 import { updateBASE } from "@/api/equipment/BASE";
-import { addBASE} from "@/api/property/warehousing";
+import { addBASE } from "@/api/property/warehousing";
 import {
   listParts,
   addParts,
@@ -280,7 +280,7 @@ export default {
           this.equipmentList.length > 0
             ? this.equipmentList.map((item) => item.partCode)
             : [];
-        let arr = response.data.records.filter((item) => {
+        let arr = response.data.rows.filter((item) => {
           return list_id.indexOf(item.partCode) == -1;
         });
         this.$set(this, "partsData", arr);
@@ -358,12 +358,12 @@ export default {
       var formData = this.$parent.getFormDataParams();
       formData.archivesPartsList = this.equipmentList;
       if (formData.deviceId != undefined) {
-        updateBASE({ ...formData}).then((response) => {
+        updateBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("修改成功");
           if (typeof fn == "function") fn();
         });
       } else {
-        addBASE({ ...formData}).then((response) => {
+        addBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
           if (typeof fn == "function") fn();
         });

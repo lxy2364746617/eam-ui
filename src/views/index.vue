@@ -79,7 +79,7 @@
               :key="item.name"
               @click="
                 () => {
-                  $router.push({ name: item.path });
+                  $router.push({ name: item.name });
                 }
               "
             >
@@ -87,11 +87,11 @@
                 style="color: #226efc; font-size: 20px"
                 :icon-class="item.icon"
               />
-              <span style="margin-top: 40px">{{ item.name }}</span>
+              <span style="margin-top: 40px">{{ item.title }}</span>
             </li>
           </ul>
           <div class="no-information" v-else>
-            <span>暂无公告</span>
+            <span>暂无常用功能导航</span>
           </div>
         </div>
       </div>
@@ -203,8 +203,12 @@
         </div>
         <ul class="system" v-if="noticeList">
           <li v-for="item in noticeList" :key="item.createTime">
-            <span>{{ item.noticeTitle }}</span>
-            <span>{{ item.createTime }}</span>
+            <el-tooltip :content="item.noticeTitle" placement="top">
+              <span class="single-line-ellipsis">{{ item.noticeTitle }}</span>
+            </el-tooltip>
+            <el-tooltip :content="item.createTime" placement="top">
+              <span class="single-line-data">{{ item.createTime }}</span>
+            </el-tooltip>
           </li>
         </ul>
         <div class="no-information" v-else>
@@ -405,28 +409,7 @@ export default {
         monthCount: 223,
         yearCount: 223,
       },
-      commonNavigation: [
-        {
-          id: "1",
-          menuId: 1,
-          userId: 1,
-          delFlag: null,
-          total: 0,
-          name: "系统管理",
-          icon: "system",
-          path: "User",
-        },
-        {
-          id: "2",
-          menuId: 2,
-          userId: 1,
-          delFlag: null,
-          total: 0,
-          name: "系统监控",
-          icon: "monitor",
-          path: "Monitor",
-        },
-      ],
+      commonNavigation: [],
       todoCount: {},
       orderCount: null,
     };
@@ -586,6 +569,9 @@ export default {
       getWomTypeList({ type: value }).then((res) => {
         if (res.code === 200) {
           this.womTypeList = res.data;
+          this.flagOrder1 = true;
+        } else {
+          this.womTypeList = null;
           this.flagOrder1 = true;
         }
       });
@@ -777,6 +763,7 @@ export default {
   color: #1f66f1;
   padding: 25px;
   font-weight: 700;
+
   span {
     font-size: 16px;
     line-height: 42px;
@@ -851,6 +838,18 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
+  .single-line-ellipsis {
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .single-line-data {
+    width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 .work-order {
   height: calc(100% - 47px);
@@ -865,6 +864,7 @@ export default {
   width: 100%;
   height: calc(100% - 30px);
   display: flex;
+   overflow-y: auto;
   .knowledge-left {
     width: 50%;
     height: 100%;
@@ -883,6 +883,7 @@ export default {
       align-items: center;
       width: 75px;
       height: 90px;
+      margin-right: 10px;
     }
     &:nth-of-type(1),
     &:nth-of-type(2),
@@ -929,13 +930,16 @@ export default {
 .use {
   width: 100%;
   height: calc(100% - 30px);
-  padding: 16px 24px;
+  padding: 16px 24px 16px 34px;
+  overflow-y: auto;
+
   ul {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     li {
       cursor: pointer;
+      margin-right: 10px;
       width: 100px;
       height: 100px;
       display: flex;
