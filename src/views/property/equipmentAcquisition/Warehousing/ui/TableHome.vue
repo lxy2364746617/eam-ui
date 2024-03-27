@@ -149,7 +149,7 @@ import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 import fileImport from "@/components/FileImport";
 import { equipmentTree } from "@/api/equipment/category";
-import { getLocationTree } from '@/api/Location';
+import { getLocationTree } from "@/api/Location";
 export default {
   components: {
     ContTable,
@@ -207,7 +207,7 @@ export default {
       radioRow: {},
       deptOptions: [],
       categoryOptions: [],
-       locationOptions: [],
+      locationOptions: [],
     };
   },
   computed: {
@@ -238,7 +238,7 @@ export default {
         {
           label: "功能位置",
           prop: "location",
-           options: this.locationOptions,
+          options: this.locationOptions,
           formType: "selectTree",
           width: 180,
           tableVisible: true,
@@ -362,6 +362,7 @@ export default {
           label: "计划类型",
           prop: "purchasePlanType",
           tableVisible: true,
+          formType: "select",
           options: [
             {
               label: "年度采购",
@@ -441,7 +442,7 @@ export default {
         return node;
       });
     },
-     getTreeName(arr) {
+    getTreeName(arr) {
       arr.forEach((item) => {
         item.value = item.deptId;
         item.label = item.deptName;
@@ -562,18 +563,6 @@ export default {
         });
         saveAs(blob, `warehousing_${new Date().getTime()}`);
       });
-    },
-    // 导入
-    beforeUpload(file) {
-      let isRightSize = file.size / 1024 / 1024 < 2;
-      if (!isRightSize) {
-        this.$message.error("文件大小超过 2MB");
-      }
-      const fileData = new FormData();
-      fileData.append("files", file);
-      fileData["purchasePlanType"] = 2;
-      uploadInfo(fileData);
-      return false;
     },
     async getList(
       form = {
