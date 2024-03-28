@@ -57,7 +57,7 @@
               type="text"
               icon="el-icon-document-add"
               @click="handleSet(scope.row)"
-              v-hasPermi="['work:schedule:edit']"
+              v-hasPermi="['work:schedule:off']"
               >关闭</el-button
             ></span
           >

@@ -30,7 +30,7 @@
               icon="el-icon-download"
               size="mini"
               @click="handlerDerive"
-              v-hasPermi="['work:request:download']"
+              v-hasPermi="['work:quest:download']"
               >下载</el-button
             >
           </el-col>
@@ -65,7 +65,7 @@
             icon="el-icon-view"
             :loading="btnLoading"
             @click="goDetails(scope.row, 'view')"
-            v-hasPermi="['work:request:view']"
+            v-hasPermi="['work:quest:view']"
             >详情</el-button
           >
           <el-button
