@@ -114,6 +114,7 @@
           size="mini"
           style="margin-left: 5px"
           @click="AddFile"
+          v-hasPermi="['property:detail:add']"
           v-if="!isChoose"
           >上传</el-button
         >
@@ -124,7 +125,7 @@
           type="text"
           icon="el-icon-view"
           @click="downloadFile(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:detail:download']"
           >下载</el-button
         >
         <el-button
@@ -133,7 +134,7 @@
           v-if="!isChoose"
           icon="el-icon-delete"
           @click="handleDelete2(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
+          v-hasPermi="['property:detail:remove']"
           >删除</el-button
         >
         <el-button
@@ -142,7 +143,7 @@
           type="text"
           icon="el-icon-view"
           @click="handlePreview(scope.row)"
-          v-hasPermi="['equipment:book:edit']"
+          v-hasPermi="['property:detail:view']"
           >预览</el-button
         >
       </template>

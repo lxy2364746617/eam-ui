@@ -36,10 +36,9 @@ export function chartOption() {
     },
     title: {
       text: "总数量" + "\n\n" + list.total,
-      subtext: "今日新增" + list.today,
       // subtext: list.stateList && "今日新增" + list.today + "台",
       left: "40%",
-      top: "30%",
+      top: "38%",
       textAlign: "center",
       textStyle: {
         color: "#686D81",
@@ -91,7 +90,7 @@ export function chartOption() {
           position: "inside",
           color: "#666",
           formatter: function (params) {
-            return params.percent + "%";
+            if (params.percent) return params.percent + "%";
           },
         },
         data: data,

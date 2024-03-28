@@ -21,7 +21,7 @@
               icon="el-icon-plus"
               size="mini"
               @click="handleAdd"
-              v-hasPermi="['equipment:base:addParentEm']"
+              v-hasPermi="['property:base:addParentEm']"
               >添加</el-button
             >
           </el-col>
@@ -33,7 +33,7 @@
               size="mini"
               :disabled="multiple"
               @click="handleDelete(0)"
-              v-hasPermi="['equipment:base:removeParentEm']"
+              v-hasPermi="['property:base:removeParentEm']"
               >解除</el-button
             >
           </el-col>
