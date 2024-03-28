@@ -305,7 +305,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        
       },
+      exportIds:undefined,
       // 表单参数
       form: {},
       // 表单校验
@@ -831,6 +833,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id)
+      this.exportIds = selection.map((item) => item.id).join(',')
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
@@ -894,7 +897,7 @@ export default {
       this.download(
         'system/supplier/export',
         {
-          ...this.queryParams,
+          ...this.queryParams,exportIds:this.exportIds
         },
         `供应商_${new Date().getTime()}.xlsx`
       )

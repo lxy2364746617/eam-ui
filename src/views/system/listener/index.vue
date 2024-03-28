@@ -210,6 +210,7 @@ export default {
         value: null,
         status: null,
       },
+      exportIds:undefined,
       // 表单参数
       form: {},
       // 表单校验
@@ -286,6 +287,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
+      this.exportIds = selection.map(item => item.id).join(',')
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
@@ -338,7 +340,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       this.download('system/listener/export', {
-        ...this.queryParams
+        ...this.queryParams,exportIds:this.exportIds
       }, `listener_${new Date().getTime()}.xlsx`)
     }
   }

@@ -14,7 +14,7 @@ export function getPartRecord(query) {
   return request({
     url: '/workorder/getPartRecord',
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 查询关联备件_表单模板详细

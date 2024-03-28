@@ -216,6 +216,7 @@ export default {
         configKey: undefined,
         configType: undefined
       },
+      exportIds:undefined,
       // 表单参数
       form: {},
       // 表单校验
@@ -283,6 +284,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.configId)
+      this.exportIds = selection.map(item => item.configId).join(',')
       this.single = selection.length!=1
       this.multiple = !selection.length
     },
@@ -329,7 +331,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       this.download('system/config/export', {
-        ...this.queryParams
+        ...this.queryParams,exportIds:this.exportIds
       }, `config_${new Date().getTime()}.xlsx`)
     },
     /** 刷新缓存按钮操作 */

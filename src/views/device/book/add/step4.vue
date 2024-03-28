@@ -79,7 +79,6 @@
       :total="total2"
       :initLoading="false"
       :handleWidth="130"
-      :showOperate='false'
       size="60%">
       </jm-table>
       <div style="width:100%;height:48px"></div>
@@ -108,6 +107,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
+import { getLocationTree} from '@/api/Location'
 import supplier from "@/views/device/book/supplier";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -145,8 +145,8 @@ export default {
         { label:"单位", prop:"unit", span: 24,formType: 'select', options: this.dict.type.spare_parts_unit, },
         { label:"当前库存", prop:"inventory", span: 24, },
         { label:"供应商名称", prop:"supplierName",  span: 24, },
-        { label:"存储位置", prop:"locationName", span: 24, },
-        { label:"所属组织", prop:"affDeptName", span: 24,  },
+        { label:"存储位置", prop:"location", span: 24,options:this.locationOptions,formType:'selectTree',width:230 },
+        { label:"所属组织", prop:"affDept", span: 24, options:this.deptOptions,formType:'selectTree',width:230 },
       ]
     },
   },
@@ -176,6 +176,7 @@ export default {
       // 部门树选项
       categoryOptions: [],
       deptOptions: [],
+      locationOptions:[],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -223,8 +224,20 @@ export default {
   created() {
     this.getTreeSelect()
     this.getList(this.queryParams)
+     
   },
   methods: {
+    getTree(arr){
+      arr.forEach(item=>{
+          item.value=item.deptId
+          item.label=item.deptName
+          item.isDisabled=item.locationFlag=='N'?true:false
+          if(item.children&&item.children.length>0){
+            this.getTree(item.children)
+          }
+        })
+        return arr
+    },
     /** 查询用户列表 */
     getList(queryParams) {
       queryParams.deviceId = this.queryParams.deviceId
@@ -344,6 +357,9 @@ export default {
         this.deptOptions = response.data;
         this.$forceUpdate()
       });
+      getLocationTree().then(res=>{
+        this.$set(this,'locationOptions',this.getTree(res.data))
+      })
     },
   }
 };

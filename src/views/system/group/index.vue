@@ -83,6 +83,7 @@ export default {
         remark:null,
         createTime:null,
       },
+      exportIds:undefined,
       typeOptions:[]
     };
   },
@@ -104,8 +105,8 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-        console.log(this.ids)
       this.ids = selection.map((item) => item.id)
+      this.exportIds = selection.map((item) => item.id).join(',')
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
@@ -156,7 +157,7 @@ export default {
       this.download(
         'system/group/export',
         {
-          ...this.queryParams,
+          ...this.queryParams,exportIds:this.exportIds
         },
         `group_${new Date().getTime()}.xlsx`
       )

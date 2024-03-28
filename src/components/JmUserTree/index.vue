@@ -60,11 +60,13 @@ export default {
     deptName(val) {
       this.$refs.tree.filter(val);
     },
-    
     treeData(val) {
      this.setCurrent&& this.$nextTick(() => {
         this.$refs.tree.setCurrentKey(this.currentNodeKey||val[0].id);
         !this.currentNodeKey&&this.$emit("handleNodeClick", val[0]);
+        this.currentNodeKey&&this.$emit("handleNodeClick", this.$refs.tree.getCurrentNode());
+        let expandNode =this.$refs.tree.getNode(this.$refs.tree.getCurrentNode()) 
+        expandNode&&this.setExpanded(expandNode)
         // const firstNode = document.querySelector('.el-tree-node');
         // if(firstNode){
         //   firstNode.click();
@@ -72,15 +74,19 @@ export default {
       });
     },
   },
-  created() {},
-  mounted() {},
+  mounted() {
+   
+  },
   methods: {
+    setExpanded(node){
+      node.expanded=true
+      if(node.parent) this.setExpanded(node.parent)
+    },
     setCurrentKey(id) {
         this.$refs.tree.setCurrentKey(id);
       },
     expandTreeNodeStatus(node) {
       this.expanded=false
-      this.defaultExpIds=[]
       for (let i = 0; i < node.childNodes.length; i++) {
         // 改变节点的自身expanded状态
         node.childNodes[i].expanded = false;

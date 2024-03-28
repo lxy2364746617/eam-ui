@@ -253,6 +253,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.codeId)
+      this.exportIds = selection.map(item => item.codeId).join(',')
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
@@ -315,7 +316,7 @@ export default {
     importTemplate() {
       this.download(
         '/maintain/faultCode/export',
-        {},
+        {exportIds:this.exportIds},
         `faultCode${new Date().getTime()}.xlsx`
       )
     },

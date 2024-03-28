@@ -13,7 +13,7 @@
           </el-radio-group>
       </div>
       <div v-if="radioColumn.length > 0">
-          <jm-table :tableData="deptList" @getList="getList" :total="total" :columns="radioColumn[radio].tableHead">
+          <jm-table :tableData="deptList" @getList="getList" :total="total" :columns="radioColumn[radio].tableHead" @handleSelectionChange='handleSelectionChange'>
               <template slot="headerLeft">
                   <el-col :span="1.5">
                       <el-button v-if="deptList.length > 0" type="primary" icon="el-icon-download" size="mini"
@@ -169,10 +169,15 @@ export default {
               this.loading = false;
           });
       },
+      // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.exportIds = selection.map(item => item.deviceId).join(',')
+    },
       /** 导出按钮操作 */
       handleExport(queryParams) { 
           var obj = {
                 categoryId: this.queryParams.categoryId,
+                exportIds:this.exportIds
             }
             this.download('equipment/special/export',
                 obj,

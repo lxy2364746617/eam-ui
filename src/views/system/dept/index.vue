@@ -38,6 +38,7 @@
             <span>{{ rightTitle }}</span>
           </div>
           <jm-form
+            ref="form"
             :columns="columns"
             :formData="formData"
             @submitForm="submitForm"
@@ -55,7 +56,8 @@
             :tableData="deptList"
             @getList="getList"
             :total="total"
-            :columns="columns"  
+            :columns="columns"
+            @handleSelectionChange="handleSelectionChange"  
           >
             <template slot="headerLeft">
               <el-col :span="1.5">
@@ -150,10 +152,10 @@ export default {
         },
         {
           label: "父级组织",
-          prop: "parentId",
+          prop: "parentName",
           formDisabled: true,
-          formType: "selectTree",
-          options: [],
+          /* formType: "selectTree",
+          options: [], */
           width: 200,
         },
         {
@@ -191,7 +193,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        parentId: [
+        parentName: [
           { required: true, message: "上级部门不能为空", trigger: "blur" },
         ],
         deptName: [
@@ -249,7 +251,6 @@ export default {
           })
           this.defaultExpIds=arr
       });
-      
     },
     hasChildArr(arr){
       let arr1=[]
@@ -293,9 +294,10 @@ export default {
     // 新增
     addTreeItem() {
       this.rightTitle = "新增下级组织";
-      console.log(this.nowClickTreeItem, 555);
+      this.$refs.form.clearValidate()
       this.formData = {
         parentId: this.nowClickTreeItem.id,
+        parentName: this.nowClickTreeItem.label,
       };
       this.disabled = false;
       this.isEdit=true
@@ -320,6 +322,7 @@ export default {
       
     },
     editTreeItem() {
+
       this.rightTitle = "编辑";
       this.isEdit=true
       //this.disabled = false;
@@ -377,6 +380,7 @@ export default {
     getDeptFn() {
       getDept(this.nowClickTreeItem.id).then((response) => {
         this.formDataInit = JSON.stringify(response.data);
+        response.data.parentName=response.data.parentName||'无父级组织'
         this.formData = response.data;
       });
       var obj = {
@@ -426,6 +430,7 @@ export default {
           this.disabled = true;
           this.isEdit=false
           this.getDeptTree();
+          this.currentNodeKey=formdata.parentId
         });
       }
       // this.$refs["form"].validate(valid => {
@@ -444,14 +449,20 @@ export default {
         })
         .then(() => {
           this.getDeptTree();
+          this.currentNodeKey=''
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {});
+    },
+     // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.exportIds = selection.map(item => item.deptId).join(',')
     },
     /** 导出按钮操作 */
     handleExport(queryParams) {
       var obj = {
         ...queryParams,
+        exportIds:this.exportIds,
         parentId: this.nowClickTreeItem.id,
       };
       this.download(

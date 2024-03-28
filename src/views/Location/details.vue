@@ -529,7 +529,9 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
       }, */
       // 上传成功回调
       onSuccess(res,file,fileList){
-       fileList[fileList.length-1]={
+        let imgTypeArr=['png','jpg','gif','jpeg','jfif','pjp','pjpeg']
+        if(imgTypeArr.includes(file.name.substring(file.name.lastIndexOf('.')+1))){
+          fileList[fileList.length-1]={
           busId : this.busId,
           origin : 'FLP',
           ...fileList[fileList.length-1],
@@ -553,10 +555,15 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
         })
           this.getBaseInfo() 
         })
+        }else{
+          this.$message.error('上传图片格式错误，请重新上传')
+        }
+       
       },
       // 上传弹窗，文件上传成功回调
       onSuccessFile(res,file,fileList){
-        let keys = Object.keys(res)
+        if(res.code==200){
+           let keys = Object.keys(res)
         fileList.forEach(item=>{
           item.busId = this.busId,
           item.origin = 'FLF'
@@ -564,7 +571,11 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
             item[key] = res[key]
           })
         })
-        this.fileList = fileList
+        }else{
+          fileList.pop()
+          this.$message.error(res.msg)
+        }
+       this.fileList = fileList
       },
       // 上传弹窗，文件上传失败回调
       onErrorFile(err,file){

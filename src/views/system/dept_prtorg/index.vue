@@ -44,6 +44,7 @@
             @handleExport="handleExport"
             :total="total"
             :columns="columns"
+            @handleSelectionChange="handleSelectionChange"
           >
             <template slot="headerLeft" slot-scope="scope">
               <el-col :span="1.5">
@@ -139,10 +140,10 @@ export default {
         },
         {
           label: "父级组织",
-          prop: "parentId",
+          prop: "parentName",
           formDisabled: true,
-          formType: "selectTree",
-          options: [],
+          /* formType: "selectTree",
+          options: [], */
           width: 200,
         },
         {
@@ -178,7 +179,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        parentId: [
+        parentName: [
           { required: true, message: "上级部门不能为空", trigger: "blur" },
         ],
         deptName: [
@@ -213,7 +214,7 @@ export default {
       if (b.prop == "secondUnit")
         this.$set(b, "options", this.dict.type.sys_second_unit);
       if (b.prop == "lease") this.$set(b, "options", this.dict.type.sys_lease);
-      if (b.prop == "parentId") this.$set(b, "options", this.deptOptions.concat([{id:0,label:'无上级组织'}]));
+      //if (b.prop == "parentId") this.$set(b, "options", this.deptOptions.concat([{id:0,label:'无上级组织'}]));
     });
   },
   methods: {
@@ -259,9 +260,10 @@ export default {
     // 新增
     addTreeItem() {
       this.rightTitle = "新增下级组织";
-      console.log(this.nowClickTreeItem, 555);
+      this.$refs.jmForm.clearValidate()
       this.formData = {
         parentId: this.nowClickTreeItem.id,
+        parentName:this.nowClickTreeItem.label
       };
       this.disabled = false;
     },
@@ -323,6 +325,7 @@ export default {
 
         getDept(row.id, this.formParams).then((response) => {
           this.formDataInit = JSON.stringify(response.data);
+          response.data.parentName=response.data.parentName||'无父级组织'
           this.formData = response.data;
           this.$refs.jmForm.clearValidate()
         });
@@ -396,10 +399,15 @@ export default {
         })
         .catch(() => {});
     },
+     // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.exportIds = selection.map(item => item.deptId).join(',')
+    },
     /** 导出按钮操作 */
     handleExport(queryParams) {
       var obj = {
         ...queryParams,
+        exportIds:this.exportIds,
         parentId: this.nowClickTreeItem.id,
       };
       this.download(

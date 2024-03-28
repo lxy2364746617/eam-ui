@@ -3,7 +3,7 @@
     <!--部门数据-->
     <div class="location_left">
       <el-card shadow="never" style="margin-right:10px;height:100%">
-        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" :defaultExpIds="defaultExpIds">
+        <jm-user-tree :treeData="deptOptions" @handleNodeClick="handleNodeClick" :defaultExpIds="defaultExpIds" :currentNodeKey='currentNodeKey'>
           <template slot="middle-pos">
             <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"
                        v-hasPermi="['system:location:add']"
@@ -24,10 +24,10 @@
       <el-card shadow="never">
         <div slot="header" class="location_right_header">
           <span>{{ rightTitle }}</span>
-          <div>
+          <div >
             <el-button size="mini" v-show="!isBaseData" @click="cancel">取消</el-button>
             <el-button size="mini" v-show="!isBaseData" @click="saveClick" type="primary">保存</el-button>
-            <el-button size="mini" v-show="isBaseData" @click="detailsClick" type="primary"
+            <el-button size="mini" v-show="isBaseData&&nowClickTreeItem.locationFlag=='Y'" @click="detailsClick" type="primary"
             >查看详情</el-button>
           </div>
         </div>
@@ -44,7 +44,7 @@
               >
             </jm-form>
           </div>
-          <div class="content_right">
+          <div class="content_right" v-show="nowClickTreeItem.locationFlag=='Y'">
             <el-image :src="src||require('@/assets/images/noImg.png')" style="width: 180px;height:180px;">
               <div slot="error" class="image-slot">
                 <i class="el-icon-picture-outline" style="font-size:30px;color:#909399"></i>
@@ -105,6 +105,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       JmForm,
       JmTable
     },
+    dicts:['sys_fun_location_attr'],
     data(){
       return {
         // 部门树选项
@@ -112,14 +113,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         defaultExpIds:[],
         nowClickTreeItem: "",
         rightTitle: '基本信息',
-        columns:[
-          { label: '所属组织', prop: 'orgName',required: true, formDisabled: true,span:24, },
-          { label: '功能位置名称', prop: 'deptName',required: true, formDisabled: true, span:24,  },
-          { label: '功能位置编码', prop: 'deptCode',required: true, formDisabled: true,  span:24, },
-          { label: '功能位置属性', prop: 'funAttr',formType: 'select', options:[], span:24,formDisabled: true, },
-          { label: '上级功能位置', prop: 'parentDeptName',span:24,formDisabled: true,formVisible: false},
-          { label: '备注', prop: 'remark',formType: 'textarea',span:24,formDisabled: true, },
-        ],
+        
         checkBoxData:[], // 多选数据
         formData: {
           deptName:'',
@@ -130,6 +124,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           remark:''
         },
         locationFlag:'Y',
+        currentNodeKey:100,
         src:'', // 二维码路径
         isBaseData: true, // 是否为基本信息
         // 表格数据
@@ -138,21 +133,36 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         // 总条数
         total: 0,
         // 表格头部
-        tablecolumns:[
+        
+        // 是否有下级信息
+        isChildren: true,
+        isAdd:false
+      }
+    },
+    computed:{
+      columns(){
+        return [
+          { label: '所属组织', prop: 'orgName',required: true, formDisabled: true,span:24, },
+          { label: '功能位置名称', prop: 'deptName',required: true, formDisabled: true, span:24,  },
+          { label: '功能位置编码', prop: 'deptCode', formDisabled: true,  span:24, },
+          { label: '功能位置属性', prop: 'funAttr',formType: 'select', options:this.dict.type.sys_fun_location_attr, span:24,formDisabled: true,required: true, formVisible:this.isAdd||this.nowClickTreeItem.locationFlag=='Y' },
+          { label: '上级功能位置', prop: 'parentDeptName',span:24,formDisabled: true,formVisible: false},
+          { label: '备注', prop: 'remark',formType: 'textarea',span:24,formDisabled: true, },
+        ]
+      },
+      tablecolumns(){
+        return [
           { label: "功能位置名称", prop: "deptName" },
           { label: "功能位置编码", prop: "deptCode" },
-          { label: "功能位置属性", prop: "funAttr", formType: "select",options:[],type:'template'},
+          { label: "功能位置属性", prop: "funAttr", formType: "select",options:this.dict.type.sys_fun_location_attr,},
           { label: "所属组织", prop: "orgName", },
           { label: "上级功能位置", prop: "parentDeptName", },
           { label: "备注", prop: "remark", },
-        ],
-        // 是否有下级信息
-        isChildren: true,
+        ]
       }
     },
     mounted(){
       this.getTreeData()
-      this.getAttr()
     },
     methods:{
       // 扁平化树结构为数组，根据ID获取所有上级
@@ -190,37 +200,16 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           }
         })
       },
-      // 获取功能位置属性
-      getAttr(){
-        getLocationAttr().then(res=>{
-          console.log(res,'功能位置属性')
-          if(res.data){
-            res.data.forEach(item=>{
-              item.label= item.dictLabel
-              item.value = item.dictValue
-            })
-            this.columns.forEach(item=>{
-              if(item.prop =='funAttr'){
-                item.options = res.data
-              }
-            })
-            this.tablecolumns.forEach(item=>{
-              if(item.prop =='funAttr'){
-                item.options = res.data
-              }
-            })
-          }
-        })
-      },
       // 点击树节点回调
       handleNodeClick(row){
-        console.log(row)
+        console.log(row,)
         if(!this.isBaseData){
           this.$message('请保存或退出当前编辑')
         }else{
           this.nowClickTreeItem = row
           this.locationFlag=row.locationFlag
           this.getBaseInfo()
+          this.$refs.form.clearValidate()
         }
       },
       // 获取基本信息
@@ -266,7 +255,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       },
       // 多选表格回调
       handleSelectionChange(data){
-        console.log(data)
+        this.exportIds=data.map(item=>item.id).join(',')
         this.checkBoxData = data
       },
       // 获取树数据
@@ -277,7 +266,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           //展开一二级
           let arr=[]
           this.deptOptions.forEach(item=>{
-            arr.push(item.id)
+            arr.push(item.deptId)
             /* if(item.children.length>0){
               item.children.forEach(item2=>{
             arr.push(item2.id)
@@ -290,7 +279,9 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
       // 树节点新增
       addTreeItem(){
         this.rightTitle = '新增下级功能位置'
+        this.isAdd=true
         this.isBaseData = false;
+        this.formData.deptCode=''
         let editShowArr = ['deptName','funAttr','remark']
         this.setShowParentLocation(true)
         this.columns.forEach(item=>{
@@ -326,6 +317,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         }).then(() => {
           this.$modal.msgSuccess("操作成功");
           this.getTreeData();
+          this.currentNodeKey=100
         }).catch(() => {});
       },
       /** 提交按钮 */
@@ -341,28 +333,34 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
           parentDeptCode: this.nowClickTreeItem.deptCode,
           parentDeptId: this.nowClickTreeItem.deptId,
           remark: formdata.remark,
-          id:id
+          id:id,
+          deptId: this.nowClickTreeItem.deptId,
         }
         // 新增或编辑
         saveOrUpdate(params).then(res=>{
+          this.isAdd=false
           this.cancel()
           this.$message({
             message: '操作成功！',
             type: 'success'
           })
           this.getTreeData( )
-        })
+          this.currentNodeKey=params.deptId||params.parentId
+          console.log('this.currentNodeKey',params,params.deptId||params.parentDeptId)
+        }) 
 
       },
       // 点击表单取消
       cancel(){
         this.rightTitle = '基本信息'
         this.isBaseData=true
+        this.isAdd=false
         this.setShowParentLocation(false)
         this.columns.forEach(item=>{
           item.formDisabled = true
         })
         this.getBaseInfo()
+        this.$refs.form.clearValidate()
       },
       // 点击保存
       saveClick(){
@@ -396,7 +394,9 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         this.checkBoxData.forEach(item=>{
           ids.push(item.id)
         })
-        let params = {}
+        let params = {
+          exportIds:this.exportIds
+        }
         if(this.checkBoxData.length){
           params.ids = ids
         }else{

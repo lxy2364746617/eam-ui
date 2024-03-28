@@ -4,7 +4,8 @@
       <!--部门数据-->
       <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
-        <jm-user-tree  :treeData="deptOptions"  @handleNodeClick="handleNodeClick" style="position: fixed;top: 121px;height: calc(100vh - 141px);">
+        <jm-user-tree  :treeData="deptOptions"  @handleNodeClick="handleNodeClick" :defaultExpIds="['78']" :currentNodeKey='currentNodeKey'
+        style="position: fixed;top: 121px;height: calc(100vh - 141px);">
           <template slot="middle-pos">
             <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"></el-button>
             <el-button type="text" icon="el-icon-edit-outline" @click="editTreeItem"></el-button>
@@ -20,6 +21,7 @@
             <span>{{ rightTitle }}</span>
           </div>
           <jm-form 
+            ref="form"
             :columns="columns" 
             :formData="formData" 
             :labelWidth="'180px'"
@@ -101,6 +103,7 @@ export default {
       rightTitle: '基本信息',
       // 表单参数
       form: {},
+      currentNodeKey:78,
       // 表单校验
       rules: {
         parentId: [
@@ -217,6 +220,7 @@ export default {
     // 新增
     addTreeItem(){
       this.rightTitle = '新增下级组织'
+      this.$refs.form.clearValidate()
       this.formData = {
         parentId:this.nowClickTreeItem.id || 0
       }
@@ -288,6 +292,7 @@ export default {
           this.rightTitle = '基本信息'
           this.$modal.msgSuccess("修改成功");
           this.disabled = true;
+          this.currentNodeKey=formdata.categoryId
         });
       } else {
         addCategory(formdata).then(response => {
@@ -295,6 +300,7 @@ export default {
           this.$modal.msgSuccess("新增成功");
           this.disabled = true;
           this.getDeptTree();
+          this.currentNodeKey=formdata.parentId
         });
       }
       // this.$refs["form"].validate(valid => {
@@ -310,6 +316,7 @@ export default {
         return delCategory(id);
       }).then(() => {
         this.getDeptTree();
+        this.currentNodeKey=0
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },

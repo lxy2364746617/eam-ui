@@ -10,7 +10,7 @@
         <el-col :span="1.5">
           <el-button
             type="primary"
-            plain
+            
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
@@ -19,8 +19,8 @@
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="danger"
-            plain
+            type="primary"
+            
             icon="el-icon-delete"
             size="mini"
             :disabled="multiple"
@@ -29,18 +29,24 @@
           >删除</el-button>
         </el-col>
         <el-col :span="1.5">
-          <el-button
-            type="warning"
-            plain
+         <!--  <el-button
+            type="primary"
+          
             icon="el-icon-download"
             size="mini"
             @click="handleExport"
             v-hasPermi="['system:notice:export']"
-          >导出</el-button>
+          >导出</el-button> -->
         </el-col>
         
       </template>
       <template #end_handle="scope">
+        <el-button
+          size="mini"
+          type="text"
+          icon="el-icon-view"
+          @click="handleView(scope.row)"
+        >查看</el-button>
         <el-button
           size="mini"
           type="text"
@@ -99,16 +105,21 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+    <el-drawer :visible='showDetail' :before-close="()=>{showDetail=false}" size='70%'>
+      <notice-detail v-if="showDetail" :id="selectNoticeId">
+      </notice-detail>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
-import JmTable from "@/components/JmTable1";
+import noticeDetail from './details.vue'
+import JmTable from "@/components/JmTable";
 export default {
   name: "Notice",
   dicts: ['sys_notice_status', 'sys_notice_type'],
-  components: { JmTable },
+  components: { JmTable,noticeDetail },
   data() {
     return {
       // 遮罩层
@@ -130,16 +141,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 表格列
-      columns: [
-        { label: '创建时间', prop: 'createTime', formType: 'datetime',formType: "daterange" },
-        { label: '发布人', prop: 'issUser',  },
-        { label: '标题', prop: 'noticeTitle',  },
-        { label: '简介', prop: 'noticeIntro',   },
-        { label: '内容', prop: 'noticeContent', formType: 'editor', showOverflowTooltip:false},
-        // { label: '公告类型', prop: 'noticeType', width: '200',  },
-        // { label: '状态', prop: 'status', width: '200',  },
-        // { label: '创建者', prop: 'createBy', width: '200',  },
-      ],
+      
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -148,6 +150,7 @@ export default {
         // createBy: undefined,
         // status: undefined
       },
+      exportIds:undefined,
       // 表单参数
       form: {
         noticeTitle:'',
@@ -164,8 +167,24 @@ export default {
         noticeType: [
           { required: true, message: "公告类型不能为空", trigger: "change" }
         ]
-      }
+      },
+      showDetail:false,
+      selectNoticeId:''
     };
+  },
+  computed:{
+    columns(){
+      return [
+        { label: '创建时间', prop: 'createTime', formType: 'datetime',formType: "daterange" },
+        { label: '发布人', prop: 'issUser',  },
+        { label: '标题', prop: 'noticeTitle',  },
+        { label: '简介', prop: 'noticeIntro',  showOverflowTooltip:true  },
+        { label: '内容', prop: 'noticeContent', formType: 'editor', showOverflowTooltip:false},
+        // { label: '公告类型', prop: 'noticeType', width: '200',  },
+         { label: '是否发布', prop: 'status',  formType:'selectTag',options:this.dict.type.sys_notice_status },
+        // { label: '创建者', prop: 'createBy', width: '200',  },
+      ]
+    } 
   },
   created() {
     this.getList();
@@ -207,6 +226,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.noticeId)
+      this.exportIds = selection.map(item => item.noticeId).join(',')
       this.single = selection.length!=1
       this.multiple = !selection.length
     },
@@ -215,6 +235,10 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加公告";
+    },
+    handleView(row){
+      this.selectNoticeId=row.noticeId
+      this.showDetail=true
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -259,9 +283,24 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       this.download('system/notice/export', {
-        ...this.queryParams
+        ...this.queryParams,exportIds:this.exportIds
       }, `config_${new Date().getTime()}.xlsx`)
     },
   }
 };
 </script>
+<style lang="scss" scoped>
+    ::v-deep .el-dialog__body{
+        height: calc(88vh - 120px) ;
+        overflow-y: auto ;
+    }
+    ::v-deep .el-dialog__footer{
+      text-align: center;
+      border-top: 1px solid rgb(114, 97, 97);
+    }
+</style>
+<style>
+.el-tooltip__popper{
+      max-width: 500px !important;
+    }
+</style>

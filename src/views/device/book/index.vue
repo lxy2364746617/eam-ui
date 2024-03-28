@@ -649,6 +649,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.deviceId)
+      this.exportIds = selection.map((item) => item.deviceId).join(',')
       this.single = selection.length != 1
       this.multiple = !selection.length
       this.radioRow = selection[0]
@@ -891,6 +892,7 @@ export default {
     handleExport() {
       var obj = {
         categoryId: this.queryParams.categoryId,
+        exportIds:this.exportIds
       }
       this.download(
         'equipment/base/export',

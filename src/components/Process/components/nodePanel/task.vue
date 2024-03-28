@@ -17,36 +17,36 @@
         </el-badge>
       </template>
       <template #checkSingleUser>
-          <el-input placeholder="请选择人员" class="input-with-select" v-model="checkValues">
+          <el-input placeholder="请选择人员"  v-model="checkValues">
               <template slot="append">
                 <!--指定用户-->
-                <el-button style="padding:10px 7px;margin:0;border:1px solid #eee" icon="el-icon-user" @click="singleUserCheck"/>
-                <el-divider direction="vertical"></el-divider>
-                <!--选择表达式-->
-                <el-button style="padding:10px 7px;border:1px solid #eee" icon="el-icon-postcard" @click="singleExpCheck('assignee')"/>
-              </template>
+                <el-button  icon="el-icon-user" @click="singleUserCheck"/>
+<!--                 <el-divider direction="vertical"></el-divider>
+ -->                <!--选择表达式-->
+<!--                 <el-button style="padding:10px 7px;border:1px solid #eee" icon="el-icon-postcard" @click="singleExpCheck('assignee')"/>
+ -->              </template>
           </el-input>
       </template>
       <template #checkMultipleUser>
           <el-input placeholder="请选择候选用户" class="input-with-select" v-model="checkValues">
             <template slot="append">
               <!--候选用户-->
-              <el-button style="padding:10px 7px;margin:0;border:1px solid #eee" icon="el-icon-user" @click="multipleUserCheck"/>
-              <el-divider direction="vertical"></el-divider>
-              <!--选择表达式-->
-              <el-button style="padding:10px 7px;border:1px solid #eee" icon="el-icon-postcard" @click="singleExpCheck('candidateUsers')"/>
-            </template>
+              <el-button  icon="el-icon-user" @click="multipleUserCheck"/>
+<!--               <el-divider direction="vertical"></el-divider>
+ -->              <!--选择表达式-->
+<!--               <el-button style="padding:10px 7px;border:1px solid #eee" icon="el-icon-postcard" @click="singleExpCheck('candidateUsers')"/>
+ -->            </template>
           </el-input>
       </template>
       <template #checkRole>
         <el-input placeholder="请选择候选角色" class="input-with-select" v-model="checkValues">
           <template slot="append" >
           <!--候选角色-->
-            <el-button style="padding:10px 7px;margin:0;border:1px solid #eee" icon="el-icon-user" @click="multipleRoleCheck"/>
-            <el-divider direction="vertical"></el-divider>
-              <!--选择表达式-->
-            <el-button style="padding:10px 7px;border:1px solid #eee" icon="el-icon-postcard" @click="singleExpCheck('candidateGroups')"/>
-          </template>
+            <el-button  icon="el-icon-user" @click="multipleRoleCheck"/><!-- style="padding:10px 7px;margin:0;border:1px solid #eee" -->
+<!--             <el-divider direction="vertical"></el-divider>
+ -->              <!--选择表达式-->
+<!--             <el-button style="padding:10px 7px;border:1px solid #eee" icon="el-icon-postcard" @click="singleExpCheck('candidateGroups')"/>
+ -->          </template>
         </el-input>
       </template>
     </x-form>
@@ -668,7 +668,7 @@ export default {
 ::v-deep .el-radio{
   margin:10px 30px 0 5px !important
 }
-::v-deep .el-input-group__append{
+/* ::v-deep .el-input-group__append{
   padding-left: 0;
-}
+} */
 </style>

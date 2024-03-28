@@ -233,7 +233,8 @@ export default {
         operName: undefined,
         businessType: undefined,
         status: undefined
-      }
+      },
+      exportIds:undefined
     };
   },
   created() {
@@ -269,6 +270,7 @@ export default {
     /** 多选框选中数据 */
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.operId)
+      this.exportIds = selection.map(item => item.operId).join(',')
       this.multiple = !selection.length
     },
     /** 排序触发事件 */
@@ -304,7 +306,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       this.download('monitor/operlog/export', {
-        ...this.queryParams
+        ...this.queryParams,exportIds:this.exportIds
       }, `operlog_${new Date().getTime()}.xlsx`)
     }
   }

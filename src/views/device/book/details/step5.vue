@@ -89,7 +89,6 @@
       :total="total2"
       :initLoading="false"
       :handleWidth="130"
-      :showOperate='false'
       >
       </jm-table>
       <div style="width:100%;height:48px"></div>
@@ -184,21 +183,21 @@ export default {
         { label:"单位", prop:"unit", span: 24,formType:'select',options:this.dict.type.spare_parts_unit },
         { label:"当前库存", prop:"inventory", span: 24, },
         { label:"供应商名称", prop:"supplierName",  span: 24, },
-        { label:"存储位置", prop:"location", span: 24,formType:'selectTree',options:this.locationOptions,width:180},
-        { label:"所属组织", prop:"affDept", span: 24, formType:'selectTree',options:this.deptOptions,width:180 },
+        { label:"存储位置", prop:"location", span: 24,formType:'selectTree',options:this.locationOptions,width:230},
+        { label:"所属组织", prop:"affDept", span: 24, formType:'selectTree',options:this.deptOptions,width:230 },
       ]
     },
     columns2(){
       return [
-        { label:"备件名称", prop:"partName", span: 24, },
-        { label:"备件编码", prop:"partCode", span: 24, },
-        { label:"规格型号", prop:"sModel", span: 24, },
-        { label:"备件类别", prop:"partType", span: 24, formType:'select',options:this.dict.type.spare_parts_type },
+        { label:"备件名称", prop:"attachmentName", span: 24, },
+        { label:"备件编码", prop:"attachmentCode", span: 24, },
+        { label:"规格型号", prop:"specs", span: 24, },
+        { label:"备件类别", prop:"attachmentType", span: 24, formType:'select',options:this.dict.type.spare_parts_type },
         { label:"单位", prop:"unit", span: 24,formType:'select',options:this.dict.type.spare_parts_unit },
-        { label:"更换数量", prop:"inventory", span: 24, },
-        { label:"工单编号", prop:"supplierName",  span: 24, },
-        { label:"工单名称", prop:"locationName", span: 24,formType:'selectTree',options:this.locationOptions,width:180},
-        { label:"更换时间", prop:"affDeptName", span: 24, formType:'selectTree',options:this.deptOptions,width:180 },
+        { label:"更换数量", prop:"replaceNum", span: 24, },
+        { label:"工单编号", prop:"orderCode",  span: 24, },
+        { label:"工单名称", prop:"orderName", span: 24,},
+        { label:"更换时间", prop:"createTime", span: 24, formType:'datetime', },
       ]
     },
   },
@@ -281,6 +280,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         deviceId: this.formData.deviceId,
+        deviceCode: this.formData.deviceCode,
       },
       queryParams2: {
         pageNum: 1,
@@ -320,6 +320,7 @@ export default {
   async created() {
     await this.getTreeSelect()
     await this.getList(this.queryParams)
+    await this.getList3(this.queryParams)
     
   },
   methods: {
@@ -366,9 +367,10 @@ export default {
     getList3(queryParams) {
       queryParams.deviceId = this.queryParams.deviceId
       queryParams.currDeviceId = this.queryParams.deviceId
+      queryParams.deviceCode = this.queryParams.deviceCode
       this.loading = true;
       getPartRecord(queryParams).then(response => {
-          this.$set(this,'equipmentList2',response.rows)
+          this.$set(this,'equipmentList2',response.data.records)
           this.total1 = response.total;
           this.loading = false;
         }

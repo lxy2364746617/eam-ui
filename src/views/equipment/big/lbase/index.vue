@@ -231,6 +231,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.largeId)
+      this.exportIds = selection.map(item => item.largeId).join(',')
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
@@ -285,7 +286,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       this.download('equipment/lbase/export', {
-        ...this.queryParams
+        ...this.queryParams,exportIds:this.exportIds
       }, `供电设备_${new Date().getTime()}.xlsx`)
     }
   }

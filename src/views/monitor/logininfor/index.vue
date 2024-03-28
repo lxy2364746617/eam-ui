@@ -164,7 +164,8 @@ export default {
         ipaddr: undefined,
         userName: undefined,
         status: undefined
-      }
+      },
+      exportIds:undefined
     };
   },
   created() {
@@ -196,6 +197,7 @@ export default {
     /** 多选框选中数据 */
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.infoId)
+      this.exportIds = selection.map(item => item.infoId).join(',')
       this.single = selection.length!=1
       this.multiple = !selection.length
       this.selectName = selection.map(item => item.userName);
@@ -237,7 +239,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       this.download('monitor/logininfor/export', {
-        ...this.queryParams
+        ...this.queryParams,exportIds:this.exportIds
       }, `logininfor_${new Date().getTime()}.xlsx`)
     }
   }

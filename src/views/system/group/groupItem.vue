@@ -27,7 +27,6 @@
 <script>
 import { listBASE } from "@/api/equipment/BASE";
 import { groupList,  deptTreeSelect } from "@/api/system/user";
-
 import { equipmentTree } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -58,9 +57,9 @@ export default {
       return [
         { label: "用户名", prop: "userName", class: true },
         { label: "姓名", prop: "nickName", class: true },
-        { label: "岗位", prop: "specs" },
+        /* { label: "岗位", prop: "specs" }, */
         { label: "联系方式", prop: "phonenumber" },
-        { label: "所属组织", prop: "deptName" },
+        { label: "所属组织", prop: "deptId",options:this.deptOptions,width:210,formType:'selectTree'},
       ]
     },
   },
