@@ -98,7 +98,7 @@ export default {
         { label:"功率", prop:"power", span: 8, },
         { label:"流量", prop:"ratedFlow", span: 8, },
         { label:"纯度", prop:"purity", span: 8, },
-        { label:"投运时间", prop:"putTime", span: 8, formType: "date", },
+        { label:"投运时间", prop:"putTime", formType: "daterange",width:200 },
         { label:"压力", prop:"gasPower", span: 8, },
         { label:"配用空压机压力", prop:"matchingPower", span: 8, },
         { label:"制氮机配用空压机流量", prop:"matchingFlow", span: 8, },

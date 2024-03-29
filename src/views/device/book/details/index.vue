@@ -119,10 +119,10 @@ export default {
   },
   computed:{
     mainImage(){
-      return process.env.VUE_APP_BASE_API + this.formData.mainImage 
+      return this.formData.mainImage ? process.env.VUE_APP_BASE_API + this.formData.mainImage : null
     }, 
     qrCode(){
-      return process.env.VUE_APP_BASE_API + this.formData.qrCode
+      return this.formData.qrCode ? process.env.VUE_APP_BASE_API + this.formData.qrCode : null
     }, 
     // 列信息
     columns(){

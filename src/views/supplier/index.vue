@@ -267,9 +267,9 @@ export default {
         {
           label: '更新时间',
           prop: 'updateTime',
-          span: 24,
+          width:200,
           formVisible: false,
-          formType: 'datetime',
+          formType: 'daterange',
         },
       ]
     },
