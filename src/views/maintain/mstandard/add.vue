@@ -62,7 +62,7 @@
                 <el-tab-pane label="常规润滑" name="fourth"></el-tab-pane>
             </el-tabs>
             <div class="title">关联保养检修项
-                <el-button type="primary" size="mini" @click="handleAdd">添加</el-button>
+                <el-button type="primary" size="mini" icon="el-icon-plus" @click="handleAdd">添加</el-button>
             </div>
             <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
                 <el-table-column type="selection" width="55" align="center" />

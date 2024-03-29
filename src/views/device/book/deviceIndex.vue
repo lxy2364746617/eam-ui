@@ -45,9 +45,7 @@ export default {
             type: String,
         },
     },
-    computed: {
-
-    },
+    
     data() {
         return {
             radio: 0,
@@ -65,6 +63,12 @@ export default {
             },
             deptOptions:[]
         };
+    },
+    computed: {
+        columns(){
+           return {
+            useDeptId:{formType:'selectTree',options:this.deptOptions,width:200}
+        }}
     },
    async created() {
        await listDept().then((response) => {
@@ -117,6 +121,12 @@ export default {
                             bb.prop = bb.fieldCode
                             bb.formType = bb.fieldType
                             bb.tableVisible = !bb.custom
+
+                            for (const key in this.columns) {
+                            if(key==bb.prop){
+                                Object.assign(bb,this.columns[key])
+                            }
+                          }
                         });
                     }
                 });

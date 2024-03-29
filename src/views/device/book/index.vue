@@ -871,7 +871,6 @@ export default {
       
     },
     handleFlowRecord(row){
-      console.log(row)
       if(row.processStatus=='running'){ //待办
         this.$router.push({ path: '/flowable/task/todo/detail/index',
         query: {

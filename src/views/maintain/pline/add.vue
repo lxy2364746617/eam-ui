@@ -21,8 +21,8 @@
             </el-row>
         </el-form>
         <div class="title">设备列表
-            <el-button type="primary" size="mini"  @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="primary" size="mini"  @click="allDelete">批量删除</el-button>
+            <el-button type="primary" size="mini" icon="el-icon-plus"  @click="handleAdd" style="margin-left: auto;">添加</el-button>
+            <el-button type="primary" size="mini" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <el-table v-loading="loading" :data="lineList" @selection-change="handleSelectionChange" ref="queryTable"
             row-key="deviceCode" :header-cell-style="{'background-color':'#e7f3ff'}">

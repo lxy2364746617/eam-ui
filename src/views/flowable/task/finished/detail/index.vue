@@ -7,7 +7,7 @@
       </div>
       <el-tabs  tab-position="top" v-model="activeName" @tab-click="handleClick">
         <!--表单信息-->
-         <el-tab-pane label="表单信息" name="1">
+         <el-tab-pane label="表单信息" name="1" v-if="!readonly">
           <el-col :span="24"  >
             <div class="test-form">
               <parser v-if="variablesData" :key="new Date().getTime()" :form-conf="variablesData" />
@@ -133,6 +133,7 @@ export default {
       variablesData: {}, // 流程变量数据
       variableOpen: false, // 是否加载流程变量数据
       path:'',
+      readonly:false
     };
   },
   created() {
@@ -140,7 +141,8 @@ export default {
     this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
     this.taskForm.businessId = this.$route.query.businessId;
-    console.log(this.taskForm)
+    this.readonly=this.$route.query.readonly
+    if (this.readonly) this.activeName='2'
     // 回显流程记录
     // 流程任务重获取变量表单
     if (this.taskForm.taskId){

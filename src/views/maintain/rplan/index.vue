@@ -44,8 +44,8 @@ export default {
       return [
         { label: '检验计划编码', prop: 'planCode', class: true },
         { label: '检验计划名称', prop: 'planName', class: true },
-         { label: '计划开始时间', prop: 'planBeginTime', formType: 'datetime' },
-        { label: '计划结束时间', prop: 'planEndTime', formType: 'datetime' },
+         { label: '计划开始时间', prop: 'planBeginTime', formType: 'daterange',width:200 },
+        { label: '计划结束时间', prop: 'planEndTime', formType: 'daterange',width:200 },
         { label: '检验设备数量', prop: 'deviceNum', class: true },
         { label: '状态', prop: 'planStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
         { label: '检测单位', prop: 'supplierName', },
@@ -56,9 +56,9 @@ export default {
         { label: '检验周期类别', prop: 'planCycleType', formType: 'select', options: this.dict.type.mro_plan_cycle_type, },
         { label: '检验类型', prop: 'itemType',  formType: 'select', options: this.dict.type.DQJY, },
         { label: '创建人', prop: 'createBy' },
-        { label: '创建时间', prop: 'createTime', formType: 'datetime' },
+        { label: '创建时间', prop: 'createTime', formType: 'daterange',width:200 },
         { label: '修改人', prop: 'updateBy' },
-        { label: '修改时间', prop: 'updateTime', formType: 'datetime' }
+        { label: '修改时间', prop: 'updateTime', formType: 'daterange',width:200 }
       ]
     },
   },

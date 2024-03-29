@@ -45,9 +45,9 @@ export default {
         { label: '维保路线名称', prop: 'lineName', },
         { label: '状态', prop: 'lineStatus', formType: 'switch', options: this.dict.type.sys_normal_disable, span: 24},
         { label: '创建人', prop: 'createBy', },
-        { label: '创建时间', prop: 'createTime', formType: 'datetime' },
+        { label: '创建时间', prop: 'createTime', formType: 'daterange',width:200 },
         { label: '更新者', prop: 'updateBy' },
-        { label: '更新时间', prop: 'updateTime', formType: 'datetime' },
+        { label: '更新时间', prop: 'updateTime', formType: 'daterange',width:200 },
       ]
     },
   },

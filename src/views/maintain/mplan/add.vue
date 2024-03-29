@@ -94,7 +94,7 @@
             </el-row>
         </el-form>
         <div class="title">保养路线
-            <el-button type="primary"  size="mini" icon="el-icon-edit" @click="handleAdd" style="margin-left: auto;">添加</el-button>
+            <el-button type="primary"  size="mini" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
             <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false"
@@ -107,7 +107,7 @@
             </template>
         </jm-table>
         <div class="title" style="margin-top: 20px;">关联文档
-            <el-button type="primary" size="mini" @click="AddFile" v-hasPermi="['maintain:mplan:add']">上传</el-button>
+            <el-button type="primary" size="mini" icon="el-icon-upload2" @click="AddFile" v-hasPermi="['maintain:mplan:add']">上传</el-button>
         </div>
 
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"

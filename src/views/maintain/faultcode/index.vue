@@ -193,7 +193,7 @@ export default {
         { label: '故障分类', prop: 'faultType',formType:'select',options: this.dict.type.kdb_fault_type, },
         { label: '状态', prop: 'status',formType:'select',options: this.statusArr, },
         { label: '创建人', prop: 'createBy',},
-        { label: '创建时间', prop: 'createTime', formType: 'datetime'},
+        { label: '创建时间', prop: 'createTime', formType: 'daterange',width:200},
       ]
     }
   },

@@ -111,7 +111,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
         // 表单头部
         tablecolumns:[
           { label: "文件名称", prop: "fileName" },
-          { label: "类型", prop: "kdbType", formType: "selectTree",options:[],disableBranchNode:true},
+          { label: "类型", prop: "kdbType", formType: "selectTree",options:[],disableBranchNode:true,width:110},
           { label: "计划编码", prop: "planCode" },
           { label: "计划名称", prop: "planName", },
           { label: "上传人员", prop: "createBy", },
