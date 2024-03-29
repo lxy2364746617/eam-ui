@@ -2,8 +2,8 @@
   <div>
       <div class="article">
     <div class="title">{{form.noticeTitle}}</div>
-    <div class="publish-time">发布时间：{{form.updateTime}} | 发布人：{{form.issUser}}</div>
-    <div class="summary" >简介：{{form.noticeIntro}}</div>
+    <div class="publish-time">发布时间：{{form.updateTime}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 发布人：{{form.issUser}}</div>
+    <div class="summary" ><span style="font-weight:bolder">简介：</span>{{form.noticeIntro}}</div>
      <editor  v-model="form.noticeContent" :min-height="192" readOnly />
 </div>
   </div>
@@ -58,9 +58,9 @@ export default {
     }
     .summary {
         text-align: left;
-        font-size: 12px;
+        font-size: 14px;
         margin-bottom: 20px;
-        text-indent: 24px;
+        text-indent: 28px;
         line-height: 28px;
         
     }

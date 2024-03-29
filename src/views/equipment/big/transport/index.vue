@@ -86,8 +86,8 @@ export default {
         { label:"用途", prop:"use", span: 8, },
         { label:"动力形式", prop:"runPower", span: 8, },
         { label:"生产厂家", prop:"produceManufacturer", span: 8, },
-        { label:"生产日期", prop:"produceTime", span: 8, formType: "date", },
-        { label:"使用日期", prop:"useTime", span: 8, formType: "date", },
+        { label:"生产日期", prop:"produceTime", width:200, formType: "datetimerange", },
+        { label:"使用日期", prop:"useTime", width: 200, formType: "datetimerange", },
       ]
     },
   },

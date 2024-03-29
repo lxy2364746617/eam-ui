@@ -104,7 +104,7 @@ export default {
         { label:"电机功率", prop:"elevatorPower", span: 8, },
         { label:"台数", prop:"sum", span: 8, },
         { label:"设备厂家", prop:"equipmentManufacturer", span: 8, },
-        { label:"投运时间", prop:"putTime", span: 8, formType: "date",  },
+        { label:"投运时间", prop:"putTime", width: 200, formType: "daterange",  },
         { label:"电压等级", prop:"vcc", span: 8, },
         { label:"流量", prop:"ratedFlow", span: 8, },
         { label:"转速", prop:"speed", span: 8, },

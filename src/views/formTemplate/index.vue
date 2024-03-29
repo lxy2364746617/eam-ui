@@ -128,7 +128,7 @@ export default {
         { label: '所属模块', prop: 'module',formType: 'select',required: true, options: [], width: 200, span:24, },
         { label: '所属维度', prop: 'templateType',formType: 'select', options: [] ,width: 100, required: true, span:24, },
         { label: '备注', prop: 'remark', width: 100, span:24, },
-        { label: '更新时间', prop: 'updateTime',width: 100, span:24,formVisible:false },
+        { label: '更新时间', prop: 'updateTime',formType:'daterange',width: 200, span:24,formVisible:false },
       ],
       // 是否显示弹出层
       open: false,

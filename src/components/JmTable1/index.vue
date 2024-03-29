@@ -308,6 +308,7 @@ export default {
     },
     methods: {
       daterangeChange(val,row){
+        console.log(this.queryParams)
         this.$set(this.queryParams,'params',this.queryParams.params || {})
         if(row?.dateKey?.length){
           row.dateKey.forEach((key,idx)=>{

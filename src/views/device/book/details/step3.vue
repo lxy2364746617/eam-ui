@@ -5,8 +5,13 @@
         <p class="subtitle"><i class="el-icon-magic-stick"></i> 设备位置：
           <span> {{formData.locationFullName}} </span>
         </p>
-        <div style="height:200px;width:300px;">
-          <img :src="mainImage||require('@/assets/images/noImg.png')" style="width:100%;height:100%">
+        <div style="height:200px;width:300px;position:relative" :class="{main_image:mainImage}">
+          <img :src="mainImage||require('@/assets/images/noImg.png')"  style="width:100%;height:100%">
+          <div class="img_btn" style="line-height:200px">
+            <span @click="handlePictureCardPreview({url:mainImage})">
+            <i class="el-icon-zoom-in"></i>
+          </span> 
+          </div>
         </div> 
       </el-col>
       <el-col :span="8">
@@ -291,6 +296,21 @@ export default {
       }
     }
 } 
+.main_image{
+  &:hover{
+     .img_btn{
+        text-align: center;
+        line-height: 148px;
+        font-size: 22px;
+        display: flex;
+        color: white;
+        justify-content: space-evenly;
+        span{
+          cursor: pointer;
+        }
+      }
+  }
+}
 .img_btn{
   width:100%;
   height: 100%;
@@ -299,4 +319,5 @@ export default {
    top: 0;
    display: none;
 } 
+
 </style>

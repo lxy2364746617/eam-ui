@@ -102,6 +102,20 @@
                     placeholder="选择日期时间"
                   >
                   </el-date-picker>
+                  <el-date-picker
+                      v-else-if="col.formType=='daterange'"
+                      v-model="queryParams[col.prop]"
+                      :value-format="'yyyy-MM-dd'"
+                      type="daterange"
+                      clearable
+                      style="width: auto;"
+                      :placeholder="col.placeholder || '选择日期'"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      @change="daterangeChange($event,col)"
+                      >
+                    </el-date-picker>
                   <el-select
                     v-else-if="
                       col.formType == 'select' ||
@@ -230,11 +244,11 @@
               <div
                 v-else
                 v-html="scope.row[col.prop]"
-                :class="{ active: col.class }"
+                :class="{ active: col.class ,isEditor:col.formType=='editor'}"
                 @click="col.class?rowClick(scope.row):()=>{}"
                 :style="col.formType=='editor'?'max-height:50px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;':''"
               ></div>
-            </template>
+            </template> 
           </el-table-column>
         </template>
         <el-table-column
@@ -389,6 +403,19 @@ export default {
     };
   },
   methods: {
+    daterangeChange(val,row){
+      console.log(val,row,this.queryParams)
+        this.$set(this.queryParams,'params',this.queryParams.params || {})
+        if(row?.dateKey?.length){
+          row.dateKey.forEach((key,idx)=>{
+            this.queryParams.params[key] = val[idx]
+          })
+          console.log('row.dateKey',row.dateKey)
+        }else{
+          this.queryParams.params['begin'+row.prop] = val[0]
+          this.queryParams.params['end'+row.prop] = val[1]
+        }
+      },
     rowClick(row){
       this.$emit("rowClick", row);
       },
@@ -465,7 +492,14 @@ export default {
       this.getList();
     },
     getList() {
-      this.$emit("getList", this.queryParams);
+        let keys = Object.keys(this.queryParams)
+        let params = {}
+        keys.forEach(key=>{
+          if(!Array.isArray(this.queryParams[key])){
+            params[key] = this.queryParams[key]
+          }
+        })
+      this.$emit("getList", params);
     },
     resetPage(num){
       this.$set(this.queryParams, "pageNum", num||1);
@@ -507,6 +541,8 @@ export default {
   .el-input--small
   .el-input__inner,
 ::v-deep .vue-treeselect,
+::v-deep .el-date-editor--daterange,
+  ::v-deep .el-range-editor--small.el-input__inner,
 ::v-deep .vue-treeselect .vue-treeselect__control {
   height: 100%;
   border-radius: 0;
@@ -516,6 +552,12 @@ export default {
   bottom: 0;
   right: 0;
 }
+::v-deep .el-range-editor--small .el-range-separator{
+    display: flex;
+    align-items: center;
+    margin-right:5px;
+    color: #C0C4CC;
+  }
 ::v-deep .vue-treeselect__placeholder,
 ::v-deep .vue-treeselect__single-value {
   line-height: 46px;
@@ -551,5 +593,12 @@ export default {
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
     height: 12px;
     opacity: 0.5;
+}
+.isEditor{
+  :first-child{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>

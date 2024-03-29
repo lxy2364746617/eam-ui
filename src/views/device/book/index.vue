@@ -350,7 +350,7 @@ export default {
           options: this.deptOptions,
           width: 180,
         },
-        { label: '入账日期', prop: 'makerAoTime', formType: 'date' },
+        { label: '入账日期', prop: 'makerAoTime', formType: 'daterange',width:200 },
         {
           label: '设备属性',
           prop: 'deviceAtt',

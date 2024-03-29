@@ -10,16 +10,23 @@
           说明：此功能针对老设备，新设备请走设备入库流程
         </el-col>
       </el-row>
-      <el-steps :active="stepActive" style="width: 90%;margin: 0 auto;padding-top: 30px;">
-        <el-step v-for="item in elstep" v-if="item.visible" :name="item.title" :key="Math.random()" :title="item.title" :description="item.description"></el-step>
+      <el-steps :active="stepActive"  style="width: 90%;margin: 0 auto;padding-top: 30px;">
+        <el-step v-for="(item,index) in elstep" v-if="item.visible"   :name="item.title" :key="Math.random()" :title="item.title" :description="item.description" @click.native="changeStep(index)">
+          <i v-if="elstep[2].visible&&index<stepActive" class="el-icon-check" slot="icon"></i>
+          <div v-if="elstep[2].visible&&index==stepActive"  slot="icon">{{index+1}}</div>
+          <i v-if="!elstep[2].visible&&index<2&&index<stepActive" class="el-icon-check" slot="icon"></i>
+          <i v-if="!elstep[2].visible&&index>2&&index<stepActive+1" class="el-icon-check" slot="icon"></i>
+          <div v-if="!elstep[2].visible&&index<2&&index==stepActive"  slot="icon">{{index+1}}</div>
+          <div v-if="!elstep[2].visible&&index>2&&index==stepActive+1"  slot="icon">{{index}}</div>
+        </el-step>
       </el-steps>
     </el-card>
     
-    <step1 v-if="stepActive==0" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent" :isEdit='isEdit'></step1>
-    <step2 v-if="stepActive==1" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step2>
-    <step3 v-if="elstep[2].visible?stepActive==2:false" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step3>
-    <step4 v-if="elstep[2].visible?stepActive==3:stepActive==2" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step4>
-    <step5 v-if="elstep[2].visible?stepActive==4:stepActive==3" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step5>
+    <step1 v-if="stepActive==0" ref="step1" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent" :isEdit='isEdit'></step1>
+    <step2 v-if="stepActive==1" ref="step2" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step2>
+    <step3 v-if="elstep[2].visible?stepActive==2:false" ref="step3" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step3>
+    <step4 v-if="elstep[2].visible?stepActive==3:stepActive==2" ref="step4" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step4>
+    <step5 v-if="elstep[2].visible?stepActive==4:stepActive==3" ref="step5" :formData="formData" :stepActive="stepActive" @nextstep="nextstep" :elstep="elstep" @prvstep="prvstep" @closeform="backparent"></step5>
   </div>
 </template>
 
@@ -235,6 +242,26 @@ export default {
 
       return formData
     },
+    changeStep(index){
+        if(this.elstep[2].visible) {
+          console.log(index , this.formData.step)
+          if(index<=this.stepActive) this.stepActive=index
+          else if(index==this.stepActive+1) {
+            this.$refs['step'+index].nextstep()
+            }
+          else  this.$message.error('请依序完善信息')
+        }else{
+          if(index<=this.stepActive) this.stepActive=index<2?index:index-1
+          else if(index<2&&index==this.stepActive+1) {
+            this.$refs['step'+index].nextstep()
+          }
+          else if(index>2&&index==this.stepActive+2){
+            if(index==3) this.$refs['step'+(index-1)].nextstep()
+            else this.$refs['step'+index].nextstep()
+          }
+          else this.$message.error('请依序完善信息')
+        }
+    }
   }
 };
 </script>

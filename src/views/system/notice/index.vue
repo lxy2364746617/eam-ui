@@ -175,11 +175,11 @@ export default {
   computed:{
     columns(){
       return [
-        { label: '创建时间', prop: 'createTime', formType: 'datetime',formType: "daterange" },
+        { label: '创建时间', prop: 'createTime', formType: "daterange",dateKey:['beginTime','endTime'],width:200 },
         { label: '发布人', prop: 'issUser',  },
         { label: '标题', prop: 'noticeTitle',  },
         { label: '简介', prop: 'noticeIntro',  showOverflowTooltip:true  },
-        { label: '内容', prop: 'noticeContent', formType: 'editor', showOverflowTooltip:false},
+       // { label: '内容', prop: 'noticeContent', formType: 'editor', showOverflowTooltip:true},
         // { label: '公告类型', prop: 'noticeType', width: '200',  },
          { label: '是否发布', prop: 'status',  formType:'selectTag',options:this.dict.type.sys_notice_status },
         // { label: '创建者', prop: 'createBy', width: '200',  },
@@ -302,5 +302,7 @@ export default {
 <style>
 .el-tooltip__popper{
       max-width: 500px !important;
+      /* max-height: 300px !important;
+      overflow: auto; */
     }
 </style>

@@ -60,7 +60,7 @@ export default {
             categoryId: { formType: 'selectTree', options: this.categoryOptions,width:230 },
             currDeptId: { formType: 'selectTree', options: this.deptOptions,width:230 },
             affDeptId: { formType: 'selectTree',  options: this.deptOptions, width:230},
-            makerAoTime: { formType: 'date', },
+            makerAoTime: { formType: 'daterange',width:200 },
             deviceStatus:{formType: 'selectTag', options: this.dict.type.em_device_state, },
         }
     }
@@ -135,6 +135,7 @@ export default {
                           bb.prop = bb.fieldCode
                           bb.formType = bb.fieldType
                           bb.tableVisible = !bb.custom
+                          
                           for (const key in that.obj) {
                             if(key==bb.prop){
                                 Object.assign(bb,that.obj[key])
