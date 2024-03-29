@@ -42,11 +42,11 @@
                 <div class="user-bottom">
                   <ul>
                     <li>
-                      <p>{{ orderCount ? orderCount : "-" }}</p>
+                      <p>{{ orderCount ? orderCount : "0" }}</p>
                       <span>工单代办</span>
                     </li>
                     <li>
-                      <p>{{ todoCount.flow ? todoCount.flow : "-" }}</p>
+                      <p>{{ todoCount.flow ? todoCount.flow : "0" }}</p>
                       <span>流程代办</span>
                     </li>
                   </ul>
@@ -202,7 +202,11 @@
           <span>系统公告</span>
         </div>
         <ul class="system" v-if="noticeList">
-          <li v-for="item in noticeList" :key="item.createTime">
+          <li
+            v-for="item in noticeList"
+            :key="item.createTime"
+            @click="handleView(item)"
+          >
             <el-tooltip :content="item.noticeTitle" placement="top">
               <span class="single-line-ellipsis">{{ item.noticeTitle }}</span>
             </el-tooltip>
@@ -262,6 +266,17 @@
         </div>
       </div>
     </wc-waterfall>
+    <el-drawer
+      :visible="showDetail"
+      :before-close="
+        () => {
+          showDetail = false;
+        }
+      "
+      size="70%"
+    >
+      <notice-detail v-if="showDetail" :id="selectNoticeId"> </notice-detail>
+    </el-drawer>
   </div>
 </template>
 
@@ -273,10 +288,8 @@ import { mapGetters } from "vuex";
 import { orderTemplate } from "@/api/work/template";
 import { findAll } from "@/api/system/group";
 import { listUser } from "@/api/system/user";
-import { myProcessList } from "@/api/flowable/process";
 import { listNotice } from "@/api/system/notice";
-import * as echarts from "echarts";
-import { faultCaseInfo } from "@/api/knowledge";
+import noticeDetail from "@/views/system/notice/details.vue";
 import {
   getDeviceStatusCount,
   getMenuList,
@@ -290,7 +303,7 @@ import Bar from "@/components/HomeEchart/Bar.vue";
 import ChartLine from "@/components/HomeEchart/ChartLine.vue";
 export default {
   name: "index",
-  components: { ContTable, Bar, ChartLine },
+  components: { ContTable, Bar, ChartLine, noticeDetail },
   dicts: ["process_category", "wf_process_status"],
   data() {
     return {
@@ -412,6 +425,8 @@ export default {
       commonNavigation: [],
       todoCount: {},
       orderCount: null,
+      showDetail: false,
+      selectNoticeId: "",
     };
   },
   computed: {
@@ -481,18 +496,19 @@ export default {
           label: "业务编码",
           prop: "businessCode",
           tableVisible: true,
-          type: "link",
+        },
+        {
+          label: "业务名称",
+          prop: "category",
+          tableVisible: true,
+          formType: "select",
+          options: this.dict.type.process_category,
         },
         {
           label: "任务创建时间",
           prop: "createTime",
           tableVisible: true,
           formType: "date",
-        },
-        {
-          label: "当前节点",
-          prop: "taskName",
-          tableVisible: true,
         },
         {
           label: "流程发起人部门名称",
@@ -506,41 +522,6 @@ export default {
           tableVisible: true,
           width: 150,
         },
-        // {
-        //   label: "流程名称",
-        //   prop: "procDefName",
-        //   tableVisible: true,
-        // },
-        // {
-        //   label: "流程类别",
-        //   prop: "category",
-        //   tableVisible: true,
-        //   formType: "select",
-        //   options: this.dict.type.process_category,
-        // },
-        // {
-        //   label: "流程版本",
-        //   prop: "procDefVersion",
-        //   tableVisible: true,
-        //   formType: "edition",
-        // },
-        {
-          label: "审批状态",
-          prop: "processStatus",
-          tableVisible: true,
-          formType: "select",
-          options: this.dict.type.wf_process_status,
-        },
-        // {
-        //   label: "耗时",
-        //   prop: "duration",
-        //   tableVisible: true,
-        // },
-        // {
-        //   label: "当前节点",
-        //   prop: "taskName",
-        //   tableVisible: true,
-        // },
       ];
     },
     getImageStyle() {
@@ -563,6 +544,10 @@ export default {
     this.getChart(this.queryParams);
   },
   methods: {
+    handleView(row) {
+      this.selectNoticeId = row.noticeId;
+      this.showDetail = true;
+    },
     handlerRadioChange(value) {
       this.flagOrder1 = false;
       this.flagOrder2 = false;
@@ -837,6 +822,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
   }
   .single-line-ellipsis {
     width: 300px;
@@ -864,7 +850,7 @@ export default {
   width: 100%;
   height: calc(100% - 30px);
   display: flex;
-   overflow-y: auto;
+  overflow-y: auto;
   .knowledge-left {
     width: 50%;
     height: 100%;
@@ -906,10 +892,12 @@ export default {
   .knowledge-right {
     width: 50%;
     height: auto;
-    padding-top: 32px;
     overflow-y: auto;
     font-weight: 500;
-
+    padding: 42px 23px 16px 23px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
     li {
       width: 100%;
       height: 32px;
@@ -935,7 +923,7 @@ export default {
 
   ul {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     flex-wrap: wrap;
     li {
       cursor: pointer;
