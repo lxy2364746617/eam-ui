@@ -94,7 +94,7 @@
         <el-button
           size="mini"
           type="text"
-          @click="handleSet"
+          @click="handleSet(scope.row)"
           v-if="
             scope.row.apvStatus == 'completed' ||
             scope.row.apvStatus == 'running'
@@ -256,13 +256,11 @@ export default {
       return defaultObject;
     },
     // ! 提交
-    sub(val) {
-      definitionStart2(
-        val.id,
-        this.radioRow.changeNo,
-        "position_change",
-        {}
-      ).then((res) => {
+    sub(val, userIds) {
+      definitionStart2(val.id, this.radioRow.changeNo, "position_change", {
+        path: "/property/positionChangeControls",
+        nextUserIds: userIds,
+      }).then((res) => {
         if (res.code == 200) {
           this.$message.success(res.msg);
           this.subopen = false;
@@ -297,7 +295,7 @@ export default {
       if (act === "add") {
         // ! 新增
         this.$router.push({
-          path: "/property/positionChangeDetails",
+          path: "/property/positionChangeControls",
           query: {
             formData: null,
             isShowCard: 0,
@@ -307,14 +305,14 @@ export default {
       } else if (act === "view") {
         // ! 详情
         this.$router.push({
-          path: "/property/positionChangeDetails",
+          path: "/property/positionChangeControls",
           query: { formData: row, isShowCard: 1 },
         });
         return;
       } else if (act === "edit") {
         // ! 编辑
         this.$router.push({
-          path: "/property/positionChangeDetails",
+          path: "/property/positionChangeControls",
           query: { formData: row, isShowCard: 0, d: true },
         });
         return;
@@ -382,6 +380,7 @@ export default {
           procInsId: row.processInstanceId,
           deployId: row.deployId,
           taskId: row.taskId,
+          readonly: true,
         },
       });
     },

@@ -288,7 +288,6 @@ import { mapGetters } from "vuex";
 import { orderTemplate } from "@/api/work/template";
 import { findAll } from "@/api/system/group";
 import { listUser } from "@/api/system/user";
-import { listNotice } from "@/api/system/notice";
 import noticeDetail from "@/views/system/notice/details.vue";
 import {
   getDeviceStatusCount,
@@ -298,6 +297,7 @@ import {
   getKdbStatics,
   getFlowTodo,
   getTodoCount,
+  getNoticeList,
 } from "@/api/home/index.js";
 import Bar from "@/components/HomeEchart/Bar.vue";
 import ChartLine from "@/components/HomeEchart/ChartLine.vue";
@@ -536,7 +536,7 @@ export default {
     },
   },
   created() {
-    this.getUserList();
+    // this.getUserList();
     this.getOrderTree();
     this.getTypeList();
     this.getNoticeList();
@@ -713,8 +713,8 @@ export default {
     /** 查询公告列表 */
     getNoticeList(queryParams) {
       this.noticeLoading = true;
-      listNotice(queryParams || this.queryParams).then((response) => {
-        this.noticeList = response.rows;
+      getNoticeList(queryParams || this.queryParams).then((response) => {
+        this.noticeList = response.data;
         this.noticeLoading = false;
       });
     },

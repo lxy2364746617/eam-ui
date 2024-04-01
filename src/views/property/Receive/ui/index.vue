@@ -11,7 +11,6 @@
       :equipmentList="equipmentList2"
       :getList="getList"
       :isShowCard="isShowCard"
-      :isChoose="isChoose"
       :busId="formData.neckNo"
       :busString="'busId'"
       @addFileList="handlerAddFileList"
@@ -21,7 +20,7 @@
       <!-- 左侧 -->
       <template slot="headerLeft">
         <el-button
-          v-if="!isChoose"
+          v-if="!isShowCard"
           type="primary"
           icon="el-icon-plus"
           size="mini"
@@ -32,7 +31,7 @@
         >
         <!-- <el-button
           type="primary"
-          v-if="isChoose"
+          v-if="isShowCard"
           icon="el-icon-download"
           size="mini"
           style="margin-left: 5px"
@@ -42,7 +41,7 @@
         > -->
       </template>
       <!-- 操作 -->
-      <template #end_handle="scope" v-if="!isChoose">
+      <template #end_handle="scope" v-if="!isShowCard">
         <el-button
           size="mini"
           type="text"
@@ -152,7 +151,16 @@ export default {
     "em_device_level",
     "acquisition_plan",
   ],
-
+  props: {
+    detailReadonly: {
+      type: Boolean,
+      default: false,
+    },
+    businessId: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       isChoose: 0,
@@ -206,22 +214,31 @@ export default {
     };
   },
   created() {
-    this.getTreeSelect();
     // this.getUserList();
-    if (this.$route.query.formData) {
-      this.formData = this.$route.query.formData;
-      this.isShowCard = Number(this.$route.query.isShowCard);
-      this.isChoose = Number(this.$route.query.isShowCard);
-      // this.getList(this.queryParams);
-
-      if (this.formData.id) {
-        getPurchaseDetail({ id: this.formData.id }).then((res) => {
+    if (
+      this.$route.query.formData ||
+      this.$route.query.i ||
+      this.detailReadonly
+    ) {
+      if (this.$route.query.formData)
+        this.formData = this.$route.query.formData;
+      this.isShowCard =
+        Number(this.$route.query.isShowCard) ||
+        this.$route.query.i ||
+        this.detailReadonly
+          ? true
+          : false;
+      if (this.$route.query.i || this.formData.neckNo || this.businessId) {
+        getPurchaseDetail({
+          neckNo:
+            this.$route.query.i || this.formData.neckNo || this.businessId,
+        }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
+            this.reviewCode = this.formData.neckNo;
+            this.getTreeSelect();
           }
         });
-
-        this.reviewCode = this.formData.neckNo;
       }
     } else {
       this.formData = {
@@ -229,7 +246,8 @@ export default {
         applyDeptId: this.$store.state.user.standing.deptId,
         affDeptId: this.$store.state.user.standing.deptId,
       };
-      this.isShowCard = 0;
+      this.isShowCard = false;
+      this.getTreeSelect();
     }
   },
   mounted() {},
@@ -417,34 +435,36 @@ export default {
       });
     },
     // ! 提交审批流
-    sub(val) {
+    sub(val, userIds) {
       if (!this.formData.id) {
         setProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
-            definitionStart2(val.id, res.data, "device_neck", {}).then(
-              (res) => {
-                if (res.code == 200) {
-                  this.approvalContent = null;
-                  this.$message.success(res.msg);
-                  this.subopen = false;
-                }
+            definitionStart2(val.id, res.data, "device_neck", {
+              path: "/property/receiveControls",
+              nextUserIds: userIds,
+            }).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
               }
-            );
+            });
             this.cancel();
           }
         });
       } else {
         updateProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
-            definitionStart2(val.id, this.reviewCode, "device_neck", {}).then(
-              (res) => {
-                if (res.code == 200) {
-                  this.approvalContent = null;
-                  this.$message.success(res.msg);
-                  this.subopen = false;
-                }
+            definitionStart2(val.id, this.reviewCode, "device_neck", {
+              path: "/property/receiveControls",
+              nextUserIds: userIds,
+            }).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
               }
-            );
+            });
             this.cancel();
           }
         });
@@ -496,9 +516,9 @@ export default {
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
-        if (this.$route.query.formData.id) {
+        if (this.formData?.neckNo) {
           getProjectList({
-            neckNo: this.$route.query.formData.neckNo,
+            neckNo: this.formData?.neckNo,
             pageNum: 1,
             pageSize: 1000,
           }).then((res) => {

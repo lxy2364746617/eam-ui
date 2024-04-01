@@ -273,6 +273,7 @@ export default {
       deviceIndexVisible: false,
       flag: false,
       locationOptions: [],
+      exportIds: [],
     };
   },
   created() {
@@ -420,6 +421,7 @@ export default {
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.radioRow = selection[0];
+      this.exportIds = selection.map((item) => item.deviceId).join(",");
     },
 
     getTreeParent(id) {
@@ -471,18 +473,16 @@ export default {
     },
     handleExport() {
       var obj = {
-        ids: this.ids.length > 0 ? this.ids : null,
-        ...this.convertToDefaultObject(this.columns),
         categoryId: this.queryParams.categoryId,
+        exportIds: this.exportIds,
       };
-
-      // this.download(
-      //   "equipment/base/export",
-      //   {
-      //     ...obj,
-      //   },
-      //   `device_${new Date().getTime()}.xlsx`
-      // );
+      this.download(
+        "equipment/base/export",
+        {
+          ...obj,
+        },
+        `device_${new Date().getTime()}.xlsx`
+      );
     },
     /** 下载模板操作 */
     importTemplate() {

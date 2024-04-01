@@ -12,7 +12,7 @@
       ref="spareForm"
     >
       <!-- 左侧 -->
-      <template slot="headerLeft" v-if="!isChoose">
+      <template slot="headerLeft" v-if="!isShowCard">
         <el-button
           type="primary"
           icon="el-icon-plus"
@@ -23,7 +23,7 @@
         >
       </template>
       <!-- 操作 -->
-      <template #end_handle="scope" v-if="!isChoose">
+      <template #end_handle="scope" v-if="!isShowCard">
         <el-button
           size="mini"
           type="text"
@@ -121,7 +121,16 @@ export default {
     subprocess,
   },
   dicts: ["spare_parts_unit", "spare_parts_type"],
-
+  props: {
+    detailReadonly: {
+      type: Boolean,
+      default: false,
+    },
+    businessId: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       isChoose: false,
@@ -157,20 +166,30 @@ export default {
   created() {
     // this.getTreeSelect();
     // this.getUserList();
-    if (this.$route.query.formData) {
-      this.formData = this.$route.query.formData;
-      this.isShowCard = Number(this.$route.query.isShowCard);
-      this.isChoose = Number(this.$route.query.isShowCard);
-
-      if (this.formData.id) {
-        getAttachmentDetail({ receiptCode: this.formData.receiptCode }).then(
-          (res) => {
-            if (res.code == 200) {
-              this.formData = res.data;
-              this.equipmentList = res.data.parts ?? [];
-            }
+    if (
+      this.$route.query.formData ||
+      this.$route.query.i ||
+      this.detailReadonly
+    ) {
+      console.log("========================", this.$route.query);
+      if (this.$route.query.formData)
+        this.formData = this.$route.query.formData;
+      this.isShowCard =
+        Number(this.$route.query.isShowCard) ||
+        this.$route.query.i ||
+        this.detailReadonly
+          ? true
+          : false;
+      if (this.$route.query.i || this.formData.receiptCode || this.businessId) {
+        getAttachmentDetail({
+          receiptCode:
+            this.$route.query.i || this.formData.receiptCode || this.businessId,
+        }).then((res) => {
+          if (res.code == 200) {
+            this.formData = res.data;
+            this.equipmentList = res.data.parts ?? [];
           }
-        );
+        });
         this.reviewCode = this.formData.receiptCode;
       }
     } else {
@@ -179,7 +198,7 @@ export default {
         recruiterId: this.$store.state.user.standing.userId,
         receiptDate: this.parseTime(new Date(), "{y}-{m}-{d}"),
       };
-      this.isShowCard = 0;
+      this.isShowCard = false;
     }
   },
   mounted() {},
@@ -308,34 +327,36 @@ export default {
   },
   methods: {
     // ! 提交审批流
-    sub(val) {
+    sub(val, userIds) {
       if (!this.formData.id) {
         addAttachment(this.approvalContent).then((res) => {
           if (res.code === 200) {
-            definitionStart2(val.id, res.msg, "spare_receive", {}).then(
-              (res) => {
-                if (res.code == 200) {
-                  this.approvalContent = null;
-                  this.$message.success(res.msg);
-                  this.subopen = false;
-                }
+            definitionStart2(val.id, res.msg, "spare_receive", {
+              path: "/sparepart/spareReceiveControls",
+              nextUserIds: userIds,
+            }).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
               }
-            );
+            });
             this.cancel();
           }
         });
       } else {
         updateAttachment(this.approvalContent).then((res) => {
           if (res.code === 200) {
-            definitionStart2(val.id, this.reviewCode, "spare_receive", {}).then(
-              (res) => {
-                if (res.code == 200) {
-                  this.approvalContent = null;
-                  this.$message.success(res.msg);
-                  this.subopen = false;
-                }
+            definitionStart2(val.id, this.reviewCode, "spare_receive", {
+              path: "/sparepart/spareReceiveControls",
+              nextUserIds: userIds,
+            }).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
               }
-            );
+            });
             this.cancel();
           }
         });

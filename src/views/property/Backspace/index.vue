@@ -279,16 +279,17 @@ export default {
       });
     },
     // ! 提交
-    sub(val) {
-      definitionStart2(val.id, this.radioRow.backNo, "device_back", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
-            this.getList(this.queryParams);
-          }
+    sub(val, userIds) {
+      definitionStart2(val.id, this.radioRow.backNo, "device_back", {
+        path: "/property/backspaceControls",
+        nextUserIds: userIds,
+      }).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.getList(this.queryParams);
         }
-      );
+      });
     },
     getTableData(val) {
       let data = {
@@ -393,6 +394,7 @@ export default {
           procInsId: row.processInstanceId,
           deployId: row.deployId,
           taskId: row.taskId,
+          readonly: true,
         },
       });
     },

@@ -76,7 +76,7 @@
       <template #right_end>
         <slot name="right_end"></slot>
       </template>
-      <template v-slot:end_handle="scope" v-if="!isChoose">
+      <template v-slot:end_handle="scope" v-if="!isShowCard">
         <slot name="end_handle" :row="scope.row" :index="scope.index"></slot>
       </template>
     </ContTable>
@@ -115,7 +115,7 @@
           style="margin-left: 5px"
           @click="AddFile"
           v-hasPermi="['property:detail:add']"
-          v-if="!isChoose"
+          v-if="!isShowCard"
           >上传</el-button
         >
       </template>
@@ -131,7 +131,7 @@
         <el-button
           size="mini"
           type="text"
-          v-if="!isChoose"
+          v-if="!isShowCard"
           icon="el-icon-delete"
           @click="handleDelete2(scope.row)"
           v-hasPermi="['property:detail:remove']"
@@ -176,8 +176,7 @@ export default {
   components: { ContTable },
   props: {
     formData: { default: () => {}, type: Object },
-    isShowCard: { default: 0, type: Number },
-    isChoose: { default: 0, type: Number },
+    isShowCard: { default: false, type: Boolean },
     infoTitle: { default: "", type: String },
     detailTitle: { default: "", type: String },
     attachmentsTitle: { default: "", type: String },

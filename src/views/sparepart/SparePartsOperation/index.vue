@@ -71,7 +71,7 @@ export default {
   components: { ContTable },
   props: {
     formData: { default: () => {}, type: Object },
-    isShowCard: { default: false, type: Number },
+    isShowCard: { default: false, type: Boolean },
     isChoose: { default: false, type: Boolean },
     infoTitle: { default: "", type: String },
     columns: { default: () => [], type: Array },

@@ -65,3 +65,11 @@ export function getTodoCount(query) {
     params: query,
   });
 }
+// 系统公告
+export function getNoticeList(query) {
+  return request({
+    url: "/getNoticeList",
+    method: "get",
+    params: query,
+  });
+}

@@ -68,7 +68,13 @@
             <td>{{ item.sModel }}</td>
             <td>{{ "台" }}</td>
             <td>1</td>
-            <td>{{ item.location ? item.location : "-" }}</td>
+            <td>
+              {{
+                item.location
+                  ? findTreeName(locationOptions, item.location)
+                  : "-"
+              }}
+            </td>
             <td>{{ item.targetLocation ? item.targetLocation : "-" }}</td>
           </tr>
         </tbody>
@@ -79,7 +85,13 @@
             <td>{{ "台" }}</td>
             <td>{{ item.deviceNum }}</td>
             <td>{{ item.targetLocation ? item.targetLocation : "-" }}</td>
-            <td>{{ item.location ? item.location : "-" }}</td>
+            <td>
+              {{
+                item.location
+                  ? findTreeName(locationOptions, item.location)
+                  : "-"
+              }}
+            </td>
             <td>{{ item.remark ? item.remark : "-" }}</td>
           </tr>
         </tbody>
@@ -89,7 +101,13 @@
             <td>{{ item.deviceName ? item.deviceName : "-" }}</td>
             <td>{{ item.sModel ? item.sModel : "-" }}</td>
             <td>{{ findTreeName(categoryOptions, item.deviceType) }}</td>
-            <td>{{ item.location ? item.location : "-" }}</td>
+            <td>
+              {{
+                item.location
+                  ? item.location
+                  : "-"
+              }}
+            </td>
             <td>
               {{ findName(dict.type.em_device_state, item.deviceStatus) }}
             </td>
@@ -99,13 +117,13 @@
       <!-- 底部 -->
       <div v-if="form.flag !== 'BF'" class="basic">
         <span v-for="item in personnelOptions" :key="item.taskName"
-          >{{ item.taskName }}：{{ item.assigneeName }}</span
+          >{{ item.assigneeName }}：{{ item.taskName }}</span
         >
       </div>
       <div v-else class="basic">
         <span>报废人：{{ dataSource.scrapPerson }}</span>
         <span v-for="item in personnelOptions" :key="item.taskName"
-          >{{ item.taskName }}：{{ item.assigneeName }}</span
+          >{{ item.assigneeName }}：{{ item.taskName }}</span
         >
       </div>
     </div>
@@ -116,6 +134,7 @@ import request from "@/utils/request";
 // 报废
 import { getProjectList } from "@/api/property/scrapping";
 import { equipmentTree } from "@/api/equipment/category";
+import { getLocationTree } from "@/api/Location";
 export default {
   components: {},
   dicts: ["em_device_state"],
@@ -130,6 +149,7 @@ export default {
       form: {},
       categoryOptions: [],
       personnelOptions: [],
+      locationOptions: [],
     };
   },
   created() {
@@ -139,6 +159,9 @@ export default {
     this.thead = this.$route.query.thead;
     this.form = this.$route.query;
     if (this.routeUrl && this.routeMethod) {
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTreeName(res.data);
+      });
       request({
         url: `${this.routeUrl}?id=${this.$route.query.id}`,
         method: this.routeMethod,
@@ -172,7 +195,7 @@ export default {
       request({
         url: `/flowable/task/flowRecord?procInsId=${this.form.procInsId}&deployId=${this.form.deployId}`,
       }).then((res) => {
-        res.data.flowList.pop()
+        res.data.flowList.pop();
         this.personnelOptions = res.data.flowList;
       });
     }
@@ -202,6 +225,17 @@ export default {
       }
       return name || value;
     },
+    getTreeName(arr) {
+      arr.forEach((item) => {
+        item.id = item.id;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTreeName(item.children);
+        }
+      });
+      return arr;
+    },
     getTree() {
       equipmentTree().then(async (response) => {
         this.categoryOptions = response.data;
@@ -216,6 +250,7 @@ export default {
       }
       var name1 = new Name("");
       this.forfn(options, value, name1);
+
       return name1.name;
     },
     forfn(options, value, name1) {

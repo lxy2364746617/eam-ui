@@ -60,3 +60,11 @@ export function downDetailLoad(data) {
     responseType: "blob",
   });
 }
+// ! 设备报废-详情
+export function getPurchaseDetail(data) {
+  return request({
+    url: "/property/scrapped/getScrapped",
+    method: "get",
+    params: data,
+  });
+}

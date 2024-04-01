@@ -263,16 +263,17 @@ export default {
       });
     },
     // ! 提交
-    sub(val) {
-      definitionStart2(val.id, this.radioRow.neckNo, "device_neck", {}).then(
-        (res) => {
-          if (res.code == 200) {
-            this.$message.success(res.msg);
-            this.subopen = false;
-            this.getList(this.queryParams);
-          }
+    sub(val, userIds) {
+      definitionStart2(val.id, this.radioRow.neckNo, "device_neck", {
+        path: "/property/receiveControls",
+        nextUserIds: userIds,
+      }).then((res) => {
+        if (res.code == 200) {
+          this.$message.success(res.msg);
+          this.subopen = false;
+          this.getList(this.queryParams);
         }
-      );
+      });
     },
     getTableData(val) {
       let data = {
@@ -377,6 +378,7 @@ export default {
           procInsId: row.processInstanceId,
           deployId: row.deployId,
           taskId: row.taskId,
+          readonly: true,
         },
       });
     },

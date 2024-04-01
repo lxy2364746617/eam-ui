@@ -293,13 +293,11 @@ export default {
       return defaultObject;
     },
     // ! 提交
-    sub(val) {
-      definitionStart2(
-        val.id,
-        this.radioRow.purchasePlanNo,
-        "purchase_plan",
-        {}
-      ).then((res) => {
+    sub(val, userIds) {
+      definitionStart2(val.id, this.radioRow.purchasePlanNo, "purchase_plan", {
+        path: "/property/annualControls",
+        nextUserIds: userIds,
+      }).then((res) => {
         if (res.code == 200) {
           this.$message.success(res.msg);
           this.subopen = false;
@@ -416,6 +414,7 @@ export default {
           procInsId: row.processInstanceId,
           deployId: row.deployId,
           taskId: row.taskId,
+          readonly: true,
         },
       });
     },

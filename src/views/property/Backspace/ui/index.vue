@@ -10,7 +10,6 @@
       :equipmentList="equipmentList2"
       :getList="getList"
       :isShowCard="isShowCard"
-      :isChoose="isChoose"
       :busId="formData.backNo"
       :busString="'busId'"
       @addFileList="handlerAddFileList"
@@ -19,7 +18,7 @@
       ref="spareForm"
     >
       <!-- 左侧 -->
-      <template slot="headerLeft" v-if="!isChoose">
+      <template slot="headerLeft" v-if="!isShowCard">
         <el-button
           type="primary"
           icon="el-icon-plus"
@@ -39,7 +38,7 @@
         >
         <!-- <el-button
           type="primary"
-          v-if="isChoose"
+          v-if="isShowCard"
           icon="el-icon-download"
           size="mini"
           style="margin-left: 5px"
@@ -49,7 +48,7 @@
         > -->
       </template>
       <!-- 操作 -->
-      <template #end_handle="scope" v-if="!isChoose">
+      <template #end_handle="scope" v-if="!isShowCard">
         <el-button
           size="mini"
           type="text"
@@ -144,7 +143,7 @@ import {
   getPurchaseDetail,
   downDetailLoad,
 } from "@/api/property/backspace";
-import { listDefinition1 } from "@/api/flowable/definition";
+import { listDefinition1, definitionStart } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 import { getLocationTree } from "@/api/Location";
@@ -162,7 +161,16 @@ export default {
     "em_device_level",
     "acquisition_plan",
   ],
-
+  props: {
+    detailReadonly: {
+      type: Boolean,
+      default: false,
+    },
+    businessId: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       isChoose: 0,
@@ -218,22 +226,30 @@ export default {
     };
   },
   created() {
-    this.getTreeSelect();
-    // this.getUserList();
-    if (this.$route.query.formData) {
-      this.formData = this.$route.query.formData;
-      this.isShowCard = Number(this.$route.query.isShowCard);
-      this.isChoose = Number(this.$route.query.isShowCard);
-      // this.getList(this.queryParams);
-
-      if (this.formData.id) {
-        getPurchaseDetail({ id: this.formData.id }).then((res) => {
+    if (
+      this.$route.query.formData ||
+      this.$route.query.i ||
+      this.detailReadonly
+    ) {
+      if (this.$route.query.formData)
+        this.formData = this.$route.query.formData;
+      this.isShowCard =
+        Number(this.$route.query.isShowCard) ||
+        this.$route.query.i ||
+        this.detailReadonly
+          ? true
+          : false;
+      if (this.$route.query.i || this.formData.backNo || this.businessId) {
+        getPurchaseDetail({
+          backNo:
+            this.$route.query.i || this.formData.backNo || this.businessId,
+        }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
+            this.reviewCode = this.formData.neckNo;
+            this.getTreeSelect();
           }
         });
-
-        this.reviewCode = this.formData.backNo;
       }
     } else {
       this.formData = {
@@ -241,7 +257,8 @@ export default {
         applyDeptId: this.$store.state.user.standing.deptId,
         affDeptId: this.$store.state.user.standing.deptId,
       };
-      this.isShowCard = 0;
+      this.isShowCard = false;
+      this.getTreeSelect();
     }
   },
   mounted() {},
@@ -452,19 +469,20 @@ export default {
       });
     },
     // ! 提交审批流
-    sub(val) {
+    sub(val, userIds) {
       if (!this.formData.id) {
         setProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
-            definitionStart2(val.id, res.data, "device_back", {}).then(
-              (res) => {
-                if (res.code == 200) {
-                  this.approvalContent = null;
-                  this.$message.success(res.msg);
-                  this.subopen = false;
-                }
+            definitionStart(val.id, res.data, "device_back", {
+              path: "/property/backspaceControls",
+              nextUserIds: userIds,
+            }).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
               }
-            );
+            });
             this.cancel();
           }
         });
@@ -535,9 +553,9 @@ export default {
       equipmentTree().then(async (response) => {
         this.categoryOptions = response.data;
         // 方便获取父级tree
-        if (this.$route.query.formData.id) {
+        if (this.formData?.backNo) {
           await getProjectList({
-            backNo: this.$route.query.formData.backNo,
+            backNo: this.formData?.backNo,
             pageNum: 1,
             pageSize: 1000,
           }).then((res) => {

@@ -58,3 +58,11 @@ export function updateProject(data) {
     data: data,
   });
 }
+// ! 位置状态变动-详情
+export function getPurchaseDetail(data) {
+  return request({
+    url: "/property/pos_change/getPostChg",
+    method: "get",
+    params: data,
+  });
+}

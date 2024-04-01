@@ -10,7 +10,6 @@
       :equipmentList="equipmentList2"
       :getList="getList"
       :isShowCard="isShowCard"
-      :isChoose="isChoose"
       :busId="formData.scrapNo"
       :handleSelectionChange="handleSelectionChange"
       :busString="'busId'"
@@ -21,7 +20,7 @@
       <!-- 左侧 -->
       <template slot="headerLeft">
         <el-button
-          v-if="!isChoose"
+          v-if="!isShowCard"
           type="primary"
           icon="el-icon-plus"
           size="mini"
@@ -42,7 +41,7 @@
         >
       </template>
       <!-- 操作 -->
-      <template #end_handle="scope" v-if="!isChoose">
+      <template #end_handle="scope" v-if="!isShowCard">
         <el-button
           size="mini"
           type="text"
@@ -148,7 +147,16 @@ export default {
     parentdevice,
   },
   dicts: ["em_device_state", "em_property_type", "em_scrap_way", "is_declare"],
-
+  props: {
+    detailReadonly: {
+      type: Boolean,
+      default: false,
+    },
+    businessId: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       isChoose: 0,
@@ -203,29 +211,41 @@ export default {
     };
   },
   created() {
-    this.getTreeSelect();
-    // this.getUserList();
-    if (this.$route.query.formData) {
-      this.formData = this.$route.query.formData;
-      this.isShowCard = Number(this.$route.query.isShowCard);
-      this.isChoose = Number(this.$route.query.isShowCard);
-      // this.getList(this.queryParams);
-
-      if (this.formData.id) {
-        // getPurchaseDetail({ id: this.formData.id }).then((res) => {
-        //   if (res.code == 200) {
-        //     this.formData = res.data;
-        //   }
-        // });
-
-        this.reviewCode = this.formData.scrapNo;
+    if (
+      this.$route.query.formData ||
+      this.$route.query.i ||
+      this.detailReadonly
+    ) {
+      if (this.$route.query.formData)
+        this.formData = this.$route.query.formData;
+      this.isShowCard =
+        Number(this.$route.query.isShowCard) ||
+        this.$route.query.i ||
+        this.detailReadonly
+          ? true
+          : false;
+      if (this.$route.query.i || this.formData.scrapNo || this.businessId) {
+        getPurchaseDetail({
+          scrapNo:
+            this.$route.query.i || this.formData.scrapNo || this.businessId,
+        }).then((res) => {
+          if (res.code == 200) {
+            this.formData = {
+              ...res.data,
+              scrapType: String(res.data.scrapType),
+            };
+            this.reviewCode = this.formData.scrapNo;
+            this.getTreeSelect();
+          }
+        });
       }
     } else {
       this.formData = {
         scrapUnitId: this.$store.state.user.standing.deptId,
         scrapUnit: this.$store.state.user.standing.dept.deptName,
       };
-      this.isShowCard = 0;
+      this.isShowCard = false;
+      this.getTreeSelect();
     }
   },
   mounted() {},
@@ -486,31 +506,30 @@ export default {
       });
     },
     // ! 提交审批流
-    sub(val) {
+    sub(val, userIds) {
       if (!this.formData.id) {
         setProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
-            definitionStart2(val.id, res.msg, "device_scrapped", {}).then(
-              (res) => {
-                if (res.code == 200) {
-                  this.approvalContent = null;
-                  this.$message.success(res.msg);
-                  this.subopen = false;
-                }
+            definitionStart2(val.id, res.msg, "device_scrapped", {
+              path: "/property/scrappingControls",
+              nextUserIds: userIds,
+            }).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
               }
-            );
+            });
             this.cancel();
           }
         });
       } else {
         updateProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
-            definitionStart2(
-              val.id,
-              this.reviewCode,
-              "device_scrapped",
-              {}
-            ).then((res) => {
+            definitionStart2(val.id, this.reviewCode, "device_scrapped", {
+              path: "/property/scrappingControls",
+              nextUserIds: userIds,
+            }).then((res) => {
               if (res.code == 200) {
                 this.approvalContent = null;
                 this.$message.success(res.msg);
@@ -583,9 +602,9 @@ export default {
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
-        if (this.$route.query.formData.id) {
+        if (this.formData?.scrapNo) {
           getProjectList({
-            scrapNo: this.$route.query.formData.scrapNo,
+            scrapNo: this.formData?.scrapNo,
             pageNum: 1,
             pageSize: 1000,
           }).then((res) => {

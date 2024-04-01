@@ -254,7 +254,9 @@ export const constantRoutes = [
         component: () => import("@/views/equipment/big/transport/add"),
         name: "bigTransport",
         beforeEnter: (to, from, next) => {
-          to.meta.title = to.query.l ? "主要辅助运输设备/编辑" : "主要辅助运输设备/新增";
+          to.meta.title = to.query.l
+            ? "主要辅助运输设备/编辑"
+            : "主要辅助运输设备/新增";
           to.query.d == "true" ? (to.meta.title = "主要辅助运输设备/查看") : "";
           next();
         },
@@ -318,7 +320,8 @@ export const constantRoutes = [
         component: () => import("@/views/device/book/details/index.vue"),
         name: "bookDetails",
         beforeEnter: (to, from, next) => {
-          to.meta.title =to.query.title|| (to.query.i ? "设备档案/编辑" : "设备档案/新增");
+          to.meta.title =
+            to.query.title || (to.query.i ? "设备档案/编辑" : "设备档案/新增");
           to.query.d == "true" ? (to.meta.title = "设备档案/查看") : "";
           next();
         },
@@ -469,9 +472,10 @@ export const constantRoutes = [
           import("@/views/property/equipmentAcquisition/Annual/ui/index"),
         name: "annualControls",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "购置年度计划/详情"
-            : "购置年度计划/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "购置年度计划/详情"
+              : "购置年度计划/新增";
           to.query.d == "true" ? (to.meta.title = "购置年度计划/编辑") : "";
           next();
         },
@@ -491,9 +495,10 @@ export const constantRoutes = [
           import("@/views/property/equipmentAcquisition/Temporarily/ui/index"),
         name: "temporarilyControls",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "购置临时计划/详情"
-            : "购置临时计划/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "购置临时计划/详情"
+              : "购置临时计划/新增";
           to.query.d == "true" ? (to.meta.title = "购置临时计划/编辑") : "";
           next();
         },
@@ -526,9 +531,10 @@ export const constantRoutes = [
         component: () => import("@/views/property/Receive/ui/index"),
         name: "receiveControls",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "设备领用/详情"
-            : "设备领用/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "设备领用/详情"
+              : "设备领用/新增";
           to.query.d == "true" ? (to.meta.title = "设备领用/编辑") : "";
           next();
         },
@@ -547,9 +553,10 @@ export const constantRoutes = [
         component: () => import("@/views/property/Backspace/ui/index"),
         name: "backspaceControls",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "设备回退/详情"
-            : "设备回退/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "设备回退/详情"
+              : "设备回退/新增";
           to.query.d == "true" ? (to.meta.title = "设备回退/编辑") : "";
           next();
         },
@@ -568,9 +575,10 @@ export const constantRoutes = [
         component: () => import("@/views/property/TurnOver/ui/index"),
         name: "turnOverControls",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "设备移交/详情"
-            : "设备移交/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "设备移交/详情"
+              : "设备移交/新增";
           to.query.d == "true" ? (to.meta.title = "设备移交/编辑") : "";
           next();
         },
@@ -589,9 +597,10 @@ export const constantRoutes = [
         component: () => import("@/views/property/Scrapping/ui/index"),
         name: "scrappingControls",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "设备报废/详情"
-            : "设备报废/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "设备报废/详情"
+              : "设备报废/新增";
           to.query.d == "true" ? (to.meta.title = "设备报废/编辑") : "";
           next();
         },
@@ -606,13 +615,14 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: "/property/positionChangeDetails",
+        path: "/property/positionChangeControls",
         component: () => import("@/views/property/PositionChange/ui/index"),
         name: "positionChangeDetails",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "位置状态变动/详情"
-            : "位置状态变动/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "位置状态变动/详情"
+              : "位置状态变动/新增";
           to.query.d == "true" ? (to.meta.title = "位置状态变动/编辑") : "";
           next();
         },
@@ -809,9 +819,10 @@ export const constantRoutes = [
         component: () => import("@/views/sparepart/requirement/ui/index.vue"),
         name: "requirementControls",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "备件需求/详情"
-            : "备件需求/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "备件需求/详情"
+              : "备件需求/新增";
           to.query.d == "true" ? (to.meta.title = "备件需求/编辑") : "";
           next();
         },
@@ -830,9 +841,10 @@ export const constantRoutes = [
         component: () => import("@/views/sparepart/spareReceive/ui/index.vue"),
         name: "spareReceiveControls",
         beforeEnter: (to, from, next) => {
-          to.meta.title = Number(to.query.isShowCard)
-            ? "备件领用/详情"
-            : "备件领用/新增";
+          to.meta.title =
+            to.query.i || Number(to.query.isShowCard)
+              ? "备件领用/详情"
+              : "备件领用/新增";
           to.query.d == "true" ? (to.meta.title = "备件领用/编辑") : "";
           next();
         },
