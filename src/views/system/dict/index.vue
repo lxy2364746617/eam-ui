@@ -336,7 +336,7 @@ export default {
     handleExport() {
       this.download('system/dict/type/export', {
         ...this.queryParams,exportIds:this.exportIds
-      }, `type_${new Date().getTime()}.xlsx`)
+      }, `字典管理_${new Date().getTime()}.xlsx`)
     },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {

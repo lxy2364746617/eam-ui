@@ -413,7 +413,7 @@ export default {
       this.download(
         "system/dept/export",
         obj,
-        `config_${new Date().getTime()}.xlsx`
+        `产权组织树_${new Date().getTime()}.xlsx`
       );
     },
   },

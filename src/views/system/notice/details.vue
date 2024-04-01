@@ -2,7 +2,7 @@
   <div>
       <div class="article">
     <div class="title">{{form.noticeTitle}}</div>
-    <div class="publish-time">发布时间：{{form.updateTime}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 发布人：{{form.issUser}}</div>
+    <div class="publish-time">发布时间：{{form.updateTime}} <p style="display:inline-block;margin:0 0 0 40px">发布人：{{form.issUser}}</p></div>
     <div class="summary" ><span style="font-weight:bolder">简介：</span>{{form.noticeIntro}}</div>
      <editor  v-model="form.noticeContent" :min-height="192" readOnly />
 </div>

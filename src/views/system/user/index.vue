@@ -1031,7 +1031,7 @@ export default {
         {
           ...this.queryParams,
         },
-        `user_${new Date().getTime()}.xlsx`
+        `人员管理_${new Date().getTime()}.xlsx`
       );
     },
     /** 导入按钮操作 */
@@ -1044,7 +1044,7 @@ export default {
       this.download(
         "system/user/importTemplate",
         {},
-        `user_template_${new Date().getTime()}.xlsx`
+        `人员管理模板_${new Date().getTime()}.xlsx`
       );
     },
     // 文件上传中处理

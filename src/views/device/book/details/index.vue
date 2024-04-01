@@ -8,7 +8,8 @@
         </el-col>
         <el-col :span="5" v-if="disabled1" style="font-size: 12px;color: #888;">
           <!-- <el-button type="text" icon="el-icon-s-help">快速工单</el-button> -->
-          <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
+          <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false"
+          v-hasPermi="['equipment:base:modify']" >编辑</el-button>
         </el-col>
       </el-row>
       <el-row :gutter="12" style="margin-top: 10px;">
@@ -62,7 +63,7 @@
             <td>设备编码</td>
             <td>{{ formData.deviceCode }}</td>
             <td rowspan="4" style="text-align: center;width: 30%;">
-              <img v-if="qrCode.indexOf('null')==-1" :src="qrCode" width="60%" alt="" srcset="">
+              <img v-if="qrCode" :src="qrCode" width="60%" alt="" srcset="">
             </td>
           </tr>
           <tr>
@@ -119,10 +120,10 @@ export default {
   },
   computed:{
     mainImage(){
-      return this.formData.mainImage ? process.env.VUE_APP_BASE_API + this.formData.mainImage : null
+      return this.formData.mainImage ? process.env.VUE_APP_BASE_API + this.formData.mainImage : false
     }, 
     qrCode(){
-      return this.formData.qrCode ? process.env.VUE_APP_BASE_API + this.formData.qrCode : null
+      return this.formData.qrCode ? process.env.VUE_APP_BASE_API + this.formData.qrCode : false
     }, 
     // 列信息
     columns(){
@@ -370,8 +371,10 @@ export default {
     getFormDataParams(){
       var formData1 = JSON.parse(JSON.stringify(this.formData1))
       var aa = formData1.emArchivesExtendAtt
-      aa['fieldValue'] = JSON.stringify(aa['fieldValue'])
-      aa['componentContent'] = JSON.stringify(aa['componentContent'])
+      if(aa){
+        aa['fieldValue'] = JSON.stringify(aa['fieldValue'])
+        aa['componentContent'] = JSON.stringify(aa['componentContent'])
+      }
       var bb = formData1.emArchivesIndex
       if (bb) {
         bb['fieldValue'] = JSON.stringify(bb['fieldValue'])

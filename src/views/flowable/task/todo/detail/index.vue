@@ -79,7 +79,7 @@
               <ul>
                 <li class="linetime" v-for="(item,index ) in flowRecordList" :key="index">
                  <el-card :body-style="{ padding: '10px' }">
-                    <p><span v-if="item.activityType=='startEvent'">发起人:</span>{{item.assigneeName?item.assigneeName:''+(item.duration? ('('+item.duration+')'):'')}}</p>
+                    <p><span v-if="item.activityType=='startEvent'">发起人:</span>{{item.assigneeName?item.assigneeName:item.candidate+(item.duration? ('('+item.duration+')'):'')}}</p>
                     <p style="color:#02B606" v-if="item.comment&&item.comment.type==1">同意</p>
                     <p style="color:#EA0000" v-if="item.comment&&item.comment.type==3">驳回</p>
                     <p>{{item.comment?item.comment.comment:''}}</p>
@@ -346,7 +346,8 @@ export default {
           this.userobj = {
             flowDataType:res.data.flowDataType,
             selectUsers:res.data.assignee?res.data.assignee:res.data.candidateGroups?res.data.candidateGroups:
-            res.data.candidateUsers.length>0?res.data.candidateUsers.join(','):''
+            res.data.candidateUsers.length>0?res.data.candidateUsers.join(','):'',
+            deptId:res.data.deptId?res.data.deptId:''
           }
             const formData = new FormData();  
             Object.entries(this.userobj).forEach(([key, value]) => {  

@@ -305,7 +305,7 @@ export default {
     handleExport() {
       this.download('system/post/export', {
         ...this.queryParams,exportIds:this.exportIds
-      }, `post_${new Date().getTime()}.xlsx`)
+      }, `岗位管理_${new Date().getTime()}.xlsx`)
     }
   }
 };

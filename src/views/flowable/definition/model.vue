@@ -100,6 +100,7 @@ export default {
     },
     /** 保存xml */
     save(data) {
+      !data.process.category&&this.$message.error('请选择流程分类')
        if(data.process.name&&data.process.category&&data.xml){
         const params = {
         name: data.process.name,

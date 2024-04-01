@@ -15,12 +15,12 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
+            v-hasPermi="['system:resource:add']"
           >上传</el-button>
         </el-col>
       </template>
       <template #end_handle="scope" >
         <el-button
-         v-if="!isReadonly"
           size="mini"
           type="text"
           icon="el-icon-view"
@@ -29,8 +29,8 @@
         <el-button
           size="mini"
           type="text"
-          icon="el-icon-document-add"
-          v-if="!isReadonly&&fileType.includes(scope.row.fileType)"
+          icon="el-icon-document-view"
+          v-if="fileType.includes(scope.row.fileType)"
           @click="handlePreview(scope.row)"
         >预览</el-button>
         <el-button
@@ -38,6 +38,7 @@
           size="mini"
           type="text"
           icon="el-icon-delete"
+          v-hasPermi="['system:resource:remove']" 
           @click="handleDelete(scope.row)"
         >删除</el-button>
         

@@ -26,6 +26,7 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
+            v-hasPermi="['equipment:parts:add']"
           >添加</el-button>
         </el-col>
         <el-col :span="1.5">
@@ -36,6 +37,7 @@
             size="mini"
             :disabled="multiple"
             @click="handleDelete"
+            v-hasPermi="['equipment:parts:remove']"
           >解除</el-button>
         </el-col>
       </template>
@@ -44,6 +46,7 @@
           size="mini"
           type="text"
           icon="el-icon-delete"
+          v-hasPermi="['equipment:parts:remove']"
           @click="handleDelete(scope.row)"
         >解除</el-button>
       </template>

@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import { Message } from 'element-ui'
 
 // 查询流程定义列表
 export function listDefinition(query) {
@@ -24,6 +25,9 @@ export function definitionStart(
   businessCode,
   data
 ) {
+  if(!data.path){
+    return Message.error('缺少必要的path属性')
+  }
   return request({
     url:
       "/flowable/definition/start/" +
@@ -40,6 +44,9 @@ export function definitionStart(
 }
 // 部署流程实例
 export function definitionStart2(procDefId, businessId, businessType, data) {
+  if(!data.path){
+    return Message.error('缺少必要的path属性')
+  }
   return request({
     url:
       "/flowable/definition/start/" +

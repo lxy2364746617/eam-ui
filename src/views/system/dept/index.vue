@@ -468,7 +468,7 @@ export default {
       this.download(
         "system/dept/export",
         obj,
-        `config_${new Date().getTime()}.xlsx`
+        `人资组织管理_${new Date().getTime()}.xlsx`
       );
     },
   },

@@ -3,7 +3,7 @@
     <div v-if="formData.emArchivesIndex">
       <p class="subtitle"><i class="el-icon-magic-stick"></i> 主要指标
         <span v-if="disabled5" class="rightbutton">
-          <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled5=false">编辑</el-button>
+          <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled5=false" v-hasPermi="['equipment:base:modify']">编辑</el-button>
         </span><span v-else class="rightbutton">
           <el-button v-if="!isReadonly" type="text" @click="save('5')">确认</el-button>
           <el-button v-if="!isReadonly" type="text" @click="closeEdit('5')">取消</el-button>

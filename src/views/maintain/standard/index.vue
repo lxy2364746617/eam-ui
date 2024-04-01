@@ -311,7 +311,7 @@ export default {
         {
           ...this.queryParams,
         },
-        `standard_${new Date().getTime()}.xlsx`
+        `巡点检标准_${new Date().getTime()}.xlsx`
       )
     },
   },

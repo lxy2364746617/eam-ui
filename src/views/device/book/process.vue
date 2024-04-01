@@ -153,7 +153,8 @@ export default {
           this.userobj = {
             flowDataType:res.data.flowDataType,
             selectUsers:res.data.assignee?res.data.assignee:res.data.candidateGroups?res.data.candidateGroups:
-            res.data.candidateUsers.length>0?res.data.candidateUsers.join(','):''
+            res.data.candidateUsers.length>0?res.data.candidateUsers.join(','):'',
+            deptId:res.data.deptId?res.data.deptId:''
           }
             const formData = new FormData();  
             Object.entries(this.userobj).forEach(([key, value]) => {  

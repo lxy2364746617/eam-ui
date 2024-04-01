@@ -277,7 +277,7 @@ export default {
     handleExport() {
       this.download('system/expression/export', {
         ...this.queryParams,exportIds:this.exportIds
-      }, `expression_${new Date().getTime()}.xlsx`)
+      }, `流程表达式_${new Date().getTime()}.xlsx`)
     }
   }
 };

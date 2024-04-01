@@ -247,7 +247,7 @@ export default {
     getDeviceParent(){
       const deviceId = this.formData.parentId
       getBASE(deviceId).then(response => {
-         response.data.location=response.data.locationFullName&&response.data.locationFullName.split('->')[response.data.locationFullName.split('->').length-1]
+         response.data&&(response.data.location=response.data&&response.data.locationFullName&&response.data.locationFullName.split('->')[response.data.locationFullName.split('->').length-1])
         this.parentData = response.data||null;
       })
       .catch(err => {

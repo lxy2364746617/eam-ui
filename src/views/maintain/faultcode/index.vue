@@ -317,7 +317,7 @@ export default {
       this.download(
         '/maintain/faultCode/export',
         {exportIds:this.exportIds},
-        `faultCode${new Date().getTime()}.xlsx`
+        `故障代码_${new Date().getTime()}.xlsx`
       )
     },
   }

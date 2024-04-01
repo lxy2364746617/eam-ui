@@ -167,6 +167,7 @@
               type="text"
               icon="el-icon-document-add"
               @click="handleSet(scope.row)"
+              v-hasPermi="['flowable:business:submit']"
               v-if="scope.row.processStatus=='uncommitted'||scope.row.processStatus=='reject'||scope.row.processStatus=='canceled'||scope.row.processStatus=='terminated'"
             >提交</el-button>
           </template>
@@ -841,6 +842,7 @@ export default {
     handleSet(row){
       this.id = row.deviceId
       this.deviceCode=row.deviceCode
+      this.deviceName=row.deviceName
       this.subopen = true;
       this.subtitle = "提交";
       let data={
@@ -864,7 +866,7 @@ export default {
       })
     },
     sub(val,userIds){
-         definitionStart(val.id,this.id,'EA',this.deviceCode,{path:'/device/book/details',nextUserIds:userIds}).then(res=>{
+         definitionStart(val.id,this.id,'EA',this.deviceCode,{path:'/device/book/details',nextUserIds:userIds,businessName:this.deviceName}).then(res=>{
           this.subopen=false
           this.getList()
       })  
@@ -898,7 +900,7 @@ export default {
         {
           ...obj,
         },
-        `device_${new Date().getTime()}.xlsx`
+        `d设备档案_${new Date().getTime()}.xlsx`
       )
     },
     /** 下载模板操作 */
@@ -906,7 +908,7 @@ export default {
       this.download(
         'system/user/importTemplate',
         {},
-        `user_template_${new Date().getTime()}.xlsx`
+        `设备档案模板_${new Date().getTime()}.xlsx`
       )
     },
     // 文件上传中处理

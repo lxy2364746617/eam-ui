@@ -404,7 +404,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         }
         this.download('/system/location/export',{
           ...params
-        },`location_${new Date().getTime()}.xlsx`)
+        },`功能位置管理_${new Date().getTime()}.xlsx`)
       },
     }
   }

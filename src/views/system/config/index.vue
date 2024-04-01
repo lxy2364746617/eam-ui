@@ -332,7 +332,7 @@ export default {
     handleExport() {
       this.download('system/config/export', {
         ...this.queryParams,exportIds:this.exportIds
-      }, `config_${new Date().getTime()}.xlsx`)
+      }, `参数设置_${new Date().getTime()}.xlsx`)
     },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {

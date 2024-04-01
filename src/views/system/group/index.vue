@@ -159,7 +159,7 @@ export default {
         {
           ...this.queryParams,exportIds:this.exportIds
         },
-        `group_${new Date().getTime()}.xlsx`
+        `班组管理_${new Date().getTime()}.xlsx`
       )
     },
   }

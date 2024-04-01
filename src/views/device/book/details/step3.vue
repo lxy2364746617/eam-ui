@@ -17,7 +17,7 @@
       <el-col :span="8">
         <p class="subtitle"><i class="el-icon-magic-stick"></i> 设备图片
           <span v-if="disabled1" class="rightbutton">
-            <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false">编辑</el-button>
+            <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false" v-hasPermi="['equipment:base:modify']">编辑</el-button>
           </span>
           <span v-else class="rightbutton">
             <el-button v-if="!isReadonly" type="text" @click="save('1')">确认</el-button>

@@ -23,7 +23,7 @@
     <div v-if="formData.emArchivesSpecial">
       <p class="subtitle"><i class="el-icon-magic-stick"></i> 特种设备详情信息
         <span v-if="disabled4" class="rightbutton">
-          <el-button type="text" icon="el-icon-edit" @click="disabled4=false">编辑</el-button>
+          <el-button type="text" icon="el-icon-edit" @click="disabled4=false" v-hasPermi="['equipment:base:modify']">编辑</el-button>
         </span><span v-else class="rightbutton">
           <el-button type="text" @click="save('4')">确认</el-button>
           <el-button type="text" @click="closeEdit('4')">取消</el-button>

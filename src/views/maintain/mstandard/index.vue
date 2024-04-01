@@ -291,7 +291,7 @@ export default {
         {
           ...this.queryParams,
         },
-        `mstandard_${new Date().getTime()}.xlsx`
+        `保养检修标准_${new Date().getTime()}.xlsx`
       )
     },
     handleStatusChange(event, prop, row) {
