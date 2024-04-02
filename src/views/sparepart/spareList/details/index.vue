@@ -212,8 +212,7 @@ export default {
       ...this.$route.query.i,
       partType: "" + this.$route.query.i.partType,
     };
-
-    getManagementDetails(this.spareValue.id).then((res) => {
+    getManagementDetails(this.spareValue.partCode).then((res) => {
       this.formData = { ...res.data, partType: "" + res.data.partType };
       this.$refs.jmform1.clearValidate();
     });
@@ -352,7 +351,7 @@ export default {
         // 编辑
         updateManagement(this.spareValue).then((res) => {
           if (res.code === 200) {
-            getManagementDetails(this.spareValue.id).then((res) => {
+            getManagementDetails(this.spareValue.partCode).then((res) => {
               this.formData = { ...res.data, partType: "" + res.data.partType };
               this.$refs.jmform1.clearValidate();
             });
@@ -373,7 +372,7 @@ export default {
 
       uploadImgPut(newFile).then((response) => {
         if (response.code === 200) {
-          getManagementDetails(this.spareValue.id).then((res) => {
+          getManagementDetails(this.spareValue.partCode).then((res) => {
             this.formData = { ...res.data, partType: "" + res.data.partType };
             this.$refs.jmform1.clearValidate();
           });
