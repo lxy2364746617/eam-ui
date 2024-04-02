@@ -58,12 +58,12 @@
         >
       </template>
     </PropertyOperation>
-    <p class="icon" v-if="isShowCard">
+    <p class="icon" v-if="isShowCard && !businessId">
       <span style="padding-left: 13px"></span>
       <span>设备审批信息</span>
     </p>
     <adminParentdevice
-      v-if="isShowCard"
+      v-if="isShowCard && !businessId"
       :code="formData.neckNo"
       :detailReadonly="true"
     ></adminParentdevice>
