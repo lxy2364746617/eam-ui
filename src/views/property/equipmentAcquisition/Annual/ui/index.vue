@@ -188,8 +188,6 @@ export default {
       this.$route.query.i ||
       this.detailReadonly
     ) {
-      if (this.$route.query.formData)
-        this.formData = this.$route.query.formData;
       this.isShowCard =
         Number(this.$route.query.isShowCard) ||
         this.$route.query.i ||
@@ -198,13 +196,13 @@ export default {
           : false;
       if (
         this.$route.query.i ||
-        this.formData.purchasePlanNo ||
+        this.$route.query?.formData?.purchasePlanNo ||
         this.businessId
       ) {
         getPurchaseDetail({
           purchasePlanNo:
             this.$route.query.i ||
-            this.formData.purchasePlanNo ||
+            this.$route.query?.formData?.purchasePlanNo ||
             this.businessId,
         }).then((res) => {
           if (res.code == 200) {

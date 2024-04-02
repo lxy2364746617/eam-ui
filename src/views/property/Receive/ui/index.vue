@@ -58,6 +58,16 @@
         >
       </template>
     </PropertyOperation>
+    <p class="icon" v-if="isShowCard">
+      <span style="padding-left: 13px"></span>
+      <span>设备审批信息</span>
+    </p>
+    <adminParentdevice
+      v-if="isShowCard"
+      :code="formData.neckNo"
+      :detailReadonly="true"
+    ></adminParentdevice>
+
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
       <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
@@ -126,6 +136,7 @@ import { listUser } from "@/api/system/user";
 import { v4 as uuidv4 } from "uuid";
 import { listDept } from "@/api/system/dept";
 import parentdevice from "@/views/device/book/device";
+import adminParentdevice from "@/views/property/Receive/ui/adminParentdevice";
 
 import {
   getProjectList,
@@ -144,6 +155,7 @@ export default {
     Wrapper,
     subprocess,
     parentdevice,
+    adminParentdevice,
   },
   dicts: [
     "em_device_state",
@@ -220,18 +232,22 @@ export default {
       this.$route.query.i ||
       this.detailReadonly
     ) {
-      if (this.$route.query.formData)
-        this.formData = this.$route.query.formData;
       this.isShowCard =
         Number(this.$route.query.isShowCard) ||
         this.$route.query.i ||
         this.detailReadonly
           ? true
           : false;
-      if (this.$route.query.i || this.formData.neckNo || this.businessId) {
+      if (
+        this.$route.query.i ||
+        this.$route.query?.formData?.neckNo ||
+        this.businessId
+      ) {
         getPurchaseDetail({
           neckNo:
-            this.$route.query.i || this.formData.neckNo || this.businessId,
+            this.$route.query.i ||
+            this.$route.query?.formData?.neckNo ||
+            this.businessId,
         }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
@@ -540,6 +556,7 @@ export default {
       this.drawer = false;
     },
     submitForm(formVal) {
+      formVal["createTime"] = this.parseTime(new Date(), "{y}-{m}-{d}");
       if (formVal.type === 1) {
         formVal.type = 2;
         this.equipmentList = this.equipmentList.concat([formVal]);
@@ -707,5 +724,8 @@ export default {
   padding-top: 20px;
   border-top: 1px solid #ddd;
   z-index: 2;
+}
+.admin-parentdevice {
+  padding: 0 !important;
 }
 </style>

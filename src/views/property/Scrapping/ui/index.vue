@@ -216,18 +216,22 @@ export default {
       this.$route.query.i ||
       this.detailReadonly
     ) {
-      if (this.$route.query.formData)
-        this.formData = this.$route.query.formData;
       this.isShowCard =
         Number(this.$route.query.isShowCard) ||
         this.$route.query.i ||
         this.detailReadonly
           ? true
           : false;
-      if (this.$route.query.i || this.formData.scrapNo || this.businessId) {
+      if (
+        this.$route.query.i ||
+        this.$route.query?.formData?.scrapNo ||
+        this.businessId
+      ) {
         getPurchaseDetail({
           scrapNo:
-            this.$route.query.i || this.formData.scrapNo || this.businessId,
+            this.$route.query.i ||
+            this.$route.query?.formData?.scrapNo ||
+            this.businessId,
         }).then((res) => {
           if (res.code == 200) {
             this.formData = {

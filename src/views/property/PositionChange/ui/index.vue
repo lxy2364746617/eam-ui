@@ -231,18 +231,16 @@ export default {
       this.$route.query.i ||
       this.detailReadonly
     ) {
-      if (this.$route.query.formData)
-        this.formData = this.$route.query.formData;
       this.isShowCard =
         Number(this.$route.query.isShowCard) ||
         this.$route.query.i ||
         this.detailReadonly
           ? true
           : false;
-      if (this.$route.query.i || this.formData.changeNo || this.businessId) {
+      if (this.$route.query.i || this.$route.query?.formData?.changeNo || this.businessId) {
         getPurchaseDetail({
           changeNo:
-            this.$route.query.i || this.formData.changeNo || this.businessId,
+            this.$route.query.i || this.$route.query?.formData?.changeNo || this.businessId,
         }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;

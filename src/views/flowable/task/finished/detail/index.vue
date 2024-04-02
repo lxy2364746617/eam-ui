@@ -1,26 +1,85 @@
 <template>
   <div class="app-container">
-    <el-card class="box-card" >
+    <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span class="el-icon-document">已办任务</span>
-        <el-button style="float: right;" size="mini" type="danger" @click="goBack">关闭</el-button>
+        <el-button
+          style="float: right"
+          size="mini"
+          type="danger"
+          @click="goBack"
+          >关闭</el-button
+        >
       </div>
-      <el-tabs  tab-position="top" v-model="activeName" @tab-click="handleClick">
+      <el-tabs tab-position="top" v-model="activeName" @tab-click="handleClick">
         <!--表单信息-->
-         <el-tab-pane label="表单信息" name="1" v-if="!readonly">
-          <el-col :span="24"  >
+        <el-tab-pane label="表单信息" name="1" v-if="!readonly">
+          <el-col :span="24">
             <div class="test-form">
-              <parser v-if="variablesData" :key="new Date().getTime()" :form-conf="variablesData" />
+              <parser
+                v-if="variablesData"
+                :key="new Date().getTime()"
+                :form-conf="variablesData"
+              />
               <!-- 设备档案详情 -->
-              <device-detail v-if="path=='/device/book/details'" :detailReadonly='true' :detailId='taskForm.businessId'></device-detail>
+              <device-detail
+                v-if="path == '/device/book/details'"
+                :detailReadonly="true"
+                :detailId="taskForm.businessId"
+              ></device-detail>
+              <receive-detail
+                v-if="path == '/property/receiveControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></receive-detail>
+              <backspace-detail
+                v-if="path == '/property/backspaceControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></backspace-detail>
+              <annual-detail
+                v-if="path == '/property/annualControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></annual-detail>
+              <temporarily-detail
+                v-if="path == '/property/temporarilyControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></temporarily-detail>
+              <scrapping-detail
+                v-if="path == '/property/scrappingControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></scrapping-detail>
+              <positionChange-detail
+                v-if="path == '/property/positionChangeControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></positionChange-detail>
+              <turnOver-detail
+                v-if="path == '/property/turnOverControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></turnOver-detail>
+              <spareReceive-detail
+                v-if="path == '/sparepart/spareReceiveControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></spareReceive-detail>
+              <requirement-detail
+                v-if="path == '/sparepart/requirementControls'"
+                :detailReadonly="true"
+                :businessId="taskForm.businessId"
+              ></requirement-detail>
             </div>
           </el-col>
         </el-tab-pane>
         <!--流程流转记录-->
         <el-tab-pane label="流转记录" name="2">
-          <el-col :span="16" :offset="4" >
+          <el-col :span="16" :offset="4">
             <div class="block">
-               <!--<el-timeline>
+              <!--<el-timeline>
                 <el-timeline-item
                   v-for="(item,index ) in flowRecordList"
                   :key="index"
@@ -60,22 +119,44 @@
                 </el-timeline-item>
               </el-timeline> -->
               <ul>
-                <li class="linetime" v-for="(item,index ) in flowRecordList" :key="index">
-                 <el-card :body-style="{ padding: '10px' }">
-                    <p><span v-if="item.activityType=='startEvent'">发起人:</span>{{item.assigneeName?item.assigneeName:''+(item.duration? ('('+item.duration+')'):'')}}</p>
-                    <p style="color:#02B606" v-if="item.comment&&item.comment.type==1">同意</p>
-                    <p style="color:#EA0000" v-if="item.comment&&item.comment.type==3">驳回</p>
-                    <p>{{item.comment?item.comment.comment:''}}</p>
-                    <p>{{item.createTime}}</p>
+                <li
+                  class="linetime"
+                  v-for="(item, index) in flowRecordList"
+                  :key="index"
+                >
+                  <el-card :body-style="{ padding: '10px' }">
+                    <p>
+                      <span v-if="item.activityType == 'startEvent'"
+                        >发起人:</span
+                      >{{
+                        item.assigneeName
+                          ? item.assigneeName
+                          : "" +
+                            (item.duration ? "(" + item.duration + ")" : "")
+                      }}
+                    </p>
+                    <p
+                      style="color: #02b606"
+                      v-if="item.comment && item.comment.type == 1"
+                    >
+                      同意
+                    </p>
+                    <p
+                      style="color: #ea0000"
+                      v-if="item.comment && item.comment.type == 3"
+                    >
+                      驳回
+                    </p>
+                    <p>{{ item.comment ? item.comment.comment : "" }}</p>
+                    <p>{{ item.createTime }}</p>
                   </el-card>
-                  </li>
+                </li>
               </ul>
             </div>
-            
           </el-col>
         </el-tab-pane>
         <el-tab-pane label="流程图" name="3">
-          <flow :flowData="flowData"/>
+          <flow :flowData="flowData" />
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -83,79 +164,100 @@
 </template>
 
 <script>
-import {flowRecord} from "@/api/flowable/finished";
-import Parser from '@/components/parser/Parser'
-import {getProcessVariables, flowXmlAndNode} from "@/api/flowable/definition";
-import flow from '@/views/flowable/task/finished/detail/flow'
-import deviceDetail from '@/views/device/book/details'
+import { flowRecord } from "@/api/flowable/finished";
+import Parser from "@/components/parser/Parser";
+import { getProcessVariables, flowXmlAndNode } from "@/api/flowable/definition";
+import flow from "@/views/flowable/task/finished/detail/flow";
+import deviceDetail from "@/views/device/book/details";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import receiveDetail from "@/views/property/Receive/ui/index";
+import backspaceDetail from "@/views/property/Backspace/ui/index";
+import turnOverDetail from "@/views/property/TurnOver/ui/index";
+import ScrappingDetail from "@/views/property/Scrapping/ui/index";
+import AnnualDetail from "@/views/property/equipmentAcquisition/Annual/ui/index";
+import TemporarilyDetail from "@/views/property/equipmentAcquisition/Temporarily/ui/index";
+import PositionChangeDetail from "@/views/property/PositionChange/ui/index";
+import spareReceiveDetail from "@/views/sparepart/spareReceive/ui/index";
+import requirementDetail from "@/views/sparepart/requirement/ui/index";
 
 export default {
   name: "Record",
   components: {
     Parser,
     flow,
-    deviceDetail
+    deviceDetail,
+    receiveDetail,
+    backspaceDetail,
+    turnOverDetail,
+    ScrappingDetail,
+    AnnualDetail,
+    TemporarilyDetail,
+    PositionChangeDetail,
+    spareReceiveDetail,
+    requirementDetail,
   },
   props: {},
   data() {
     return {
       // 模型xml数据
       flowData: {},
-      activeName: '1',
+      activeName: "1",
       // 用户表格数据
       userList: null,
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "label",
       },
       // 查询参数
       queryParams: {
-        deptId: undefined
+        deptId: undefined,
       },
       // 遮罩层
       loading: true,
       flowRecordList: [], // 流程流转数据
       formConfCopy: {},
       src: null,
-      taskForm:{
+      taskForm: {
         multiple: false,
-        comment:"", // 意见内容
+        comment: "", // 意见内容
         procInsId: "", // 流程实例编号
         instanceId: "", // 流程实例编号
-        deployId: "",  // 流程定义编号
-        taskId: "" ,// 流程任务编号
-        procDefId: "",  // 流程编号
+        deployId: "", // 流程定义编号
+        taskId: "", // 流程任务编号
+        procDefId: "", // 流程编号
         vars: "",
-        targetKey:""
+        targetKey: "",
       },
       variables: [], // 流程变量数据
       variablesData: {}, // 流程变量数据
       variableOpen: false, // 是否加载流程变量数据
-      path:'',
-      readonly:false
+      path: "",
+      readonly: false,
     };
   },
   created() {
     this.taskForm.deployId = this.$route.query && this.$route.query.deployId;
-    this.taskForm.taskId  = this.$route.query && this.$route.query.taskId;
+    this.taskForm.taskId = this.$route.query && this.$route.query.taskId;
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
     this.taskForm.businessId = this.$route.query.businessId;
-    this.readonly=this.$route.query.readonly
-    if (this.readonly) this.activeName='2'
+    this.readonly = this.$route.query.readonly;
+    if (this.readonly) this.activeName = "2";
     // 回显流程记录
     // 流程任务重获取变量表单
-    if (this.taskForm.taskId){
-      this.processVariables( this.taskForm.taskId)
+    if (this.taskForm.taskId) {
+      this.processVariables(this.taskForm.taskId);
     }
-    this.getFlowRecordList( this.taskForm.procInsId, this.taskForm.deployId);
+    this.getFlowRecordList(this.taskForm.procInsId, this.taskForm.deployId);
   },
   methods: {
     handleClick(tab, event) {
-      if (tab.name === '3') {
-        flowXmlAndNode({procInsId: this.taskForm.procInsId, deployId: this.taskForm.deployId}).then(res => {
+      if (tab.name === "3") {
+        flowXmlAndNode({
+          procInsId: this.taskForm.procInsId,
+          deployId: this.taskForm.deployId,
+        }).then((res) => {
           this.flowData = res.data;
-        })
+        });
       }
     },
     setIcon(val) {
@@ -174,22 +276,24 @@ export default {
     },
     /** 流程流转记录 */
     getFlowRecordList(procInsId, deployId) {
-      const that = this
-      const params = {procInsId: procInsId, deployId: deployId}
-      flowRecord(params).then(res => {
-        that.flowRecordList = res.data.flowList;
-      }).catch(res => {
-        this.goBack();
-      })
+      const that = this;
+      const params = { procInsId: procInsId, deployId: deployId };
+      flowRecord(params)
+        .then((res) => {
+          that.flowRecordList = res.data.flowList;
+        })
+        .catch((res) => {
+          this.goBack();
+        });
     },
     /** 获取流程变量内容 */
     processVariables(taskId) {
       if (taskId) {
         // 提交流程申请时填写的表单存入了流程变量中后续任务处理时需要展示
-        getProcessVariables(taskId).then(res => {
-          this.path=res.data.path?res.data.path:''
+        getProcessVariables(taskId).then((res) => {
+          this.path = res.data.path ? res.data.path : "";
           //this.variablesData = res.data.variables;
-          this.variableOpen = true
+          this.variableOpen = true;
         });
       }
     },
@@ -198,9 +302,9 @@ export default {
       // 关闭当前标签页并返回上个页面
       /* const obj = { path: "/task/finished", query: { t: Date.now()} };
       this.$tab.closeOpenPage(obj); */
-      this.$tab.closePage()
+      this.$tab.closePage();
     },
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -216,7 +320,7 @@ export default {
   content: "";
 }
 .clearfix:after {
-  clear: both
+  clear: both;
 }
 
 .box-card {
@@ -229,27 +333,30 @@ export default {
 }
 
 .my-label {
-  background: #E1F3D8;
+  background: #e1f3d8;
 }
-.linetime{
-  list-style:none;
-  border-left:4px solid #D9D9D9;
-  padding:20px;
+.linetime {
+  list-style: none;
+  border-left: 4px solid #d9d9d9;
+  padding: 20px;
   position: relative;
 }
-.linetime::before{
-  content:'';
+.linetime::before {
+  content: "";
   width: 20px;
   height: 20px;
   background: white;
-  border: 4px solid #1890FF;
+  border: 4px solid #1890ff;
   border-radius: 50%;
   position: absolute;
   top: 50%;
   left: -12px;
   transform: translateY(-50%);
 }
-.el-card{
+.el-card {
   padding-left: 10px;
+}
+.app-container {
+  padding: 0 12px;
 }
 </style>
