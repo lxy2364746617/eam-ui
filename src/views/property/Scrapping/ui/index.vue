@@ -60,7 +60,7 @@
     </PropertyOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary" v-if="isDeclare === 'Y'" @click="submitReview"
+      <el-button v-hasPermi="['property:scrapping:submit']" type="primary" v-if="isDeclare === 'Y'" @click="submitReview"
         >保存并提交审批</el-button
       >
       <el-button @click="cancel">取消</el-button>

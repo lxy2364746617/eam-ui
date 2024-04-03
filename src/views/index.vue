@@ -97,8 +97,9 @@
       </div>
       <div class="border" style="height: 655px; width: 617px">
         <div class="border-title">
-          <span>我的代办</span>
-          <div>
+          <span>我的工单代办</span>
+          <!-- <span>我的代办</span> -->
+          <!-- <div>
             <el-radio-group v-model="radio" size="mini">
               <el-radio-button
                 v-for="item in radioArr"
@@ -106,10 +107,10 @@
                 :label="item"
               ></el-radio-button>
             </el-radio-group>
-          </div>
+          </div> -->
         </div>
         <div class="charge">
-          <ContTable
+          <!-- <ContTable
             v-for="(item, index) in radioArr"
             v-show="radio === item"
             :key="item"
@@ -121,6 +122,19 @@
             ref="contTable"
             :handleWidth="100"
             :columns="getTableDataBy('columns' + (index + 1))"
+            :showOperate="false"
+            :showSearch="false"
+            :rightToolbarShow="false"
+            @linkClick="linkClick"
+          >
+          </ContTable> -->
+          <ContTable
+            :tableData="getTableDataBy('equipmentList' + 1, item, radio)"
+            @getList="getTableDataBy('getList' + 1)"
+            :total="getTableDataBy('total' + 1)"
+            ref="contTable"
+            :handleWidth="100"
+            :columns="getTableDataBy('columns' + 1)"
             :showOperate="false"
             :showSearch="false"
             :rightToolbarShow="false"
@@ -157,46 +171,27 @@
           </div>
         </div>
       </div>
-      <div class="border" style="height: 655px; width: 513px">
+      <div class="border" style="height: 655px; width: 617px">
         <div class="border-title">
-          <span>预警通知</span>
+          <span>我的流程代办</span>
         </div>
-        <div class="forewarning" v-if="forewarning">
-          <ul>
-            <li>
-              <div
-                :style="{
-                  backgroundImage: `url(${dotIcon})`,
-                }"
-                class="dot"
-              ></div>
-              <div class="forewarning-container">
-                <span>2024 / 01 / 11 15:33:06</span>
-                <ul>
-                  <li>
-                    <span>EQ000046-1 <i>#掘进机预警通知</i></span>
-                  </li>
-                  <li>功能位置：{{ "101工作面" }}</li>
-                  <li>报警等级：{{ "警告" }}</li>
-                  <li>报警名称：{{ "电机定子异常故障" }}</li>
-                  <li>故障现象：</li>
-                  <li>{{ "1.电机壳横向振动幅值大;" }}</li>
-                  <li>{{ "2.振动波形出现明显拍波现象;" }}</li>
-                  <li>
-                    {{
-                      "3.振动频率为电源频率的2倍，不产生极通过频率边带振动频率为电源频率的2倍，不产生极通过频率边带振动频率为电源频率的2倍，不产生极通过频率边带;"
-                    }}
-                  </li>
-                  <li>{{ "4.切断电源，振动立即消失。" }}</li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div class="no-information" v-else>
-          <span>暂无预警</span>
+        <div class="charge">
+          <ContTable
+            :tableData="getTableDataBy('equipmentList' + 2, item, radio)"
+            @getList="getTableDataBy('getList' + 2)"
+            :total="getTableDataBy('total' + 2)"
+            ref="contTable"
+            :handleWidth="100"
+            :columns="getTableDataBy('columns' + 2)"
+            :showOperate="false"
+            :showSearch="false"
+            :rightToolbarShow="false"
+            @linkClick="linkClick"
+          >
+          </ContTable>
         </div>
       </div>
+      
       <div class="border" style="height: 315px; width: 617px">
         <div class="border-title">
           <span>系统公告</span>
@@ -263,6 +258,46 @@
               </p>
             </li>
           </ul>
+        </div>
+      </div>
+      <div class="border" style="height: 315px; width: 513px">
+        <div class="border-title">
+          <span>预警通知</span>
+        </div>
+        <div class="forewarning" v-if="forewarning">
+          <ul>
+            <li>
+              <div
+                :style="{
+                  backgroundImage: `url(${dotIcon})`,
+                }"
+                class="dot"
+              ></div>
+              <div class="forewarning-container">
+                <span>2024 / 01 / 11 15:33:06</span>
+                <ul>
+                  <li>
+                    <span>EQ000046-1 <i>#掘进机预警通知</i></span>
+                  </li>
+                  <li>功能位置：{{ "101工作面" }}</li>
+                  <li>报警等级：{{ "警告" }}</li>
+                  <li>报警名称：{{ "电机定子异常故障" }}</li>
+                  <li>故障现象：</li>
+                  <li>{{ "1.电机壳横向振动幅值大;" }}</li>
+                  <li>{{ "2.振动波形出现明显拍波现象;" }}</li>
+                  <li>
+                    {{
+                      "3.振动频率为电源频率的2倍，不产生极通过频率边带振动频率为电源频率的2倍，不产生极通过频率边带振动频率为电源频率的2倍，不产生极通过频率边带;"
+                    }}
+                  </li>
+                  <li>{{ "4.切断电源，振动立即消失。" }}</li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="no-information" v-else>
+          <span>暂无预警</span>
         </div>
       </div>
     </wc-waterfall>

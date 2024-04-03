@@ -192,10 +192,8 @@ export default {
   data() {
     return {
       deptOptions: null,
-      form: {},
       userList: [],
       userList2: [],
-      listValue: {},
       review: null,
       //文档
       fileList: [],
@@ -208,11 +206,8 @@ export default {
   },
   async created() {
     await this.getTreeSelect();
-    this.form = this.formData;
-    if (this.isShowCard) {
-      this.listValue = this.formData;
-    }
-    if (this.attachmentsTitle && this.formData.id) {
+    console.log("========================", this.attachmentsTitle, this.busId);
+    if (this.attachmentsTitle && this.busId) {
       getAssociatedPlan({
         [this.busString]: this.busId ? this.busId : 1,
         pageNum: 1,
@@ -247,6 +242,12 @@ export default {
     },
   },
   computed: {
+    listValue() {
+      return this.formData;
+    },
+    form() {
+      return this.formData;
+    },
     documentColumns() {
       return [
         { label: "文件名", prop: "originalFileName", class: true },

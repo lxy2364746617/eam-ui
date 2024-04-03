@@ -61,7 +61,7 @@
     </PropertyOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
+      <el-button v-hasPermi="['property:purchase:submit']" type="primary" @click="submitReview">保存并提交审批</el-button>
       <el-button @click="cancel">取消</el-button>
     </div>
     <!-- 对表格的操作 -->

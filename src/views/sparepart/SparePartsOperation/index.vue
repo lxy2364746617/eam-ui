@@ -84,22 +84,23 @@ export default {
   data() {
     return {
       deptOptions: null,
-      form: {},
       userList: [],
       userList2: [],
-      listValue: {},
       review: null,
     };
   },
   async created() {
     await this.getTreeSelect();
-    this.form = this.formData;
-    if (this.isShowCard) {
-      this.listValue = this.formData;
-    }
   },
   mounted() {},
-  computed: {},
+  computed: {
+    listValue() {
+      return this.formData;
+    },
+    form() {
+      return this.formData;
+    },
+  },
   methods: {
     findTreeName(options, value) {
       if (!options || !value) return null;

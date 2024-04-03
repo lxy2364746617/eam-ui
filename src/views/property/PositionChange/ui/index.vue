@@ -68,7 +68,12 @@
     </PropertyOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
+      <el-button
+        v-hasPermi="['property:position:submit']"
+        type="primary"
+        @click="submitReview"
+        >保存并提交审批</el-button
+      >
       <el-button @click="cancel">取消</el-button>
     </div>
     <!-- 对表格的操作 -->
@@ -237,10 +242,16 @@ export default {
         this.detailReadonly
           ? true
           : false;
-      if (this.$route.query.i || this.$route.query?.formData?.changeNo || this.businessId) {
+      if (
+        this.$route.query.i ||
+        this.$route.query?.formData?.changeNo ||
+        this.businessId
+      ) {
         getPurchaseDetail({
           changeNo:
-            this.$route.query.i || this.$route.query?.formData?.changeNo || this.businessId,
+            this.$route.query.i ||
+            this.$route.query?.formData?.changeNo ||
+            this.businessId,
         }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
@@ -272,6 +283,9 @@ export default {
     "formData.applyDeptId": {
       handler(newFormData, oldFormData) {
         if (newFormData) {
+          this.delFileList = this.equipmentList.filter((item) => item.id);
+          this.equipmentList = [];
+          this.updateList = [];
           this.getUserList(newFormData);
         }
       },

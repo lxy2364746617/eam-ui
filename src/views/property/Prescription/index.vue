@@ -269,6 +269,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         categoryId: undefined,
+        isRelieve: "Y",
       },
       deviceIndexVisible: false,
       flag: false,
@@ -475,6 +476,7 @@ export default {
       var obj = {
         categoryId: this.queryParams.categoryId,
         exportIds: this.exportIds,
+        isRelieve:'Y'
       };
       this.download(
         "equipment/base/export",

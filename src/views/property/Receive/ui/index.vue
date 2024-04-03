@@ -70,7 +70,12 @@
 
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button type="primary" @click="submitReview">保存并提交审批</el-button>
+      <el-button
+        v-hasPermi="['property:receive:submit']"
+        type="primary"
+        @click="submitReview"
+        >保存并提交审批</el-button
+      >
       <el-button @click="cancel">取消</el-button>
     </div>
     <!-- 对表格的操作 -->
@@ -368,11 +373,11 @@ export default {
           width: 150,
           span: 23,
           required: true,
-          clickFn: () => {
-            this.$set(this.addItem, "choosedrawer", true);
-            let lineIds = this.equipmentList.map((item) => item.deviceId) || [];
-            this.$set(this.form, "disIds", lineIds);
-          },
+          // clickFn: () => {
+          //   this.$set(this.addItem, "choosedrawer", true);
+          //   let lineIds = this.equipmentList.map((item) => item.deviceId) || [];
+          //   this.$set(this.form, "disIds", lineIds);
+          // },
         },
         {
           label: "规格型号",
