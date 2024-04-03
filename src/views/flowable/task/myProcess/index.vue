@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="申请编号" prop="businessCode">
         <el-input
-          v-model="queryParams.name"
+          v-model="queryParams.businessCode"
           placeholder="请输入名称"
           clearable
           size="small"
@@ -13,7 +13,7 @@
       <el-form-item label="开始时间" prop="deployTime">
         <el-date-picker clearable size="small"
                         v-model="queryParams.deployTime"
-                        type="date"
+                        type="daterange"
                         value-format="yyyy-MM-dd"
                         placeholder="选择时间">
         </el-date-picker>
@@ -52,7 +52,7 @@
     <el-table v-loading="loading" :data="myProcessList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="申请时间" align="center" prop="createTime" width="180"/>
-      <el-table-column label="申请编号" align="center" prop="businessCode" :show-overflow-tooltip="true"/>
+      <el-table-column label="申请编号" align="center" prop="businessCode"  width="150" :show-overflow-tooltip="true"/>
       <el-table-column label="申请部门" align="center" prop="startDeptName"/>
       <el-table-column label="申请人" align="center" prop="startUserName"/>
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
@@ -191,7 +191,8 @@ export default {
         derivedFrom: null,
         derivedFromRoot: null,
         parentDeploymentId: null,
-        engineVersion: null
+        engineVersion: null,
+        beginTime:null
       },
       // 查询参数
       queryProcessParams: {
@@ -213,6 +214,14 @@ export default {
       rules: {
       },
     };
+  },
+  watch:{
+    'queryParams.deployTime':{
+      handler(newVal){
+        this.queryParams.beginTime=newVal[0]
+        this.queryParams.endTime=newVal[1]
+      }
+    }
   },
   created() {
     this.getList();

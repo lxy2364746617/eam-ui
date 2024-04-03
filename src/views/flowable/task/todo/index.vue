@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="申请编号" prop="businessCode">
         <el-input
-          v-model="queryParams.name"
+          v-model="queryParams.businessCode"
           placeholder="请输入名称"
           clearable
           size="small"
@@ -13,7 +13,7 @@
       <el-form-item label="开始时间" prop="deployTime">
         <el-date-picker clearable size="small"
                         v-model="queryParams.deployTime"
-                        type="date"
+                        type="daterange"
                         value-format="yyyy-MM-dd"
                         placeholder="选择时间">
         </el-date-picker>
@@ -149,7 +149,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         name: null,
-        category: null
+        category: null,
       },
       // 表单参数
       form: {},
@@ -159,6 +159,14 @@ export default {
   },
   created() {
     this.getList();
+  },
+  watch:{
+    'queryParams.deployTime':{
+      handler(newVal){
+        this.queryParams.beginTime=newVal[0]
+        this.queryParams.endTime=newVal[1]
+      }
+    }
   },
   methods: {
     findName(options,value){

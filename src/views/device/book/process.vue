@@ -109,6 +109,7 @@ export default {
       this.userMultipleSelection = this.nextUser;
     },
     submitPro(){
+      if(!this.taskForm.nextUserIds) return this.$message.error('请选择下级审批人!')
       this.$confirm("确定发起流程？",{
         confirmButtonText: '确定',
         cancelButtonText: '取消',

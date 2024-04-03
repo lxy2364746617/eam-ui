@@ -310,8 +310,9 @@ export default {
 <style lang="scss" scoped>
 .test-form {
   margin: 15px auto;
-  width: 800px;
+  width: 100% !important;
   padding: 15px;
+  padding-right: 0;
 }
 
 .clearfix:before,
