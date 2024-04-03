@@ -696,6 +696,7 @@ export default {
     },
     /** 加载审批任务弹框 */
     handleComplete() {
+      if(this.nextFlow&&!this.taskForm.nextUserIds) return this.$message.error('请选择下级审批人！')
       this.taskForm.comment = "";
       this.completeOpen = true;
       this.completeTitle = "流程审批";
@@ -728,7 +729,7 @@ export default {
         });
       } else {
         if (
-          taskName == "设备管理员" &&
+          this.taskName == "设备管理员" &&
           !this.deviceList.every((item) => item.targetLocation)
         )
           return this.$message.error(

@@ -5,9 +5,9 @@
          <!-- <el-button class="btn_status" style="background:#92E182;color:#02B606;">已同意</el-button>
          <el-button class="btn_status" style="background:#F7CCCC;color:#EA0000;">已删除</el-button> -->
       </el-form-item>
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="申请编号" prop="businessCode">
         <el-input
-          v-model="queryParams.name"
+          v-model="queryParams.businessCode"
           placeholder="请输入名称"
           clearable
           size="small"
@@ -17,7 +17,7 @@
       <el-form-item label="开始时间" prop="deployTime">
         <el-date-picker clearable size="small"
                         v-model="queryParams.deployTime"
-                        type="date"
+                        type="daterange"
                         value-format="yyyy-MM-dd"
                         placeholder="选择时间">
         </el-date-picker>
@@ -44,7 +44,7 @@
     </el-row> -->
     <el-empty v-if="finishedList.length==0" :image-size="200"></el-empty>
     <el-card v-for="item in finishedList" :key="item.taskId">
-      <div v-if="item.processStatus" class="card_status" :style="'color:'+'#4DCA38;'+'background:#CAF6C2'">
+      <div v-if="item.processStatus" class="card_status" :style="'color:'+(item.processStatus=='completed'?'#4DCA38;':'#F15555;')+'background:'+(item.processStatus=='completed'?'#CAF6C2':'#F7CCCC')">
         {{findName(dict.type.wf_process_status,item.processStatus)}}
       </div>
       <el-col :span="8" class="card_col1">
@@ -166,6 +166,14 @@ export default {
       categoryObj:{}
     };
   },
+  watch:{
+    'queryParams.deployTime':{
+      handler(newVal){
+        this.queryParams.beginTime=newVal[0]
+        this.queryParams.endTime=newVal[1]
+      }
+    }
+  },
   created() {
     
     this.getList();
@@ -184,6 +192,9 @@ export default {
     getList() {
       this.loading = true;
       finishedList(this.queryParams).then(response => {
+        response.data.records.forEach(item=>{
+          item.processStatus = item.procVars.processStatus
+        })
         this.finishedList = response.data.records;
         this.total = response.data.total;
         this.loading = false;
