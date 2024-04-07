@@ -278,7 +278,7 @@ export default {
           label: "购置计划编号",
           prop: "relatePurchasePlanNo",
           tableVisible: true,
-          width: 150,
+          width: 200,
         },
         {
           label: "行号",

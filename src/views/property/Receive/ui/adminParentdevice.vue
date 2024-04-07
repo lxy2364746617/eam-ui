@@ -1,5 +1,9 @@
 <template>
   <div class="admin-parentdevice" style="padding: 12px">
+    <p class="icon">
+      <span style="padding-left: 13px"></span>
+      <span>设备审批信息</span>
+    </p>
     <ContTable
       :tableData="equipmentList2"
       @getList="getList"
@@ -19,7 +23,6 @@
           size="mini"
           style="margin-left: 5px"
           @click="handlerControls(null, 'add')"
-          v-hasPermi="['property:backspace:add']"
           >选取设备</el-button
         >
         <el-button
@@ -27,7 +30,6 @@
           icon="el-icon-plus"
           size="mini"
           @click="handlerControls(null, 'batchEdit')"
-          v-hasPermi="['property:backspace:batchEdit']"
           >批量设置</el-button
         >
         <!-- <el-button
@@ -118,9 +120,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    code: {
-      type: String,
-      default: "",
+    equipList: {
+      type: Array,
+      default: [],
     },
   },
   data() {
@@ -153,15 +155,8 @@ export default {
   },
   created() {
     this.getTreeSelect();
-    if (this.code) {
-      request({
-        url: "/property/neck/" + this.code,
-        method: "get",
-      }).then((res) => {
-        if (res.code === 200) {
-          this.equipmentList = res.data;
-        }
-      });
+    if (this.equipList) {
+      this.equipmentList = this.equipList;
     }
   },
   watch: {

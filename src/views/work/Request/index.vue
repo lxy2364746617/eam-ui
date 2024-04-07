@@ -422,6 +422,7 @@ export default {
         pageSize: 10,
       }
     ) {
+      form["searchType"] = 1;
       this.queryParams = form;
       this.loading = true;
       getScheduleList(form).then((response) => {

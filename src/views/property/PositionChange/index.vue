@@ -200,7 +200,7 @@ export default {
           formType: "date",
           width: 150,
         },
-        { label: "变动单号", prop: "changeNo", tableVisible: true, width: 150 },
+        { label: "变动单号", prop: "changeNo", tableVisible: true, width: 200 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         {
           label: "业务日期",

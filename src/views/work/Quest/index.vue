@@ -496,7 +496,7 @@ export default {
           case "JMDJ1":
             this.$router.push({
               path: "/work/questAdd7",
-              query: JSON.stringify({ item: row, disabled: true }),
+              query: { item: row, disabled: true },
             });
             break;
           case "RCDJ2":
@@ -533,7 +533,7 @@ export default {
           case "DQJY2":
             this.$router.push({
               path: "/work/questAdd8",
-              query: JSON.stringify({ item: row, disabled: true }),
+              query: { item: row, disabled: true },
             });
             break;
           // ! 保养
@@ -749,7 +749,7 @@ export default {
         pageSize: 10,
       }
     ) {
-      form["pendingFlag"] = 1;
+      form["searchType"] = 3;
       this.queryParams = form;
       this.loading = true;
 

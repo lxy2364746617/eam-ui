@@ -207,7 +207,7 @@ export default {
           label: "移交单编号",
           prop: "transferNo",
           tableVisible: true,
-          width: 150,
+          width: 200,
         },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         {

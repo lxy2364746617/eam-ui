@@ -198,7 +198,7 @@ export default {
           label: "购置计划编号",
           prop: "purchasePlanNo",
           tableVisible: true,
-          width: 150,
+          width: 200,
         },
         {
           label: "购置计划名称",

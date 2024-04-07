@@ -203,7 +203,7 @@ export default {
           width: 150,
           formType: "date",
         },
-        { label: "回退单编号", prop: "backNo", tableVisible: true, width: 150 },
+        { label: "回退单编号", prop: "backNo", tableVisible: true, width: 200 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
         {
           label: "业务日期",

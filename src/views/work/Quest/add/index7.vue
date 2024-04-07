@@ -350,7 +350,7 @@ export default {
       let row = this.$route.query;
       // this.$route.query = null;
       this.formData = row.item;
-      this.disabled = row.disabled;
+      this.disabled = row.disabled === "true" ? true : false;
       getWomLine({ orderCode: this.formData.orderCode }).then((res) => {
         if (res.code == 200) {
           this.lineList = res.data;

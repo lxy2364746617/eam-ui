@@ -171,7 +171,6 @@ export default {
       this.$route.query.i ||
       this.detailReadonly
     ) {
-      console.log("========================", this.$route.query);
       if (this.$route.query.formData)
         this.formData = this.$route.query.formData;
       this.isShowCard =

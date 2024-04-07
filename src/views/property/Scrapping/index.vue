@@ -207,7 +207,7 @@ export default {
     },
     columns() {
       return [
-        { label: "报废编号", prop: "scrapNo", tableVisible: true, width: 150 },
+        { label: "报废编号", prop: "scrapNo", tableVisible: true, width: 200 },
         { label: "业务名称", prop: "busName", tableVisible: true },
         {
           label: "报废方式",

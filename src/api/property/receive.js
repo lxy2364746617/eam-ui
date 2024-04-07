@@ -57,3 +57,20 @@ export function getPurchaseDetail(data) {
     params: data,
   });
 }
+
+// ! 领用流程选择设备
+export function addNeckApprove(data) {
+  return request({
+    url: "/property/neck/addNeckApprove",
+    method: "post",
+    data: data,
+  });
+}
+
+export function getNeckApprove(code) {
+  return request({
+    url: "/property/neck/" + code,
+    method: "get",
+  });
+}
+  

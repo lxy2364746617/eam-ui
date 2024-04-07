@@ -58,13 +58,10 @@
         >
       </template>
     </PropertyOperation>
-    <p class="icon" v-if="isShowCard && !businessId">
-      <span style="padding-left: 13px"></span>
-      <span>设备审批信息</span>
-    </p>
+
     <adminParentdevice
-      v-if="isShowCard && !businessId"
-      :code="formData.neckNo"
+      v-if="isShowCard && !businessId && equipList.length > 0"
+      :equipList="equipList"
       :detailReadonly="true"
     ></adminParentdevice>
 
@@ -149,6 +146,7 @@ import {
   updateProject,
   getPurchaseDetail,
   downDetailLoad,
+  getNeckApprove
 } from "@/api/property/receive";
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
@@ -228,10 +226,16 @@ export default {
       locationOptions: [],
       locationOptions2: [],
       approvalContent: null,
+      equipList: [],
     };
   },
   created() {
     // this.getUserList();
+    getNeckApprove().then((res) => {
+      if (res.code === 2000) {
+        this.equipList = res.data;
+      }
+    });
     if (
       this.$route.query.formData ||
       this.$route.query.i ||

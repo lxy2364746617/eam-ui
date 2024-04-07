@@ -76,15 +76,17 @@
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="18">工单来源</el-col>
-              <el-col :span="6"
+              <el-col :span="16">工单来源</el-col>
+              <el-col :span="8"
                 ><span
                   style="color: #3eb13a; display: flex; justify-content: end"
                   v-html="findName(dict.type.order_source, item.orderSource)"
                 ></span
               ></el-col>
             </el-row>
-            <el-row>
+            <el-row
+              v-if="item.maintenanceType !== 'SBWX' && item.orderObj !== '2'"
+            >
               <el-col :span="19">已执行/设备数量：</el-col>
               <el-col :span="5" style="display: flex; justify-content: end"
                 ><span
@@ -94,7 +96,26 @@
                 ></el-col
               >
             </el-row>
-            <el-row>
+            <div v-else>
+              <el-row>
+                <el-col :span="19">设备名称：</el-col>
+                <el-col :span="5" style="display: flex; justify-content: end"
+                  ><span>{{ item.orderName }}&nbsp;&nbsp;</span></el-col
+                >
+              </el-row>
+              <el-row>
+                <el-col :span="19">设备编码：</el-col>
+                <el-col :span="5" style="display: flex; justify-content: end"
+                  ><span>{{ item.deviceCode }}&nbsp;&nbsp;</span></el-col
+                >
+              </el-row>
+            </div>
+            <el-row
+              v-if="
+                item.maintenanceType === 'XDJ' ||
+                item.maintenanceType === 'BYJX'
+              "
+            >
               <el-col :span="19">已执行/项目数量：</el-col>
               <el-col :span="5" style="display: flex; justify-content: end"
                 ><span
@@ -123,10 +144,16 @@ import FullCalendar, { removeElement } from "@fullcalendar/vue";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import Wrapper from "@/components/wrapper";
+import tippy from "tippy.js";
+import "tippy.js/dist/tippy.css";
+import "tippy.js/themes/light.css";
+import { listUser } from "@/api/system/user";
+import { orderTemplate } from "@/api/work/template";
 import {
   getCalendarMonth,
   getOrderDetailDay,
   getWorkOrderCount,
+  getWorkOrderSchedule,
 } from "@/api/work/schedule";
 
 export default {
@@ -137,9 +164,10 @@ export default {
       title: "",
       newElement: null,
       dataValue: null,
+      tooltipInstance: null,
       calendarOptions: {
         //   timeGridPlugin  可显示每日时间段
-        height: 700,
+        height: 1000,
         plugins: [dayGridPlugin, interactionPlugin],
         headerToolbar: {
           left: "prev today next",
@@ -160,11 +188,45 @@ export default {
         // displayEventEnd: true,//所有视图显示结束时间
         initialView: "dayGridMonth", // 设置默认显示月，可选周、日
         dateClick: this.handleDateClick,
-        eventMouseEnter: this.handleEventMouseEnter,
-        eventMouseLeave: this.handleEventMouseLeave,
-        // eventsSet: this.handleEvents,
-        // select: this.handleDateSelect,
-
+        eventMouseEnter: (info) => {
+          if (this.tooltipInstance) {
+            this.tooltipInstance.destroy();
+            this.tooltipInstance = null;
+          }
+          let that = this;
+          this.tooltipInstance = tippy(info.el, {
+            content:
+              "<div style='position:relative;width:200px'>" +
+              "<p style='margin-bottom:4px'>" +
+              info.event.title +
+              "</p>" +
+              "<p style='margin-top:4px'>" +
+              info.event.id +
+              "</p>" +
+              "<p style='padding-left:20px;margin:4px'>工单类型:" +
+              this.findTreeName(
+                this.orderOptions,
+                info.event._def.extendedProps.orderType
+              ) +
+              "</p>" +
+              "<p style='padding-left:20px;margin:4px'>工单状态:" +
+              info.event._def.extendedProps.orderStatus +
+              "</p>" +
+              "<p style='padding-left:20px;margin:4px'>执行人员:" +
+              (!!info.event._def.extendedProps.executor
+                ? this.findTreeName(
+                    this.userList,
+                    info.event._def.extendedProps.executor
+                  )
+                : "带派工") +
+              "</p>" +
+              "</div>",
+            theme: "light",
+            placement: "right",
+            allowHTML: true,
+          });
+        },
+        eventClick: this.handleEventClick,
         // timezone
         // 设置日程
         events: [],
@@ -199,6 +261,30 @@ export default {
       detailList: [],
       flag: false,
       orderCount: [],
+      userList: [],
+      orderOptions: [],
+      // 进度
+      workActiveList: [
+        { orderStatus: "待派工" },
+        { orderStatus: "待执行" },
+        { orderStatus: "执行中" },
+        { orderStatus: "待验收" },
+        { orderStatus: "已完成" },
+        { orderStatus: "已关闭" },
+      ],
+      orderColor: {
+        RCDJ: "#ACD6E4",
+        JMDJ: "#C1E5F4",
+        ZZDJ: "#C1DDF4",
+        RCBY: "#B6E4D0",
+        YJBY: "#BCE4B6",
+        EJBY: "#D3E4B6",
+        CGRH: "#E4E2B6",
+        DQJY: "#E4D2B6",
+        DZWX: "#FBC4C4",
+        JDBWX: "#FBDBC4",
+        WWWX: "#FBECC4",
+      },
     };
   },
   watch: {
@@ -212,7 +298,7 @@ export default {
                 title: item.orderName,
                 beginDate: item.planExecuteDate,
                 endDate: item.planExecuteDate,
-                status: this.getColor(),
+                status: this.orderColor[item.orderType],
                 maintenanceType: item.maintenanceType,
               }));
               this.getReservationList(this.dataList);
@@ -228,6 +314,7 @@ export default {
     },
   },
   created() {
+    this.getOrderTree();
     let date = new Date();
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
@@ -235,11 +322,12 @@ export default {
     getCalendarMonth({ date: formattedDate }).then((res) => {
       if (res.code === 200) {
         this.dataList = res.data.map((item, index) => ({
+          ...item,
           id: item.orderCode,
           title: item.orderName,
           beginDate: item.planExecuteDate,
           endDate: item.planExecuteDate,
-          status: this.getColor(),
+          status: this.orderColor[item.orderType],
           maintenanceType: item.maintenanceType,
         }));
         this.getReservationList(this.dataList);
@@ -250,21 +338,6 @@ export default {
         this.orderCount = res.data;
       }
     });
-    this.newElement = document.createElement("div");
-    this.newElement.classList.add("new-event");
-    this.newElement.style = `
-          position: absolute;
-          left: 50%;
-          top: -100px;
-          transform: translateX(-50%);
-          background-color: #f7fbff;
-          width: 192px;
-          height: 91.85px;
-          border-radius: 6px;
-          font-size: 14px;
-          padding: 10px 8px;
-          z-index: 200;
-        `;
   },
   mounted() {
     this.title = this.$route.meta.title;
@@ -280,6 +353,54 @@ export default {
     },
   },
   methods: {
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
+    getOrderTree() {
+      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
+        this.userList = res.rows.map((item) => {
+          return {
+            id: item.userId,
+            label: item.nickName,
+          };
+        });
+      });
+      orderTemplate().then((response) => {
+        this.orderOptions = response.data.map((item) => {
+          const children = item.sysDictDatas.map((dict) => {
+            return {
+              id: dict.dictValue,
+              label: dict.dictLabel,
+            };
+          });
+
+          return {
+            id: item.value,
+            label: item.name,
+            children,
+          };
+        });
+      });
+    },
     findName(options, value) {
       var name = "";
       for (let i = 0; i < options.length; i++) {
@@ -340,6 +461,7 @@ export default {
       this.subList = arrayData;
       arrayData.forEach((item) => {
         newArr.push({
+          ...item,
           start: this.dealWithTime(item.beginDate),
           end: this.addDate(this.dealWithTime(item.endDate), 1),
           color: item.status,
@@ -411,11 +533,104 @@ export default {
         }
       });
     },
-    // handleEventClick(calEvent) {
-    //   console.log(calEvent, "事件2");
-    //   this.dialogVisible = true; // 显示dialog弹窗
-    //   let id = calEvent.event.id; // 获取当前点击日程的ID
-    // },
+    handleEventClick(calEvent) {
+      this.goDetails(
+        JSON.parse(JSON.stringify(calEvent.event._def.extendedProps))
+      );
+    },
+    goDetails(row) {
+      getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
+        row["workActive"] = 0;
+        if (
+          row.orderType !== "DZWX" &&
+          row.orderType !== "JDBWX" &&
+          row.orderType !== "WWWX"
+        ) {
+          this.workActiveList.splice(3, 1);
+        }
+        this.workActiveList.forEach((item, index) => {
+          const matchedItem = res.data.find(
+            (val) => val.orderStatus === item.orderStatus
+          );
+
+          if (matchedItem) {
+            row["workActive"] = index + 1;
+            Object.assign(item, matchedItem);
+          }
+        });
+
+        row["workOrderSchedule"] = this.workActiveList;
+        switch (row.orderType + row.orderObj) {
+          // ! 巡点捡
+          case "RCDJ1":
+          case "ZZDJ1":
+          case "JMDJ1":
+            this.$router.push({
+              path: "/work/questAdd7",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "RCDJ2":
+          case "ZZDJ2":
+          case "JMDJ2":
+            this.$router.push({
+              path: "/work/questAdd5",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 设备维修
+          case "DZWX2":
+          case "JDBWX2":
+            this.$router.push({
+              path: "/work/questAdd2",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "WWWX2":
+            this.$router.push({
+              path: "/work/questAdd3",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "DZWX3":
+          case "WWWX3":
+          case "JDBWX3":
+            this.$router.push({
+              path: "/work/questAdd",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 定期检验
+          case "DQJY2":
+            this.$router.push({
+              path: "/work/questAdd8",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 保养
+          case "RCBY1":
+          case "YJBY1":
+          case "EJBY1":
+          case "CGRH1":
+            this.$router.push({
+              path: "/work/questAdd6",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "RCBY2":
+          case "YJBY2":
+          case "EJBY2":
+          case "CGRH2":
+            this.$router.push({
+              path: "/work/questAdd4",
+              query: { item: row, disabled: true },
+            });
+            break;
+          default:
+            break;
+        }
+      });
+    },
     getShowTime(beginDate, endDate) {
       this.form.startDate = this.dealWithTime(beginDate);
       this.form.startTime = this.getHoursMin(beginDate);
@@ -470,7 +685,7 @@ export default {
 .fullLeft {
   position: relative;
   width: 80%;
-  height: 802px;
+  height: auto;
   padding-right: 10px;
   .data {
     position: absolute;
@@ -523,7 +738,7 @@ export default {
 
 .fullRight {
   width: 379px;
-  height: 900px;
+  height: 1200px;
   overflow: auto;
   padding: 10px;
   border: 1px solid #2c96f6;
@@ -545,7 +760,6 @@ export default {
       margin-bottom: 12px;
       list-style: none;
       width: 99%;
-      height: 230px;
       border: 1px solid #2c96f6;
       &:last-of-type {
         margin-bottom: 0;

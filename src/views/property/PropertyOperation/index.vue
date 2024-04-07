@@ -206,7 +206,6 @@ export default {
   },
   async created() {
     await this.getTreeSelect();
-    console.log("========================", this.attachmentsTitle, this.busId);
     if (this.attachmentsTitle && this.busId) {
       getAssociatedPlan({
         [this.busString]: this.busId ? this.busId : 1,

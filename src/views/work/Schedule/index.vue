@@ -586,9 +586,10 @@ export default {
         pageSize: 10,
       }
     ) {
+      form["searchType"] = 2;
       this.queryParams = form;
       this.loading = true;
-      form["orderStatus"] = "待派工";
+      // form["orderStatus"] = "待派工";
       getScheduleList(form).then((response) => {
         this.equipmentList = response.data.records;
         this.total = response.data.total;

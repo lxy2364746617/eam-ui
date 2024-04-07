@@ -332,7 +332,8 @@ export default {
       let row = this.$route.query;
       // this.$route.query = null;
       this.formData = row.item;
-      this.disabled = row.disabled;
+      this.disabled = row.disabled === "true" ? true : false;
+
       getWomDevice({ orderCode: this.formData.orderCode, lineCode: "" }).then(
         (res) => {
           if (res.code == 200) {
