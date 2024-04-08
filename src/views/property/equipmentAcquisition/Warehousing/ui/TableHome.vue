@@ -401,6 +401,14 @@ export default {
       },
       deep: true,
     },
+    categoryOptions: {
+      handler(newVal, oldVal) {
+        if (newVal.length > 0) {
+          this.getList();
+        }
+      },
+      deep: true,
+    },
   },
   async created() {
     // data赋值
@@ -460,12 +468,12 @@ export default {
         // 方便获取父级tree
         this.loops(this.categoryOptions);
       });
-      getLocationTree().then((res) => {
-        this.locationOptions = this.getTreeName(res.data);
+      getLocationTree().then(async (res) => {
+        this.locationOptions = await this.getTreeName(res.data);
+        // this.getList();
       });
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;
-        this.getList();
       });
     },
     // 跳转流程详情

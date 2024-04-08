@@ -512,7 +512,7 @@ export default {
         formData["deviceType"] = formData.categoryId;
         formData["sModel"] = formData.specs;
         formData["affDept"] = formData.affDeptId;
-        addBASE({ ...formData }).then((response) => {
+        addBASE({ ...formData }).then((response) => {      
           this.$modal.msgSuccess("保存成功");
           // this.formData.id = response.data;
           this.formData.deviceId = response.data;

@@ -68,7 +68,7 @@
 
 <script>
 import { updateBASE } from "@/api/equipment/BASE";
-import { addBASE} from "@/api/property/warehousing";
+import { addBASE } from "@/api/property/warehousing";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
@@ -268,12 +268,24 @@ export default {
     };
   },
   created() {
-    if (this.$route.query) {
-      this.$set(this.formData, "makerNo", this.$route.query.purchasePlanNo);
-      this.$set(this.formData, "makerLn", this.$route.query.lineNum);
-    }
     if (!this.formData.archivesOther) {
-      this.$set(this.formData, "archivesOther", {});
+      this.$set(this.formData, "archivesOther", {
+        makerNo: this.$route.query.purchasePlanNo,
+        makerLn: this.$route.query.lineNum,
+      });
+    } else {
+      if (this.$route.query) {
+        this.$set(
+          this.formData.archivesOther,
+          "makerNo",
+          this.$route.query.purchasePlanNo
+        );
+        this.$set(
+          this.formData.archivesOther,
+          "makerLn",
+          this.$route.query.lineNum
+        );
+      }
     }
     console.log(this.formData, 222);
     this.getTreeSelect();

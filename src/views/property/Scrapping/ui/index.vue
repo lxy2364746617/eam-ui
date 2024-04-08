@@ -60,7 +60,11 @@
     </PropertyOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button v-hasPermi="['property:scrapping:submit']" type="primary" v-if="isDeclare === 'Y'" @click="submitReview"
+      <el-button
+        v-hasPermi="['property:scrapping:submit']"
+        type="primary"
+        v-if="isDeclare === 'Y'"
+        @click="submitReview"
         >保存并提交审批</el-button
       >
       <el-button @click="cancel">取消</el-button>
@@ -270,7 +274,8 @@ export default {
         if (val.price < val.depreciation)
           return this.$message.warning("单价不能小于折旧金额！");
 
-        this.formDataNow.lossAmount = val.price - val.depreciation;
+        this.formDataNow.lossAmount =
+          ((val.price - val.depreciation) * 1000) / 1000;
       },
       immediate: true,
       deep: true,
@@ -341,7 +346,6 @@ export default {
           width: 200,
           span: 23,
           formDisabled: true,
-          required: true,
         },
         {
           label: "设备类别",
