@@ -84,7 +84,13 @@
             <td>{{ item.sModel }}</td>
             <td>{{ "台" }}</td>
             <td>{{ item.deviceNum }}</td>
-            <td>{{ item.targetLocation ? item.targetLocation : "-" }}</td>
+            <td>
+              {{
+                item.targetLocation
+                  ? findTreeName(locationOptions, item.targetLocation)
+                  : "-"
+              }}
+            </td>
             <td>
               {{
                 item.location
@@ -102,11 +108,7 @@
             <td>{{ item.sModel ? item.sModel : "-" }}</td>
             <td>{{ findTreeName(categoryOptions, item.deviceType) }}</td>
             <td>
-              {{
-                item.location
-                  ? item.location
-                  : "-"
-              }}
+              {{ item.location ? item.location : "-" }}
             </td>
             <td>
               {{ findName(dict.type.em_device_state, item.deviceStatus) }}

@@ -390,7 +390,8 @@ export default {
           options: this.categoryOptions,
           width: 200,
         },
-        { label: "功能位置", prop: "location", tableVisible: true },
+        { label: "功能位置", prop: "location", tableVisible: true, formType: "selectTree",
+          options: this.locationOptions, },
         {
           label: "设备批次号",
           prop: "batchNo",
