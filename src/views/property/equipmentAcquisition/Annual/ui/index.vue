@@ -198,7 +198,6 @@ export default {
         this.detailReadonly
           ? true
           : false;
-      console.log("========================this.isShowCard", this.isShowCard);
       if (
         this.$route.query.i ||
         this.$route.query?.formData?.purchasePlanNo ||
@@ -212,6 +211,10 @@ export default {
         }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
+            this.formData["time"] = [
+              this.formData.startTime,
+              this.formData.endTime,
+            ];
             this.reviewCode = this.formData.purchasePlanNo;
             this.getTreeSelect();
           }

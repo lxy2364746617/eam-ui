@@ -61,7 +61,12 @@
     </PropertyOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button v-hasPermi="['property:purchase:submit']" type="primary" @click="submitReview">保存并提交审批</el-button>
+      <el-button
+        v-hasPermi="['property:purchase:submit']"
+        type="primary"
+        @click="submitReview"
+        >保存并提交审批</el-button
+      >
       <el-button @click="cancel">取消</el-button>
     </div>
     <!-- 对表格的操作 -->
@@ -203,6 +208,10 @@ export default {
         }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
+            this.formData["time"] = [
+              this.formData.startTime,
+              this.formData.endTime,
+            ];
             this.reviewCode = this.formData.purchasePlanNo;
             this.getTreeSelect();
           }

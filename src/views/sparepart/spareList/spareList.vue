@@ -38,7 +38,7 @@
 <script>
 import ContTable from "@/components/ContTable";
 import { listDept } from "@/api/system/dept";
-import { getManagementList } from "@/api/sparePart/sparePartList";
+import { getSelectManagementList } from "@/api/sparePart/sparePartList";
 import { getLocationTree } from "@/api/Location";
 export default {
   dicts: ["spare_parts_unit", "spare_parts_type"],
@@ -192,7 +192,7 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;
-      getManagementList(queryParams).then((response) => {
+      getSelectManagementList(queryParams).then((response) => {
         this.equipmentList = response.data.records;
         this.total = response.data.total;
         this.loading = false;

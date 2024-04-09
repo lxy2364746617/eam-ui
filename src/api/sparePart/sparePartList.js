@@ -119,3 +119,11 @@ export function getImg(partCode) {
     method: "get",
   });
 }
+// 选择备件
+export function getSelectManagementList(data) {
+  return request({
+    url: "/attachment/list",
+    method: "post",
+    data: data,
+  });
+}

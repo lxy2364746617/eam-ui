@@ -146,7 +146,7 @@ import {
   updateProject,
   getPurchaseDetail,
   downDetailLoad,
-  getNeckApprove
+  getNeckApprove,
 } from "@/api/property/receive";
 import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
@@ -231,11 +231,7 @@ export default {
   },
   created() {
     // this.getUserList();
-    getNeckApprove().then((res) => {
-      if (res.code === 2000) {
-        this.equipList = res.data;
-      }
-    });
+
     if (
       this.$route.query.formData ||
       this.$route.query.i ||
@@ -247,6 +243,14 @@ export default {
         this.detailReadonly
           ? true
           : false;
+      if (this.$route.query.formData && this.isShowCard) {
+        getNeckApprove(this.$route.query.formData.neckNo).then((res) => {
+          if (res.code === 2000) {
+            this.equipList = res.data;
+          }
+        });
+      }
+
       if (
         this.$route.query.i ||
         this.$route.query?.formData?.neckNo ||
