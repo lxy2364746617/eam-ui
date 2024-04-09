@@ -101,7 +101,7 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true
-      queryParams.exportIds=this.formData.disIds.join(',')
+     // queryParams.exportIds=this.formData.disIds.join(',') //可重复选择
       relationItem(queryParams).then((response) => {
         this.itemList = response.rows
         this.total = response.total;

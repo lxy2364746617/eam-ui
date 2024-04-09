@@ -40,7 +40,7 @@
           <template slot-scope="scope">
             <el-radio
               v-model="radio"
-              :label="scope.$index"
+              :label="((queryParams.pageNum-1)*queryParams.pageSize)+scope.$index"
               v-if="scope.$index != 0 && showSearch"
               class="leftRadio"
               >&nbsp;</el-radio
@@ -428,7 +428,8 @@ export default {
     handleCurrentChange(currentRow, oldCurrentRow) {
       if (currentRow) {
         this.currentRow = currentRow;
-        this.radio = this.tableData2.indexOf(currentRow);
+        this.radio = currentRow.index||currentRow.$index;
+        console.log('this.radio',this.radio,currentRow)
         this.$emit("handleSelectionChange", [currentRow]);
       }
     },

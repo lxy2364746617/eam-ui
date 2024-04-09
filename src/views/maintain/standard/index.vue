@@ -41,7 +41,7 @@
         <el-table-column label="巡点检内容" align="center" prop="itemContent" min-width="150" />
         <el-table-column label="巡点检点数" align="center" prop="checkNum" min-width="150"></el-table-column>
         <el-table-column label="巡点检状态" align="center" prop="checkStatus" min-width="150"></el-table-column>
-        <el-table-column label="巡点检标准" align="center" prop="checkStandard" min-width="150"></el-table-column>
+        <el-table-column label="巡点检标准" align="center" prop="checkStandard" min-width="150" show-overflow-tooltip></el-table-column>
         <el-table-column label="巡点检方法" align="center" prop="itemMethod" min-width="150" />
         <el-table-column label="巡点检结果类型" align="center" prop="checkResType" min-width="150"></el-table-column>
         <el-table-column label="巡点检结果设置" align="center" prop="checkResult" min-width="150"></el-table-column>
@@ -50,6 +50,15 @@
         <el-table-column label="定量下限" align="center" prop="quotaLower" min-width="150"></el-table-column>
         <el-table-column label="定量单位" align="center" prop="quotaUnit" min-width="150"></el-table-column>
     </el-table>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="checkQueryParams.pageNum"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="10"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total1">
+    </el-pagination>
     </el-dialog>
     
   </div>
@@ -139,6 +148,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      total1: 0,
       // 维护计划_巡点检标准表格数据
       standardList: [],
       // 查询参数
@@ -181,6 +191,7 @@ export default {
       this.checkQueryParams.itemType=newval
       scheckList(this.checkQueryParams).then(res=>{
           this.tableData=res.rows
+          this.total1 =   res.total
         })
     }
   },
@@ -249,6 +260,7 @@ export default {
         this.checkQueryParams.standardId=row.standardId
         scheckList(this.checkQueryParams).then(res=>{
           this.tableData=res.rows
+          this.total1 =   res.total
           this.checkVisible=true
         })
     },
@@ -314,6 +326,22 @@ export default {
         `巡点检标准_${new Date().getTime()}.xlsx`
       )
     },
+    handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.checkQueryParams.pageSize=val
+        scheckList(this.checkQueryParams).then(res=>{
+          this.tableData=res.rows
+          this.total1 =   res.total
+        })
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+        this.checkQueryParams.pageNum=val
+        scheckList(this.checkQueryParams).then(res=>{
+          this.tableData=res.rows
+          this.total1 =   res.total
+        })
+      }
   },
 }
 </script>
@@ -326,5 +354,8 @@ export default {
 ::v-deep .el-dialog__wrapper{
   position: fixed;
   left:200px !important;
+}
+.el-pagination{
+  text-align: right;
 }
 </style>

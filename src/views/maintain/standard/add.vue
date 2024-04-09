@@ -63,7 +63,7 @@
             <div class="title">关联巡点检项
                 <el-button type="primary" size="mini" icon="el-icon-plus"  @click="handleAdd">添加</el-button>
             </div>
-            <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" ref="queryTable">
+            <el-table v-loading="loading" :data="standardList" @selection-change="handleSelectionChange" max-height="400px" ref="queryTable">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column label="序号" align="center" type="index" />
                 <el-table-column label="巡点检项目编码" align="center" prop="itemCode" min-width="150" />
@@ -169,7 +169,7 @@
 
             <!-- 添加或修改设备平台_表单模板对话框 -->
             <el-drawer title="选择设备" :visible.sync="form.choosedrawer" direction="rtl" size="80%" :wrapperClosable="false">
-                <parentdevice :isChoose="true" @submitRadio="submitRadio2" @close="form.choosedrawer = false"   :deviceAtt='"0"'>
+                <parentdevice v-if="form.choosedrawer" :isChoose="true" @submitRadio="submitRadio2" :formData="form.deviceId?[form.deviceId]:[]" @close="form.choosedrawer = false"   :deviceAtt='"0"'>
                 </parentdevice>
             </el-drawer>
 
@@ -316,9 +316,9 @@ export default {
                 deviceCode: [
                     { required: true, message: '设备编码不能为空', trigger: 'blur' },
                 ],
-                specs: [
+                /* specs: [
                     { required: true, message: '设备规格不能为空', trigger: 'blur' },
-                ],
+                ], */
                 categoryName: [
                     { required: true, message: '设备类别不能为空', trigger: 'blur' },
                 ],

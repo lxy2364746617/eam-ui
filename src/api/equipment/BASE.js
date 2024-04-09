@@ -130,3 +130,20 @@ export function copyBASE(query) {
     params: query
   })
 }
+
+// 设备档案新增/编辑第一步的所属组织和当前使用组织
+export function getPrtOrgTreeByDeptId(query) {
+  return request({
+    url: '/system/dept/getPrtOrgTreeByDeptId',
+    method: 'get',
+    params: query
+  })
+}
+//所有部门信息
+export function getDeptInfo(query) {
+  return request({
+    url: '/system/dept/getDeptInfo',
+    method: 'get',
+    params: query
+  })
+}

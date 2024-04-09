@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
+import { listBASE, addBASE, updateBASE ,getPrtOrgTreeByDeptId,getDeptInfo} from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree,equipmentTrees_noParent } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
@@ -128,8 +128,8 @@ export default {
         { label:"功能位置", prop:"location", span: 8, required: true,options:this.locationOptions,formType: 'selectTree', },
         { label:"规格型号", prop:"specs", span: 8, },
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 8, required: true, },  //(1 设备、2 部件)
-        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
-        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 8, required: true, },
+        { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions1, span: 8, required: true, },
+        { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions1, span: 8, required: true, },
         { label:"上级设备", prop:"parentDeviceName", clickFn: ()=>{this.drawer=true}, readonly: true, span: 8, formVisible: this.formData.deviceAtt==1  }, //(0 父级)
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 8, }, //(A、B、C)
         { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, required: true,formDisabled:true },
@@ -141,7 +141,7 @@ export default {
       return [
         { label:"批次编号", prop:"batchNo", tableVisible: false, span: 8, },
         { label:"煤安标志证号", prop:"logoNo", tableVisible: false, span: 8, },
-        { label:"存放位置", prop:"position", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 8, },
+        { label:"存放位置", prop:"position", formType: 'selectTree', options: this.locationOptions, tableVisible: false, span: 8, },
         { label:"防爆合格证", prop:"certificate", tableVisible: false, span: 8, },
         { label:"计量单位", prop:"unit", formType: 'select', options: this.dict.type.em_unit, tableVisible: false, span: 8, }, //(台、个、座、件)
         { label:"重量(千克)", prop:"weight", tableVisible: false, span: 8, },
@@ -180,6 +180,7 @@ export default {
       // 部门树选项
       categoryOptions: [],
       deptOptions: [],
+      deptOptions1:[],
       locationOptions:[],
       // 是否显示弹出层
       open: false,
@@ -319,8 +320,14 @@ export default {
       equipmentTrees_noParent().then(response => {
         this.categoryOptions = response.data;
       });
-      listDept({prtOrg:'Y'}).then(response => {
+      /* listDept({prtOrg:'Y' }).then(response => {
         this.deptOptions = response.data;
+      }); */
+      getDeptInfo().then(response => {
+        this.deptOptions = response.data;
+      })
+       getPrtOrgTreeByDeptId({prtOrg:'Y'}).then(response => {
+        this.deptOptions1 = response.data;
       });
       getLocationTree().then(res=>{
         this.locationOptions=this.getTree(res.data)
