@@ -64,7 +64,7 @@ export default {
     // if (this.formData.maintenanceType == "设备维修") newGroupType = "SBWX";
     // if (this.formData.maintenanceType == "定期检验") newGroupType = "DQJY";
     // if (this.formData.maintenanceType == "巡点检类型") newGroupType = "XDJ";
-    findAll({ groupType: this.formData.orderTypeFather }).then((res) => {
+    findAll({ groupType: this.formData.maintenanceType }).then((res) => {
       this.groupOptions = res.data;
       if (this.formData.groupId) {
         this.changeGroupId(this.formData.groupId, 2);
@@ -74,7 +74,7 @@ export default {
   watch: {
     "formData.orderType": {
       handler(val) {
-        findAll({ groupType: val }).then((res) => {
+        findAll({ groupType: this.formData.maintenanceType }).then((res) => {
           this.groupOptions = res.data;
           if (this.formData.groupId) {
             this.changeGroupId(this.formData.groupId, 2);

@@ -525,10 +525,10 @@ export default {
     await this.getOrderTree();
     await this.getTree();
     if (this.$route.query) {
-      let row = this.$route.query
+      let row = this.$route.query;
       // this.$route.query = null;
       this.formData = row.item;
-            this.disabled = row.disabled === "true" ? true : false;
+      this.disabled = row.disabled === "true" ? true : false;
 
       getWomLine({ orderCode: this.formData.orderCode }).then((res) => {
         if (res.code == 200) {
@@ -542,14 +542,7 @@ export default {
       getWomInfo({ orderCode: this.formData.orderCode }).then((res) => {
         this.formData = { ...res.data, ...this.formData };
       });
-      findAll({ groupType: this.formData.orderType }).then((res) => {
-        res.data.forEach((item) => {
-          item.label = item.groupName;
-          item.value = item.id;
-        });
-        this.groupOptions = res.data;
-        this.changeGroupId(this.formData.groupId, 2);
-      });
+     
       await this.getListRelevance();
       await this.getList3();
       await this.getList2();

@@ -59,7 +59,7 @@ export default {
     },
   },
   async created() {
-    findAll({ groupType: this.formData.orderType }).then((res) => {
+    findAll({ groupType: this.formData.maintenanceType }).then((res) => {
       res.data.forEach((item) => {
         item.label = item.groupName;
         item.value = item.id;

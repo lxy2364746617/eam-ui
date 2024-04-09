@@ -151,7 +151,7 @@ export default {
     },
     "formData.orderType": {
       handler(val) {
-        findAll({ groupType: val }).then((res) => {
+        findAll({ groupType: maintenanceType }).then((res) => {
           this.groupOptions = res.data;
           if (this.formData.groupId) {
             this.changeGroupId(this.formData.groupId, 2);

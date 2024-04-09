@@ -344,14 +344,7 @@ export default {
       getWomInfo({ orderCode: this.formData.orderCode }).then((res) => {
         this.formData = { ...res.data, ...this.formData };
       });
-      findAll({ groupType: this.formData.orderType }).then((res) => {
-        res.data.forEach((item) => {
-          item.label = item.groupName;
-          item.value = item.id;
-        });
-        this.groupOptions = res.data;
-        this.changeGroupId(this.formData.groupId, 2);
-      });
+
       await this.getList2();
     }
   },
