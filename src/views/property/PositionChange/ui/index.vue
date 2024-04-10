@@ -365,7 +365,8 @@ export default {
           options: this.categoryOptions,
           width: 200,
         },
-        { label: "功能位置", prop: "location", tableVisible: true },
+        { label: "功能位置", prop: "location", tableVisible: true,formType: "selectTree",
+          options: this.locationOptions, },
         {
           label: "设备批次号",
           prop: "batchNo",
@@ -564,18 +565,9 @@ export default {
     },
     // ! 部门树数据
     getTreeSelect() {
-      equipmentTree().then(async (response) => {
+      equipmentTree().then((response) => {
         this.categoryOptions = response.data;
-        await this.loops(this.categoryOptions);
-
-        // 方便获取父级tree
-      });
-      getLocationTree().then((res) => {
-        this.locationOptions = this.locationTree(res.data);
-      });
-      listDept().then((response) => {
-        this.deptOptions = response.data;
-        if (this.formData?.changeNo) {
+         if (this.formData?.changeNo) {
           getProjectList({
             changeNo: this.formData?.changeNo,
             pageNum: 1,
@@ -586,6 +578,16 @@ export default {
             }
           });
         }
+        this.loops(this.categoryOptions);
+
+        // 方便获取父级tree
+      });
+      getLocationTree().then((res) => {
+        this.locationOptions = this.locationTree(res.data);
+      });
+      listDept().then((response) => {
+        this.deptOptions = response.data;
+       
       });
     },
     // 递归获取treeselect父节点

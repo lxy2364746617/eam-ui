@@ -355,7 +355,6 @@
         <template slot-scope="scope">
           <el-radio-group
             v-model="scope.row.dealResult"
-            v-hasPermi="['work:quest:edit']"
             :disabled="!carryValue.i"
           >
             <el-radio :label="1">OK</el-radio>
@@ -370,7 +369,6 @@
             type="text"
             :loading="btnLoading"
             @click="handlerAddRemarks(scope, 'remarks')"
-            v-hasPermi="['work:quest:remarks']"
             >添加备注</el-button
           >
         </template>

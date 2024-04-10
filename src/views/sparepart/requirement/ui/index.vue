@@ -212,6 +212,11 @@ export default {
         });
       }
     } else {
+      console.log(
+        "========================",
+        this.$store.state.user.standing.nickName
+      );
+
       this.formData = {
         createBy: this.$store.state.user.standing.nickName,
         userId: this.$store.state.user.standing.userId,

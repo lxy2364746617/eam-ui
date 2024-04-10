@@ -117,9 +117,9 @@ export default {
         this.getTreeItem(val, this.categoryOptions);
         var b = this.treeItem;
         if (b.isSm == "Y" && b.smAttributes) {
-          // this.$parent.elstep[2].visible = true
           if (this.formData.emArchivesIndex == null) {
-            this.formData.emArchivesIndex = {};
+            //this.formData.emArchivesIndex = {}
+            this.$set(this.formData, "emArchivesIndex", {});
           }
           this.setFormLabel(b.smAttributes);
           this.$set(
@@ -151,7 +151,6 @@ export default {
           }
         } else {
           this.$set(this.formData, "isSpecial", "N");
-
           this.$set(this.formData, "emArchivesSpecial", null);
         }
       },
@@ -512,7 +511,8 @@ export default {
         formData["deviceType"] = formData.categoryId;
         formData["sModel"] = formData.specs;
         formData["affDept"] = formData.affDeptId;
-        addBASE({ ...formData }).then((response) => {      
+        formData["grade"] = formData.level;
+        addBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
           // this.formData.id = response.data;
           this.formData.deviceId = response.data;

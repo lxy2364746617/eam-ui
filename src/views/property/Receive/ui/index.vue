@@ -60,7 +60,7 @@
     </PropertyOperation>
 
     <adminParentdevice
-      v-if="isShowCard && !businessId && equipList.length > 0"
+      v-if="isShowCard && !businessId"
       :equipList="equipList"
       :detailReadonly="true"
     ></adminParentdevice>

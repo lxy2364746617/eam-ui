@@ -193,8 +193,8 @@ export default {
     getList(queryParams) {
       this.loading = true;
       getSelectManagementList(queryParams).then((response) => {
-        this.equipmentList = response.data.records;
-        this.total = response.data.total;
+        this.equipmentList = response.rows;
+        this.total = response.total;
         this.loading = false;
       });
     },

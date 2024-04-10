@@ -295,6 +295,23 @@ export default {
         }
       },
     },
+    categoryOptions:{
+       handler(val) {
+         if (this.formData?.scrapNo) {
+          getProjectList({
+            scrapNo: this.formData?.scrapNo,
+            pageNum: 1,
+            pageSize: 1000,
+          }).then((res) => {
+            if (res.code == 200) {
+              this.equipmentList = res.data ?? [];
+            }
+          });
+        }
+      },
+      immediate: true,
+      deep: true,
+    }
   },
   computed: {
     columnsInfo() {

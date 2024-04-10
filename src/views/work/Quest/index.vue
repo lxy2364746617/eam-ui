@@ -454,7 +454,6 @@ export default {
     goCheck(row) {
       this.drawer3 = true;
       this.formData3["id"] = row.id;
-      console.log("========================", this.drawer3);
     },
     // ! 提供下载列表字段
     convertToDefaultObject(columns) {

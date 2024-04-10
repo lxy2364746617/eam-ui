@@ -129,7 +129,7 @@
           >
           </ContTable> -->
           <ContTable
-            :tableData="getTableDataBy('equipmentList' + 1, item, radio)"
+            :tableData="getTableDataBy('equipmentList' + 1)"
             @getList="getTableDataBy('getList' + 1)"
             :total="getTableDataBy('total' + 1)"
             ref="contTable"
@@ -177,7 +177,7 @@
         </div>
         <div class="charge">
           <ContTable
-            :tableData="getTableDataBy('equipmentList' + 2, item, radio)"
+            :tableData="getTableDataBy('equipmentList' + 2,)"
             @getList="getTableDataBy('getList' + 2)"
             :total="getTableDataBy('total' + 2)"
             ref="contTable"
@@ -191,7 +191,7 @@
           </ContTable>
         </div>
       </div>
-      
+
       <div class="border" style="height: 315px; width: 617px">
         <div class="border-title">
           <span>系统公告</span>
@@ -531,6 +531,7 @@ export default {
           label: "业务编码",
           prop: "businessCode",
           tableVisible: true,
+          type: "link",
         },
         {
           label: "业务名称",
@@ -620,7 +621,7 @@ export default {
         });
       } else if (item.label == "工单编码") {
         this.$router.push({
-          name: "Request",
+          name: "Quest",
           query: {
             data: JSON.stringify({ orderCode: row.orderCode }),
           },

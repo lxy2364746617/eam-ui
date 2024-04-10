@@ -30,7 +30,7 @@ export function getManagementDetails(id) {
   return request({
     url: "/attachment/getAttachmentDetail",
     method: "get",
-    params: { id: id },
+    params: { partCode: id },
   });
 }
 // ! 备件管理-删除备件
@@ -119,6 +119,7 @@ export function getImg(partCode) {
     method: "get",
   });
 }
+
 // 选择备件
 export function getSelectManagementList(data) {
   return request({

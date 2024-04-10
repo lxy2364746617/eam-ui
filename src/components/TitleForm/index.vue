@@ -8,7 +8,7 @@
       ref="formform"
       size="small"
       :model="formData"
-      :rules="rules"
+      :rules="disabled && rules"
       :label-position="labelPosition"
       :label-width="labelWidth || '120px'"
     >
@@ -108,6 +108,11 @@
             :formData="formData"
             :disabled="disabled"
           ></PersonnelUpkeep>
+          <PersonnelDetection
+            v-else-if="col.formType == 'personnelDetection'"
+            :formData="formData"
+            :disabled="disabled"
+          ></PersonnelDetection>
           <Equip
             v-else-if="col.formType == 'equip'"
             @womDevices="womDevices"
@@ -438,6 +443,7 @@ import MaintenanceEqm from "@/components/FaultTable/MaintenanceEqm";
 import EquipMessage from "@/components/FaultTable/EquipMessage";
 import Personnel from "@/components/FaultTable/Personnel";
 import PersonnelUpkeep from "@/components/FaultTable/PersonnelUpkeep";
+import PersonnelDetection from "@/components/FaultTable/PersonnelDetection";
 import Equip from "@/components/FaultTable/Equip";
 
 // 设置报错提示信息
@@ -460,6 +466,7 @@ export default {
     PersonnelUpkeep,
     Equip,
     AppraisalReport,
+    PersonnelDetection
   },
   props: {
     columns: {

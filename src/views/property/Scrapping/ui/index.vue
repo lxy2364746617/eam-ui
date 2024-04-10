@@ -602,15 +602,9 @@ export default {
     },
     // ! 部门树数据
     getTreeSelect() {
-      equipmentTree().then((response) => {
+      equipmentTree().then( (response) => {
         this.categoryOptions = response.data;
-
-        // 方便获取父级tree
-        this.loops(this.categoryOptions);
-      });
-      listDept().then((response) => {
-        this.deptOptions = response.data;
-        if (this.formData?.scrapNo) {
+ if (this.formData?.scrapNo) {
           getProjectList({
             scrapNo: this.formData?.scrapNo,
             pageNum: 1,
@@ -621,6 +615,12 @@ export default {
             }
           });
         }
+        // 方便获取父级tree
+        this.loops(this.categoryOptions);
+      });
+      listDept().then((response) => {
+        this.deptOptions = response.data;
+       
       });
     },
     // ! 对话框

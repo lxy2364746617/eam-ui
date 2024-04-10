@@ -156,11 +156,7 @@
         v-if="carryValue.i"
       >
         <template slot-scope="scope">
-          <el-radio-group
-            v-model="scope.row.result"
-            v-hasPermi="['work:quest:edit']"
-            :disabled="!carryValue.i"
-          >
+          <el-radio-group v-model="scope.row.result" :disabled="!carryValue.i">
             <el-radio :label="1">OK</el-radio>
 
             <el-radio :label="2">NG</el-radio>
@@ -173,7 +169,6 @@
             type="text"
             :loading="btnLoading"
             @click="handlerAddRemarks(scope, 'remarks')"
-            v-hasPermi="['work:quest:remarks']"
             >添加备注</el-button
           >
         </template>

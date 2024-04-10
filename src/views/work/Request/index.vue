@@ -247,8 +247,8 @@ export default {
       return defaultObject;
     },
     getTypeList() {
-      findAll().then((res) => {
-        this.typeAll = res.data.map((item) => {
+      findAll().then(async (res) => {
+        this.typeAll = await res.data.map((item) => {
           return {
             id: item.id,
             label: item.groupName,
