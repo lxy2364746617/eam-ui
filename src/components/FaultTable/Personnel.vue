@@ -65,7 +65,9 @@ export default {
     // if (this.formData.maintenanceType == "定期检验") newGroupType = "DQJY";
     // if (this.formData.maintenanceType == "巡点检类型") newGroupType = "XDJ";
     findAll({ groupType: this.formData.maintenanceType }).then((res) => {
-      this.groupOptions = res.data;
+      this.groupOptions = res.data.filter(
+        (item) => item.groupType === this.formData.orderType
+      );
       if (this.formData.groupId) {
         this.changeGroupId(this.formData.groupId, 2);
       }
@@ -75,7 +77,9 @@ export default {
     "formData.orderType": {
       handler(val) {
         findAll({ groupType: this.formData.maintenanceType }).then((res) => {
-          this.groupOptions = res.data;
+          this.groupOptions = res.data.filter(
+            (item) => item.groupType === this.formData.orderType
+          );
           if (this.formData.groupId) {
             this.changeGroupId(this.formData.groupId, 2);
           }

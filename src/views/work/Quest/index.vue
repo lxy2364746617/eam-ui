@@ -39,7 +39,8 @@
           <el-button
             v-if="
               scope.row.orderStatus !== '待验收' &&
-              scope.row.orderStatus !== '已关闭'
+              scope.row.orderStatus !== '已关闭' &&
+              scope.row.orderStatus !== '已完成'
             "
             size="mini"
             type="text"
@@ -660,7 +661,7 @@ export default {
       // this.radioRow = row;
     },
     handlerAdd() {
-      this.title = "手动分派";
+      this.title = "任务转派";
       if (!(this.ids.length && this.ids.length > 0)) {
         this.$message.warning("请先选择要分派的工单！");
         return;

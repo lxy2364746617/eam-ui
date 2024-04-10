@@ -191,7 +191,7 @@ export default {
       }
     },
     closeSelectedTag(view) {
-      console.log(view)
+      console.log(view);
       this.$tab.closePage(view).then(({ visitedViews }) => {
         if (this.isActive(view)) {
           this.toLastView(visitedViews, view);
@@ -227,6 +227,7 @@ export default {
       });
     },
     toLastView(visitedViews, view) {
+      console.log("========================", visitedViews);
       const latestView = visitedViews.slice(-1)[0];
       if (latestView) {
         this.$router.push(latestView);

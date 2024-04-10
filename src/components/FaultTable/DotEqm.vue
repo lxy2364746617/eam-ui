@@ -53,9 +53,9 @@
         prop="location"
         min-width="150"
       >
-        <!-- <template slot-scope="scope">
+        <template slot-scope="scope">
           <span>{{ findTreeName(locationOptions, scope.row.location) }}</span>
-        </template> -->
+        </template>
       </el-table-column>
       <el-table-column
         label="所属子公司"
@@ -158,18 +158,20 @@
 
     <!-- 添加设备 -->
     <el-drawer
-      title="选择上级设备"
+      title="选择设备"
       :visible.sync="plineForm.choosedrawer"
       direction="rtl"
       size="80%"
       :wrapperClosable="false"
     >
-      <SelectParentDeviceDialog
-        v-if="plineForm.choosedrawer"
+      <parentdevice
         :isChoose="false"
         @submitRadio="submitRadio2"
         @close="plineForm.choosedrawer = false"
-      ></SelectParentDeviceDialog>
+        :formData="plineForm"
+        v-if="plineForm.choosedrawer"
+      >
+      </parentdevice>
     </el-drawer>
 
     <!-- 点检 -->
@@ -191,6 +193,7 @@ import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
 import pline from "./ui/pline";
 import { getWomDevice } from "@/api/work/schedule";
 import { getLocationTree, locationInfo } from "@/api/Location";
+import parentdevice from "@/views/device/book/device";
 import {
   findByDeviceIdAndItemType,
   findByDeviceId,
@@ -200,6 +203,7 @@ export default {
     JmTable,
     pline,
     SelectParentDeviceDialog,
+    parentdevice,
   },
   dicts: ["mro_s_check_status", "em_is_photo", "em_device_state"],
   props: {
@@ -444,8 +448,9 @@ export default {
 
     /** 新增按钮操作 */
     handleAdd() {
-      let lineIds = this.plineList.map((item) => item.deviceCode) || [];
+      let lineIds = this.plineList.map((item) => item.deviceId) || [];
       this.$set(this.plineForm, "disIds", lineIds);
+      console.log("========================", lineIds);
       this.$set(this.plineForm, "choosedrawer", true);
     },
     handleSelectionChange(selection) {

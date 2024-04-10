@@ -312,7 +312,11 @@ export default {
     },
     handleCancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      this.$router.go(-1); //跳回上页
+       this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+        if (this.$route.path === this.$route.path) {
+          this.$tab.toLastView(visitedViews);
+        }
+      });
     },
     /** 转换部门数据结构 */
     normalizer(node) {
@@ -346,7 +350,11 @@ export default {
         if (res[0].code === 200 && res[1].code === 200) {
           this.$message.success("执行成功！");
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$router.go(-1); //跳回上页
+          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+            if (this.$route.path === this.$route.path) {
+              this.$tab.toLastView(visitedViews);
+            }
+          });
         }
       });
       // this.formData = { supplierName: "" };

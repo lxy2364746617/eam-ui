@@ -532,7 +532,11 @@ export default {
     },
     handleCancel() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      this.$router.go(-1); //跳回上页
+      this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+        if (this.$route.path === this.$route.path) {
+          this.$tab.toLastView(visitedViews);
+        }
+      });
     },
     handelerGenerate() {},
     handlerSelf() {
@@ -566,7 +570,11 @@ export default {
         if (res.code === 200) {
           this.$message.success("提交成功!");
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$router.go(-1); //跳回上页
+          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+            if (this.$route.path === this.$route.path) {
+              this.$tab.toLastView(visitedViews);
+            }
+          });
         }
       });
     },
@@ -589,7 +597,11 @@ export default {
         if (res.code === 200) {
           this.$message.success("提交成功!");
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$router.go(-1); //跳回上页
+          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+            if (this.$route.path === this.$route.path) {
+              this.$tab.toLastView(visitedViews);
+            }
+          });
         }
       });
     },

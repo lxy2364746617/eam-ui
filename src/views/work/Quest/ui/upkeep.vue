@@ -161,6 +161,7 @@
         align="center"
         prop="itemStandard"
         min-width="100"
+        :show-overflow-tooltip="true"
       >
         <!-- <template slot-scope="scope">
           <el-input
@@ -305,7 +306,7 @@
         min-width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.dealResult === 1 ? "OK" : "" }}</span>
+          <span>{{ scope.row.dealResult === 1 ? "OK" : "NG" }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -706,7 +707,12 @@ export default {
     },
     handlerBack() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      this.$router.go(-1); //跳回上页
+      // this.$router.go(-1); //跳回上页
+      this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+        if (this.$route.path === this.$route.path) {
+          this.$tab.toLastView(visitedViews);
+        }
+      });
     },
     handlerImgSubmit() {
       photoWomDevice({
@@ -847,7 +853,11 @@ export default {
         if (res.code === 200) {
           this.$message.success("提交成功!");
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$router.go(-1); //跳回上页
+           this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+        if (this.$route.path === this.$route.path) {
+          this.$tab.toLastView(visitedViews);
+        }
+      });
         }
       });
     },
@@ -870,7 +880,11 @@ export default {
         if (res.code === 200) {
           this.$message.success("提交成功!");
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$router.go(-1); //跳回上页
+          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+            if (this.$route.path === this.$route.path) {
+              this.$tab.toLastView(visitedViews);
+            }
+          });
         }
       });
     },

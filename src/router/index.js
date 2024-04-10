@@ -689,7 +689,7 @@ export const constantRoutes = [
         path: "/work/questAdd4",
         component: () => import("@/views/work/Quest/add/index4"),
         name: "questAdd4",
-        meta: { title: "工单/保养检修", icon: "" },
+        meta: { title: "工单/保养检修设备", icon: "" },
       },
       {
         path: "/work/questUpkeep",
@@ -698,13 +698,13 @@ export const constantRoutes = [
         beforeEnter: (to, from, next) => {
           next();
         },
-        meta: { title: "工单/巡检点/操作", icon: "" },
+        meta: { title: "工单/巡点检设备/操作", icon: "" },
       },
       {
         path: "/work/questAdd5",
         component: () => import("@/views/work/Quest/add/index5"),
         name: "questAdd5",
-        meta: { title: "工单/巡检点", icon: "" },
+        meta: { title: "工单/巡点检设备", icon: "" },
       },
       {
         path: "/work/questUpkeep2",
@@ -713,7 +713,7 @@ export const constantRoutes = [
         beforeEnter: (to, from, next) => {
           next();
         },
-        meta: { title: "工单/保养检修/操作", icon: "" },
+        meta: { title: "工单/保养检修设备/操作", icon: "" },
       },
       {
         path: "/work/questUpkeep3",
@@ -734,7 +734,7 @@ export const constantRoutes = [
         path: "/work/questAdd7",
         component: () => import("@/views/work/Quest/add/index7"),
         name: "questAdd7",
-        meta: { title: "工单/巡检点路线", icon: "" },
+        meta: { title: "工单/巡点检路线", icon: "" },
       },
       {
         path: "/work/questAdd8",

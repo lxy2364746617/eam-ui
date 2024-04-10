@@ -106,9 +106,9 @@
           prop="location"
           min-width="150"
         >
-          <!-- <template slot-scope="scope">
+          <template slot-scope="scope">
             <span>{{ findTreeName(locationOptions, scope.row.location) }}</span>
-          </template> -->
+          </template>
         </el-table-column>
         <el-table-column
           label="所属子公司"
@@ -205,7 +205,7 @@ import { getWomLine } from "@/api/work/schedule";
 import { getLocationTree } from "@/api/Location";
 export default {
   name: "Template",
-  dicts: ["mro_s_check_status", "mro_is_photo", "em_device_state"],
+  dicts: ["mro_s_check_status", "em_is_photo", "em_device_state"],
   props: {
     disabled: {
       default: false,
@@ -228,7 +228,7 @@ export default {
           label: "是否拍照",
           prop: "photoFlag",
           formType: "switch",
-          options: this.dict.type.mro_is_photo,
+          options: this.dict.type.em_is_photo,
           span: 24,
         },
       ];
@@ -400,7 +400,7 @@ export default {
     },
     submitRadio2(row) {
       let row1 = row.map((item) => {
-        item.photoFlag = "Y";
+        item.photoFlag = "1";
         return item;
       });
       this.plineList = this.plineList.concat(row1);

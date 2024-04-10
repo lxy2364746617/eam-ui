@@ -53,7 +53,10 @@
         align="center"
         prop="location"
         min-width="150"
-      ></el-table-column>
+        ><template slot-scope="scope">
+          {{ findTreeName(locationOptions, scope.row.location) }}
+        </template></el-table-column
+      >
       <el-table-column
         label="所属子公司"
         align="center"
@@ -190,15 +193,18 @@
     <el-drawer
       :visible.sync="plineForm.choosedrawer"
       direction="rtl"
+      title="选择设备"
       size="80%"
       :wrapperClosable="false"
     >
-      <SelectParentDeviceDialog
-        v-if="plineForm.choosedrawer"
+      <parentdevice
         :isChoose="false"
         @submitRadio="submitRadio2"
         @close="plineForm.choosedrawer = false"
-      ></SelectParentDeviceDialog>
+        :formData="plineForm"
+        v-if="plineForm.choosedrawer"
+      >
+      </parentdevice>
     </el-drawer>
 
     <!-- 点检 -->
@@ -295,11 +301,14 @@ import {
   findByDeviceId,
 } from "@/api/maintain/mline";
 import { getWomDevice } from "@/api/work/schedule";
+import { getLocationTree } from "@/api/Location";
+import parentdevice from "@/views/device/book/device";
 export default {
   components: {
     JmTable,
     pline,
     SelectParentDeviceDialog,
+    parentdevice,
   },
   dicts: [
     "mro_s_check_status",
@@ -410,6 +419,7 @@ export default {
       // ! 当前设备Code
       currentCode: "",
       maintainItems: [],
+      locationOptions: [],
     };
   },
   created() {
@@ -420,9 +430,23 @@ export default {
         }
       );
     }
+    getLocationTree().then((res) => {
+      this.locationOptions = this.getTreeName(res.data);
+    });
   },
   mounted() {},
   methods: {
+    getTreeName(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTreeName(item.children);
+        }
+      });
+      return arr;
+    },
     handlerSubmit() {
       this.rigthData.map((item) => {
         item["itemType"] = this.formData.checkCycleType;
@@ -480,6 +504,28 @@ export default {
         );
       });
     },
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
     viewFun(itemType, deviceCode, num) {
       this.lineList = this.maintainItems.filter(
         (item) => item.deviceCode == deviceCode
@@ -527,6 +573,10 @@ export default {
       findByDeviceId(formData).then((res) => {
         let row1 = JSON.parse(JSON.stringify(res.data)).map((item) => {
           item.photoFlag = "1";
+          // item.location = this.findTreeName(
+          //   this.locationOptions,
+          //   item.location
+          // );
           return item;
         });
         this.plineList = this.plineList.concat(row1);

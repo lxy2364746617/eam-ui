@@ -32,7 +32,6 @@
             size="mini"
             :loading="btnLoading"
             @click="handleUpdate"
-            v-hasPermi="['equipment:book:add']"
             >批量维护故障</el-button
           >
         </el-col>
@@ -43,7 +42,6 @@
             size="mini"
             :loading="btnLoading"
             @click="importHandler"
-            v-hasPermi="['equipment:book:add']"
             >下载</el-button
           >
         </el-col>
@@ -55,7 +53,6 @@
           icon="el-icon-view"
           :loading="btnLoading"
           @click="goDetails(scope.row, 'view')"
-          v-hasPermi="['equipment:book:edit']"
           >浏览</el-button
         >
         <el-button
@@ -65,7 +62,6 @@
           icon="el-icon-edit"
           :loading="btnLoading"
           @click="handleUpdate(scope.row, scope.index, 'edit', 1)"
-          v-hasPermi="['equipment:book:edit']"
           >维护故障</el-button
         >
         <el-button
@@ -74,7 +70,6 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope.row)"
-          v-hasPermi="['equipment:book:remove']"
           >删除</el-button
         >
       </template>

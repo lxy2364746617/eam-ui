@@ -106,7 +106,10 @@
           align="center"
           prop="location"
           min-width="150"
-        ></el-table-column>
+          ><template slot-scope="scope">
+            {{ findTreeName(locationOptions, scope.row.location) }}
+          </template></el-table-column
+        >
         <el-table-column
           label="所属子公司"
           align="center"
@@ -300,6 +303,7 @@ import { larchivesList, findByDeviceIdAndItemType } from "@/api/maintain/mline";
 import mline from "@/views/maintain/mplan/line";
 import { getWomLine } from "@/api/work/schedule";
 import { listMline } from "@/api/maintain/mline";
+import { getLocationTree } from "@/api/Location";
 export default {
   components: {
     JmTable,
@@ -392,17 +396,19 @@ export default {
           val.forEach((item) => {
             larchivesList({ lineId: item.lineId })
               .then((res) => {
-                arr.push(...res.data.map(val=>({
+                arr.push(
+                  ...res.data.map((val) => ({
                     ...val,
                     lineCode: item.lineCode,
                     lineName: item.lineName,
-                })));
+                  }))
+                );
               })
               .catch(() => {});
           });
 
           this.womDevices = arr;
-          console.log(this.womDevices)
+          console.log(this.womDevices);
 
           this.$emit("lineDTOListWomDevices", this.womDevices);
         }
@@ -455,6 +461,7 @@ export default {
       mlineList: [],
 
       womDevices: [],
+      locationOptions: [],
     };
   },
   created() {
@@ -470,9 +477,45 @@ export default {
         });
       });
     }
+    getLocationTree().then((res) => {
+      this.locationOptions = this.getTreeName(res.data);
+    });
   },
   mounted() {},
   methods: {
+    getTreeName(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTreeName(item.children);
+        }
+      });
+      return arr;
+    },
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
+    },
     handlerSubmit() {
       this.rigthData.map((item) => {
         item["itemType"] = this.formData.checkCycleType;

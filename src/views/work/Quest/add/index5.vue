@@ -153,11 +153,11 @@
           <span>{{ scope.row.executeNum + "/" + scope.row.itemNum }}</span>
         </template></el-table-column
       >
-      <el-table-column
-        label="异常数量"
-        align="center"
-        prop="executeNum"
-      ></el-table-column>
+      <el-table-column label="异常数量" align="center" prop="executeNum"
+        ><template slot-scope="scope">
+          <span>{{ scope.row.errorDealNum + "/" + scope.row.errorNum }}</span>
+        </template></el-table-column
+      >
       <el-table-column label="执行状态" align="center" prop="executeStatus">
         <template slot-scope="scope">
           <span
