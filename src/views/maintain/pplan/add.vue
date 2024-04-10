@@ -27,7 +27,7 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="巡点检周期" prop="planCycle">
-                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入巡点检周期" :disabled='form.planCycleType=="班"'></el-input-number>
+                        <el-input-number v-model="form.planCycle" :min="1"  label="请输入巡点检周期" :disabled='form.planCycleType=="班"'></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="巡点检周期类别" prop="planCycleType">

@@ -63,6 +63,7 @@ export default {
     treeData(val) {
      this.setCurrent&& this.$nextTick(() => {
         this.$refs.tree.setCurrentKey(this.currentNodeKey||val[0].id);
+        console.log(this.currentNodeKey||val[0].id)
         !this.currentNodeKey&&this.$emit("handleNodeClick", val[0]);
         this.currentNodeKey&&this.$emit("handleNodeClick", this.$refs.tree.getCurrentNode());
         let expandNode =this.$refs.tree.getNode(this.$refs.tree.getCurrentNode()) 
@@ -78,6 +79,11 @@ export default {
    
   },
   methods: {
+    //取消选中
+    clearChecked(){
+      this.$refs.tree.setCurrentKey(null);
+      this.$emit('clearChecked')
+    },
     setExpanded(node){
       node.expanded=true
       if(node.parent) this.setExpanded(node.parent)

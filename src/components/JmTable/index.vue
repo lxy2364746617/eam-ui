@@ -126,6 +126,7 @@
                     v-model="queryParams[col.prop]"
                     @keyup.enter.native="handleQuery"
                     @change="selectchange($event, col.prop)"
+                    :disabled='col.disabled'
                     placeholder="请选择"
                   >
                     <el-option

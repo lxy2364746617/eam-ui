@@ -29,6 +29,10 @@ export default {
       default: () => { },
       type: Object,
     },
+    itemType:{
+      default:'',
+      type:String
+    }
 
   },
   computed: {
@@ -38,7 +42,7 @@ export default {
         { label: '保养项编码', prop: 'itemCode' },
         { label: '保养项名称', prop: 'itemName' },
         { label: '保养部位', prop: 'itemArea' },
-        { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.BYJX, },
+        { label: '保养类型', prop: 'itemType', formType: 'select', options: this.dict.type.BYJX,disabled:true },
         { label: '保养内容', prop: 'itemContent',showOverflowTooltip:true },
         { label: '保养工具', prop: 'itemTool', },
         { label: '状态', prop: 'itemStatus', formType: 'selectTag', options: this.dict.type.sys_normal_disable, },
@@ -97,6 +101,7 @@ export default {
     getList(queryParams) {
       this.loading = true
       queryParams.exportIds=this.formData.disIds.join(',')
+      queryParams.itemType=queryParams.itemType?queryParams.itemType:this.itemType
       relationItem(queryParams).then((response) => {
         this.itemList = response.rows
         this.total = response.total;
