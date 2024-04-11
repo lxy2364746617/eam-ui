@@ -201,7 +201,7 @@
       :wrapperClosable="false"
     >
       <requirement
-      v-if="drawerRequirement"
+        v-if="drawerRequirement"
         @submitRadio="submitRequirement"
         :isRadio="true"
         :searchValue="[
@@ -487,7 +487,7 @@ export default {
                 this.$message.warning("请先选择备件编码");
                 return;
               }
-            this.drawerSpareReceive = true;
+              this.drawerSpareReceive = true;
 
               // this.drawerRequirement = true;
             },
@@ -674,6 +674,7 @@ export default {
       if (this.title === "备件入库") {
         this.$set(this.formDataNow, "locationCode", row.locationCode);
         this.$set(this.formDataNow, "supplierName", row.supplierName);
+        this.$set(this.formDataNow, "supplierCode", row.supplierCode);
         this.$set(this.formDataNow, "supplierId", row.supplierId);
       }
       getStockInOutCondition(row.partCode).then((res) => {
@@ -789,6 +790,10 @@ export default {
             this.locationOptions,
             formVal.locationCode
           );
+        if (!formVal.supplierName) {
+          delete formVal.supplierCode;
+          delete formVal.supplierId;
+        }
         stockIn(formVal).then((res) => {
           if (res.code === 200) {
             this.getList(this.queryParams);

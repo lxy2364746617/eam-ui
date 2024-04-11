@@ -49,9 +49,9 @@
             /> </el-form-item
         ></el-col>
         <el-col :span="12">
-          <el-form-item label="功能位置(工作面)" prop="location">
+          <el-form-item label="功能位置(工作面)" prop="locationName">
             <el-input
-              v-model="form.location"
+              v-model="form.locationName"
               placeholder="请输入功能位置"
               disabled
             /> </el-form-item
@@ -155,9 +155,9 @@ export default {
         deviceCode: [
           { required: true, message: "设备编码不能为空", trigger: "blur" },
         ],
-        specs: [
-          { required: true, message: "设备规格不能为空", trigger: "blur" },
-        ],
+        // specs: [
+        //   { required: true, message: "设备规格不能为空", trigger: "blur" },
+        // ],
         categoryName: [
           { required: true, message: "设备类别不能为空", trigger: "blur" },
         ],
@@ -278,6 +278,7 @@ export default {
   justify-content: space-between;
   -webkit-box-align: center;
   -ms-flex-align: center;
-  align-items: center;padding: 0 18px;
+  align-items: center;
+  padding: 0 18px;
 }
 </style>

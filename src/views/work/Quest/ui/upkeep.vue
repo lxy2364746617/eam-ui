@@ -91,6 +91,8 @@
       @selection-change="handleSelectionChange"
       ref="queryTable"
     >
+      <el-table-column v-if="carryValue.y" type="selection" width="55">
+      </el-table-column>
       <el-table-column label="序号" align="center" type="index" />
       <el-table-column
         label="点检项目编码"
@@ -707,12 +709,12 @@ export default {
     },
     handlerBack() {
       this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      // this.$router.go(-1); //跳回上页
-      this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-        if (this.$route.path === this.$route.path) {
-          this.$tab.toLastView(visitedViews);
-        }
-      });
+      this.$router.go(-1); //跳回上页
+      // this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+      //   if (this.$route.path === this.$route.path) {
+      //     this.$tab.toLastView(visitedViews);
+      //   }
+      // });
     },
     handlerImgSubmit() {
       photoWomDevice({
@@ -853,11 +855,11 @@ export default {
         if (res.code === 200) {
           this.$message.success("提交成功!");
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-           this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-        if (this.$route.path === this.$route.path) {
-          this.$tab.toLastView(visitedViews);
-        }
-      });
+          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+            if (this.$route.path === this.$route.path) {
+              this.$tab.toLastView(visitedViews);
+            }
+          });
         }
       });
     },
@@ -914,7 +916,9 @@ export default {
     getDetails(queryParams) {
       queryParams["orderCode"] = this.routerForm.orderCode;
       queryParams["deviceCode"] = this.form.deviceCode;
-
+      if (this.carryValue.y == true) {
+        queryParams["dealResult"] = 2;
+      }
       getSelectPage(queryParams).then((res) => {
         if (res.code == 200) {
           this.standardList = res.data.records;

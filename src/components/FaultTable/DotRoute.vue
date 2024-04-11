@@ -31,7 +31,6 @@
           type="text"
           icon="el-icon-view"
           @click="showLine(scope.row)"
-          v-hasPermi="['maintain:pline:remove']"
           >查看</el-button
         >
         <el-button
@@ -40,7 +39,6 @@
           type="text"
           icon="el-icon-delete"
           @click="handleDelete(scope)"
-          v-hasPermi="['maintain:pline:remove']"
           >删除</el-button
         >
       </template>
@@ -223,7 +221,7 @@ export default {
         { label: "巡点检路线编码", prop: "lineCode", class: true },
         { label: "巡点检路线名称", prop: "lineName", class: true },
         { label: "巡点检设备数量", prop: "deviceNum" },
-        { label: "日常巡点检", prop: "sCheckNum" },
+        { label: "巡点捡项数量", prop: "sCheckNum" },
         {
           label: "是否拍照",
           prop: "photoFlag",
@@ -346,6 +344,29 @@ export default {
       deep: true,
       immediate: true,
     },
+    "formData.orderType": {
+      handler(val) {
+        if (val) {
+          switch (val) {
+            case "RCDJ":
+              this.title = "日常点检项";
+              break;
+            case "JMDJ":
+              this.title = "精密点检项";
+              break;
+            case "ZZDJ":
+              this.title = "专职点检项";
+              break;
+            default:
+              break;
+          }
+        }
+        this.plineList = this.plineList?.map((item) => ({
+          ...item,
+          sCheckNum: item.itemMap[val],
+        }));
+      },
+    },
   },
   created() {
     getLocationTree().then((res) => {
@@ -401,6 +422,7 @@ export default {
     submitRadio2(row) {
       let row1 = row.map((item) => {
         item.photoFlag = "1";
+        item.sCheckNum = item.itemMap[this.formData.orderType];
         return item;
       });
       this.plineList = this.plineList.concat(row1);
@@ -466,19 +488,19 @@ export default {
       if (num == 0) {
         this.$modal.msgWarning("浏览量为0");
       } else {
-        switch (itemType) {
-          case "RCDJ":
-            this.title = "日常点检项";
-            break;
-          case "JMDJ":
-            this.title = "精密点检项";
-            break;
-          case "ZZDJ":
-            this.title = "专职点检项";
-            break;
-          default:
-            break;
-        }
+        // switch (itemType) {
+        //   case "RCDJ":
+        //     this.title = "日常点检项";
+        //     break;
+        //   case "JMDJ":
+        //     this.title = "精密点检项";
+        //     break;
+        //   case "ZZDJ":
+        //     this.title = "专职点检项";
+        //     break;
+        //   default:
+        //     break;
+        // }
         let data = {
           itemType,
           deviceId,

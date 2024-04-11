@@ -448,21 +448,41 @@ export default {
       return arr;
     },
     handlerSubmit() {
-      this.rigthData.map((item) => {
+      this.rigthData.forEach((item) => {
         item["itemType"] = this.formData.checkCycleType;
         item["deviceCode"] = this.currentCode;
-        return item;
+        item["currentCodeLineId"] = this.currentCodeLineId;
+        item["itemCodeDeviceCodeId"] =
+          item.deviceCode + item.itemCode + item.itemId;
+        if (
+          !this.maintainItems.some(
+            (v) => v.itemCodeDeviceCodeId === item["itemCodeDeviceCodeId"]
+          )
+        )
+          this.maintainItems.push(item);
       });
-      this.maintainItems = this.maintainItems.concat(this.rigthData);
+
+      // ! 上
+      if (this.leftData.length) {
+        this.leftData.forEach((v) => {
+          this.maintainItems = this.maintainItems.filter(
+            (t) => t.itemCodeDeviceCodeId !== v.itemCodeDeviceCodeId
+          );
+        });
+      }
       this.drawer2 = false;
       this.rigthData = [];
+      this.leftData = [];
     },
     handleDelete(row) {
       var that = this;
       this.$modal
         .confirm("是否确认删除？")
-        .then(function () {
+        .then((res) => {
           let index = that.plineList.indexOf(row);
+          this.maintainItems = this.maintainItems.filter(
+            (item) => item.deviceCode !== row.deviceCode
+          );
           that.plineList.splice(index, 1);
         })
         .catch(() => {});
@@ -594,7 +614,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      let lineIds = this.plineList.map((item) => item.lineId) || [];
+      let lineIds = this.plineList.map((item) => item.deviceId) || [];
       this.$set(this.plineForm, "disIds", lineIds);
       this.$set(this.plineForm, "choosedrawer", true);
     },
@@ -640,9 +660,9 @@ export default {
 
     // 添加
     increase() {
-      const ids = this.selectionLeft.map((mp) => mp.id);
+      const ids = this.selectionLeft.map((mp) => mp.itemId);
       const filterRData = this.leftData.filter(
-        (el) => !ids.some((e) => e === el.id)
+        (el) => !ids.some((e) => e === el.itemId)
       );
       this.leftData = [...filterRData];
       this.rigthData = [...this.rigthData, ...this.selectionLeft];
@@ -651,9 +671,9 @@ export default {
 
     // 取消
     decrease() {
-      const ids = this.selectionRight.map((mp) => mp.id);
+      const ids = this.selectionRight.map((mp) => mp.itemId);
       const filterRData = this.rigthData.filter(
-        (el) => !ids.some((e) => e === el.id)
+        (el) => !ids.some((e) => e === el.itemId)
       );
       this.rigthData = [...filterRData];
       this.leftData = this.leftData.concat(this.selectionRight);
@@ -693,5 +713,10 @@ export default {
   .btn {
     margin-right: 15px;
   }
+}
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -108,16 +108,29 @@ export default {
               break;
             case "DZWX":
             case "JDBWX":
-              this.routePoint = JSON.parse(
-                JSON.stringify(this.dict.type.order_obj)
-              )
-                .filter((item) => item.value != 1)
-                .map((item) => {
-                  return {
-                    id: item.value,
-                    label: item.label,
-                  };
-                });
+              if (this.$route.query.item) {
+                this.routePoint = JSON.parse(
+                  JSON.stringify(this.dict.type.order_obj)
+                )
+                  .filter((item) => item.value == 2)
+                  .map((item) => {
+                    return {
+                      id: item.value,
+                      label: item.label,
+                    };
+                  });
+              } else {
+                this.routePoint = JSON.parse(
+                  JSON.stringify(this.dict.type.order_obj)
+                )
+                  .filter((item) => item.value != 1)
+                  .map((item) => {
+                    return {
+                      id: item.value,
+                      label: item.label,
+                    };
+                  });
+              }
 
               this.resetColumns();
               break;
@@ -284,10 +297,6 @@ export default {
               case "DZWX2":
               case "WWWX2":
               case "JDBWX2":
-                console.log(
-                  "========================this.formData",
-                  this.itemIdList
-                );
                 this.columns2 = [
                   // 需填信息
                   {
@@ -323,7 +332,9 @@ export default {
                     required: true,
                     formType: "selectTree",
                     options: this.routePoint,
-                    formDisabled: this.itemIdList.length && true,
+                    formDisabled:
+                      this.itemIdList.length ||
+                      (this.$route.query.item && true),
                   },
                   // ! 设备信息
                   {
@@ -758,9 +769,9 @@ export default {
             // formDisabled: true,
           },
         ];
-        // if (this.formData.orderType) {
-        //   this.formData.orderObj = Number(this.routePoint[0].id);
-        // }
+        if (this.formData.orderType) {
+          this.formData.orderObj = Number(this.routePoint[0].id);
+        }
       }
       if (!this.formData.orderCode) {
         this.formData = {
@@ -770,9 +781,9 @@ export default {
           orderObj: this.formData.orderObj,
         };
       }
-      if (this.routePoint && this.routePoint.length > 0) {
-        this.formData.orderObj = Number(this.routePoint[0].id);
-      }
+      // if (this.routePoint && this.routePoint.length > 0) {
+      //   this.formData.orderObj = Number(this.routePoint[0].id);
+      // }
       this.formData["orderTypeFather"] = this.findParentType(
         this.formData["orderType"],
         this.orderOptions

@@ -342,8 +342,8 @@ export default {
   mounted() {
     this.title = this.$route.meta.title;
     this.calendarApi = this.$refs.fullCalendar.getApi();
-    document.querySelector(".fc-scroller-liquid-absolute").style.overflow = "";
-    document.querySelector(".fc-scroller-harness").style.overflow = "";
+    // document.querySelector(".fc-scroller-liquid-absolute").style.overflow = "";
+    // document.querySelector(".fc-scroller-harness").style.overflow = "";
   },
   computed: {
     getImageStyle() {
@@ -534,11 +534,13 @@ export default {
       });
     },
     handleEventClick(calEvent) {
+      console.log("========================");
       this.goDetails(
         JSON.parse(JSON.stringify(calEvent.event._def.extendedProps))
       );
     },
     goDetails(row) {
+      console.log("========================", row);
       getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
         row["workActive"] = 0;
         if (

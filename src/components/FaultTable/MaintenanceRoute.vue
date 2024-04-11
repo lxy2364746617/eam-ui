@@ -27,11 +27,7 @@
       :showOperate="!disabled"
     >
       <template #end_handle="scope">
-        <el-button
-          size="mini"
-          type="text"
-          @click="showLine(scope.row)"
-          v-hasPermi="['maintain:mplan:remove']"
+        <el-button size="mini" type="text" @click="showLine(scope.row)"
           >查看</el-button
         >
         <el-button
@@ -39,7 +35,6 @@
           size="mini"
           type="text"
           @click="handleDelete(scope)"
-          v-hasPermi="['maintain:mplan:remove']"
           >删除</el-button
         >
       </template>
@@ -141,7 +136,9 @@
           <template slot-scope="scope">
             <span
               class="viewSpan"
-              @click="viewFun('RCBY', scope.row.deviceCode, scope.row.dayNum)"
+              @click="
+                viewFun('RCBY', scope.row.currentCodeLineId, scope.row.dayNum)
+              "
               >浏览</span
             >
           </template>
@@ -156,7 +153,7 @@
           <template slot-scope="scope">
             <span
               class="viewSpan"
-              @click="viewFun('YJBY', scope.row.deviceCode, scope.row.oNum)"
+              @click="viewFun('YJBY', scope.currentCodeLineId, scope.row.oNum)"
               >浏览</span
             >
           </template>
@@ -171,7 +168,7 @@
           <template slot-scope="scope">
             <span
               class="viewSpan"
-              @click="viewFun('EJBY', scope.row.deviceCode, scope.row.tNum)"
+              @click="viewFun('EJBY', scope.currentCodeLineId, scope.row.tNum)"
             >
               浏览</span
             >
@@ -187,7 +184,7 @@
           <template slot-scope="scope">
             <span
               class="viewSpan"
-              @click="viewFun('CGRH', scope.row.deviceCode, scope.row.cNum)"
+              @click="viewFun('CGRH', scope.currentCodeLineId, scope.row.cNum)"
             >
               浏览</span
             >
@@ -209,7 +206,8 @@
                   formData.orderType,
                   scope.row.deviceId,
                   scope.row.deviceCode,
-                  scope.row.fullNum
+                  scope.row.fullNum,
+                  scope.row.deviceCode + lineId
                 )
               "
               >{{ scope.row.fullNum }} 调整项目</span
@@ -328,29 +326,20 @@ export default {
   },
   computed: {
     columns1() {
-      if (this.disabled) {
-        return [
-          { label: "保养路线编码", prop: "lineCode", class: true },
-          { label: "保养路线名称", prop: "lineName", class: true },
-          { label: "保养设备数量", prop: "deviceNum" },
-          { label: "日常保养", prop: "sCheckNum" },
-        ];
-      } else {
-        return [
-          { label: "保养路线编码", prop: "lineCode", class: true },
-          { label: "保养路线名称", prop: "lineName", class: true },
-          { label: "保养设备数量", prop: "deviceNum" },
-          { label: "日常保养", prop: "sCheckNum" },
-          {
-            label: "是否拍照",
-            prop: "photoFlag",
-            formType: "radioSelect",
-            options: this.dict.type.em_is_photo,
-            span: 18,
-            width: 150,
-          },
-        ];
-      }
+      return [
+        { label: "保养路线编码", prop: "lineCode", class: true },
+        { label: "保养路线名称", prop: "lineName", class: true },
+        { label: "保养设备数量", prop: "deviceNum" },
+        { label: "保养项数量", prop: "sCheckNum" },
+        {
+          label: "是否拍照",
+          prop: "photoFlag",
+          formType: "switch",
+          options: this.dict.type.em_is_photo,
+          span: 18,
+          width: 150,
+        },
+      ];
     },
     // 列信息
     columns() {
@@ -425,6 +414,34 @@ export default {
       deep: true,
       immediate: true,
     },
+    "formData.orderType": {
+      handler(val) {
+        if (val) {
+          switch (val) {
+            case "RCBY":
+              this.title = "日常保养";
+              break;
+            case "YJBY":
+              this.title = "一级保养";
+              break;
+            case "EJBY":
+              this.title = "二级保养";
+              break;
+            case "CGRH":
+              this.title = "常规润滑";
+              break;
+            default:
+              break;
+          }
+        }
+        this.plineList = this.plineList?.map((item) => ({
+          ...item,
+          sCheckNum: item.itemMap[val],
+        }));
+        this.maintainItems = [];
+        this.lineForm.disIds = [];
+      },
+    },
   },
   data() {
     return {
@@ -432,10 +449,7 @@ export default {
       choosedrawer: false,
       plineList: [],
       selectArr: [],
-      plineForm: {
-        choosedrawer: false,
-        disIds: [],
-      }, // 关联点检测项目
+      // 关联点检测项目
       lineForm: {
         choosedrawer: false,
         disIds: [],
@@ -457,11 +471,13 @@ export default {
       selectionRight: [],
       // ! 当前设备Code
       currentCode: "",
+      currentCodeLineId: "",
       maintainItems: [],
       mlineList: [],
 
       womDevices: [],
       locationOptions: [],
+      lineId: "",
     };
   },
   created() {
@@ -517,30 +533,57 @@ export default {
       }
     },
     handlerSubmit() {
-      this.rigthData.map((item) => {
+      this.rigthData.forEach((item) => {
         item["itemType"] = this.formData.checkCycleType;
         item["deviceCode"] = this.currentCode;
-        return item;
+        item["currentCodeLineId"] = this.currentCodeLineId;
+        item["lineId"] = this.lineId;
+        item["itemCodeLineId"] =
+          item.deviceCode + item.itemCode + this.lineId + item.itemId;
+        if (
+          !this.maintainItems.some(
+            (v) => v.itemCodeLineId === item["itemCodeLineId"]
+          )
+        )
+          this.maintainItems.push(item);
       });
-      this.maintainItems = this.maintainItems.concat(this.rigthData);
+
+      // ! 上
+      if (this.leftData.length) {
+        this.leftData.forEach((v) => {
+          this.maintainItems = this.maintainItems.filter(
+            (t) => t.itemCodeLineId !== v.itemCodeLineId
+          );
+        });
+      }
+      this.lineList = this.lineList.map((item) => {
+        return {
+          ...item,
+          sCheckNum: this.maintainItems.reduce(
+            (v, t) => (item.lineId === t.lineId ? v + 1 : v),
+            0
+          ),
+        };
+      });
       this.drawer2 = false;
       this.rigthData = [];
+      this.leftData = [];
     },
-    handleDelete() {
+    handleDelete(row) {
       var that = this;
       this.$modal
         .confirm("是否确认删除？")
-        .then(function () {
-          that.selectArr.forEach((element) => {
-            let index = that.lineList.indexOf(element);
-            that.lineList.splice(index, 1);
-          });
+        .then((res) => {
+          this.maintainItems = this.maintainItems.filter(
+            (item) => item.lineId !== row.row.lineId
+          );
+          that.lineList.splice(row.index, 1);
         })
         .catch(() => {});
     },
     viewFun(itemType, deviceCode, num) {
       this.mlineList = this.maintainItems.filter(
-        (item) => item.deviceCode == deviceCode
+        (item) => item.currentCodeLineId == deviceCode
       );
       if (this.mlineList.length == 0) {
         this.$modal.msgWarning("浏览量为0");
@@ -577,11 +620,12 @@ export default {
         );
       });
     },
-    itemFun(itemType, deviceId, deviceCode, num) {
+    itemFun(itemType, deviceId, deviceCode, num, currentCodeLineId) {
+      this.currentCodeLineId = currentCodeLineId;
       this.currentCode = deviceCode;
       this.rigthData = [];
       this.rigthData = this.maintainItems.filter(
-        (item) => item.deviceCode == deviceCode
+        (item) => item.currentCodeLineId == currentCodeLineId
       );
 
       this.getList(itemType, deviceId);
@@ -617,6 +661,7 @@ export default {
     submitRadio2(row) {
       let row1 = row.map((item) => {
         item.photoFlag = "1";
+        item.sCheckNum = 0;
         return item;
       });
       this.lineList = this.lineList.concat(row1);
@@ -652,6 +697,7 @@ export default {
     showLine(row) {
       this.$set(this.deviceForm, "loading", true);
       this.$set(this.deviceForm, "choosedrawer", true);
+      this.lineId = row.lineId;
       larchivesList({ lineId: row.lineId })
         .then((res) => {
           this.deviceList = res.data || [];
@@ -692,9 +738,9 @@ export default {
 
     // 添加
     increase() {
-      const ids = this.selectionLeft.map((mp) => mp.id);
+      const ids = this.selectionLeft.map((mp) => mp.itemId);
       const filterRData = this.leftData.filter(
-        (el) => !ids.some((e) => e === el.id)
+        (el) => !ids.some((e) => e === el.itemId)
       );
       this.leftData = [...filterRData];
       this.rigthData = [...this.rigthData, ...this.selectionLeft];
@@ -703,9 +749,9 @@ export default {
 
     // 取消
     decrease() {
-      const ids = this.selectionRight.map((mp) => mp.id);
+      const ids = this.selectionRight.map((mp) => mp.itemId);
       const filterRData = this.rigthData.filter(
-        (el) => !ids.some((e) => e === el.id)
+        (el) => !ids.some((e) => e === el.itemId)
       );
       this.rigthData = [...filterRData];
       this.leftData = this.leftData.concat(this.selectionRight);

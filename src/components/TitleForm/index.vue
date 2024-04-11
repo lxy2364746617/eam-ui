@@ -8,7 +8,7 @@
       ref="formform"
       size="small"
       :model="formData"
-      :rules="disabled && rules"
+      :rules="rules"
       :label-position="labelPosition"
       :label-width="labelWidth || '120px'"
     >
@@ -497,6 +497,10 @@ export default {
       default: "right",
       type: String,
     },
+     rules:{
+      default:()=>{},
+      type:Object
+    }
   },
 
   data() {
@@ -507,7 +511,6 @@ export default {
       filedrawer3: false,
       fileType: [".xlsx"],
       fileList: [],
-      rules: {},
       fileList2: [],
       fileList3: [],
     };

@@ -52,7 +52,7 @@
         >
         <el-col :span="6" class="mb8"
           ><span class="show">功能位置(工作面):</span
-          >{{ data.location }}</el-col
+          >{{ data.locationName }}</el-col
         >
         <el-col :span="6" class="mb8"
           ><span class="show">当前使用组织:</span>{{ data.currDept }}</el-col
