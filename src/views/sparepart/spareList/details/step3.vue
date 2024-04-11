@@ -43,7 +43,7 @@ export default {
         { label: "设备名称", prop: "deviceName", width: 200 },
         {
           label: "设备类别",
-          prop: "categoryId",
+          prop: "deviceType",
           formType: "selectTree",
           options: this.categoryOptions,
           width: 240,

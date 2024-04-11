@@ -56,10 +56,11 @@
 
           <el-col :span="6" class="mb20"
             ><span class="show">执行人员:</span
-            >{{ formData.executorName }}</el-col
+            >{{ findTreeName(userList, formData.executor) }}</el-col
           >
           <el-col :span="6" class="mb20"
-            ><span class="show">执行单位:</span>{{ formData.deptName }}</el-col
+            ><span class="show">执行班组:</span
+            >{{ findName(groupOptions, formData.groupId) }}</el-col
           >
           <el-col :span="6" class="mb20"
             ><span class="show">计划开始时间:</span
@@ -197,27 +198,26 @@
             icon="el-icon-view"
             :loading="btnLoading"
             @click="goDetails(scope.row, 'view')"
-            v-hasPermi="['work:quest:view']"
             >查看</el-button
           >
           <el-button
-            v-if="!disabled && scope.row.executeStatus != 1"
+            v-if="
+              !disabled && scope.row.executeStatus != 1 && scope.row.itemNum > 0
+            "
             size="mini"
             type="text"
             icon="el-icon-edit"
             :loading="btnLoading"
             @click="handlerCarry(scope.row, 'carry')"
-            v-hasPermi="['work:quest:carry']"
             >执行</el-button
           >
           <el-button
-            v-if="scope.row.executeNum > 0"
+            v-if="scope.row.errorNum > 0"
             size="mini"
             type="text"
             icon="el-icon-edit"
             :loading="btnLoading"
             @click="handlerAbnormal(scope.row, 'abnormal')"
-            v-hasPermi="['work:quest:abnormal']"
             >异常处理</el-button
           >
         </template>
@@ -280,6 +280,7 @@ import {
 } from "@/api/work/schedule";
 import { findAll, getGroup } from "@/api/system/group";
 import { orderTemplate } from "@/api/work/template";
+import { listUser } from "@/api/system/user";
 export default {
   components: {
     Wrapper,
@@ -323,6 +324,7 @@ export default {
       groupOptions: [],
       orderOptions: [],
       disabled: false,
+      userList: [],
     };
   },
   async created() {
@@ -341,6 +343,13 @@ export default {
           }
         }
       );
+      findAll({ groupType: this.formData.maintenanceType }).then((res) => {
+        res.data.forEach((item) => {
+          item.label = item.groupName;
+          item.value = item.id;
+        });
+        this.groupOptions = res.data;
+      });
       getWomInfo({ orderCode: this.formData.orderCode }).then((res) => {
         this.formData = { ...res.data, ...this.formData };
       });
@@ -523,10 +532,16 @@ export default {
     },
     /** 查询设备档案下拉树结构 */
     getTree() {
-      equipmentTree().then((response) => {
-        this.categoryOptions = response.data;
-        // 方便获取父级tree
-        this.loops(this.categoryOptions);
+      // equipmentTree().then((response) => {
+      //   this.categoryOptions = response.data;
+      // });
+      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
+        this.userList = res.rows.map((item) => {
+          return {
+            id: item.userId,
+            label: item.nickName,
+          };
+        });
       });
     },
     loops(list, parent) {

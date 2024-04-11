@@ -33,8 +33,21 @@ export default {
       default: () => {},
       type: Object,
     },
+    locationOptions: {
+      default: () => [],
+      type: Array,
+    },
   },
-  watch: {},
+  watch: {
+    locationOptions: {
+      handler(newVal, oldVal) {
+        if (newVal.length > 0) {
+          this.getList(this.queryParams);
+        }
+      },
+      deep: true,
+    },
+  },
   computed: {
     columns() {
       return [
@@ -66,7 +79,14 @@ export default {
           required: true,
         },
         { label: "供应商", prop: "supplierName", span: 22, width: 150 },
-        { label: "存储位置", prop: "locationName", span: 22, width: 150 },
+        {
+          label: "存储位置",
+          prop: "locationCode",
+          options: this.locationOptions,
+          formType: "selectTree",
+          span: 22,
+          width: 150,
+        },
         { label: "关联请求", prop: "relatedRequestCode", span: 22, width: 150 },
         { label: "出入库原因", prop: "reason", span: 22, width: 150 },
         { label: "操作人员", prop: "operatorName", span: 22, width: 150 },
@@ -100,9 +120,7 @@ export default {
       },
     };
   },
-  created() {
-    this.getList(this.queryParams);
-  },
+  created() {},
   methods: {
     /** 查询用户列表 */
     getList(queryParams) {

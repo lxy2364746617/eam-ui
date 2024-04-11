@@ -191,7 +191,6 @@
             icon="el-icon-view"
             :loading="btnLoading"
             @click="goDetails(scope.row, 'view')"
-            v-hasPermi="['work:quest:view']"
             >查看</el-button
           >
           <el-button
@@ -201,7 +200,6 @@
             icon="el-icon-edit"
             :loading="btnLoading"
             @click="handlerCarry(scope.row, 'carry')"
-            v-hasPermi="['work:quest:carry']"
             >执行</el-button
           >
         </template>

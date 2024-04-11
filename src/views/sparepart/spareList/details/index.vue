@@ -84,6 +84,7 @@
             :is="item.name"
             v-if="spareValue"
             :formData="spareValue"
+            :locationOptions="locationOptions"
             @submitForm="submitForm"
             @newFormData="newFormData"
             @close="close"

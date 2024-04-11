@@ -34,6 +34,10 @@ export default {
       default: () => {},
       type: Object,
     },
+    locationOptions: {
+      default: () => [],
+      type: Array,
+    },
   },
   watch: {},
   computed: {
@@ -88,7 +92,6 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
-      locationOptions: null,
     };
   },
   created() {
@@ -96,10 +99,7 @@ export default {
   },
   methods: {
     getTreeSelect() {
-      getLocationTree().then((res) => {
-        this.getList(this.formData.id);
-        this.locationOptions = this.getTree(res.data);
-      });
+      this.getList(this.formData.id);
     },
     getTree(arr) {
       arr.forEach((item) => {

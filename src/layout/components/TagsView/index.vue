@@ -227,7 +227,6 @@ export default {
       });
     },
     toLastView(visitedViews, view) {
-      console.log("========================", visitedViews);
       const latestView = visitedViews.slice(-1)[0];
       if (latestView) {
         this.$router.push(latestView);
