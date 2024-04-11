@@ -431,7 +431,7 @@ import {
   userList,
   completeFinish,
 } from "@/api/flowable/todo";
-import { addNeckApprove } from '@/api/property/receive.js'
+import { addNeckApprove } from "@/api/property/receive.js";
 import flow from "@/views/flowable/task/todo/detail/flow";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { listUser } from "@/api/system/user";
@@ -697,7 +697,8 @@ export default {
     },
     /** 加载审批任务弹框 */
     handleComplete() {
-      if(this.nextFlow&&!this.taskForm.nextUserIds) return this.$message.error('请选择下级审批人！')
+      if (this.nextFlow && !this.taskForm.nextUserIds)
+        return this.$message.error("请选择下级审批人！");
       this.taskForm.comment = "";
       this.completeOpen = true;
       this.completeTitle = "流程审批";
@@ -797,6 +798,27 @@ export default {
     taskFinish() {
       this.$refs["taskForm"].validate((valid) => {
         if (valid) {
+          if (
+            this.taskName == "设备管理员" &&
+            !this.deviceList.every((item) => item.targetLocation)
+          )
+            return this.$message.error(
+              "已选取设备的位置状态变动信息不能为空，请核查!"
+            );
+          if (this.taskName == "设备管理员") {
+            addNeckApprove({
+              neckNo: this.taskForm?.businessId,
+              approveList: this.deviceList,
+            }).then((res) => {
+              if (res.code === 200) {
+                complete(this.taskForm).then((response) => {
+                  this.$modal.msgSuccess(response.msg);
+                  this.goBack();
+                });
+              }
+            });
+            return;
+          }
           completeFinish(this.taskForm).then((res) => {
             this.$modal.msgSuccess(res.msg);
             this.goBack();
