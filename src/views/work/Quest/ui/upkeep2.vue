@@ -137,17 +137,6 @@
       >
       </el-table-column>
       <el-table-column
-        v-if="!carryValue.i"
-        label="处理状态"
-        align="center"
-        prop="dealStatus"
-        min-width="100"
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.result == 0 ? "待处理" : "已处理" }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
@@ -156,7 +145,10 @@
         v-if="carryValue.i"
       >
         <template slot-scope="scope">
-          <el-radio-group v-model="scope.row.result" :disabled="!carryValue.i">
+          <el-radio-group
+            v-model="scope.row.dealResult"
+            :disabled="!carryValue.i"
+          >
             <el-radio :label="1">OK</el-radio>
 
             <el-radio :label="2">NG</el-radio>
@@ -171,6 +163,24 @@
             @click="handlerAddRemarks(scope, 'remarks')"
             >添加备注</el-button
           >
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作结果"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+        min-width="200"
+        v-else
+      >
+        <template slot-scope="scope">
+          <span>{{
+            scope.row.dealResult === 1
+              ? "OK"
+              : scope.row.dealResult === 0
+              ? "OK"
+              : "暂未操作"
+          }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -383,7 +393,9 @@ export default {
     await this.getDetails(this.queryParams);
 
     if (!this.carryValue.y) {
-      getRelevanceInfo({ busId: this.routerForm.orderCode }).then((res) => {
+      getRelevanceInfo({
+        busId: this.routerForm.orderCode + "_" + this.form.deviceCode,
+      }).then((res) => {
         if (res.code == 200 && res.rows.length > 0) {
           this.fileList = res.rows;
         }
@@ -410,18 +422,18 @@ export default {
           span: 8,
         },
         { label: "设备编码", prop: "deviceCode", span: 8 },
-        {
-          label: "运行状态",
-          prop: "runStatus",
-          formType: "select",
-          options: this.dict.type.device_run_state,
-          span: 8,
-        },
-        {
-          label: "异常数量",
-          prop: "errorNum",
-          span: 8,
-        },
+        // {
+        //   label: "运行状态",
+        //   prop: "runStatus",
+        //   formType: "select",
+        //   options: this.dict.type.device_run_state,
+        //   span: 8,
+        // },
+        // {
+        //   label: "异常数量",
+        //   prop: "errorNum",
+        //   span: 8,
+        // },
       ];
     },
     columnsForm() {
@@ -465,9 +477,24 @@ export default {
     },
   },
   methods: {
+    isActive(route) {
+      return route.path === this.$route.path;
+    },
     handlerBack() {
-      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      this.$router.go(-1); //跳回上页
+      this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+        if (this.isActive(this.$route)) {
+          const latestView = visitedViews.slice(-1)[0];
+          if (latestView) {
+            this.$router.push(latestView);
+          } else {
+            if (this.$route.name === "Dashboard") {
+              router.replace({ path: "/redirect" + this.$route.fullPath });
+            } else {
+              router.push("/");
+            }
+          }
+        }
+      });
     },
     handlerDownload() {
       exportPatrolItem({
@@ -569,23 +596,12 @@ export default {
       upkeepStoreItem({ maintainItems: this.standardList }).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
-          this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-            if (this.$route.path === this.$route.path) {
-              this.$tab.toLastView(visitedViews);
-            }
-          });
+          this.handlerBack();
         }
       });
     },
     // 提交
     handlerSubmit() {
-      // let data = this.standardList.map((item) => ({
-      //   dealResult: item.dealResult,
-      //   id: item.id,
-      //   quotaValue: item.quotaValue,
-      //   remark: item.remark,
-      // }));
       if (
         this.standardList.filter((item) => item.dealResult).length !==
         this.standardList.length
@@ -596,12 +612,7 @@ export default {
       upkeepSubmitItem({ maintainItems: this.standardList }).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
-          this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-            if (this.$route.path === this.$route.path) {
-              this.$tab.toLastView(visitedViews);
-            }
-          });
+          this.handlerBack();
         }
       });
     },
@@ -671,13 +682,13 @@ export default {
       this.checkBoxRows = selection;
     },
   },
-  beforeRouteLeave(to, from, next) {
-    // 保存上一个路由信息
-    this.$store.dispatch("tagsView/delView", from); // 关闭当前页
-    // this.$router.go(-1);
-    removeStore("carryValue");
-    next();
-  },
+  // beforeRouteLeave(to, from, next) {
+  //   // 保存上一个路由信息
+  //   this.$store.dispatch("tagsView/delView", from); // 关闭当前页
+  //   // this.$router.go(-1);
+  //   removeStore("carryValue");
+  //   next();
+  // },
 };
 </script>
 <style lang='scss' scoped>

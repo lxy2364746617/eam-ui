@@ -63,7 +63,8 @@
             >{{ findTreeName(userList, formData.executor) }}</el-col
           >
           <el-col :span="6" class="mb20"
-            ><span class="show">执行班组:</span>{{ findName(groupOptions, formData.groupId) }}</el-col
+            ><span class="show">执行班组:</span
+            >{{ findName(groupOptions, formData.groupId) }}</el-col
           >
           <el-col :span="6" class="mb20"
             ><span class="show">计划开始时间:</span
@@ -195,8 +196,9 @@
             >查看</el-button
           >
           <el-button
-            v-if="!disabled && scope.row.executeStatus != 1 &&
-                  scope.row.itemNum > 0"
+            v-if="
+              !disabled && scope.row.executeStatus != 1 && scope.row.itemNum > 0
+            "
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -275,7 +277,6 @@
                 size="mini"
                 :loading="btnLoading"
                 @click="handlerAdd2"
-                v-hasPermi="['work:quest:add']"
                 >添加</el-button
               >
             </el-col>
@@ -287,7 +288,6 @@
               icon="el-icon-edit"
               :loading="btnLoading"
               @click="handlerEdit(scope.row, 'edit')"
-              v-hasPermi="['work:quest:edit']"
               >编辑</el-button
             >
             <el-button
@@ -296,7 +296,6 @@
               icon="el-icon-delete"
               :loading="btnLoading"
               @click="handlerDeleteHours(scope.row, 'delete')"
-              v-hasPermi="['work:quest:delete']"
               >删除</el-button
             >
           </template>
@@ -323,7 +322,6 @@
               size="mini"
               :loading="btnLoading"
               @click="handlerDownload(scope.row, 'download')"
-              v-hasPermi="['work:quest:download']"
               >下载</el-button
             >
             <el-button
@@ -331,7 +329,6 @@
               type="text"
               :loading="btnLoading"
               @click="handlerPreview(scope.row, 'preview')"
-              v-hasPermi="['work:quest:preview']"
               >预览</el-button
             >
           </template>
@@ -409,7 +406,7 @@ import {
 } from "@/api/work/schedule";
 import { findAll, getGroup } from "@/api/system/group";
 import { orderTemplate } from "@/api/work/template";
-import { listUser } from '@/api/system/user';
+import { listUser } from "@/api/system/user";
 import {
   getExecutorList,
   getOrderExecutor,
@@ -477,7 +474,7 @@ export default {
       groupMembers: [],
       groupOptions: [],
       orderOptions: [],
-      userList:[],
+      userList: [],
 
       selectUser: { name: "", id: null },
     };

@@ -294,7 +294,6 @@
                 size="mini"
                 :loading="btnLoading"
                 @click="handlerAdd2"
-                v-hasPermi="['work:quest:add']"
                 >添加</el-button
               >
             </el-col>
@@ -306,7 +305,6 @@
               icon="el-icon-edit"
               :loading="btnLoading"
               @click="handlerEdit(scope.row, 'edit')"
-              v-hasPermi="['work:quest:edit']"
               >编辑</el-button
             >
             <el-button
@@ -315,7 +313,6 @@
               icon="el-icon-delete"
               :loading="btnLoading"
               @click="handlerDeleteHours(scope.row, 'delete')"
-              v-hasPermi="['work:quest:delete']"
               >删除</el-button
             >
           </template>
@@ -342,7 +339,6 @@
               size="mini"
               :loading="btnLoading"
               @click="handlerDownload(scope.row, 'download')"
-              v-hasPermi="['work:quest:download']"
               >下载</el-button
             >
             <el-button
@@ -350,7 +346,6 @@
               type="text"
               :loading="btnLoading"
               @click="handlerPreview(scope.row, 'preview')"
-              v-hasPermi="['work:quest:preview']"
               >预览</el-button
             >
           </template>

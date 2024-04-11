@@ -538,9 +538,9 @@ export default {
 ::v-deep .el-table__fixed-right {
   height: 100% !important;
 }
-  .link{
-    color: #007bfe;
-    cursor: pointer;
-    text-decoration: underline;
-  }
+.link {
+  color: #007bfe;
+  cursor: pointer;
+  text-decoration: underline;
+}
 </style>

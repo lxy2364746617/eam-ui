@@ -432,6 +432,10 @@ export default {
     },
     submitRadio2(row) {
       let deviceIds = row.map((item) => item.deviceId);
+      let runStart = row.map((item) => ({
+        deviceId: item.deviceId,
+        runStatus: item.runStatus,
+      }));
       let formData = new FormData();
       formData.append("deviceIds", deviceIds.toString());
 
@@ -450,7 +454,6 @@ export default {
     handleAdd() {
       let lineIds = this.plineList.map((item) => item.deviceId) || [];
       this.$set(this.plineForm, "disIds", lineIds);
-      console.log("========================", lineIds);
       this.$set(this.plineForm, "choosedrawer", true);
     },
     handleSelectionChange(selection) {

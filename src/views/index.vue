@@ -46,7 +46,7 @@
                       <span>工单代办</span>
                     </li>
                     <li>
-                      <p>{{ todoCount.flow ? todoCount.flow : "0" }}</p>
+                      <p>{{ todoCount ? todoCount : "0" }}</p>
                       <span>流程代办</span>
                     </li>
                   </ul>
@@ -130,7 +130,7 @@
           </ContTable> -->
           <ContTable
             :tableData="getTableDataBy('equipmentList' + 1)"
-            @getList="getTableDataBy('getList' + 1)"
+            @getList="getList1"
             :total="getTableDataBy('total' + 1)"
             ref="contTable"
             :handleWidth="100"
@@ -177,8 +177,8 @@
         </div>
         <div class="charge">
           <ContTable
-            :tableData="getTableDataBy('equipmentList' + 2,)"
-            @getList="getTableDataBy('getList' + 2)"
+            :tableData="getTableDataBy('equipmentList' + 2)"
+            @getList="getList2"
             :total="getTableDataBy('total' + 2)"
             ref="contTable"
             :handleWidth="100"
@@ -458,7 +458,7 @@ export default {
         yearCount: 223,
       },
       commonNavigation: [],
-      todoCount: {},
+      todoCount: null,
       orderCount: null,
       showDetail: false,
       selectNoticeId: "",
@@ -599,7 +599,6 @@ export default {
       getWomStatusCount({ type: value }).then((res) => {
         if (res.code === 200) {
           this.womStatusCount = res.data;
-          this.orderCount = res.data.total;
           this.flagOrder2 = true;
         }
       });
@@ -649,7 +648,6 @@ export default {
       getWomStatusCount({ type: 1 }).then((res) => {
         if (res.code === 200) {
           this.womStatusCount = res.data;
-          this.orderCount = res.data.total;
           this.flagOrder2 = true;
         }
       });
@@ -659,11 +657,11 @@ export default {
           this.flagOrder1 = true;
         }
       });
-      getTodoCount().then((res) => {
-        if (res.code === 200) {
-          this.todoCount = res.data;
-        }
-      });
+      // getTodoCount().then((res) => {
+      //   if (res.code === 200) {
+      //     this.todoCount = res.data;
+      //   }
+      // });
       getKdbStatics().then((res) => {
         if (res.code === 200) {
           this.kdbStatics = res.data;
@@ -685,6 +683,7 @@ export default {
         }));
         this.total2 = response.data.total;
         this.loading2 = false;
+        this.todoCount = response.data.total;
       });
     },
     getTableDataBy(value, flg, flg2) {
@@ -743,6 +742,7 @@ export default {
       getWorkOrderToDoList(form).then((response) => {
         this.equipmentList1 = response.data.records;
         this.total1 = response.data.total;
+        this.orderCount = res.data.total;
         this.loading1 = false;
       });
     },

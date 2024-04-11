@@ -264,7 +264,7 @@
         </template> -->
       </el-table-column>
       <el-table-column
-        label="定量单位"
+        label="单位"
         align="center"
         prop="quotaUnit"
         min-width="100"
@@ -289,7 +289,6 @@
         <template slot-scope="scope" v-if="scope.row.resultType == '数字'">
           <template v-if="carryValue.i == false ? false : true">
             <el-input
-              v-hasPermi="['work:quest:edit']"
               v-model="scope.row.quotaValue"
               @input="handlerQuotaValue(scope)"
               placeholder="请输入实际值"
@@ -308,7 +307,13 @@
         min-width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.dealResult === 1 ? "OK" : "NG" }}</span>
+          <span>{{
+            scope.row.dealResult === 1
+              ? "OK"
+              : scope.row.dealResult === 0
+              ? "OK"
+              : "暂未操作"
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -612,7 +617,9 @@ export default {
     await this.getDetails(this.queryParams);
 
     if (!this.carryValue.y) {
-      getRelevanceInfo({ busId: this.routerForm.orderCode }).then((res) => {
+      getRelevanceInfo({
+        busId: this.routerForm.orderCode + "_" + this.form.deviceCode,
+      }).then((res) => {
         if (res.code == 200 && res.rows.length > 0) {
           this.fileList = res.rows;
         }
@@ -707,14 +714,24 @@ export default {
         this.standardList.splice(1, 0);
       }
     },
+    isActive(route) {
+      return route.path === this.$route.path;
+    },
     handlerBack() {
-      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-      this.$router.go(-1); //跳回上页
-      // this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-      //   if (this.$route.path === this.$route.path) {
-      //     this.$tab.toLastView(visitedViews);
-      //   }
-      // });
+      this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+        if (this.isActive(this.$route)) {
+          const latestView = visitedViews.slice(-1)[0];
+          if (latestView) {
+            this.$router.push(latestView);
+          } else {
+            if (this.$route.name === "Dashboard") {
+              router.replace({ path: "/redirect" + this.$route.fullPath });
+            } else {
+              router.push("/");
+            }
+          }
+        }
+      });
     },
     handlerImgSubmit() {
       photoWomDevice({
@@ -837,7 +854,10 @@ export default {
       this.$set(
         this.standardList[scope.$index],
         "dealResult",
-        scope.row.quotaValue < scope.row.quotaUpper - scope.row.quotaLower
+        scope.row.quotaValue < scope.row.quotaUpper - scope.row.quotaLower &&
+          scope.row.quotaUpper &&
+          scope.row.quotaLower &&
+          scope.row.quotaValue
           ? 1
           : 2
       );
@@ -882,11 +902,7 @@ export default {
         if (res.code === 200) {
           this.$message.success("提交成功!");
           this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-            if (this.$route.path === this.$route.path) {
-              this.$tab.toLastView(visitedViews);
-            }
-          });
+          this.$router.go(-1); //跳回上页
         }
       });
     },
