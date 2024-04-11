@@ -107,7 +107,8 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true;
-      queryParams.partCode = this.formData.partCode;
+      // queryParams.partCode = this.formData.partCode;
+      queryParams["preSeaPartCode"] = this.formData.partCode;
       getStockInOutList(queryParams).then((response) => {
         this.equipmentList = response.data.records;
         this.total = response.data.total;
