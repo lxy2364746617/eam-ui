@@ -27,7 +27,7 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养周期" prop="planCycle">
-                        <el-input-number v-model="form.planCycle" :min="1" :max="10" label="请输入保养周期" :disabled="form.planCycleType=='班'"></el-input-number>
+                        <el-input-number v-model="form.planCycle" :min="1"  label="请输入保养周期" :disabled="form.planCycleType=='班'"></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养周期类别" prop="planCycleType">
@@ -211,7 +211,7 @@ export default {
         columns1() {
             return [
                 { label: '保养路线编码', prop: 'lineCode', class: true },
-                { label: '保养路线名称', prop: 'lineName', class: true },
+                { label: '保养路线名称', prop: 'lineName', },
                 { label: '保养设备数量', prop: 'deviceNum', },
                 { label: '日常保养', prop: 'sCheckNum', },
                 { label: '是否拍照', prop: 'isPhoto', formType: 'radioSelect', options: this.dict.type.mro_is_photo, span: 18, },

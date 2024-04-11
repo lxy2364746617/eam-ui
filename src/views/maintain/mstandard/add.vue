@@ -132,7 +132,7 @@
 
             <el-drawer :title="title" :visible.sync="pointItemForm.drawer" direction="rtl" size="60%"
                 :wrapperClosable="false">
-                <pointItem :isChoose="false" :formData="pointItemForm" @submitRadio="submitRadio1"
+                <pointItem :itemType='itemType' :isChoose="false" :formData="pointItemForm" @submitRadio="submitRadio1"
                     @close="pointItemForm.drawer = false" ref="itemForm" v-if="pointItemForm.drawer">
                 </pointItem>
             </el-drawer>
@@ -202,15 +202,19 @@ export default {
         standardList(newData, oldData) {
             switch (this.activeName) {
                 case "first":
+                    this.itemType='RCBY'
                     this.standardList1 = [...newData]
                     break;
                 case "second":
+                    this.itemType='YJBY'
                     this.standardList2 = [...newData]
                     break;
                 case "third":
+                    this.itemType='EJBY'
                     this.standardList3 = [...newData]
                     break;
                 case "fourth":
+                    this.itemType='CGRH'
                     this.standardList4 = [...newData]
                     break;
                 default:
@@ -296,7 +300,8 @@ export default {
                 ],
             },
             isSelectPart:false,
-            partIndex:0
+            partIndex:0,
+            itemType:'RCBY'
         };
     },
     created() {

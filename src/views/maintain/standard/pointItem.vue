@@ -43,7 +43,7 @@ export default {
         { label: '巡点检项目编码', prop: 'itemCode' },
         { label: '巡点检内容', prop: 'itemContent' },
         { label: '巡点检方法', prop: 'itemMethod', formType: 'select', options: this.dict.type.mro_item_method, },
-        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.XDJ, },
+        { label: '巡点检类型', prop: 'itemType', formType: 'select', options: this.dict.type.XDJ,disabled:true },
         { label: '状态', prop: 'itemStatus', formType: 'selectTag', options: this.dict.type.sys_normal_disable, span: 24 },
       ]
     },
@@ -101,6 +101,7 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true
+      queryParams.itemType=queryParams.itemType?queryParams.itemType:this.itemType
      // queryParams.exportIds=this.formData.disIds.join(',') //可重复选择
       relationItem(queryParams).then((response) => {
         this.itemList = response.rows

@@ -212,7 +212,7 @@ export default {
         { label:"计量单位", prop:"unit", formType: 'select', options: this.dict.type.em_unit, tableVisible: false, span: 12, }, //(台、个、座、件)
         { label:"大小/尺寸mm", prop:"size", tableVisible: false, span: 12, },
         { label:"折旧年限", prop:"depLife", tableVisible: false, span: 12, },
-        { label:"存放位置", prop:"position", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 12, },
+        { label:"存放位置", prop:"position", formType: 'selectTree', options: this.locationOptions, tableVisible: false, span: 12, },
         { label:"重量(千克)", prop:"weight", tableVisible: false, span: 12, },
         { label:"是否融资设备", prop:"isFinan", formType: 'select', options: this.dict.type.em_device_financing, tableVisible: false, span: 12, },//(Y 是、N 否)
         { label:"融资设备到期日", prop:"finanTime", formType: 'date', tableVisible: false, span: 12, },

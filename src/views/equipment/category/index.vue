@@ -4,8 +4,8 @@
       <!--部门数据-->
       <el-col :span="6" :xs="24">
         <p style="color: transparent;">1</p>
-        <jm-user-tree  :treeData="deptOptions"  @handleNodeClick="handleNodeClick" :defaultExpIds="['78']" :currentNodeKey='currentNodeKey'
-        style="position: fixed;top: 121px;height: calc(100vh - 141px);">
+        <jm-user-tree  :treeData="deptOptions" ref="JmUserTree"  @handleNodeClick="handleNodeClick" :defaultExpIds="['78']" :currentNodeKey='currentNodeKey'
+        style="position: fixed;top: 121px;height: calc(100vh - 141px);" @clearChecked='clearChecked'>
           <template slot="middle-pos">
             <el-button type="text" icon="el-icon-document-add" @click="addTreeItem"></el-button>
             <el-button type="text" icon="el-icon-edit-outline" @click="editTreeItem"></el-button>
@@ -103,7 +103,7 @@ export default {
       rightTitle: '基本信息',
       // 表单参数
       form: {},
-      currentNodeKey:78,
+      currentNodeKey:0,
       // 表单校验
       rules: {
         parentId: [
@@ -190,6 +190,7 @@ export default {
       await equipmentTree().then(response => {
         // this.forfn(response.rows)
         this.deptOptions = response.data;
+        this.currentNodeKey = response.data[0].id
       });
     },
     // forfn(options){
@@ -219,10 +220,10 @@ export default {
     },
     // 新增
     addTreeItem(){
-      this.rightTitle = '新增下级组织'
+      this.rightTitle = '新增下级类别'
       this.$refs.form.clearValidate()
       this.formData = {
-        parentId:this.nowClickTreeItem.id || 0
+        parentId:(this.nowClickTreeItem&&this.nowClickTreeItem.id)?this.nowClickTreeItem.id : 0
       }
       this.disabled = false;
     },
@@ -275,9 +276,21 @@ export default {
       if(!this.disabled){
         this.$message('请退出当前编辑')
       }else{
-        this.nowClickTreeItem = row
-        this.getCategoryFn()
+        if(this.nowClickTreeItem.id == row.id){
+          this.nowClickTreeItem={}
+          this.$refs.JmUserTree.clearChecked()
+          console.log('true',this.nowClickTreeItem)
+        }else{
+          this.nowClickTreeItem = row
+          console.log('false',this.nowClickTreeItem)
+          this.getCategoryFn()
+        }
+        
       }
+    },
+    clearChecked(){
+      this.currentNodeKey=null
+      console.log('clearChecked')
     },
     getCategoryFn(){
       getCategory(this.nowClickTreeItem.id).then(response => {

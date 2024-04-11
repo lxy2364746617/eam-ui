@@ -379,7 +379,8 @@ export default {
         events: [],
         eventMouseEnter: (info) => {
           let that = this;
-          tippy(info.el, {
+          that.instance&&that.instance.destroy()
+          that.instance = tippy(info.el, {
             content:
               "<div style='position:relative;width:200px'>" +
               (info.event._def.extendedProps.status == 0
