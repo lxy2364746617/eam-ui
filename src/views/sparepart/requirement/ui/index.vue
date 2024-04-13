@@ -506,6 +506,7 @@ export default {
     // ! 信息提交
     spareSubmitForm(val, review) {
       delete val.parts;
+      delete val.createBy;
       // * 新增
       if (review) {
         if (!this.formData.id) {

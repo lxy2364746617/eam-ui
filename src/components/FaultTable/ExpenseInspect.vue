@@ -41,7 +41,7 @@
         <el-table-column label="单位" align="center" prop="unit">
           <template slot-scope="scope">
             <span>{{
-              findName(dict.type.expense_accounting, scope.row.unit)
+              findName(dict.type.spare_parts_unit, scope.row.unit)
             }}</span>
           </template>
         </el-table-column>
@@ -134,7 +134,7 @@
 <script>
 export default {
   components: {},
-  dicts: ["expense_accounting"],
+  dicts: ["spare_parts_unit"],
   props: {
     disabled: {
       default: false,
@@ -190,7 +190,7 @@ export default {
           required: true,
           span: 22,
           formType: "select",
-          options: this.dict.type.expense_accounting,
+          options: this.dict.type.spare_parts_unit,
         },
         {
           label: "数量",

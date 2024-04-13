@@ -172,7 +172,6 @@
               icon="el-icon-plus"
               @click="AddFile"
               :disabled="col.formDisabled || disabled"
-              v-hasPermi="['equipment:book:add']"
               >{{ col.btnText }}</el-button
             >
             <!-- 多选框 -->
@@ -466,7 +465,7 @@ export default {
     PersonnelUpkeep,
     Equip,
     AppraisalReport,
-    PersonnelDetection
+    PersonnelDetection,
   },
   props: {
     columns: {
@@ -497,10 +496,10 @@ export default {
       default: "right",
       type: String,
     },
-     rules:{
-      default:()=>{},
-      type:Object
-    }
+    rules: {
+      default: () => {},
+      type: Object,
+    },
   },
 
   data() {

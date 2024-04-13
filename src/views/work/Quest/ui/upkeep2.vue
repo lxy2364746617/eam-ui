@@ -177,7 +177,7 @@
           <span>{{
             scope.row.dealResult === 1
               ? "OK"
-              : scope.row.dealResult === 0
+              : scope.row.dealResult === 2
               ? "OK"
               : "暂未操作"
           }}</span>

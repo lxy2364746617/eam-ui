@@ -66,7 +66,8 @@ export default {
     // if (this.formData.maintenanceType == "巡点检类型") newGroupType = "XDJ";
     findAll({ groupType: this.formData.maintenanceType }).then((res) => {
       this.groupOptions = res.data.filter(
-        (item) => item.groupType === this.formData.orderType
+        (item) =>
+          item.groupType === this.formData.orderType && item.groupStatue == 0
       );
       if (this.formData.groupId) {
         this.changeGroupId(this.formData.groupId, 2);
@@ -78,8 +79,11 @@ export default {
       handler(val) {
         findAll({ groupType: this.formData.maintenanceType }).then((res) => {
           this.groupOptions = res.data.filter(
-            (item) => item.groupType === this.formData.orderType
+            (item) =>
+              item.groupType === this.formData.orderType &&
+              item.groupStatue == 0
           );
+          console.log("========================", this.groupOptions);
           if (this.formData.groupId) {
             this.changeGroupId(this.formData.groupId, 2);
           }

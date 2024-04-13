@@ -110,11 +110,11 @@ export default {
           if (res.code == 200) {
             this.$set(this.form, "faultType", res.data.faultInfoDTO.faultType);
             this.$set(this.form, "faultInfo", res.data.faultInfoDTO.faultInfo);
-            this.$set(
-              this.form,
-              "faultReason",
-              res.data.faultInfoDTO.faultReason
-            );
+            // this.$set(
+            //   this.form,
+            //   "faultReason",
+            //   res.data.faultInfoDTO.faultReason
+            // );
           }
         });
       }

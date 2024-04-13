@@ -257,7 +257,7 @@ export default {
         },
         {
           label: "功能位置",
-          prop: "location",
+          prop: "locationName",
           tableVisible: true,
         },
         { label: "当前使用组织", prop: "currDeptName", tableVisible: true },
@@ -627,9 +627,9 @@ export default {
       if (!isRow) {
         this.title = "批量设置";
         if (this.ids.length) {
-          // this.formData = {};
+          this.formData = { fileList: [] };
           this.drawer = true;
-          this.itemValue = this.rowArr;
+          this.itemValue = JSON.parse(JSON.stringify(this.rowArr));
         } else {
           this.$message.error("请选择一行数据进行修改!");
           return;
@@ -638,7 +638,7 @@ export default {
         this.title = "单个设置";
         this.drawer = true;
         this.formData = { ...this.formData, ...row["faultInfoDTO"] };
-        this.itemValue = row;
+        this.itemValue = JSON.parse(JSON.stringify(row));
       }
     },
 

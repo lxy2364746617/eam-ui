@@ -184,9 +184,7 @@
         @submitRadio="submitSpareReceive"
         :isRadio="true"
         @close="closeSpareReceive"
-         :searchValue="[
-          { prop: 'approvalStatus', value: 'completed' },
-        ]"
+        :searchValue="[{ prop: 'approvalStatus', value: 'completed' }]"
       ></spareReceive>
     </el-drawer>
 
@@ -295,7 +293,7 @@ export default {
           prop: "replaceNum",
           formType: "number",
           span: 22,
-          min:1,
+          min: 1,
         },
         {
           label: "备注",
@@ -322,8 +320,8 @@ export default {
       this.$set(this.form, "attachmentCode", row.partCode);
       this.$set(this.form, "attachmentName", row.partName);
       this.$set(this.form, "specs", row.sModel);
-      this.$set(this.form, "attachmentType", row.partType);
-      this.$set(this.form, "unit", row.unit);
+      this.$set(this.form, "attachmentType", row.partType + "");
+      this.$set(this.form, "unit", row.unit + "");
       this.$set(this.form, "supplierName", row.supplierName);
       this.closesupplier();
     },

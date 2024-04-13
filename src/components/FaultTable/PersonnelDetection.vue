@@ -109,7 +109,6 @@ export default {
     submitRadio(row) {
       this.$set(this.formData, "supplierName", row.supplierName);
       this.$set(this.formData, "directorName", row.contacts);
-      this.$set(this.formData, "groupId", row.id);
       this.closesupplier();
     },
     getUserList() {

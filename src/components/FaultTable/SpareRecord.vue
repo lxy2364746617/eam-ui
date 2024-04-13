@@ -34,7 +34,6 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope)"
-            v-hasPermi="['work:quest:edit']"
             >编辑</el-button
           >
           <el-button
@@ -42,7 +41,6 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope)"
-            v-hasPermi="['work:quest:remove']"
             >删除</el-button
           >
         </template></ContTable
@@ -115,7 +113,7 @@ import { v4 as uuidv4 } from "uuid";
 import spareList from "@/views/sparepart/spareList/spareList.vue";
 import supplier from "@/views/sparepart/supplier";
 export default {
-  components: { ContTable, spareList,supplier },
+  components: { ContTable, spareList, supplier },
   dicts: ["spare_parts_unit", "spare_parts_type"],
   props: {
     disabled: {
@@ -261,11 +259,12 @@ export default {
         },
         { label: "原件编码", prop: "scriptCode", required: true, span: 22 },
         {
-          label: "更换时间",
+          label: "更换日期",
           prop: "createTime",
           required: true,
           span: 22,
-          formType: "datetime",
+          formType: "date",
+          // width:180
         },
       ];
     },
@@ -354,6 +353,7 @@ export default {
       // this.$set(this.form, "unit", row.unit);
       delete row.createTime;
       delete row.id;
+      delete row.location;
       this.form = {
         ...row,
         attachmentCode: row.partCode,

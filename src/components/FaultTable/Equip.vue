@@ -61,9 +61,9 @@
         prop="location"
         min-width="150"
       >
-        <!-- <template slot-scope="scope">
-            <span>{{ findTreeName(locationOptions, scope.row.location) }}</span>
-          </template> -->
+        <template slot-scope="scope">
+          <span>{{ findTreeName(locationOptions, scope.row.location) }}</span>
+        </template>
       </el-table-column>
       <el-table-column
         label="所属子公司"

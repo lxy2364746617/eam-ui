@@ -310,11 +310,22 @@ export default {
         this.deptOptions = response.data;
       });
     },
+    isActive(route) {
+      return route.path === this.$route.path;
+    },
     handleCancel() {
-      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-       this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-        if (this.$route.path === this.$route.path) {
-          this.$tab.toLastView(visitedViews);
+      this.$tab.closePage(this.$route).then(({ visitedViews }) => {
+        if (this.isActive(this.$route)) {
+          const latestView = visitedViews.slice(-1)[0];
+          if (latestView) {
+            this.$router.push(latestView);
+          } else {
+            if (this.$route.name === "Dashboard") {
+              router.replace({ path: "/redirect" + this.$route.fullPath });
+            } else {
+              router.push("/");
+            }
+          }
         }
       });
     },

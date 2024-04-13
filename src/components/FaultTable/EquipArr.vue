@@ -71,7 +71,6 @@
             icon="el-icon-view"
             :loading="btnLoading"
             @click="goDetails(scope.row, 'view')"
-            v-hasPermi="['equipment:book:edit']"
             >查看故障</el-button
           >
         </template>
@@ -98,7 +97,7 @@
       >
         <template #footer>
           <image-upload
-            v-if="form.fileList.length !== 0"
+            v-if="form.fileList && form.fileList.length !== 0"
             class="upload-demo"
             :fileType="['jpg', 'png']"
             @uploadChange="uploadChange1"
@@ -221,13 +220,13 @@ export default {
         { label: "设备类别", prop: "deviceType", tableVisible: true },
         {
           label: "功能位置",
-          prop: "location",
+          prop: "locationName",
           tableVisible: true,
         },
-        { label: "当前使用组织", prop: "currDeptName", tableVisible: true },
+        { label: "当前使用组织", prop: "currDept", tableVisible: true },
         {
           label: "所属组织",
-          prop: "affDeptName",
+          prop: "affDept",
           width: 180,
         },
         {

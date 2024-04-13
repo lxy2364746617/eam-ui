@@ -310,7 +310,7 @@
           <span>{{
             scope.row.dealResult === 1
               ? "OK"
-              : scope.row.dealResult === 0
+              : scope.row.dealResult === 2
               ? "OK"
               : "暂未操作"
           }}</span>
@@ -874,12 +874,7 @@ export default {
       stagingPatrolItem(data).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
-          this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-            if (this.$route.path === this.$route.path) {
-              this.$tab.toLastView(visitedViews);
-            }
-          });
+          this.handlerBack();
         }
       });
     },
@@ -901,8 +896,7 @@ export default {
       commitPatrolItem(data).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
-          this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$router.go(-1); //跳回上页
+          this.handlerBack();
         }
       });
     },

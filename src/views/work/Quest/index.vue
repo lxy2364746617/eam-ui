@@ -676,6 +676,7 @@ export default {
       exportWomInfo({
         ids: this.ids.length > 0 ? this.ids : null,
         ...this.convertToDefaultObject(this.columns),
+        searchType: 3,
       }).then((res) => {
         const blob = new Blob([res], {
           type: "application/vnd.ms-excel;charset=utf-8",
