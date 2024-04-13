@@ -152,6 +152,9 @@ export default {
     },
   },
   methods: {
+    validate() {
+      this.$ref.titleform2.validate();
+    },
     dateDiffInHours(date1, date2) {
       const firstDate = new Date(date1);
       const secondDate = new Date(date2);

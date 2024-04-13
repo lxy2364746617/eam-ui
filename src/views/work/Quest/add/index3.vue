@@ -109,8 +109,8 @@ export default {
       this.formData = { supplierName: "" };
 
       this.$refs.titleform.clearValidate();
-        this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-        this.$router.go(-1); //跳回上页
+      this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
+      this.$router.go(-1); //跳回上页
     },
     /** 转换部门数据结构 */
     normalizer(node) {
@@ -125,7 +125,6 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function (formdata) {
-      // ! 成功了才会走这
       goWorkOrder(formdata).then((res) => {
         if (res.code === 200) {
           this.$message.success(res.msg);
@@ -133,6 +132,8 @@ export default {
           this.$router.go(-1); //跳回上页
         }
       });
+      // ! 成功了才会走这
+
       // this.formData = { supplierName: "" };
     },
     saveHandle() {

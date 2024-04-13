@@ -562,15 +562,7 @@ export default {
     sbxx(val) {
       if (!val.deviceCode) return;
       let newVal = {
-        deviceName: val.deviceName,
-        deviceCode: val.deviceCode,
-        categoryId: val.categoryId,
-        isSpecial: val.isSpecial,
-        specs: val.specs,
-        currDeptId: val.currDeptId,
-        affDeptId: val.affDeptId,
-        deviceStatus: val.deviceStatus,
-        remark: val.remark,
+        ...val,
         faultInfoDTO: val.faultInfoDTO,
       };
       this.formData["deviceDTOList"] = [newVal];

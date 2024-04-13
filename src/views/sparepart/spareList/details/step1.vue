@@ -99,7 +99,10 @@ export default {
   },
   methods: {
     getTreeSelect() {
-      this.getList(this.formData.id);
+      getLocationTree().then(async(res) => {
+        this.locationOptions =await this.getTree(res.data);
+        this.getList(this.formData.id);
+      });
     },
     getTree(arr) {
       arr.forEach((item) => {

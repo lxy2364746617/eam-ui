@@ -238,6 +238,9 @@ export default {
     },
   },
   methods: {
+    validate() {
+      this.$ref.titleform.validate();
+    },
     submitFaultManage(row) {
       this.$set(this.form, "faultType", row.faultCode + " " + row.faultName);
       this.closeFaultManage();

@@ -217,7 +217,7 @@ export default {
         { label: "设备编码", prop: "deviceCode", tableVisible: true },
         { label: "设备名称", prop: "deviceName", tableVisible: true },
         { label: "规格型号", prop: "specs", tableVisible: true },
-        { label: "设备类别", prop: "deviceType", tableVisible: true },
+        { label: "设备类别", prop: "deviceTypeName", tableVisible: true },
         {
           label: "功能位置",
           prop: "locationName",

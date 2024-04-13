@@ -82,17 +82,20 @@
           ></Expense>
           <MaintenanceRecord
             v-else-if="col.formType == 'maintenanceRecord'"
+            ref="MaintenanceRecord"
             :disabled="col.formDisabled || disabled"
             :formData="formData"
             @maintenanceRecord="maintenanceRecord"
           ></MaintenanceRecord>
           <MaintenanceContent
+            ref="MaintenanceContent"
             v-else-if="col.formType == 'maintenanceContent'"
             :disabled="col.formDisabled || disabled"
             :formData="formData"
             @maintenanceContent="maintenanceContent"
           ></MaintenanceContent>
           <InspectContent
+            ref="InspectContent"
             v-else-if="col.formType == 'inspectContent'"
             :disabled="col.formDisabled || disabled"
             :formData="formData"
@@ -111,6 +114,14 @@
             icon="el-icon-plus"
             :disabled="col.formDisabled || disabled"
             @click="AddFile"
+            >{{ col.btnText }}</el-button
+          >
+          <el-button
+            v-else-if="col.formType == 'fileBtn2'"
+            type="primary"
+            icon="el-icon-plus"
+            :disabled="col.formDisabled || disabled"
+            @click="AddFile2"
             >{{ col.btnText }}</el-button
           >
           <div
@@ -478,8 +489,9 @@ export default {
     AddFile() {
       document.querySelector(".add-btn-file").click();
     },
+
     AddFile2() {
-      this.filedrawer2 = true;
+      document.querySelector(".add-btn-file").click();
     },
     uploadChange2(val) {
       val = val.url;
@@ -500,6 +512,15 @@ export default {
       this.formData["fileResourceList"] =
         this.formData["fileResourceList"].concat(val);
       this.filedrawer2 = false;
+    },
+    uploadChange4(val) {
+      this.fileList3 = val[0].url;
+      let props = JSON.parse(JSON.stringify(this.columns))
+        .filter((item) => item.formType == "fileBtn2")
+        .map((item) => item.prop);
+      this.formData[`${props[0]}`] = this.fileList3;
+
+      this.filedrawer3 = false;
     },
     uploadChange1(e) {
       let props = JSON.parse(JSON.stringify(this.columns))

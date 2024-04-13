@@ -252,7 +252,7 @@ export default {
         { label: "规格型号", prop: "specs", tableVisible: true, width: 200 },
         {
           label: "设备类别",
-          prop: "categoryName",
+          prop: "deviceTypeName",
           tableVisible: true,
         },
         {
@@ -260,10 +260,10 @@ export default {
           prop: "locationName",
           tableVisible: true,
         },
-        { label: "当前使用组织", prop: "currDeptName", tableVisible: true },
+        { label: "当前使用组织", prop: "currDept", tableVisible: true },
         {
           label: "所属组织",
-          prop: "affDeptName",
+          prop: "affDept",
           tableVisible: true,
           width: 150,
         },
@@ -447,10 +447,10 @@ export default {
         return;
       }
       row.forEach((item) => {
-        // item["deviceType"] = item.categoryName;
-        // item["orgId"] = item.otherId;
-        // item["deptId"] = item.affDeptId;
-        item["topicId"] = uuidv4();
+        item["deviceTypeName"] = item.categoryName;
+        item["affDept"] = item.affDeptName;
+        item["currDept"] = item.currDeptName;
+        item["locationName"] = item.locationName;
       });
 
       if (getStore("equipmentList") && getStore("equipmentList").length > 0) {

@@ -166,10 +166,11 @@ export default {
             if (res.code == 200) {
               this.faultInfoDTO = res.data.faultInfoDTO;
               this.formData.faultInfoDTO = res.data.faultInfoDTO;
-              this.formData["faultType"] =
-                res.data.faultInfoDTO.faultType +
-                "-" +
-                res.data.faultInfoDTO.faultInfo;
+              this.$set(
+                this.formData,
+                "faultType",
+                res.data.faultInfoDTO?.faultType
+              );
             }
           });
         }
