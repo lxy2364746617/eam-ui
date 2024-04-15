@@ -97,7 +97,10 @@ export default {
   watch: {
     fileResourceList: {
       handler(val) {
-        this.$emit("fileResourceList", val);
+        this.$emit(
+          "fileResourceList",
+          val.map((item) => ({ ...item, createBy: undefined }))
+        );
       },
       deep: true,
       immediate: true,

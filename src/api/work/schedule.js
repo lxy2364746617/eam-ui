@@ -386,15 +386,10 @@ export const getWorkOrderSchedule = (query) => {
   });
 };
 
-// 加入故障案例库
+// 是否验收
 export const checkWomInfo = (data) => {
-  if (!data.caseFlag) return;
   return request({
-    url:
-      "/wom/repair/checkWomInfo?id=" +
-      data.id +
-      "&caseFlag=" +
-      `${data.caseFlag}`,
+    url: "/wom/repair/checkWomInfo?id=" + data.id,
     method: "post",
   });
 };

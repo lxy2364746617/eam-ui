@@ -111,14 +111,11 @@
 import { findByTemplateType } from "@/api/equipment/attribute";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
-import { getDispensingChart } from "@/api/property/prescription";
+import { getDispensingChart,getDispensingList } from "@/api/property/prescription";
 
 import {
-  listBASE,
   getBASE,
   delBASE,
-  addBASE,
-  updateBASE,
   countBASE,
   exportBASE,
   copyBASE,
@@ -269,7 +266,6 @@ export default {
         pageNum: 1,
         pageSize: 10,
         categoryId: undefined,
-        isRelieve: "Y",
       },
       deviceIndexVisible: false,
       flag: false,
@@ -294,7 +290,6 @@ export default {
       equipmentTree().then((response) => {
         this.categoryOptions = response.data;
         // 方便获取父级tree
-        this.loops(this.categoryOptions);
       });
       getLocationTree().then((res) => {
         this.locationOptions = this.getTreeName(res.data);
@@ -341,8 +336,9 @@ export default {
         categoryId: this.queryParams.categoryId,
         ...queryParams,
       };
+      data["isRelieve"] = "Y";
       this.getCount(data);
-      listBASE(data).then((response) => {
+      getDispensingList(data).then((response) => {
         response.rows.forEach((b) => {
           Object.assign(
             b,
@@ -476,7 +472,7 @@ export default {
       var obj = {
         categoryId: this.queryParams.categoryId,
         exportIds: this.exportIds,
-        isRelieve:'Y'
+        isRelieve: "Y",
       };
       this.download(
         "equipment/base/export",

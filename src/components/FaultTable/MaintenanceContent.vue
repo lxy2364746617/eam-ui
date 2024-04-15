@@ -32,6 +32,7 @@
 import { listDept } from "@/api/system/dept";
 import { findAll, getGroup } from "@/api/system/group";
 import supplier from "@/views/sparepart/supplier";
+import request from "@/utils/request";
 
 export default {
   components: { supplier },
@@ -84,13 +85,18 @@ export default {
       }
     });
     if (this.formData.orderCode && this.disabled) {
+      console.log("========================", 12321);
       request({
         url: "/wom/repair/getWomRepairInfoOut",
         method: "get",
         params: { orderCode: this.formData.orderCode },
       }).then((res) => {
         if (res.code === 200) {
-          this.form = res.data;
+          this.form = {
+            ...res.data,
+            identityResult: res.data.identityResult + "",
+            acceptResult: res.data.acceptResult + "",
+          };
         }
       });
     }

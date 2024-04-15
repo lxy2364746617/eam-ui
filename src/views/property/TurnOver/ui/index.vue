@@ -25,7 +25,6 @@
           size="mini"
           style="margin-left: 5px"
           @click="handlerControls(null, 'add')"
-          v-hasPermi="['property:turnOver:add']"
           >选取设备</el-button
         >
         <el-button
@@ -33,7 +32,6 @@
           icon="el-icon-plus"
           size="mini"
           @click="handlerControls(null, 'batchEdit')"
-          v-hasPermi="['property:turnOver:batchEdit']"
           >批量设置</el-button
         >
         <!-- <el-button
@@ -54,14 +52,12 @@
           type="text"
           icon="el-icon-edit"
           @click="handlerControls(scope.row, 'edit', scope)"
-          v-hasPermi="['property:turnOver:edit']"
           >编辑</el-button
         >
         <el-button
           size="mini"
           type="text"
           icon="el-icon-delete"
-          v-hasPermi="['property:turnOver:remove']"
           @click="handlerControls(scope.row, 'delete', scope)"
           >删除</el-button
         >
@@ -223,6 +219,7 @@ export default {
       // 过滤设备
       form: {
         disIds: [],
+        currDeptId: this.$store.state.user.standing.dept.deptId,
       },
       formDataType: 1,
       categoryOptions: [],
@@ -282,6 +279,7 @@ export default {
       handler(newFormData, oldFormData) {
         if (newFormData) {
           this.delList = this.equipmentList.filter((item) => item.id);
+          this.form.currDeptId = newFormData;
           this.equipmentList = [];
           this.updateList = [];
           this.getUserList(newFormData);
@@ -295,9 +293,9 @@ export default {
         }
       },
     },
-    categoryOptions:{
-       handler(val) {
-         if (this.formData?.scrapNo) {
+    categoryOptions: {
+      handler(val) {
+        if (this.formData?.scrapNo) {
           getProjectList({
             scrapNo: this.formData?.scrapNo,
             pageNum: 1,
@@ -311,7 +309,7 @@ export default {
       },
       immediate: true,
       deep: true,
-    }
+    },
   },
   computed: {
     columnsInfo() {
@@ -413,6 +411,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.locationOptions,
+          width: 200,
         },
         {
           label: "设备批次号",

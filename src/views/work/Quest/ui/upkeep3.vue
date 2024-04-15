@@ -374,13 +374,13 @@ export default {
       this.$refs.titleform.submitForm();
     },
   },
-  beforeRouteLeave(to, from, next) {
-    // 保存上一个路由信息
-    this.$store.dispatch("tagsView/delView", from); // 关闭当前页
-    // this.$router.go(-1);
-    removeStore("carryValue");
-    next();
-  },
+  // beforeRouteLeave(to, from, next) {
+  //   // 保存上一个路由信息
+  //   this.$store.dispatch("tagsView/delView", from); // 关闭当前页
+  //   // this.$router.go(-1);
+  //   removeStore("carryValue");
+  //   next();
+  // },
 };
 </script>
 <style lang='scss' scoped>

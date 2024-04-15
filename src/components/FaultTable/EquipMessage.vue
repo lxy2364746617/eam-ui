@@ -41,9 +41,9 @@
             /> </el-form-item
         ></el-col>
         <el-col :span="12">
-          <el-form-item label="设备类别" prop="deviceTypeName">
+          <el-form-item label="设备类别" prop="categoryName">
             <el-input
-              v-model="form.deviceTypeName"
+              v-model="form.categoryName"
               placeholder="请输入设备类别"
               disabled
             /> </el-form-item
@@ -57,17 +57,17 @@
             /> </el-form-item
         ></el-col>
         <el-col :span="12">
-          <el-form-item label="所属组织" prop="affDept">
+          <el-form-item label="所属组织" prop="affDeptName">
             <el-input
-              v-model="form.affDept"
+              v-model="form.affDeptName"
               placeholder="请输入所属组织"
               disabled
             /> </el-form-item
         ></el-col>
         <el-col :span="12">
-          <el-form-item label="当前使用组织" prop="currDept">
+          <el-form-item label="当前使用组织" prop="currDeptName">
             <el-input
-              v-model="form.currDept"
+              v-model="form.currDeptName"
               placeholder="请输入当前使用组织"
               disabled
             /> </el-form-item
@@ -155,10 +155,10 @@ export default {
         deviceCode: [
           { required: true, message: "设备编码不能为空", trigger: "blur" },
         ],
-        // specs: [
-        //   { required: true, message: "设备规格不能为空", trigger: "blur" },
-        // ],
-        deviceTypeName: [
+        specs: [
+          { required: true, message: "设备规格不能为空", trigger: "blur" },
+        ],
+        categoryName: [
           { required: true, message: "设备类别不能为空", trigger: "blur" },
         ],
         locationName: [
@@ -168,10 +168,10 @@ export default {
             trigger: "blur",
           },
         ],
-        affDept: [
+        affDeptName: [
           { required: true, message: "所属组织不能为空", trigger: "blur" },
         ],
-        currDept: [
+        currDeptName: [
           { required: true, message: "当前使用组织不能为空", trigger: "blur" },
         ],
         isSpecial: [
@@ -256,10 +256,7 @@ export default {
     submitRadio2(row) {
       this.form = {
         ...row,
-        affDept: row.affDeptName,
-        currDept: row.currDeptName,
-        deviceTypeName: row.currDeptName,
-        locationName: row.locationName,
+        deviceType: row.categoryId,
         // choosedrawer: false
       };
       this.$set(this.form, "choosedrawer", false);

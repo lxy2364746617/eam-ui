@@ -36,7 +36,7 @@ import { getWomDevice, getWomFaultInfo2 } from "@/api/work/schedule";
 import faultManage from "@/views/work/Request/ui/faultManage.vue";
 export default {
   components: { faultManage },
-  dicts: ["fault_grade"],
+  dicts: ["fault_grade", "kdb_fault_type"],
   props: {
     disabled: {
       default: false,
@@ -238,11 +238,25 @@ export default {
     },
   },
   methods: {
-    validate() {
-      this.$ref.titleform.validate();
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
     },
     submitFaultManage(row) {
-      this.$set(this.form, "faultType", row.faultCode + " " + row.faultName);
+      this.$set(
+        this.form,
+        "faultType",
+        row.faultCode +
+          " " +
+          row.faultName +
+          " " +
+          this.findName(this.dict.type.kdb_fault_type, row.faultType)
+      );
       this.closeFaultManage();
     },
     closeFaultManage() {

@@ -25,7 +25,6 @@
           size="mini"
           style="margin-left: 5px"
           @click="handlerControls(null, 'add')"
-          v-hasPermi="['property:backspace:add']"
           >选取设备</el-button
         >
         <el-button
@@ -33,7 +32,6 @@
           icon="el-icon-plus"
           size="mini"
           @click="handlerControls(null, 'batchEdit')"
-          v-hasPermi="['property:backspace:batchEdit']"
           >批量设置</el-button
         >
         <!-- <el-button
@@ -54,14 +52,12 @@
           type="text"
           icon="el-icon-edit"
           @click="handlerControls(scope.row, 'edit', scope)"
-          v-hasPermi="['property:backspace:edit']"
           >编辑</el-button
         >
         <el-button
           size="mini"
           type="text"
           icon="el-icon-delete"
-          v-hasPermi="['property:backspace:remove']"
           @click="handlerControls(scope.row, 'delete', scope)"
           >删除</el-button
         >
@@ -222,6 +218,7 @@ export default {
       // 过滤设备
       form: {
         disIds: [],
+        currDeptId: this.$store.state.user.standing.dept.deptId,
       },
       formDataType: 1,
       categoryOptions: [],
@@ -255,7 +252,7 @@ export default {
         }).then((res) => {
           if (res.code == 200) {
             this.formData = res.data;
-            this.reviewCode = this.formData.neckNo;
+            this.reviewCode = this.formData.backNo;
             this.getTreeSelect();
           }
         });
@@ -283,6 +280,7 @@ export default {
       handler(newFormData, oldFormData) {
         if (newFormData) {
           this.delList = this.equipmentList.filter((item) => item.id);
+          this.form.currDeptId = newFormData;
           this.equipmentList = [];
           this.updateList = [];
           this.getUserList(newFormData);
@@ -390,8 +388,14 @@ export default {
           options: this.categoryOptions,
           width: 200,
         },
-        { label: "功能位置", prop: "location", tableVisible: true, formType: "selectTree",
-          options: this.locationOptions, },
+        {
+          label: "功能位置",
+          prop: "location",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.locationOptions,
+          width: 200,
+        },
         {
           label: "设备批次号",
           prop: "batchNo",
@@ -455,6 +459,7 @@ export default {
           sModel: item.specs,
           deviceType: item.categoryId,
           id: item.deviceId,
+          location: item.locationCode,
         }))
       );
       this.addItem.choosedrawer = false;
@@ -502,15 +507,16 @@ export default {
       } else {
         updateProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
-            definitionStart2(val.id, this.reviewCode, "device_back", {}).then(
-              (res) => {
-                if (res.code == 200) {
-                  this.approvalContent = null;
-                  this.$message.success(res.msg);
-                  this.subopen = false;
-                }
+            definitionStart2(val.id, this.reviewCode, "device_back", {
+              path: "/property/backspaceControls",
+              nextUserIds: userIds,
+            }).then((res) => {
+              if (res.code == 200) {
+                this.approvalContent = null;
+                this.$message.success(res.msg);
+                this.subopen = false;
               }
-            );
+            });
             this.cancel();
           }
         });

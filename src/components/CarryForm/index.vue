@@ -68,6 +68,14 @@
             :disabled="col.formDisabled || disabled"
             :formData="formData"
           ></SpareRecord>
+          <SpareRecord2
+            v-else-if="col.formType == 'spareRecord2'"
+            @spareRecord="spareRecord"
+            @delAttachmentList="delAttachmentList"
+            @updateAttachmentiist="updateAttachmentiist"
+            :disabled="col.formDisabled || disabled"
+            :formData="formData"
+          ></SpareRecord2>
           <TimeLog
             v-else-if="col.formType == 'timeLog'"
             :disabled="col.formDisabled || disabled"
@@ -386,6 +394,7 @@ import AppraisalReport from "@/components/FaultTable/AppraisalReport";
 import EquipArr from "@/components/FaultTable/EquipArr";
 import EquipOne from "@/components/FaultTable/EquipOne";
 import SpareRecord from "@/components/FaultTable/SpareRecord";
+import SpareRecord2 from "@/components/FaultTable/SpareRecord2";
 import TimeLog from "@/components/FaultTable/TimeLog";
 import Expense from "@/components/FaultTable/Expense";
 import MaintenanceRecord from "@/components/FaultTable/MaintenanceRecord";
@@ -412,6 +421,7 @@ export default {
     InspectContent,
     ExpenseInspect,
     AppraisalReport,
+    SpareRecord2,
   },
   props: {
     columns: {

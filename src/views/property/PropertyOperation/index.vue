@@ -206,15 +206,6 @@ export default {
   },
   async created() {
     await this.getTreeSelect();
-    if (this.attachmentsTitle && this.busId) {
-      getAssociatedPlan({
-        [this.busString]: this.busId ? this.busId : 1,
-        pageNum: 1,
-        pageSize: 1000,
-      }).then((res) => {
-        this.fileResourceList = res.data;
-      });
-    }
   },
   mounted() {},
   watch: {
@@ -234,6 +225,21 @@ export default {
       handler(val) {
         if (val.length > 0) {
           this.$emit("delFileList", val);
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+    busId: {
+      handler(val) {
+        if (this.attachmentsTitle && val) {
+          getAssociatedPlan({
+            [this.busString]: val ? val : 1,
+            pageNum: 1,
+            pageSize: 1000,
+          }).then((res) => {
+            this.fileResourceList = res.data;
+          });
         }
       },
       deep: true,

@@ -25,7 +25,6 @@
           icon="el-icon-plus"
           size="mini"
           style="margin-left: 5px"
-          v-hasPermi="['property:receive:add']"
           @click="handlerControls(null, 'add')"
           >新增</el-button
         >

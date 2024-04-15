@@ -158,7 +158,7 @@
         <template slot="title"
           ><span class="custom-dialog-title">
             <i class="el-icon-warning"></i>
-            验收工单是否加入故障案例库
+            工单是否验收
           </span></template
         >
 
@@ -170,12 +170,6 @@
           label-width="40px"
           class="from"
         >
-          <el-form-item prop="caseFlag">
-            <el-radio-group v-model="formData3.caseFlag">
-              <el-radio label="true" :value="true">是</el-radio>
-              <el-radio label="false" :value="false">否</el-radio>
-            </el-radio-group>
-          </el-form-item>
           <el-form-item size="large">
             <el-button type="primary" @click="submitFormAdd3">提交</el-button>
             <el-button @click="resetForm3">取消</el-button>
@@ -301,6 +295,7 @@ export default {
         { orderStatus: "已完成" },
         { orderStatus: "已关闭" },
       ],
+      flag: false,
     };
   },
   computed: {
@@ -453,8 +448,8 @@ export default {
   },
   methods: {
     goCheck(row) {
-      this.drawer3 = true;
       this.formData3["id"] = row.id;
+      this.drawer3 = true;
     },
     // ! 提供下载列表字段
     convertToDefaultObject(columns) {

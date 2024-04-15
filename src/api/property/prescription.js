@@ -8,3 +8,11 @@ export function getDispensingChart(data) {
     data: data,
   });
 }
+
+export function getDispensingList(data) {
+  return request({
+    url: "/property/relieve/list",
+    method: "get",
+    params: data,
+  });
+}

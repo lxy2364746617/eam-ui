@@ -258,6 +258,7 @@ export default {
           formType: "selectTree",
           options: this.deptOptions,
           tableVisible: false,
+          formDisabled: true,
           span: 8,
           required: true,
         },
@@ -454,6 +455,7 @@ export default {
   },
   created() {
     this.getTreeSelect();
+    this.formData.useDeptId = this.$store.state.user.standing.dept.deptId;
   },
   methods: {
     getTreeItem(id, arr) {

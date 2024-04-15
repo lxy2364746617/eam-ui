@@ -594,7 +594,20 @@ export default {
   },
   methods: {
     handlerDeviceList(row) {
-      this.deviceList = row;
+      this.deviceList = row.map(item=>({
+        neckNo: item.neckNo,
+        deviceId: item.deviceId,
+        deviceCode: item.deviceCode,
+        deviceName: item.deviceName,
+        targetLocation: item.targetLocation,
+        specs: item.specs,
+        batchNo: item.batchNo,
+        categoryId: item.categoryId,
+        location: item.location,
+        deviceStatus: item.deviceStatus,
+        targetDeviceStatus: item.targetDeviceStatus,
+        createTime: item.createTime,
+      }));
     },
     handleClick(tab, event) {
       if (tab.name === "3") {

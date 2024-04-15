@@ -84,7 +84,6 @@
             :is="item.name"
             v-if="spareValue"
             :formData="spareValue"
-            :locationOptions="locationOptions"
             @submitForm="submitForm"
             @newFormData="newFormData"
             @close="close"
@@ -216,6 +215,9 @@ export default {
     getManagementDetails(this.spareValue.partCode).then((res) => {
       this.formData = { ...res.data, partType: "" + res.data.partType };
       this.$refs.jmform1.clearValidate();
+    });
+    getImg(this.spareValue.partCode).then((res) => {
+      this.$set(this.formData, "fileResource", res.data[0]);
     });
   },
 
@@ -373,9 +375,8 @@ export default {
 
       uploadImgPut(newFile).then((response) => {
         if (response.code === 200) {
-          getManagementDetails(this.spareValue.partCode).then((res) => {
-            this.formData = { ...res.data, partType: "" + res.data.partType };
-            this.$refs.jmform1.clearValidate();
+          getImg(this.spareValue.partCode).then((res) => {
+            this.$set(this.formData, "fileResource", res.data[0]);
           });
           this.$modal.msgSuccess("修改成功");
           this.disabled1 = true;

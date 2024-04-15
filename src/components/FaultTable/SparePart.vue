@@ -332,16 +332,17 @@ export default {
       this.$refs.titleform.submitForm();
     },
     submitForm(formVal) {
-      let newValue = JSON.parse(JSON.stringify(formVal));
-      this.standardList = this.standardList.concat([newValue]);
+      this.standardList = this.standardList.concat([
+        JSON.parse(JSON.stringify(formVal)),
+      ]);
       this.close();
     },
     handleCancel() {
       this.close();
     },
     close() {
-      this.$refs.titleform.resetFields();
-
+      this.form = {};
+      this.$refs.titleform.clearValidate();
       this.drawer = false;
     },
     openSb() {

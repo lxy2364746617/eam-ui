@@ -148,6 +148,7 @@ export default {
       // 过滤设备
       form: {
         disIds: [],
+        currDeptId: this.$store.state.user.standing.dept.deptId,
       },
       categoryOptions: [],
       locationOptions: [],
@@ -155,7 +156,7 @@ export default {
   },
   created() {
     this.getTreeSelect();
-    if (this.equipList) {
+    if (this.equipList.length > 0) {
       this.equipmentList = this.equipList;
     }
   },
@@ -200,8 +201,14 @@ export default {
           options: this.categoryOptions,
           width: 200,
         },
-        { label: "功能位置", prop: "location", tableVisible: true,formType: "selectTree",
-          options: this.locationOptions, },
+        {
+          label: "功能位置",
+          prop: "location",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.locationOptions,
+          width: 200,
+        },
         {
           label: "设备批次号",
           prop: "batchNo",

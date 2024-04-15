@@ -124,21 +124,15 @@ export default {
   methods: {
     // ! 加入故障案例库
     addFaultCase() {
-      listFaultcode({
-        faultCode: this.formData?.faultInfoDTO?.faultCode,
+      addFaultCase({
+        busId: this.formData?.orderCode,
+        code: this.formData?.faultInfoDTO?.faultType.split(" ")[0],
+        faultName: this.formData?.faultInfoDTO?.faultType.split(" ")[1],
+        level: this.formData?.faultInfoDTO?.faultGrade,
+        type: this.formData?.faultInfoDTO?.faultType.split(" ")[2],
       }).then((res) => {
-        if (res.code == 200) {
-          addFaultCase({
-            busId: this.formData?.orderCode,
-            code: res?.rows?.faultCode,
-            faultName: res?.rows?.faultName,
-            level: this.formData?.faultInfoDTO?.faultGrade,
-            type: res?.rows?.faultType,
-          }).then((res) => {
-            if (res.code === 200) {
-              this.$message.success("加入故障案例库成功！");
-            }
-          });
+        if (res.code === 200) {
+          this.$message.success("加入故障案例库成功！");
         }
       });
     },

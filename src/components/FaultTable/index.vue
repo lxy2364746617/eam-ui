@@ -170,7 +170,7 @@ export default {
     SelectParentDeviceDialog,
     faultManage,
   },
-  dicts: ["em_is_special", "em_device_state", "fault_grade"],
+  dicts: ["em_is_special", "em_device_state", "fault_grade", "kdb_fault_type"],
   props: {
     orderCode: {
       default: "",
@@ -232,6 +232,7 @@ export default {
       formParams: {
         prtOrg: "Y",
       },
+      locationOptions: [],
     };
   },
   computed: {
@@ -252,18 +253,20 @@ export default {
         { label: "规格型号", prop: "specs", tableVisible: true, width: 200 },
         {
           label: "设备类别",
-          prop: "deviceTypeName",
+          prop: "categoryName",
           tableVisible: true,
         },
         {
           label: "功能位置",
-          prop: "locationName",
+          prop: "location",
+          options: this.locationOptions,
+          formType: "selectTree",
           tableVisible: true,
         },
-        { label: "当前使用组织", prop: "currDept", tableVisible: true },
+        { label: "当前使用组织", prop: "currDeptName", tableVisible: true },
         {
           label: "所属组织",
-          prop: "affDept",
+          prop: "affDeptName",
           tableVisible: true,
           width: 150,
         },
@@ -366,11 +369,24 @@ export default {
   mounted() {},
 
   methods: {
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
     submitFaultManage(row) {
       this.$set(
         this.formData,
         "faultType",
-        row.faultCode + " " + row.faultName
+        row.faultCode +
+          " " +
+          row.faultName +
+          " " +
+          this.findName(this.dict.type.kdb_fault_type, row.faultType)
       );
       this.$set(this.formData, "faultCode", row.faultCode);
       this.closeFaultManage();
@@ -447,10 +463,7 @@ export default {
         return;
       }
       row.forEach((item) => {
-        item["deviceTypeName"] = item.categoryName;
-        item["affDept"] = item.affDeptName;
-        item["currDept"] = item.currDeptName;
-        item["locationName"] = item.locationName;
+        item["deviceType"] = item.categoryId;
       });
 
       if (getStore("equipmentList") && getStore("equipmentList").length > 0) {
@@ -523,6 +536,20 @@ export default {
       await listDept(this.formParams).then((response) => {
         this.deptOptions = response.data;
       });
+      getLocationTree().then((res) => {
+        this.locationOptions = this.getTreeName(res.data);
+      });
+    },
+    getTreeName(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTreeName(item.children);
+        }
+      });
+      return arr;
     },
     /** 查询计划明细列表 */
     async getList(queryParams = { pageNum: 1, pageSize: 10 }) {

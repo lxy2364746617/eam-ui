@@ -24,7 +24,6 @@
           size="mini"
           style="margin-left: 5px"
           @click="handlerControls(null, 'add')"
-          v-hasPermi="['property:position:add']"
           >选取设备</el-button
         >
         <el-button
@@ -32,7 +31,6 @@
           icon="el-icon-plus"
           size="mini"
           @click="handlerControls(null, 'batchEdit')"
-          v-hasPermi="['property:position:batchEdit']"
           >批量设置</el-button
         >
         <el-button
@@ -41,7 +39,6 @@
           icon="el-icon-download"
           size="mini"
           style="margin-left: 5px"
-          v-hasPermi="['property:position:download']"
           @click="handlerControls(null, 'download')"
           >下载</el-button
         >
@@ -53,14 +50,12 @@
           type="text"
           icon="el-icon-edit"
           @click="handlerControls(scope.row, 'edit', scope)"
-          v-hasPermi="['property:position:edit']"
           >编辑</el-button
         >
         <el-button
           size="mini"
           type="text"
           icon="el-icon-delete"
-          v-hasPermi="['property:position:remove']"
           @click="handlerControls(scope.row, 'delete', scope)"
           >删除</el-button
         >
@@ -222,6 +217,7 @@ export default {
       // 过滤设备
       form: {
         disIds: [],
+        currDeptId: this.$store.state.user.standing.dept.deptId,
       },
       formDataType: 1,
       categoryOptions: [],
@@ -284,6 +280,7 @@ export default {
       handler(newFormData, oldFormData) {
         if (newFormData) {
           this.delFileList = this.equipmentList.filter((item) => item.id);
+          this.form.currDeptId = newFormData;
           this.equipmentList = [];
           this.updateList = [];
           this.getUserList(newFormData);
@@ -365,8 +362,13 @@ export default {
           options: this.categoryOptions,
           width: 200,
         },
-        { label: "功能位置", prop: "location", tableVisible: true,formType: "selectTree",
-          options: this.locationOptions, },
+        {
+          label: "功能位置",
+          prop: "location",
+          tableVisible: true,
+          formType: "selectTree",
+          options: this.locationOptions,
+        },
         {
           label: "设备批次号",
           prop: "batchNo",
@@ -567,7 +569,7 @@ export default {
     getTreeSelect() {
       equipmentTree().then((response) => {
         this.categoryOptions = response.data;
-         if (this.formData?.changeNo) {
+        if (this.formData?.changeNo) {
           getProjectList({
             changeNo: this.formData?.changeNo,
             pageNum: 1,
@@ -587,7 +589,6 @@ export default {
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
-       
       });
     },
     // 递归获取treeselect父节点

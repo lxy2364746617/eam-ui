@@ -26,7 +26,6 @@
           icon="el-icon-plus"
           size="mini"
           style="margin-left: 5px"
-          v-hasPermi="['property:purchase:add']"
           @click="handlerControls(null, 'add')"
           >新增</el-button
         >
@@ -36,7 +35,6 @@
           icon="el-icon-download"
           size="mini"
           style="margin-left: 5px"
-          v-hasPermi="['property:purchase:download']"
           @click="handlerControls(null, 'download')"
           >下载</el-button
         >

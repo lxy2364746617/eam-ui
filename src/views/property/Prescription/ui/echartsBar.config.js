@@ -145,7 +145,7 @@ export function chartOption() {
           return i.name === name;
         });
         const p = item.value;
-        return "{name|" + name + "}" + "{percent|" + p + "}" + "个";
+        if (name) return "{name|" + name + "}" + "{percent|" + p + "}" + "个";
       },
     },
     grid: {

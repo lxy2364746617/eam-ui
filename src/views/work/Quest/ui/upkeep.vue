@@ -689,7 +689,7 @@ export default {
         {
           label: "添加备件",
           span: 24,
-          formType: "spareRecord",
+          formType: "spareRecord2",
         },
       ];
     },

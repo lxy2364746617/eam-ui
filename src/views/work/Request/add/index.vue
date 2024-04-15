@@ -58,7 +58,7 @@ import faultManage from "@/views/work/Request/ui/faultManage.vue";
 
 export default {
   components: { Wrapper, JmTable, TitleForm, Treeselect, faultManage },
-  dicts: ["order_obj", "fault_grade", "fault_type"],
+  dicts: ["order_obj", "fault_grade", "fault_type", "kdb_fault_type"],
   data() {
     return {
       wrapperTitle: "",
@@ -688,11 +688,24 @@ export default {
     },
   },
   methods: {
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
     submitFaultManage(row) {
       this.$set(
         this.formData,
         "faultType",
-        row.faultCode + " " + row.faultName
+        row.faultCode +
+          " " +
+          row.faultName +
+          " " +
+          this.findName(this.dict.type.kdb_fault_type, row.faultType)
       );
       this.$set(this.formData, "faultCode", row.faultCode);
       this.closeFaultManage();
@@ -789,6 +802,8 @@ export default {
         this.orderOptions
       );
       this.formData["maintenanceType"] = this.formData["orderTypeFather"];
+      removeStore("equipmentList");
+      removeStore("addList");
     },
     // 根据二级工单类型获取一级工单类型
     findParentType(selectedChildType, data) {
@@ -909,7 +924,6 @@ export default {
               delete formdata.faultLocation;
               delete formdata.faultType;
               delete formdata.faultGrade;
-              delete formdata.haltFlag;
               delete formdata.faultInfo;
               delete formdata.fileList;
               delete formdata.faultCode;
@@ -918,6 +932,7 @@ export default {
           if (this.itemIdList.length && this.itemIdList.length > 0) {
             formdata["itemIdList"] = this.itemIdList;
           }
+          console.log("========================", formdata);
           addEquip(formdata).then((res) => {
             if ((res.code = 200)) {
               this.$message.success("添加成功");

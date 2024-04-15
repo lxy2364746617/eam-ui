@@ -152,7 +152,13 @@ export default {
     SelectParentDeviceDialog,
     faultManage,
   },
-  dicts: ["em_device_state", "em_is_special", "order_obj", "fault_grade"],
+  dicts: [
+    "em_device_state",
+    "em_is_special",
+    "order_obj",
+    "fault_grade",
+    "kdb_fault_type",
+  ],
   props: {
     formData: {
       default: {},
@@ -326,11 +332,24 @@ export default {
   mounted() {},
 
   methods: {
+    findName(options, value) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i].label;
+        }
+      }
+      return name || value;
+    },
     submitFaultManage(row) {
       this.$set(
         this.formData,
         "faultType",
-        row.faultCode + " " + row.faultName
+        row.faultCode +
+          " " +
+          row.faultName +
+          " " +
+          this.findName(this.dict.type.kdb_fault_type, row.faultType)
       );
       this.$set(this.formData, "faultCode", row.faultCode);
       this.closeFaultManage();
