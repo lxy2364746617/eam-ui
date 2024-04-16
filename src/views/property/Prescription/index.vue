@@ -111,7 +111,11 @@
 import { findByTemplateType } from "@/api/equipment/attribute";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
-import { getDispensingChart,getDispensingList } from "@/api/property/prescription";
+import {
+  getDispensingChart,
+  getDispensingList,
+  downloadDispensingList,
+} from "@/api/property/prescription";
 
 import {
   getBASE,
@@ -175,9 +179,9 @@ export default {
         { label: "财务资产编码", prop: "propertyCode", width: 200 },
         {
           label: "功能位置",
-          prop: "location",
-          options: this.locationOptions,
-          formType: "selectTree",
+          prop: "locationName",
+          // options: this.locationOptions,
+          // formType: "selectTree",
           width: 230,
         },
         {
@@ -226,6 +230,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      idList: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -291,9 +296,9 @@ export default {
         this.categoryOptions = response.data;
         // 方便获取父级tree
       });
-      getLocationTree().then((res) => {
-        this.locationOptions = this.getTreeName(res.data);
-      });
+      // getLocationTree().then((res) => {
+      //   this.locationOptions = this.getTreeName(res.data);
+      // });
     },
     getTreeName(arr) {
       arr.forEach((item) => {
@@ -414,7 +419,8 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.deviceId);
+      // this.ids = selection.map((item) => item.deviceId);
+      this.idList = selection.map((item) => item.deviceCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.radioRow = selection[0];
@@ -470,17 +476,15 @@ export default {
     },
     handleExport() {
       var obj = {
-        categoryId: this.queryParams.categoryId,
-        exportIds: this.exportIds,
+        idList: this.idList,
         isRelieve: "Y",
       };
-      this.download(
-        "equipment/base/export",
-        {
-          ...obj,
-        },
-        `device_${new Date().getTime()}.xlsx`
-      );
+      downloadDispensingList(obj).then((res) => {
+        const blob = new Blob([res], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8",
+        });
+        saveAs(blob, `device_${new Date().getTime()}`);
+      });
     },
     /** 下载模板操作 */
     importTemplate() {

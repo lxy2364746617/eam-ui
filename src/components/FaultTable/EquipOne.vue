@@ -80,7 +80,7 @@
         >
         <el-col :span="6" class="mb8"
           ><span class="show"> 是否特种设备:</span
-          >{{ data.specialFlag === "Y" ? "是" : "否" }}</el-col
+          >{{ findName(dict.type.em_is_special, data.isSpecial) }}</el-col
         >
         <el-col :span="6" class="mb8"
           ><span class="show">故障类型:</span
@@ -126,7 +126,7 @@ import { orderTemplate } from "@/api/work/template";
 import { listDept } from "@/api/system/dept";
 export default {
   components: {},
-  dicts: ["em_device_state"],
+  dicts: ["em_device_state", "em_is_special"],
   props: {
     formData: {
       default: {},

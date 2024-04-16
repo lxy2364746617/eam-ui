@@ -17,8 +17,9 @@
       ref="spareForm"
     >
       <!-- 左侧 -->
-      <template slot="headerLeft" v-if="!isShowCard">
+      <template slot="headerLeft">
         <el-button
+          v-if="!isShowCard"
           type="primary"
           icon="el-icon-plus"
           size="mini"
@@ -27,13 +28,14 @@
           >选取设备</el-button
         >
         <el-button
+          v-if="!isShowCard"
           type="primary"
           icon="el-icon-plus"
           size="mini"
           @click="handlerControls(null, 'batchEdit')"
           >批量设置</el-button
         >
-        <el-button
+        <!-- <el-button
           type="primary"
           v-if="isShowCard"
           icon="el-icon-download"
@@ -41,7 +43,7 @@
           style="margin-left: 5px"
           @click="handlerControls(null, 'download')"
           >下载</el-button
-        >
+        > -->
       </template>
       <!-- 操作 -->
       <template #end_handle="scope" v-if="!isShowCard">
@@ -368,6 +370,7 @@ export default {
           tableVisible: true,
           formType: "selectTree",
           options: this.locationOptions,
+          width: 200,
         },
         {
           label: "设备批次号",
@@ -457,6 +460,18 @@ export default {
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
     },
+    // ! 提供下载列表字段
+    convertToDefaultObject(columns) {
+      const defaultObject = {};
+
+      columns.forEach((column) => {
+        if (column.prop) {
+          defaultObject[column.prop] = null;
+        }
+      });
+
+      return defaultObject;
+    },
     submitRadio2(row) {
       this.equipmentList = this.equipmentList.concat(
         row.map((item) => ({
@@ -464,6 +479,7 @@ export default {
           sModel: item.specs,
           deviceType: item.categoryId,
           id: item.deviceId,
+          location: item.locationCode,
         }))
       );
       this.addItem.choosedrawer = false;
@@ -700,11 +716,14 @@ export default {
           .catch(() => {});
         return;
       } else if (act === "download") {
-        downDetailLoad({ ids: this.ids }).then((res) => {
+        downDetailLoad({
+          ids: this.ids.length > 0 ? this.ids : null,
+          ...this.convertToDefaultObject(this.columns),
+        }).then((res) => {
           const blob = new Blob([res], {
             type: "application/vnd.ms-excel;charset=utf-8",
           });
-          saveAs(blob, `sparePart_${new Date().getTime()}`);
+          saveAs(blob, `PositionChange_${new Date().getTime()}`);
         });
       } else {
         // ! 其他

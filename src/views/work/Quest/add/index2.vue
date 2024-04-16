@@ -81,6 +81,11 @@ export default {
   },
   mounted() {
     this.wrapperTitle = this.$route.meta.title;
+    console.log(
+      "========================",
+      this.formData.workOrderSchedule,
+      this.formData.workActive
+    );
   },
   computed: {
     columns() {

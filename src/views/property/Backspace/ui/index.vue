@@ -459,7 +459,6 @@ export default {
           sModel: item.specs,
           deviceType: item.categoryId,
           id: item.deviceId,
-          location: item.locationCode,
         }))
       );
       this.addItem.choosedrawer = false;
@@ -600,7 +599,7 @@ export default {
     },
     locationTree(arr) {
       arr.forEach((item) => {
-        item.id = item.deptCode;
+        item.value = item.deptId;
         item.label = item.deptName;
         item.isDisabled = item.locationFlag == "N" ? true : false;
         if (item.children && item.children.length > 0) {

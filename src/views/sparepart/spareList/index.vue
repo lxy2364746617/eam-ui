@@ -112,7 +112,7 @@
       @handleFileSuccess="handleFileSuccess"
       :downloadTemplateUrl="'/attachment/importTemplate'"
       ref="fileImport"
-      :isUpdate="true"
+      :isUpdate="false"
       :importUrl="'/attachment/import'"
     ></file-import>
   </Wrapper>

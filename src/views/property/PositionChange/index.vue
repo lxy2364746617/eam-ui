@@ -226,9 +226,9 @@ export default {
         },
         {
           label: "申请部门负责人",
-          prop: "applyPersonId",
-          formType: "selectTree",
-          options: this.userList,
+          prop: "applyPersonName",
+          // formType: "selectTree",
+          // options: this.userList,
           tableVisible: true,
           width: 150,
         },

@@ -263,30 +263,32 @@ export default {
   },
   methods: {
     /** 查询用户列表 */
-    getList(queryParams) {
-      queryParams.deviceId = this.queryParams.deviceId;
+      getList(queryParams) {
+      queryParams.deviceId = this.queryParams.deviceId
       this.loading = true;
-      listParts(queryParams).then((response) => {
-        this.$set(this, "equipmentList", response.rows);
-        this.total = response.total;
-        this.loading = false;
-      });
+      listParts(queryParams).then(response => {
+          this.$set(this,'equipmentList',response.rows)
+          this.total = response.total;
+          this.loading = false;
+        }
+      );
     },
     /* 添加备品备件 */
     getList2(queryParams) {
       this.loading = true;
-      selectPage(queryParams).then((response) => {
-        let list_id =
-          this.equipmentList.length > 0
-            ? this.equipmentList.map((item) => item.partCode)
-            : [];
-        let arr = response.data.rows.filter((item) => {
-          return list_id.indexOf(item.partCode) == -1;
-        });
-        this.$set(this, "partsData", arr);
-        this.total2 = response.data.total;
-        this.pushList = [];
-      });
+      let ids = this.equipmentList.map(item=>{return item.partCode})
+      queryParams.exportIds = ids.join(',')      
+      selectPage( queryParams).then(response => {
+          /* let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
+          let arr= response.data.records.filter(item=>{
+            return list_id.indexOf(item.partCode) == -1;
+          })*/
+          this.$set(this,'partsData',response.rows); 
+          
+          this.total2 = response.total;
+          this.pushList=[]
+        }
+      );
     },
     closeform() {
       this.$emit("closeform");

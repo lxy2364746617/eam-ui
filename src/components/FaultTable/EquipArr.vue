@@ -244,7 +244,7 @@ export default {
         },
         {
           label: "是否特种设备",
-          prop: "specialFlag",
+          prop: "isSpecial",
           formType: "select",
           options: this.dict.type.em_is_special,
         },

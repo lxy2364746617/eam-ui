@@ -12,7 +12,15 @@ export function getDispensingChart(data) {
 export function getDispensingList(data) {
   return request({
     url: "/property/relieve/list",
-    method: "get",
-    params: data,
+    method: "post",
+    data: data,
+  });
+}
+export function downloadDispensingList(data) {
+  return request({
+    url: "/property/relieve/download",
+    method: "post",
+    responseType: "blob",
+    data: data,
   });
 }

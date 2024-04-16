@@ -83,12 +83,14 @@
       size="80%"
       :wrapperClosable="false"
     >
-      <SelectParentDeviceDialog
-        v-if="addItem.choosedrawer"
+      <parentdevice
         :isChoose="false"
         @submitRadio="submitRadio2"
         @close="addItem.choosedrawer = false"
-      ></SelectParentDeviceDialog>
+        :formData="form"
+        v-if="addItem.choosedrawer"
+      >
+      </parentdevice>
     </el-drawer>
 
     <!-- 维护故障弹窗 -->
@@ -149,26 +151,19 @@
 import { getProjectList, downDetailLoad } from "@/api/property/scrapping";
 import ContTable from "@/components/ContTable";
 import SelectParentDeviceDialog from "./SelectParentDeviceDialog";
-import { v4 as uuidv4 } from "uuid";
-import {
-  setStore,
-  getStore,
-  delList,
-  upName,
-  convertToTargetFormat,
-  removeStore,
-} from "@/utils/property.js";
+import parentdevice from "@/views/device/book/device";
+import { setStore, getStore, convertToTargetFormat } from "@/utils/property.js";
 import { listDept } from "@/api/system/dept";
 import { saveAs } from "file-saver";
-import CarryForm from "@/components/CarryForm/index";
 import { getWomDevice } from "@/api/work/schedule";
 import faultManage from "@/views/work/Request/ui/faultManage.vue";
-import { equipmentTree } from "@/api/equipment/category";
+import { getLocationTree } from "@/api/Location";
 export default {
   components: {
     ContTable,
     SelectParentDeviceDialog,
     faultManage,
+    parentdevice,
   },
   dicts: ["em_is_special", "em_device_state", "fault_grade", "kdb_fault_type"],
   props: {
@@ -199,6 +194,9 @@ export default {
       drawerFaultManage: false,
       disabled: false,
       showButton: true,
+      form: {
+        disIds: [],
+      },
       addItem: {
         choosedrawer: false,
         copyInputName: "",
@@ -592,7 +590,9 @@ export default {
     },
     handleAdd() {
       //   this.drawer = !this.drawer;
-      this.addItem.choosedrawer = !this.addItem.choosedrawer;
+      this.addItem.choosedrawer = true;
+      let lineIds = this.equipmentList.map((item) => item.deviceId) || [];
+      this.$set(this.form, "disIds", lineIds);
       this.title = "新增";
     },
     importHandler() {
