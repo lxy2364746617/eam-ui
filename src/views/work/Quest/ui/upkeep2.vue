@@ -145,10 +145,7 @@
         v-if="carryValue.i"
       >
         <template slot-scope="scope">
-          <el-radio-group
-            v-model="scope.row.dealResult"
-            :disabled="!carryValue.i"
-          >
+          <el-radio-group v-model="scope.row.result" :disabled="!carryValue.i">
             <el-radio :label="1">OK</el-radio>
 
             <el-radio :label="2">NG</el-radio>
@@ -175,10 +172,10 @@
       >
         <template slot-scope="scope">
           <span>{{
-            scope.row.dealResult === 1
+            scope.row.result === 1
               ? "OK"
-              : scope.row.dealResult === 2
-              ? "OK"
+              : scope.row.result === 2
+              ? "NG"
               : "暂未操作"
           }}</span>
         </template>
@@ -579,7 +576,7 @@ export default {
     handlerQuotaValue(scope) {
       this.$set(
         this.standardList[scope.$index],
-        "dealResult",
+        "result",
         scope.row.quotaValue < scope.row.quotaUpper - scope.row.quotaLower
           ? 1
           : 2
@@ -603,7 +600,7 @@ export default {
     // 提交
     handlerSubmit() {
       if (
-        this.standardList.filter((item) => item.dealResult).length !==
+        this.standardList.filter((item) => item.result).length !==
         this.standardList.length
       ) {
         this.$message.warning("请填写所有操作！");

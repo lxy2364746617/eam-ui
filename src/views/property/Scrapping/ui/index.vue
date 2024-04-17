@@ -365,7 +365,6 @@ export default {
           required: true,
 
           width: 200,
-
         },
         {
           label: "索引号",
@@ -603,9 +602,9 @@ export default {
     },
     // ! 部门树数据
     getTreeSelect() {
-      equipmentTree().then( (response) => {
+      equipmentTree().then((response) => {
         this.categoryOptions = response.data;
- if (this.formData?.scrapNo) {
+        if (this.formData?.scrapNo) {
           getProjectList({
             scrapNo: this.formData?.scrapNo,
             pageNum: 1,
@@ -621,7 +620,6 @@ export default {
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
-       
       });
     },
     // ! 对话框
@@ -767,7 +765,7 @@ export default {
       let matches = this.equipmentList.filter((item) => {
         for (let key in search) {
           if (!String(item[key]).includes(search[key])) {
-            if (search[key] == "") continue;
+            if (search[key] == "" || search[key] === null) continue;
             return false;
           }
         }

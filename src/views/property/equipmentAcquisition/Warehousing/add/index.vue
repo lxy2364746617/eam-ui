@@ -24,6 +24,7 @@
           :key="Math.random()"
           :title="item.title"
           :description="item.description"
+          @click.native="changeStep(index)"
         ></el-step>
       </el-steps>
     </el-card>
@@ -329,8 +330,25 @@ export default {
         cc["fieldValue"] = JSON.stringify(cc["fieldValue"]);
         cc["componentContent"] = JSON.stringify(cc["componentContent"]);
       }
-
       return formData;
+    },
+    changeStep(index) {
+      if (this.elstep[2].visible) {
+        console.log(index, this.formData.step);
+        if (index <= this.stepActive) this.stepActive = index;
+        else if (index == this.stepActive + 1) {
+          this.$refs["step" + index].nextstep();
+        } else this.$message.error("请依序完善信息");
+      } else {
+        if (index <= this.stepActive)
+          this.stepActive = index < 2 ? index : index - 1;
+        else if (index < 2 && index == this.stepActive + 1) {
+          this.$refs["step" + index].nextstep();
+        } else if (index > 2 && index == this.stepActive + 2) {
+          if (index == 3) this.$refs["step" + (index - 1)].nextstep();
+          else this.$refs["step" + index].nextstep();
+        } else this.$message.error("请依序完善信息");
+      }
     },
   },
 };

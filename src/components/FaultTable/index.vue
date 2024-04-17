@@ -565,7 +565,7 @@ export default {
       let matches = getStore("equipmentList").filter((item) => {
         for (let key in search) {
           if (!String(item[key]).includes(search[key])) {
-            if (search[key] == "") continue;
+            if (search[key] == "" || search[key] === null) continue;
             return false;
           }
         }

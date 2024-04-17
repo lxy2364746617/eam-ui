@@ -742,7 +742,7 @@ export default {
       getWorkOrderToDoList(form).then((response) => {
         this.equipmentList1 = response.data.records;
         this.total1 = response.data.total;
-        this.orderCount = res.data.total;
+        this.orderCount = response.data.total;
         this.loading1 = false;
       });
     },

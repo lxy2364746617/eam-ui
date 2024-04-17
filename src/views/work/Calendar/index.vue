@@ -197,10 +197,10 @@ export default {
           this.tooltipInstance = tippy(info.el, {
             content:
               "<div style='position:relative;width:200px'>" +
-              "<p style='margin-bottom:4px'>" +
+              "<p style='margin-bottom:4px;color:#0084FF;font-weight: 600;'>" +
               info.event.title +
               "</p>" +
-              "<p style='margin-top:4px'>" +
+              "<p style='margin-top:4px;color:#0084FF;font-weight: 600;'>" +
               info.event.id +
               "</p>" +
               "<p style='padding-left:20px;margin:4px'>工单类型:" +

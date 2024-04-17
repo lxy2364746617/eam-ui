@@ -199,7 +199,7 @@ export default {
       formData2: {},
 
       rules: {
-        demandDate: [
+        planExecuteDate: [
           {
             required: true,
             message: "请选择调整计划执行日期",
@@ -650,7 +650,7 @@ export default {
 
         this.drawer = true;
         this.title = "编辑设备";
-        this.itemValue = row;
+        this.formData = row;
       }
     },
     goDetails(row) {

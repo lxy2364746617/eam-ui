@@ -128,8 +128,7 @@
 </template>
 
 <script>
-import { updateBASE } from "@/api/equipment/BASE";
-import { addBASE } from "@/api/property/warehousing";
+import { updateBASE, addBASE } from "@/api/equipment/BASE";
 import {
   listParts,
   addParts,
@@ -263,32 +262,32 @@ export default {
   },
   methods: {
     /** 查询用户列表 */
-      getList(queryParams) {
-      queryParams.deviceId = this.queryParams.deviceId
+    getList(queryParams) {
+      queryParams.deviceId = this.queryParams.deviceId;
       this.loading = true;
-      listParts(queryParams).then(response => {
-          this.$set(this,'equipmentList',response.rows)
-          this.total = response.total;
-          this.loading = false;
-        }
-      );
+      listParts(queryParams).then((response) => {
+        this.$set(this, "equipmentList", response.rows);
+        this.total = response.total;
+        this.loading = false;
+      });
     },
     /* 添加备品备件 */
     getList2(queryParams) {
       this.loading = true;
-      let ids = this.equipmentList.map(item=>{return item.partCode})
-      queryParams.exportIds = ids.join(',')      
-      selectPage( queryParams).then(response => {
-          /* let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
+      let ids = this.equipmentList.map((item) => {
+        return item.partCode;
+      });
+      queryParams.exportIds = ids.join(",");
+      selectPage(queryParams).then((response) => {
+        /* let list_id = this.equipmentList.length>0? this.equipmentList.map(item=>item.partCode):[];
           let arr= response.data.records.filter(item=>{
             return list_id.indexOf(item.partCode) == -1;
           })*/
-          this.$set(this,'partsData',response.rows); 
-          
-          this.total2 = response.total;
-          this.pushList=[]
-        }
-      );
+        this.$set(this, "partsData", response.rows);
+
+        this.total2 = response.total;
+        this.pushList = [];
+      });
     },
     closeform() {
       this.$emit("closeform");
@@ -356,20 +355,21 @@ export default {
       this.submitForm(fn);
     },
     /** 提交按钮 */
-    submitForm: function (fn) {
+    submitForm: async function (fn) {
       var formData = this.$parent.getFormDataParams();
       formData.archivesPartsList = this.equipmentList;
       if (formData.deviceId != undefined) {
-        updateBASE({ ...formData }).then((response) => {
+        await updateBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("修改成功");
           if (typeof fn == "function") fn();
         });
       } else {
-        addBASE({ ...formData }).then((response) => {
+        await addBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
           if (typeof fn == "function") fn();
         });
       }
+      this.$emit("closeform");
     },
     getTreeSelect() {
       equipmentTree().then((response) => {

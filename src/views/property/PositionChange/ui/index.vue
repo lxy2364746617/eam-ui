@@ -219,7 +219,7 @@ export default {
       // 过滤设备
       form: {
         disIds: [],
-        currDeptId: this.$store.state.user.standing.dept.deptId,
+        useDeptId: this.$store.state.user.standing.dept.deptId,
       },
       formDataType: 1,
       categoryOptions: [],
@@ -282,7 +282,7 @@ export default {
       handler(newFormData, oldFormData) {
         if (newFormData) {
           this.delFileList = this.equipmentList.filter((item) => item.id);
-          this.form.currDeptId = newFormData;
+          this.form.useDeptId = newFormData;
           this.equipmentList = [];
           this.updateList = [];
           this.getUserList(newFormData);
@@ -804,7 +804,7 @@ export default {
       let matches = this.equipmentList.filter((item) => {
         for (let key in search) {
           if (!String(item[key]).includes(search[key])) {
-            if (search[key] == "") continue;
+            if (search[key] == "" || search[key] === null) continue;
             return false;
           }
         }

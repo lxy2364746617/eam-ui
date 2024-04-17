@@ -5,7 +5,15 @@
         type="primary"
         size="small"
         style="position: absolute; right: 0; top: -2.5%"
-        v-if="disabled"
+        v-if="
+          disabled &&
+          this.formData.workOrderSchedule.find(
+            (item) =>
+              item.orderStatus == '已完成' &&
+              item.createBy &&
+              this.formData.workActive == 5
+          )
+        "
         @click="addFaultCase"
         >加入故障案例库</el-button
       >
@@ -81,11 +89,6 @@ export default {
   },
   mounted() {
     this.wrapperTitle = this.$route.meta.title;
-    console.log(
-      "========================",
-      this.formData.workOrderSchedule,
-      this.formData.workActive
-    );
   },
   computed: {
     columns() {

@@ -284,6 +284,7 @@ export default {
       plineForm: {
         choosedrawer: false,
         disIds: [],
+        currDeptId: this.$store.state.user.standing.dept.deptId,
       }, // 关联点检测项目
       lineList: [],
       drawer: false,
@@ -359,40 +360,6 @@ export default {
           that.plineList.splice(index, 1);
         })
         .catch(() => {});
-    },
-    itemFun() {
-      this.title = "日常保养项";
-      this.leftData = [
-        {
-          name: "John Brown",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03",
-          id: 1,
-        },
-        {
-          name: "Jim Green",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          date: "2016-10-01",
-          id: 2,
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          id: 3,
-        },
-        {
-          name: "Jon Snow",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          date: "2016-10-04",
-          id: 4,
-        },
-      ];
-      this.drawer2 = true;
     },
     viewFun(itemType, deviceId, num) {
       if (num == 0) {

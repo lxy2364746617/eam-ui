@@ -221,6 +221,7 @@ export default {
         ...queryParams,
         deviceAtt: this.deviceAtt,
         currDeptId: this.formData?.currDeptId,
+        useDeptId: this.formData?.useDeptId,
       };
       listBASE(data).then((response) => {
         response.rows.forEach((item) => {

@@ -60,7 +60,7 @@
 
     <adminParentdevice
       v-if="isShowCard && !businessId"
-      :equipList="equipList"
+      :equipList="equipList || []"
       :detailReadonly="true"
     ></adminParentdevice>
 
@@ -137,7 +137,7 @@ import { listUser } from "@/api/system/user";
 import { v4 as uuidv4 } from "uuid";
 import { listDept } from "@/api/system/dept";
 import parentdevice from "@/views/device/book/device";
-import adminParentdevice from "@/views/property/Receive/ui/adminParentdevice";
+import adminParentdevice from "@/views/property/Receive/ui/adminParentdevice2";
 
 import {
   getProjectList,
@@ -244,7 +244,7 @@ export default {
           : false;
       if (this.$route.query.formData && this.isShowCard) {
         getNeckApprove(this.$route.query.formData.neckNo).then((res) => {
-          if (res.code === 2000) {
+          if (res.code === 200) {
             this.equipList = res.data;
           }
         });
@@ -702,7 +702,7 @@ export default {
       let matches = this.equipmentList.filter((item) => {
         for (let key in search) {
           if (!String(item[key]).includes(search[key])) {
-            if (search[key] == "") continue;
+            if (search[key] == "" || search[key] === null) continue;
             return false;
           }
         }

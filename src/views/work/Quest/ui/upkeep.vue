@@ -311,7 +311,7 @@
             scope.row.dealResult === 1
               ? "OK"
               : scope.row.dealResult === 2
-              ? "OK"
+              ? "NG"
               : "暂未操作"
           }}</span>
         </template>

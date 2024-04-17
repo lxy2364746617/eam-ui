@@ -75,7 +75,13 @@
                   : "-"
               }}
             </td>
-            <td>{{ item.targetLocation ? item.targetLocation : "-" }}</td>
+            <td>
+              {{
+                item.targetLocation
+                  ? findTreeName(locationOptions, item.targetLocation)
+                  : "-"
+              }}
+            </td>
           </tr>
         </tbody>
         <tbody v-else-if="form.flag === 'YJ'">
@@ -86,15 +92,15 @@
             <td>{{ item.deviceNum }}</td>
             <td>
               {{
-                item.targetLocation
-                  ? findTreeName(locationOptions, item.targetLocation)
+                item.location
+                  ? findTreeName(locationOptions, item.location)
                   : "-"
               }}
             </td>
             <td>
               {{
-                item.location
-                  ? findTreeName(locationOptions, item.location)
+                item.targetLocation
+                  ? findTreeName(locationOptions, item.targetLocation)
                   : "-"
               }}
             </td>
@@ -117,16 +123,59 @@
         </tbody>
       </table>
       <!-- 底部 -->
-      <div v-if="form.flag !== 'BF'" class="basic">
-        <span v-for="item in personnelOptions" :key="item.taskName"
-          >{{ item.assigneeName }}：{{ item.taskName }}</span
-        >
+      <div v-if="form.flag !== 'BF' && form.flag !== 'YJ'">
+        <span
+          class="basic"
+          v-for="item in personnelOptions"
+          :key="item.taskName"
+          ><span
+            >{{ "部门主管" }}：<span v-if="item.taskName === '部门主管'">{{
+              item.candidate
+            }}</span></span
+          >
+          <span
+            >{{ "设备管理员" }}：<span v--if="item.taskName === '设备管理员'">{{
+              item.candidate
+            }}</span></span
+          ><span
+            >{{ "材料员" }}：<span v-if="item.taskName === '材料员'">{{
+              item.candidate
+            }}</span></span
+          >
+        </span>
       </div>
-      <div v-else class="basic">
-        <span>报废人：{{ dataSource.scrapPerson }}</span>
-        <span v-for="item in personnelOptions" :key="item.taskName"
-          >{{ item.assigneeName }}：{{ item.taskName }}</span
+      <div v-if="form.flag === 'YJ'">
+        <span
+          class="basic"
+          v-for="item in personnelOptions"
+          :key="item.taskName"
         >
+          <span
+            >{{ "调出单位负责人" }}：<span
+              v-if="item.taskName === '调出单位负责人'"
+              >{{ item.candidate }}</span
+            ></span
+          >
+          <span
+            >{{ "调入单位负责人" }}：<span
+              v-if="item.taskName === '调入单位负责人'"
+              >{{ item.candidate }}</span
+            ></span
+          >
+        </span>
+      </div>
+      <div v-if="form.flag === 'BF'">
+        <span class="basic">
+          <span>报废人：{{ dataSource.scrapPerson }}</span>
+          <span v-for="item in personnelOptions" :key="item.taskName">
+            <span
+              >{{ "设备管理员" }}：<span
+                v-if="item.taskName === '设备管理员'"
+                >{{ item.candidate }}</span
+              ></span
+            >
+          </span>
+        </span>
       </div>
     </div>
   </div>

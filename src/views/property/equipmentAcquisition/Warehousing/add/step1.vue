@@ -57,7 +57,11 @@
 </template>
 
 <script>
-import { updateBASE } from "@/api/equipment/BASE";
+import {
+  updateBASE,
+  getPrtOrgTreeByDeptId,
+  getDeptInfo,
+} from "@/api/equipment/BASE";
 import { addBASE } from "@/api/property/warehousing";
 import { listDept } from "@/api/system/dept";
 import {
@@ -223,7 +227,7 @@ export default {
           label: "当前使用组织",
           prop: "currDeptId",
           formType: "selectTree",
-          options: this.deptOptions,
+          options: this.deptOptions1,
           span: 8,
           required: true,
         },
@@ -231,7 +235,7 @@ export default {
           label: "所属组织",
           prop: "affDeptId",
           formType: "selectTree",
-          options: this.deptOptions,
+          options: this.deptOptions1,
           span: 8,
           required: true,
         },
@@ -376,6 +380,7 @@ export default {
       // 部门树选项
       categoryOptions: [],
       deptOptions: [],
+      deptOptions1: [],
       locationOptions: [],
       // 是否显示弹出层
       open: false,
@@ -495,10 +500,10 @@ export default {
       }
     },
     /** 提交按钮 */
-    submitForm(fn) {
+    async submitForm(fn) {
       var formData = this.$parent.getFormDataParams();
       if (formData.deviceId != undefined) {
-        updateBASE({ ...formData }).then((response) => {
+        await updateBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("修改成功");
           if (typeof fn == "function") fn();
         });
@@ -514,13 +519,14 @@ export default {
         formData["sModel"] = formData.specs;
         formData["affDept"] = formData.affDeptId;
         formData["grade"] = formData.level;
-        addBASE({ ...formData }).then((response) => {
+        await addBASE({ ...formData }).then((response) => {
           this.$modal.msgSuccess("保存成功");
           // this.formData.id = response.data;
           this.formData.deviceId = response.data;
           if (typeof fn == "function") fn();
         });
       }
+      this.$emit("closeform");
     },
     close() {
       this.drawer = false;
@@ -534,9 +540,15 @@ export default {
       equipmentTrees_noParent().then((response) => {
         this.categoryOptions = response.data;
       });
-      listDept().then((response) => {
+      getDeptInfo().then((response) => {
         this.deptOptions = response.data;
       });
+      getPrtOrgTreeByDeptId({ prtOrg: "Y" }).then((response) => {
+        this.deptOptions1 = response.data;
+      });
+      // listDept().then((response) => {
+      //   this.deptOptions = response.data;
+      // });
       getLocationTree().then((res) => {
         this.locationOptions = this.getTree(res.data);
       });

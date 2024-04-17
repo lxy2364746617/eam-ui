@@ -61,14 +61,19 @@ export default {
           width: 200,
         },
         { label: "使用部位", prop: "location", required: true, span: 22 },
-        { label: "更换数量", prop: "sl" },
+        { label: "更换数量", prop: "replaceNum" },
         {
           label: "单位",
           prop: "unit",
           formType: "select",
           options: this.dict.type.spare_parts_unit,
         },
-        { label: "更换时间", prop: "sj", formType: "date", width: 150 },
+        {
+          label: "更换时间",
+          prop: "replaceTime",
+          formType: "date",
+          width: 150,
+        },
       ];
     },
   },

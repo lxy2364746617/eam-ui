@@ -193,7 +193,7 @@ export default {
           tableVisible: true,
           width: 200,
         },
-        { label: "规格型号", prop: "sModel", tableVisible: true, width: 200 },
+        { label: "规格型号", prop: "specs", tableVisible: true, width: 200 },
         {
           label: "设备编码",
           prop: "deviceCode",
@@ -202,17 +202,18 @@ export default {
         },
         {
           label: "设备类别",
-          prop: "deviceType",
-          formType: "selectTree",
-          options: this.categoryOptions,
+          tableVisible: true,
+          prop: "categoryName",
+          // formType: "selectTree",
+          // options: this.categoryOptions,
           width: 200,
         },
         {
           label: "功能位置",
-          prop: "location",
+          prop: "locationName",
           tableVisible: true,
-          formType: "selectTree",
-          options: this.locationOptions,
+          // formType: "selectTree",
+          // options: this.locationOptions,
           width: 200,
         },
         {
@@ -230,10 +231,10 @@ export default {
         },
         {
           label: "目标功能位置",
-          prop: "targetLocation",
+          prop: "targetLocationName",
           tableVisible: true,
-          formType: "selectTree",
-          options: this.locationOptions,
+          // formType: "selectTree",
+          // options: this.locationOptions,
           width: 150,
         }, //(0 父级)
         {
