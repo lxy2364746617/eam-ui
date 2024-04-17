@@ -34,6 +34,12 @@
         </el-col>
       </template>
       <template #end_handle="scope">
+        <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-view"
+            @click="handleUpdate(scope.row,true)"
+          >查看</el-button>
           <el-button
             size="mini"
             type="text"
@@ -92,31 +98,31 @@
           <el-input v-model="form.faultCode"  disabled />
         </el-form-item>
         <el-form-item label="故障名称" prop="faultName" :rules='[{required:true,message:"请填写故障名称"}]'>
-          <el-input v-model="form.faultName" placeholder="请输入故障名称" />
+          <el-input v-model="form.faultName" placeholder="请输入故障名称" :disabled='readOnly' />
         </el-form-item>
         <el-form-item label="故障分类" prop="faultType" :rules='[{required:true,message:"请选择故障分类"}]'>
-          <el-select v-model="form.faultType" style="width:100%">
+          <el-select v-model="form.faultType" style="width:100%" :disabled='readOnly'>
             <el-option v-for="item in dict.type.kdb_fault_type" :key="item.value" :label="item.label" :value='item.value'></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="故障症状" prop="symptom" :rules='[{required:true,message:"请填写故障症状"}]'>
-          <el-input v-model="form.symptom" type="textarea" placeholder="请输入故障症状"  :autosize="{ minRows: 3}" maxlength="100" show-word-limit />
+          <el-input v-model="form.symptom" type="textarea" placeholder="请输入故障症状"  :autosize="{ minRows: 3}" maxlength="100" show-word-limit :disabled='readOnly'/>
         </el-form-item>
         <el-form-item label="故障分析原因" prop="reasons" :rules='[{required:true,message:"请填写故障分析原因"}]'>
-          <el-input v-model="form.reasons" type="textarea" placeholder="请输入故障分析原因"  :autosize="{ minRows: 3}" maxlength="100" show-word-limit />
+          <el-input v-model="form.reasons" type="textarea" placeholder="请输入故障分析原因"  :autosize="{ minRows: 3}" maxlength="100" show-word-limit :disabled='readOnly'/>
         </el-form-item>
         <el-form-item label="故障处理措施" prop="measure" :rules='[{required:true,message:"请填写故障处理措施"}]'>
-          <el-input v-model="form.measure" type="textarea" placeholder="请输入故障处理措施"  :autosize="{ minRows: 3}" maxlength="100" show-word-limit />
+          <el-input v-model="form.measure" type="textarea" placeholder="请输入故障处理措施"  :autosize="{ minRows: 3}" maxlength="100" show-word-limit :disabled='readOnly'/>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item label="状态" prop="status" :disabled='readOnly'>
           <el-radio v-model="form.status" label="0">启用</el-radio>
           <el-radio v-model="form.status" label="1">停用</el-radio>
         </el-form-item>
       </el-form>
       <div  class="dialog-footer" style="text-align:center;border-top: 1px solid #ccc;padding-top: 10px;">
     
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" v-if="!readOnly" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel"> {{readOnly?'关 闭':'取 消'}}</el-button>
       </div>
     </el-drawer>
     <!-- 导入 -->
@@ -181,7 +187,8 @@ export default {
       statusArr:[
         {label:'启用',value:'0',class:'green'},
         {label:'停用',value:'1'},
-        ]
+        ],
+        readOnly:false
     };
   },
   computed:{
@@ -259,13 +266,15 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
+      this.readOnly = false
       this.isEdit=false
       this.reset();
       this.open = true;
       this.title = "新增";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    handleUpdate(row,readOnly) {
+      this.readOnly = readOnly
       this.isEdit=true
       this.reset();
       const codeId = row.codeId || this.ids

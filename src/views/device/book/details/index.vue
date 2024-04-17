@@ -207,12 +207,11 @@ export default {
     getInfo(){
       const deviceId = this.$route.query.i||this.detailId
       getBASE(deviceId).then(response => {
-      
       // 第一步  特种设备
       if(response.data.emArchivesSpecial){
         response.data.emArchivesSpecial.componentContent = JSON.parse(response.data.emArchivesSpecial.componentContent)
         response.data.emArchivesSpecial.fieldValue = JSON.parse(response.data.emArchivesSpecial.fieldValue)
-        this.setFormLabel(response.data.emArchivesSpecial.componentContent)
+        this.setFormLabel(response.data.emArchivesSpecial.componentContent ,true)
       }
       // 第二步
       if(response.data.archivesOther==null){
@@ -230,9 +229,9 @@ export default {
         response.data.emArchivesIndex.fieldValue = JSON.parse(response.data.emArchivesIndex.fieldValue)
         this.setFormLabel(response.data.emArchivesIndex.componentContent)
       }
-
       this.formData = response.data;
       this.formData1 = JSON.parse(JSON.stringify(this.formData))
+      console.log(this.formData1)
       // var obj = {
       //   componentContent: [],
       //   fieldValue: {},
@@ -311,12 +310,13 @@ export default {
         style: '@page { size: auto;  margin: 0mm; }' ,
       })
     },
-    setFormLabel(arr){
+    setFormLabel(arr,type){
+      if(type) console.log(arr)
       arr.forEach(b => {
         b.label=b.fieldName;
         b.prop=b.fieldCode;
-        // b.required = b.required;
-        b.required = b.required=='0'?true:false;
+        b.required = b.required;
+        //b.required = b.required=='0'?true:false;
         b.disabled = b.disabled;
         b.formType = b.componentType;
         switch (b.componentType) {

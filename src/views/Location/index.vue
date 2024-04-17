@@ -310,6 +310,7 @@ import { getLocationTree,locationInfo,saveOrUpdate,getLocationAttr,locationRemov
         console.log(row)
         let params = {
           deptId:[],
+          deptCode:[row.deptCode]
         }
         params.deptId.push(row.deptId)
         this.$modal.confirm('是否确认删除？').then(function() {

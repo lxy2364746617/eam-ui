@@ -242,12 +242,12 @@ export default {
     },
     // 修改====
     /** 提交按钮 */
-    submitForm: function(fn) {
+    submitForm: async function(fn) {
       var formData = this.$parent.getFormDataParams();
       // 当前路由
       let obj = this.$route
       if (formData.deviceId != undefined) {
-        updateBASE(formData).then(response => {
+       await updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
           // this.$tab.closePage(obj).then(({ visitedViews }) => {
           //   if (this.isActive(obj)) {
@@ -257,7 +257,7 @@ export default {
           if(typeof fn == 'function') fn()
         });
       } else {
-        addBASE(formData).then(response => {
+       await addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
           // this.$tab.closePage(obj).then(({ visitedViews }) => {
           //   if (this.isActive(obj)) {
@@ -267,6 +267,7 @@ export default {
           if(typeof fn == 'function') fn()
         });
       }
+      this.$emit('closeform')
     },
     getTreeSelect(){
       equipmentTree().then(response => {

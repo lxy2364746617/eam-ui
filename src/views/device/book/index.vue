@@ -262,7 +262,7 @@
 <script>
 import { findByTemplateType } from '@/api/equipment/attribute'
 import { listDept } from '@/api/system/dept'
-import { equipmentTree } from '@/api/equipment/category'
+import { equipmentTree,equipmentTreeNoTemplate } from '@/api/equipment/category'
 import {listDefinition1} from "@/api/flowable/definition";
 import {
   listBASE,
@@ -273,6 +273,7 @@ import {
   countBASE,
   exportBASE,
   copyBASE,
+  getPrtOrgTreeByDeptId
 } from '@/api/equipment/BASE'
 import { getToken } from '@/utils/auth'
 import Treeselect from '@riophae/vue-treeselect'
@@ -341,14 +342,14 @@ export default {
           label: '所属组织',
           prop: 'affDeptId',
           formType: 'selectTree',
-          options: this.deptOptions,
+          options: this.deptOptions1,
           width: 180,
         },
         {
           label: '当前使用组织',
           prop: 'currDeptId',
           formType: 'selectTree',
-          options: this.deptOptions,
+          options: this.deptOptions1,
           width: 180,
         },
         { label: '入账日期', prop: 'makerAoTime', formType: 'daterange',width:200 },
@@ -426,6 +427,7 @@ export default {
       title: '',
       // 部门树选项
       deptOptions: undefined,
+      deptOptions1:undefined,
       categoryOptions: undefined,
       // 是否显示弹出层
       open: false,
@@ -518,7 +520,7 @@ export default {
     },
     /** 查询设备档案下拉树结构 */
     getTree() {
-      equipmentTree().then((response) => {
+      equipmentTreeNoTemplate().then((response) => {
         this.categoryOptions = response.data
         // 方便获取父级tree
         this.loops(this.categoryOptions)
@@ -542,6 +544,9 @@ export default {
     getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data
+      }),
+      getPrtOrgTreeByDeptId().then((response) => {
+        this.deptOptions1 = response.data
       })
     },
     // 设备指标

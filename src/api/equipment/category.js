@@ -8,7 +8,14 @@ export function equipmentTree(query) {
     params: query
   })
 }
-
+// 查询设备平台_设备类别 不查模板
+export function equipmentTreeNoTemplate(query) {
+  return request({
+    url: '/equipment/category/equipmentTreeNoTemplate',
+    method: 'get',
+    params: query
+  })
+}
 // 查询设备平台_设备类别 树 无最外层父级
 export function equipmentTrees_noParent(query) {
   return request({

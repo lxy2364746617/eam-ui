@@ -118,7 +118,7 @@
                     <template slot-scope="scope">
                         <el-button size="mini" type="text" @click="handleUpdate(scope)"
                             v-hasPermi="['maintain:mstandard:edit']">{{ scope.row.editType ? '保存' : '编辑' }}</el-button>
-                        <el-button size="mini" type="text" @click="handleDelete(scope)"
+                        <el-button size="mini" type="text" @click="handleDelete(scope)" v-show="!scope.row.editType"
                             v-hasPermi="['maintain:mstandard:remove']">删除</el-button>
                     </template>
                 </el-table-column>

@@ -20,7 +20,7 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养类型" prop="itemType">
-                        <el-select v-model="form.itemType" placeholder="请选择保养类型">
+                        <el-select v-model="form.itemType" placeholder="请选择保养类型" @change="tablekey++">
                             <el-option v-for="dict in dict.type.BYJX" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
@@ -97,7 +97,7 @@
             <el-button type="primary"  size="mini" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
             <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
         </div>
-        <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false"
+        <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false" :key="tablekey"
             @radiochange="radiochange"  :rightToolbarShow='false'>
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
@@ -148,25 +148,25 @@
                         <span v-html="findName(dict.type.em_device_state, scope.row.deviceStatus)"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="日常保养" align="center" prop="dayNum" min-width="150">
+                <el-table-column label="日常保养" align="center" prop="dayNum" min-width="150" v-if="form.itemType == 'RCBY'">
                     <template slot-scope="scope">
                         <span class="viewSpan" @click="viewFun('RCBY', scope.row.deviceId, scope.row.dayNum)">{{
                             scope.row.dayNum }} 浏览</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="一级保养" align="center" prop="oNum" min-width="150">
+                <el-table-column label="一级保养" align="center" prop="oNum" min-width="150" v-if="form.itemType == 'YJBY'">
                     <template slot-scope="scope">
                         <span class="viewSpan" @click="viewFun('YJBY', scope.row.deviceId, scope.row.oNum)">{{
                             scope.row.oNum }} 浏览</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="二级保养" align="center" prop="tNum" min-width="150">
+                <el-table-column label="二级保养" align="center" prop="tNum" min-width="150" v-if="form.itemType == 'EJBY'">
                     <template slot-scope="scope">
                         <span class="viewSpan" @click="viewFun('EJBY', scope.row.deviceId, scope.row.tNum)">{{
                             scope.row.tNum }} 浏览</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="常规润滑" align="center" prop="cNum" min-width="150">
+                <el-table-column label="常规润滑" align="center" prop="cNum" min-width="150" v-if="form.itemType == 'CGRH'">
                     <template slot-scope="scope">
                         <span class="viewSpan" @click="viewFun('CGRH', scope.row.deviceId, scope.row.cNum)">{{
                             scope.row.cNum }} 浏览</span>
@@ -213,7 +213,10 @@ export default {
                 { label: '保养路线编码', prop: 'lineCode', class: true },
                 { label: '保养路线名称', prop: 'lineName', },
                 { label: '保养设备数量', prop: 'deviceNum', },
-                { label: '日常保养', prop: 'sCheckNum', },
+                { label: '日常保养', prop: 'RCBY', tableVisible:this.form.itemType=='RCBY' },
+                { label: '一级保养', prop: 'YJBY', tableVisible:this.form.itemType=='YJBY'},
+                { label: '二级保养', prop: 'EJBY', tableVisible:this.form.itemType=='EJBY'},
+                { label: '常规润滑', prop: 'CGRH', tableVisible:this.form.itemType=='CGRH'},
                 { label: '是否拍照', prop: 'isPhoto', formType: 'radioSelect', options: this.dict.type.mro_is_photo, span: 18, },
             ]
         },
@@ -351,7 +354,7 @@ export default {
             },
             startDatePicker: this.beginDate(),
             endDatePicker: this.processDate(),
-            
+            tablekey:0,
         };
     },
     created() {
@@ -412,6 +415,12 @@ export default {
                     this.form.nextExecuteTime=new Date(datetime)>new Date(this.form.planEndTime) ?'':this.formatDate(datetime)
                 }
             }
+        },
+        lineList(newval){
+            newval&&newval.forEach(item=>{
+                item=Object.assign(item,{'RCBY':0,'YJBY':0,'EJBY':0,'CGRH':0},item.itemMap)
+            })
+            console.log(newval)
         },
         immediate: true,
         deep: true
@@ -529,12 +538,13 @@ export default {
                 getGroup(response.data.groupId).then(res=>{
                 this.groupMembers= res.data.sysUserGroupList
                 let { maintainPlanLineList, fileResourceList, ...other } = response.data;
-                this.form = other;
+                this.form = other
                 this.form.executor=Number(response.data.executor)
                 this.lineList = maintainPlanLineList || [];
                 this.fileResourceList = fileResourceList || [];
                 this.form.otherExecutors=response.data.otherExecutor.split(',').map(item=>Number(item))
-                this.loading = false;     
+                this.loading = false;
+                this.tablekey++     
                 })
             }).catch(() => {
                 this.loading = false;
@@ -629,7 +639,9 @@ export default {
                 }
                 let data = {
                     itemType,
-                    deviceId
+                    deviceId,
+                    checkCycleType:this.form.planCycleType,
+                    itemType:this.form.itemType
                 }
                 findByDeviceIdAndItemType(data).then(res => {
                     this.lineList1 = res.data
@@ -658,7 +670,7 @@ export default {
         showLine(row) {
             this.$set(this.deviceForm, 'loading', true)
             this.$set(this.deviceForm, 'choosedrawer', true)
-            larchivesList({ lineId: row.lineId }).then(res => {
+            larchivesList({ lineId: row.lineId ,checkCycleType:this.form.planCycleType}).then(res => {
                 this.deviceList = res.data || [];
                 this.$set(this.deviceForm, 'loading', false)
             }).catch(() => {

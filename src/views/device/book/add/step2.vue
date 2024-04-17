@@ -251,19 +251,20 @@ export default {
       }
     },
     /** 提交按钮 */
-    submitForm: function(fn) {
+    submitForm:async function(fn) {
       var formData = this.$parent.getFormDataParams();
       if (formData.deviceId != undefined) {
-        updateBASE(formData).then(response => {
+       await updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
           if(typeof fn == 'function') fn()
         });
       } else {
-        addBASE(formData).then(response => {
+       await addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
           if(typeof fn == 'function') fn()
         });
       }
+      this.$emit('closeform')
     },
     close(){
       this.drawer = false

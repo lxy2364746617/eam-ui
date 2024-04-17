@@ -154,7 +154,7 @@
               </el-timeline> -->
                 <ul>
                   <li
-                    class="linetime"
+                    :class="{linetime:true,linetime_finished:item.processStatus=='completed'||item.processStatus==null,linetime_running:item.processStatus=='running'}"
                     v-for="(item, index) in flowRecordList"
                     :key="index"
                   >
@@ -1040,12 +1040,30 @@ export default {
   padding: 20px;
   position: relative;
 }
-.linetime::before {
-  content: "";
+.linetime_finished:before {
+  content: "\e6da";
+  font-family:element-icons !important;
+  display: inline-block;
   width: 20px;
   height: 20px;
   background: white;
-  border: 4px solid #1890ff;
+  border: 3px solid #24a71e;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: -12px;
+  transform: translateY(-50%);
+  font-size: 15px;
+    font-weight: 900;
+    color: #24a71e;
+}
+.linetime_running:before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 3px solid #006fe5;
   border-radius: 50%;
   position: absolute;
   top: 50%;
