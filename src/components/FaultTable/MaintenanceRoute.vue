@@ -396,6 +396,7 @@ export default {
                     ...val,
                     lineCode: item.lineCode,
                     lineName: item.lineName,
+                    photoFlag: item.photoFlag,
                   }))
                 );
               })

@@ -83,11 +83,7 @@
         min-width="150"
       >
         <template slot-scope="scope">
-          <span
-            v-if="disabled"
-            v-html="findName(dict.type.em_is_photo, scope.row.photoFlag)"
-          ></span>
-          <el-radio-group v-else v-model="scope.row.photoFlag">
+          <el-radio-group v-model="scope.row.photoFlag">
             <el-radio
               v-for="item in dict.type.em_is_photo"
               :key="item.value"
