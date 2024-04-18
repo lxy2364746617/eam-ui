@@ -473,6 +473,7 @@ export default {
       userList: [],
 
       selectUser: { name: "", id: null },
+      idsList: [],
     };
   },
   watch: {
@@ -805,6 +806,7 @@ export default {
       this.isDrawer2 = true;
     },
     handlerAdd() {
+      this.getList2();
       this.isDrawer = true;
     },
     handlerDeleteHours(row) {
@@ -852,11 +854,11 @@ export default {
       getOrderExecutor;
       getExecutorList({ groupId: this.formData.groupId }).then((response) => {
         if (this.equipmentList3.length !== 0) {
-          response.data = response.data.filter((user) =>
-            this.equipmentList3.some((u) => u.userId !== user.userId)
+          this.equipmentList2 = response.data.filter(
+            (user) => !this.equipmentList3.some((u) => u.userId === user.userId)
           );
+        } else {
           this.equipmentList2 = response.data;
-          this.loading2 = false;
         }
         // getOrderExecutor({ workOrderCode: this.formData.orderCode }).then((response) => {
       });
@@ -872,6 +874,7 @@ export default {
       form["workOrderCode"] = this.formData.orderCode;
       await getOrderExecutor(form).then((response) => {
         this.equipmentList3 = response.data;
+        this.idsList = this.equipmentList3.map((item) => item.userId);
         // this.total3 = response.total;
         this.loading3 = false;
       });

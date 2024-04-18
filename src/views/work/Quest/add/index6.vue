@@ -877,11 +877,11 @@ export default {
       this.loading2 = true;
       getExecutorList({ groupId: this.formData.groupId }).then((response) => {
         if (this.equipmentList3.length !== 0) {
-          response.data = response.data.filter((user) =>
-            this.equipmentList3.some((u) => u.userId !== user.userId)
+          this.equipmentList2 = response.data.filter(
+            (user) => !this.equipmentList3.some((u) => u.userId === user.userId)
           );
+        } else {
           this.equipmentList2 = response.data;
-          this.loading2 = false;
         }
         // getOrderExecutor({ workOrderCode: this.formData.orderCode }).then((response) => {
       });
