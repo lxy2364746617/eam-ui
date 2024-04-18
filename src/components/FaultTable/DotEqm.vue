@@ -284,7 +284,7 @@ export default {
       plineForm: {
         choosedrawer: false,
         disIds: [],
-        currDeptId: this.$store.state.user.standing.dept.deptId,
+        // currDeptId: this.$store.state.user.standing.dept.deptId,
       }, // 关联点检测项目
       lineList: [],
       drawer: false,

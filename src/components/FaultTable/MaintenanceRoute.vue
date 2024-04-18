@@ -137,7 +137,7 @@
             <span
               class="viewSpan"
               @click="
-                viewFun('RCBY', scope.row.currentCodeLineId, scope.row.dayNum)
+                viewFun('RCBY', scope.row.deviceCode + lineId, scope.row.dayNum)
               "
               >浏览</span
             >
@@ -153,7 +153,9 @@
           <template slot-scope="scope">
             <span
               class="viewSpan"
-              @click="viewFun('YJBY', scope.currentCodeLineId, scope.row.oNum)"
+              @click="
+                viewFun('YJBY', scope.row.deviceCode + lineId, scope.row.oNum)
+              "
               >浏览</span
             >
           </template>
@@ -168,7 +170,9 @@
           <template slot-scope="scope">
             <span
               class="viewSpan"
-              @click="viewFun('EJBY', scope.currentCodeLineId, scope.row.tNum)"
+              @click="
+                viewFun('EJBY', scope.row.deviceCode + lineId, scope.row.tNum)
+              "
             >
               浏览</span
             >
@@ -184,7 +188,9 @@
           <template slot-scope="scope">
             <span
               class="viewSpan"
-              @click="viewFun('CGRH', scope.currentCodeLineId, scope.row.cNum)"
+              @click="
+                viewFun('CGRH', scope.row.deviceCode + lineId, scope.row.cNum)
+              "
             >
               浏览</span
             >

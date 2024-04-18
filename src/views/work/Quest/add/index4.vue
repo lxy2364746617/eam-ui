@@ -192,7 +192,6 @@
             icon="el-icon-view"
             :loading="btnLoading"
             @click="goDetails(scope.row, 'view')"
-            v-hasPermi="['work:quest:view']"
             >查看</el-button
           >
           <el-button
@@ -204,7 +203,6 @@
             icon="el-icon-edit"
             :loading="btnLoading"
             @click="handlerCarry(scope.row, 'carry')"
-            v-hasPermi="['work:quest:carry']"
             >执行</el-button
           >
         </template>
@@ -238,7 +236,6 @@
                 size="mini"
                 :loading="btnLoading"
                 @click="handlerAdd"
-                v-hasPermi="['work:quest:add']"
                 >添加</el-button
               >
             </el-col>
@@ -251,7 +248,6 @@
               icon="el-icon-delete"
               :loading="btnLoading"
               @click="handlerDelete(scope.row, 'delete')"
-              v-hasPermi="['work:quest:delete']"
               >删除</el-button
             >
           </template>

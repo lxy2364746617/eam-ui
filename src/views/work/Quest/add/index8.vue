@@ -233,7 +233,6 @@
             size="mini"
             :loading="btnLoading"
             @click="handlerDownload(scope.row, 'download')"
-            v-hasPermi="['work:quest:download']"
             >下载</el-button
           >
           <el-button
@@ -241,7 +240,6 @@
             type="text"
             :loading="btnLoading"
             @click="handlerPreview(scope.row, 'preview')"
-            v-hasPermi="['work:quest:preview']"
             >预览</el-button
           >
         </template>

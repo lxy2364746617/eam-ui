@@ -255,7 +255,6 @@
                 size="mini"
                 :loading="btnLoading"
                 @click="handlerAdd"
-                v-hasPermi="['work:quest:add']"
                 >添加</el-button
               >
             </el-col>
@@ -268,7 +267,6 @@
               icon="el-icon-delete"
               :loading="btnLoading"
               @click="handlerDelete(scope.row, 'delete')"
-              v-hasPermi="['work:quest:delete']"
               >删除</el-button
             >
           </template>
