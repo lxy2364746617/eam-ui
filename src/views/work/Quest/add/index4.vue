@@ -873,7 +873,12 @@ export default {
       this.loading3 = true;
       form["workOrderCode"] = this.formData.orderCode;
       await getOrderExecutor(form).then((response) => {
-        this.equipmentList3 = response.data;
+        this.equipmentList3 = response.data.map((item) => ({
+          ...item,
+          allWorkHours: item.allWorkHours
+            ? (item.allWorkHours / 60).toFixed(1)
+            : 0,
+        }));
         this.idsList = this.equipmentList3.map((item) => item.userId);
         // this.total3 = response.total;
         this.loading3 = false;
