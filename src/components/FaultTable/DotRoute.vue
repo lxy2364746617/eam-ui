@@ -456,7 +456,7 @@ export default {
       this.$modal
         .confirm("是否确认删除？")
         .then(function () {
-          that.plineList.splice(scope.$index, 1);
+          that.plineList.splice(scope.index, 1);
         })
         .catch(() => {});
     },
