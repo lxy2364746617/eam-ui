@@ -590,7 +590,11 @@ export default {
       //   quotaValue: item.quotaValue,
       //   remark: item.remark,
       // }));
-      upkeepStoreItem({ maintainItems: this.standardList }).then((res) => {
+      upkeepStoreItem({
+        deviceCode: this.form.deviceCode,
+        workOrderCode: this.routerForm.orderCode,
+        maintainItems: this.standardList,
+      }).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
           this.handlerBack();
@@ -606,7 +610,11 @@ export default {
         this.$message.warning("请填写所有操作！");
         return;
       }
-      upkeepSubmitItem({ maintainItems: this.standardList }).then((res) => {
+      upkeepSubmitItem({
+        deviceCode: this.form.deviceCode,
+        workOrderCode: this.routerForm.orderCode,
+        maintainItems: this.standardList,
+      }).then((res) => {
         if (res.code === 200) {
           this.$message.success("提交成功!");
           this.handlerBack();

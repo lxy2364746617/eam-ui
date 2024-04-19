@@ -89,6 +89,15 @@ export default {
     //     });
     //   },
     // },
+    "formData.supplierName": {
+      handler(val) {
+        console.log("========================", val, this.formData);
+        if (!val) {
+          this.formData.checkUnit = null;
+          console.log("========================", this.formData);
+        }
+      },
+    },
   },
   data() {
     return {
@@ -99,7 +108,6 @@ export default {
       userList: [],
     };
   },
-
   mounted() {},
   computed: {},
   methods: {
@@ -108,6 +116,7 @@ export default {
     },
     submitRadio(row) {
       this.$set(this.formData, "supplierName", row.supplierName);
+      this.$set(this.formData, "checkUnit", row.id);
       this.$set(this.formData, "directorName", row.contacts);
       this.closesupplier();
     },

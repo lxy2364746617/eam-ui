@@ -166,7 +166,12 @@
         align="center"
         prop="checkUnitHead"
         min-width="150"
-      />
+      >
+        <template slot-scope="scope">
+          <span
+            v-html="findName1(groupOptions, scope.row.checkUnit, 'contacts')"
+          ></span> </template
+      ></el-table-column>
 
       <el-table-column label="执行状态" align="center" prop="executeStatus">
         <template slot-scope="scope">
@@ -262,6 +267,7 @@ import { findAll, getGroup } from "@/api/system/group";
 import { orderTemplate } from "@/api/work/template";
 import { userList } from "@/api/flowable/todo";
 import { listUser } from "@/api/system/user";
+import { listSupplier } from "@/api/system/supplier";
 export default {
   components: {
     Wrapper,
@@ -301,7 +307,6 @@ export default {
       btnLoading: false,
       title: "",
       data: {},
-      groupMembers: [],
       groupOptions: [],
       orderOptions: [],
       disabled: false,
@@ -354,6 +359,16 @@ export default {
           return {
             value: item.userId,
             label: item.nickName,
+          };
+        });
+      });
+      listSupplier({ pageNum: 1, pageSize: 10000 }).then((res) => {
+        this.groupOptions = res.rows.map((item) => {
+          return {
+            value: item.id,
+            label: item.supplierName,
+            phone: item.phone,
+            contacts: item.contacts,
           };
         });
       });
@@ -427,6 +442,15 @@ export default {
         }
       }
       return null;
+    },
+    findName1(options, value, label) {
+      var name = "";
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == value) {
+          name = options[i][label];
+        }
+      }
+      return name || value;
     },
     findName(options, value) {
       var name = "";

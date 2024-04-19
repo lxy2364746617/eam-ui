@@ -95,7 +95,7 @@ import { listSupplier } from "@/api/system/supplier";
 import { removeStore } from "@/utils/property.js";
 export default {
   components: { Wrapper, CarryForm, JmForm },
-  dicts: ["em_is_special", "em_device_state", "em_device_check"],
+  dicts: ["em_is_special", "em_device_state", "em_device_testresults"],
   data() {
     return {
       wrapperTitle: "",
@@ -120,7 +120,6 @@ export default {
     this.formData["workOrderCode"] = this.carryValue.l.orderCode;
     this.formData["orderCode"] = this.carryValue.l.orderCode;
     this.formData["deviceCode"] = this.form.deviceCode;
-    this.getUserList();
     goExecutorDetail({
       workOrderCode: this.formData.workOrderCode,
       deviceCode: this.form.deviceCode,
@@ -128,14 +127,13 @@ export default {
       this.formData = {
         ...this.formData,
         ...res.data,
-        checkResult: "" + res.data.checkResult,
-        checkUnit: res.data.checkUnit
-          ? Number(res.data.checkUnit)
-          : this.carryValue.l.groupId,
+        checkResult: res.data.checkResult ? String(res.data.checkResult) : "1",
+        checkUnit: Number(res.data.checkUnit),
         recorder: res.data.recorder ?? this.$store.state.user.standing.nickName,
         recordTime: res.data.recordTime ?? new Date(),
       };
       this.checkCosts = res.data.checkCosts;
+      this.getUserList();
     });
   },
   mounted() {
@@ -190,7 +188,7 @@ export default {
           label: "联系方式",
           span: 8,
           prop: "headPhonenum",
-          required: true,
+          // required: true,
           formDisabled: true,
         },
         {
@@ -220,7 +218,7 @@ export default {
           span: 8,
           prop: "checkResult",
           formType: "select",
-          options: this.dict.type.em_device_check,
+          options: this.dict.type.em_device_testresults,
           required: true,
         },
         {
@@ -280,7 +278,6 @@ export default {
             contacts: item.contacts,
           };
         });
-        this.$set(this.formData, "checkUnit", this.carryValue.l.groupId);
         this.$set(
           this.formData,
           "checkUnitHead",
@@ -291,6 +288,7 @@ export default {
           "headPhonenum",
           this.findName(this.userList, this.formData.checkUnit, "phone")
         );
+        this.$refs.titleform.clearValidate();
       });
     },
     dateDiffInHours(date1, date2) {

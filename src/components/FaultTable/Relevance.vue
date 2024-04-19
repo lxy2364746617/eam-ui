@@ -10,7 +10,6 @@
         icon="el-icon-plus"
         class="add-btn-file"
         @click="AddFile"
-        v-hasPermi="['work:detail:add']"
         v-if="!disabled"
         >上传</el-button
       >
@@ -29,7 +28,6 @@
           type="text"
           icon="el-icon-view"
           @click="downloadFile(scope.row)"
-          v-hasPermi="['work:detail:download']"
           >下载</el-button
         >
         <el-button
@@ -47,7 +45,6 @@
           type="text"
           icon="el-icon-document-add"
           @click="handlePreview(scope.row)"
-          v-hasPermi="['work:detail:view']"
           >预览</el-button
         >
       </template>
