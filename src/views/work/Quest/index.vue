@@ -249,6 +249,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        orderCode: this.$route.query.orderCode,
       },
       queryParams2: {
         pageNum: 1,
@@ -288,7 +289,7 @@ export default {
       listGroupId: null,
       // 进度
       workActiveList: [
-        { orderStatus: "待派工" },
+        { orderStatus: "待派工", sbdx: "12312321" },
         { orderStatus: "待执行" },
         { orderStatus: "执行中" },
         { orderStatus: "待验收" },
@@ -485,6 +486,7 @@ export default {
         });
 
         row["workOrderSchedule"] = this.workActiveList;
+        console.log("========================", row["workOrderSchedule"]);
         switch (row.orderType + row.orderObj) {
           // ! 巡点捡
           case "RCDJ1":
@@ -564,7 +566,7 @@ export default {
             label: item.groupName,
           };
         });
-        this.getList();
+        this.getList(this.queryParams);
       });
     },
     getUserList() {

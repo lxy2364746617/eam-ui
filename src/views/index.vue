@@ -1,13 +1,15 @@
 <template>
   <div class="home">
     <wc-waterfall :gap="10" :cols="3">
-      <div class="border" style="height: 300px; width: 630px">
+      <div class="border" style="height: 300px; width: 630px; padding: 0">
         <div class="user">
           <div>
             <div style="display: flex; justify-content: space-between">
               <div>
-                <div>{{ $store.state.user.standing.nickName }}，你好！</div>
-                <span>今天是元气满满的一天！</span>
+                <div>
+                  <div>{{ $store.state.user.standing.nickName }}，你好！</div>
+                  <span>今天是元气满满的一天！</span>
+                </div>
                 <div
                   style="
                     display: flex;
@@ -21,9 +23,21 @@
                   </div>
                   <div class="user-bottom">
                     <div>
-                      <b>{{ $store.state.user.standing.nickName }}</b>
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        :content="$store.state.user.standing.nickName"
+                        placement="top-start"
+                      >
+                        <b class="user-name">{{
+                          $store.state.user.standing.nickName
+                        }}</b>
+                      </el-tooltip>
+
                       <span>{{
-                        $store.state.user.standing.dept.deptName
+                        $store.state.user.standing.dept
+                          ? $store.state.user.standing.dept.deptName
+                          : ""
                       }}</span>
                     </div>
                   </div>
@@ -35,11 +49,13 @@
                     backgroundImage: `url(${img})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'contain',
-                    width: '170px',
-                    height: '170px',
+                    backgroundSize: '100% 100%',
+                    width: '238px',
+                    height: '240px',
+                    transform: 'translateY(-50px)',
                   }"
                 ></div>
-                <div class="user-bottom">
+                <div class="user-bottom2">
                   <ul>
                     <li>
                       <p>{{ orderCount ? orderCount : "0" }}</p>
@@ -54,7 +70,6 @@
               </div>
             </div>
           </div>
-          <div class="user-bottom"></div>
         </div>
       </div>
       <div class="border" style="height: 300px">
@@ -84,10 +99,12 @@
               "
             >
               <svg-icon
-                style="color: #226efc; font-size: 20px"
+                style="color: #226efc; font-size: 18px"
                 :icon-class="item.icon"
               />
-              <span style="margin-top: 40px">{{ item.title }}</span>
+              <span style="margin-top: 44px; font-size: 14px">{{
+                item.title
+              }}</span>
             </li>
           </ul>
           <div class="no-information" v-else>
@@ -622,7 +639,7 @@ export default {
         this.$router.push({
           name: "Quest",
           query: {
-            data: JSON.stringify({ orderCode: row.orderCode }),
+            orderCode: row.orderCode,
           },
         });
       }
@@ -779,15 +796,24 @@ export default {
 }
 .user {
   height: 132px;
-  background: rgba(20, 95, 240, 0.4);
-  font-size: 20px;
+  background: #d9e5fd;
+  font-size: 18px;
   color: #1f66f1;
-  padding: 25px;
+  // padding: 25px;
   font-weight: 700;
-
+  border-radius: 8px;
+  > div {
+    padding: 25px;
+  }
   span {
     font-size: 16px;
     line-height: 42px;
+  }
+  .user-name {
+    width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 显示省略号 */
+    white-space: nowrap; /* 禁止文本换行 */
   }
   .user-avatar {
     width: 80px; /* 正方形的宽度 */
@@ -813,6 +839,47 @@ export default {
       justify-content: center;
       align-items: center;
       transform: translateX(20px);
+      b {
+        color: #495055;
+        font-size: 18px;
+      }
+      span {
+        color: #7d8092;
+        font-size: 14px;
+      }
+    }
+    ul {
+      list-style: none;
+      display: flex;
+      height: 70px;
+      width: 170px;
+      justify-content: space-between;
+      align-items: center;
+      li {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 8px;
+        span {
+          color: #7d8092;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  .user-bottom2 {
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-72px) translateX(40px);
+
+    div {
+      height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       b {
         color: #495055;
         font-size: 18px;

@@ -90,7 +90,7 @@ export function chartOption() {
           position: "inside",
           color: "#666",
           formatter: function (params) {
-            if (params.percent) return params.percent + "%";
+            return params.percent ? params.percent : 0 + "%";
           },
         },
         data: data,
