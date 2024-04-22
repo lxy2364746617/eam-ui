@@ -184,6 +184,7 @@
 <script>
 import { getDeviceResume } from "@/api/equipment/parts";
 import { listDept } from "@/api/system/dept";
+import {getPrtOrgTreeByDeptId} from '@/api/equipment/BASE'
 export default {
   props: {
     formData: {
@@ -267,7 +268,7 @@ export default {
     },
     getTreeSelect() {
       this.deptOptions = [];
-      listDept().then((response) => {
+      getPrtOrgTreeByDeptId().then((response) => {
         this.$set(this, "deptOptions", response.data);
         this.$forceUpdate();
       });

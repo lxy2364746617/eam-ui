@@ -32,7 +32,7 @@
 <script>
 import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
-import { equipmentTree } from "@/api/equipment/category";
+import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import store from '@/store'
 export default {
@@ -270,7 +270,7 @@ export default {
       this.$emit('closeform')
     },
     getTreeSelect(){
-      equipmentTree().then(response => {
+      equipmentTreeNoTemplate().then(response => {
         this.categoryOptions = response.data;
       });
       listDept().then(response => {

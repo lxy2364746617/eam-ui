@@ -26,7 +26,7 @@
 
 <script>
 import { listBASE } from "@/api/equipment/BASE";
-import { groupList,  deptTreeSelect } from "@/api/system/user";
+import { groupList,  deptTreeSelect ,deptTreeNoAnnotation} from "@/api/system/user";
 import { equipmentTree } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -157,7 +157,7 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTree() {
-      deptTreeSelect().then(response => {
+      deptTreeNoAnnotation().then(response => {
         this.deptOptions = response.data;
       });
     },

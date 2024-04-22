@@ -16,6 +16,14 @@ export function equipmentTreeNoTemplate(query) {
     params: query
   })
 }
+// 查询设备平台_设备类别详情
+export function getAttrByCatgoryId(query) {
+  return request({
+    url: '/equipment/category/getAttrByCatgoryId',
+    method: 'get',
+    params: query
+  })
+}
 // 查询设备平台_设备类别 树 无最外层父级
 export function equipmentTrees_noParent(query) {
   return request({

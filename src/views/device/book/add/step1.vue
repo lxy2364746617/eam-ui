@@ -40,7 +40,7 @@
 <script>
 import { listBASE, addBASE, updateBASE ,getPrtOrgTreeByDeptId,getDeptInfo} from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
-import { equipmentTree,equipmentTrees_noParent } from "@/api/equipment/category";
+import { equipmentTree,equipmentTreeNoTemplate,getAttrByCatgoryId } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -80,9 +80,12 @@ export default {
   watch:{
     'formData.categoryId':{
       handler(val) {
-        this.getTreeItem(val,this.categoryOptions)
-        var b = this.treeItem
-        if(b.isSm == 'Y' && b.smAttributes){
+        /* this.getTreeItem(val,this.categoryOptions)
+        var b = this.treeItem */
+        console.log(val)
+        getAttrByCatgoryId({categoryId:val}).then(res=>{
+        const b = res.data[0]
+          if(b.isSm == 'Y' && b.smAttributes){
           if(this.formData.emArchivesIndex==null){
             //this.formData.emArchivesIndex = {}
             this.$set(this.formData, 'emArchivesIndex', {})
@@ -111,8 +114,10 @@ export default {
           this.$set(this.formData, 'isSpecial', 'N')
           this.$set(this.formData,'emArchivesSpecial',null)
         }
+        })
+        
       },
-      // immediate: true,
+       immediate: true,
     }
   },
   computed:{
@@ -318,7 +323,7 @@ export default {
       this.close()
     },
     getTreeSelect(){
-      equipmentTrees_noParent().then(response => {
+      equipmentTreeNoTemplate().then(response => {
         this.categoryOptions = response.data;
       });
       /* listDept({prtOrg:'Y' }).then(response => {

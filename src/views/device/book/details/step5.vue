@@ -147,6 +147,7 @@
 
 <script>
 import { listParts, addParts, updateParts, delParts,selectPage,getPartRecord } from "@/api/equipment/parts";
+import{getPrtOrgTreeByDeptId} from  "@/api/equipment/BASE";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -328,7 +329,7 @@ export default {
   },
   methods: {
   async  getTreeSelect(){
-     await listDept().then(response => {
+     await getPrtOrgTreeByDeptId().then(response => {
         this.$set(this,'deptOptions',response.data)
       });
      await getLocationTree().then(res=>{
