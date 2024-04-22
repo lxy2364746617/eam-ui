@@ -341,11 +341,13 @@ export default {
        await updateBASE(formData).then(response => {
           this.$modal.msgSuccess("修改成功");
           if(typeof fn == 'function') fn()
+          this.formData.archivesPartsList = this.equipmentList;
         });
       } else {
        await addBASE(formData).then(response => {
           this.$modal.msgSuccess("保存成功");
           if(typeof fn == 'function') fn()
+          this.formData.archivesPartsList = this.equipmentList;
         });
       }
       this.$emit('closeform')

@@ -8,7 +8,7 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="日期范围：">
-        <el-date-picker v-model="time" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+        <el-date-picker v-model="time" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd"></el-date-picker>
       </el-form-item>
     </el-form>
     <div style="width:140px;position:absolute;right:0;top:0;z-index:1">
