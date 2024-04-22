@@ -55,9 +55,9 @@
 
 <script>
 import { listResource, addResource, delResource } from "@/api/system/resource";
-import { getBASE, removeParentEmBASE, addParentEmBASE } from "@/api/equipment/BASE";
+import { getBASE, removeParentEmBASE, addParentEmBASE,getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
-import { equipmentTree } from "@/api/equipment/category";
+import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -237,10 +237,10 @@ export default {
       this.drawer = true;
     },
     getTreeSelect(){
-      equipmentTree().then(response => {
+      equipmentTreeNoTemplate().then(response => {
         this.categoryOptions = response.data;
       });
-      listDept().then(response => {
+      getPrtOrgTreeByDeptId().then(response => {
         this.deptOptions = response.data;
       });
     },

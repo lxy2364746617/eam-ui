@@ -150,3 +150,10 @@ export function optionDept(query) {
     params: query
   })
 }
+// 查询部门下拉树结构  班组
+export function  deptTreeNoAnnotation() {
+  return request({
+    url: '/system/user/deptTreeNoAnnotation',
+    method: 'get'
+  })
+}

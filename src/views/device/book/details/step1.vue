@@ -108,9 +108,9 @@
 </template>
 
 <script>
-import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
+import { listBASE, addBASE, updateBASE,getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
-import { equipmentTree,equipmentTrees_noParent } from "@/api/equipment/category";
+import { equipmentTree,equipmentTreeNoTemplate } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -195,7 +195,7 @@ export default {
         { label:"功能位置", prop:"location", span: 12, required: true,options:this.locationOptions,formType: 'selectTree', },
         { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },
         { label:"当前使用组织", prop:"currDeptId", formType: 'selectTree', options: this.deptOptions, span: 12, required: true, },
-        { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions, tableVisible: false, span: 12, required: true, },
+        { label:"使用部门", prop:"useDeptId", formType: 'selectTree', options: this.deptOptions1, tableVisible: false, span: 12, required: true, },
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, span: 12, }, //(A、B、C)
         { label:"是否是特种设备", prop:"isSpecial", formType: 'select', options: this.dict.type.em_is_special, tableVisible: false, span: 12, required: true, formDisabled:true, }, //(Y 是、N 否)
         { label:"设备属性", prop:"deviceAtt", formType: 'select', options: this.dict.type.em_device_att, span: 12, required: true, },  //(1 设备、2 部件)
@@ -274,6 +274,7 @@ export default {
       // 部门树选项
       categoryOptions: [],
       deptOptions: [],
+      deptOptions1:[],
       treeItem: {},
       // 是否显示弹出层
       open: false,
@@ -399,11 +400,14 @@ export default {
       this.close()
     },
     getTreeSelect(){
-      equipmentTrees_noParent().then(response => {
+      equipmentTreeNoTemplate().then(response => {
         this.categoryOptions = response.data;
       });
-      listDept().then(response => {
+      getPrtOrgTreeByDeptId().then(response => {
         this.deptOptions = response.data;
+      });
+      listDept().then(response => {
+        this.deptOptions1 = response.data;
       });
       getLocationTree().then(res=>{
         this.locationOptions=this.getTree(res.data)

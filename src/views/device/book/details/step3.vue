@@ -67,9 +67,9 @@
 </template>
 
 <script>
-import { listBASE, addBASE, updateBASE } from "@/api/equipment/BASE";
+import { listBASE, addBASE, updateBASE,getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
-import { equipmentTree } from "@/api/equipment/category";
+import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -234,10 +234,10 @@ export default {
       this.close()
     },
     getTreeSelect(){
-      equipmentTree().then(response => {
+      equipmentTreeNoTemplate().then(response => {
         this.categoryOptions = response.data;
       });
-      listDept().then(response => {
+      getPrtOrgTreeByDeptId().then(response => {
         this.deptOptions = response.data;
       });
     },
