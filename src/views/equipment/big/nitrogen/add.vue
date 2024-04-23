@@ -106,9 +106,9 @@ export default {
                 { label: "设备状态", prop: "deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
                 { label: "功能位置", prop: "location", formType: 'selectTree', options: this.locationOptions,width:180},
                 { label: "重要等级", prop: "level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
-                { label: "所属子公司", prop: "subCompanyId",formType: 'selectTree', options: this.deptOptions, },
-                { label: "所属组织", prop: "affDeptId", formType: 'selectTree', options: this.deptOptions, },
-                { label: "当前使用组织", prop: "currDeptId", formType: 'selectTree', options: this.deptOptions, },
+                { label: "所属子公司", prop: "subCompanyName", },
+                { label: "所属组织", prop: "affDeptName",  },
+                { label: "当前使用组织", prop: "currDeptName",},
                 { label: "购置日期", prop: "makerAoTime", formType: 'date', },
 
             ]

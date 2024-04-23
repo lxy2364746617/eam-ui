@@ -70,7 +70,7 @@
                     <div class="wd_box" >
                       <p class="el-icon-folder-opened icon_top"></p>
                       <p class="name" >{{item.fileName}}</p>
-                      <p class="type">类型:{{item.kdbValue}}</p>
+                      <p class="type">类型:{{getName(item.kdbType)}}</p>
                       <el-divider></el-divider>
                       <p class="icon_bottom"><span class="el-icon-right" @click="ywwdClick(item)"></span></p>
                     </div>
@@ -133,16 +133,26 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
         },
         ywwdData:{
           list:[]
-        }
+        },
+        typeArr:[]
       }
     },
     mounted(){
+      maintainType().then(res=>{
+            res.data.forEach(item=>{
+             if (item.children.length>0)
+             this.typeArr= this.typeArr.concat(item.children)
+            })
+          })
       this.getGzglList()
       this.getJszlList()
       this.getYwwdList()
       this.getGzzdList()
     },
     methods:{
+      getName(val){
+        return this.typeArr.filter(item=>item.id==val)[0].label
+      },
       // 点击搜索按钮
       searchClick(){
         this.$router.push({name:'searchPage',query:{searchText:this.search_text}})
@@ -207,20 +217,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
           this.ywwdData.list = res.rows
           console.log(this.ywwdData.list)
           // 获取运维文档类型
-          /* maintainType().then(ress=>{
-            if(res.rows && ress.data){
-              res.rows.forEach(item=>{
-                ress.data.forEach(items=>{
-                  items.options.forEach(itemss=>{
-                    if( item.kdbType== itemss.value){
-                      item.type = itemss.label
-                    }
-                  })
-                })
-              })
-              this.ywwdData.list = res.rows
-            }
-          }) */
+          
         })
       },
       // 获取规章制度

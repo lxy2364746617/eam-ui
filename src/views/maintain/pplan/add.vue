@@ -675,9 +675,10 @@ export default {
         /** 删除按钮操作 */
         handleDelete2(row) {
             var name = row.originalFileName;
+            console.log(row)
             let that = this;
             this.$modal.confirm('是否确认删除名称为"' + name + '"的数据项？').then(function () {
-                return delResource(id);
+                return delResource(row.id);
             }).then(() => {
                 that.fileResourceList.forEach((element, index) => {
                     if (element.originalFileName == row.originalFileName) {

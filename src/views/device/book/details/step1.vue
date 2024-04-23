@@ -109,6 +109,7 @@
 
 <script>
 import { listBASE, addBASE, updateBASE,getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
+import { deptTreeNoAnnotation} from "@/api/system/user";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree,equipmentTreeNoTemplate } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
@@ -406,7 +407,7 @@ export default {
       getPrtOrgTreeByDeptId().then(response => {
         this.deptOptions = response.data;
       });
-      listDept().then(response => {
+      deptTreeNoAnnotation().then(response => {
         this.deptOptions1 = response.data;
       });
       getLocationTree().then(res=>{

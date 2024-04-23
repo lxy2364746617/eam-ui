@@ -604,3 +604,8 @@ export default {
   }
 }
 </style>
+<style>
+ .vue-treeselect__label-container,.vue-treeselect__option{
+  width: auto;
+}
+</style>

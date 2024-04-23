@@ -25,14 +25,14 @@
 </template>
 
 <script>
-import { largeRelationList } from "@/api/equipment/BASE";
+import { largeRelationList,getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
 import { equipmentTree } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmUserTree from "@/components/JmUserTree";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { getLocationTree} from '@/api/Location'
-import { listDept } from '@/api/system/dept'
+import { listDept, } from '@/api/system/dept'
 export default {
   name: "devicebook1",
   dicts: ['em_device_att', 'em_device_level'],
@@ -116,7 +116,7 @@ export default {
      await getLocationTree().then(res=>{
         this.locationOptions=this.getTreeName(res.data)
       })
-     await listDept().then((response) => {
+     await getPrtOrgTreeByDeptId().then((response) => {
         this.deptOptions = response.data
       })
     },

@@ -905,7 +905,8 @@ export default {
         {
           ...obj,
         },
-        `d设备档案_${new Date().getTime()}.xlsx`
+        `设备档案_${new Date().getTime()}.xlsx`,
+        {timeout:200000}
       )
     },
     /** 下载模板操作 */
