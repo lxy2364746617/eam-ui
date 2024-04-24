@@ -71,7 +71,8 @@
                   />
                 </el-col>
                 <el-col :span="14">
-                  <p>规格型号:{{ item.deviceCode }}</p>
+                  <p>设备编码:{{ item.deviceCode }}</p>
+                  <p>规格型号:{{ item.specs }}</p>
                   <p>
                     设备类型:{{
                       findTreeName(categoryOptions, item.deviceType)

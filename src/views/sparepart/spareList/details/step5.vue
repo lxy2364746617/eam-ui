@@ -5,10 +5,7 @@
         <p class="subtitle">
           <i class="el-icon-magic-stick"></i> 备件图片
           <span v-if="disabled1" class="rightbutton">
-            <el-button
-              type="text"
-              icon="el-icon-edit"
-              @click="disabled1 = false"
+            <el-button type="text" icon="el-icon-edit" @click="editTrue"
               >编辑</el-button
             >
           </span>
@@ -125,6 +122,10 @@ export default {
     });
   },
   methods: {
+    editTrue() {
+      this.$emit("editTrue", true);
+      this.disabled1 = false;
+    },
     uploadChange1(val) {
       this.formData.imgFileResourceList = val;
       this.$emit("newFormData", this.formData);

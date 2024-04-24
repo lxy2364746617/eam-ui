@@ -55,7 +55,7 @@ export function delParts(deviceId) {
 export function selectPage(data) {
   return request({
     url: '/attachment/list',
-    method: 'post',
+    method: 'get',
     params: data
   })
 }

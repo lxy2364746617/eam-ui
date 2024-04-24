@@ -278,7 +278,7 @@ export default {
           label: "存放位置",
           prop: "position",
           formType: "selectTree",
-          options: this.deptOptions,
+          options: this.locationOptions,
           tableVisible: false,
           span: 8,
         },

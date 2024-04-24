@@ -94,6 +94,8 @@ export function chartOption() {
         // data: nameArray,
         icon: "circle",
         left: "right",
+        selectedMode: false,
+
         top: "center",
         align: "left",
         right: 10,

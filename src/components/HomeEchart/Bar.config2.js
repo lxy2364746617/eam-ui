@@ -10,7 +10,7 @@ export function chartOption() {
     const value = item[key];
     nameArray.push(key + "\t\t\t\t\t\t\t\t\t" + "{a|" + value + "条}");
     return {
-      name: key + "\n\n" + "{a|" + value + "  条}",
+      name: key + "\t\t\t\t\t\t\t\t\t" + "{a|" + value + "  条}",
       label: key,
       value,
       itemStyle: { borderWidth: 0 },
@@ -90,17 +90,22 @@ export function chartOption() {
     },
     legend: [
       {
+        orient: "vertical",
+        // data: nameArray,
         icon: "circle",
+        left: "right",
+        top: "center",
         align: "left",
-        itemGap: 20, // 调整图例项之间的间距
-        right: 1,
+        selectedMode: false,
+
+        right: 10,
         bottom: 20,
-        width: "40%",
+        itemGap: 10,
+
         //图例标记的图形高度
         itemHeight: 12,
         //图例标记的图形宽度
         itemWidth: 12,
-
         formatter: (name) => {
           return name;
         },

@@ -295,7 +295,7 @@ export default {
     // ! 提交
     sub(val, userIds) {
       definitionStart2(val.id, this.radioRow.purchasePlanNo, "purchase_plan", {
-        path: "/property/annualControls",
+        path: "/property/purchase/annualControls",
         nextUserIds: userIds,
       }).then((res) => {
         if (res.code == 200) {

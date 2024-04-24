@@ -96,6 +96,7 @@
             @newFormData="newFormData"
             :locationOptions="locationOptions"
             @close="close"
+            @editTrue="editTrue"
           ></component>
         </el-tab-pane>
       </el-tabs>
@@ -299,6 +300,9 @@ export default {
     },
   },
   methods: {
+    editTrue() {
+      this.spareValue2 = JSON.parse(JSON.stringify(this.spareValue));
+    },
     getTree(arr) {
       arr.forEach((item) => {
         item.id = item.deptCode;
@@ -346,6 +350,7 @@ export default {
       this.drawer = true;
     },
     close(callback) {
+      console.log("========================", this.spareValue2);
       this.spareValue = JSON.parse(JSON.stringify(this.spareValue2));
 
       this.disabled1 = true;

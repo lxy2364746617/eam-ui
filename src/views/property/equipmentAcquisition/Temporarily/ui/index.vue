@@ -386,7 +386,7 @@ export default {
         setProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
             definitionStart2(val.id, res.data, "purchase_plan", {
-              path: "/property/temporarilyControls",
+              path: "/property/purchase/temporarilyControls",
               nextUserIds: userIds,
             }).then((res) => {
               if (res.code == 200) {
@@ -402,7 +402,7 @@ export default {
         updateProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
             definitionStart2(val.id, this.reviewCode, "purchase_plan", {
-              path: "/property/annualControls",
+              path: "/property/purchase/temporarilyControls",
               nextUserIds: userIds,
             }).then((res) => {
               if (res.code == 200) {

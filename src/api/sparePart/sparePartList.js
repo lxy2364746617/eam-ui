@@ -124,7 +124,7 @@ export function getImg(partCode) {
 export function getSelectManagementList(data) {
   return request({
     url: "/attachment/list",
-    method: "post",
-    data: data,
+    method: "get",
+    params: data,
   });
 }

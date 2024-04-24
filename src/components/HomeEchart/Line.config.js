@@ -32,7 +32,7 @@ export function chartOption() {
     },
     grid: {
       left: "4%",
-      right: "4%",
+      right: "6%",
       bottom: "1%",
       containLabel: true,
     },
