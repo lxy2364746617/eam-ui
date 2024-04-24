@@ -179,7 +179,7 @@ import ContTable from "@/components/ContTable";
 import { v4 as uuidv4 } from "uuid";
 import Wrapper from "@/components/wrapper";
 import { orderTemplate } from "@/api/work/template";
-import { listUser } from "@/api/system/user";
+import { listUser2 } from "@/api/system/user";
 import { findAll } from "@/api/system/group";
 export default {
   components: {
@@ -430,8 +430,8 @@ export default {
     },
 
     getUserList() {
-      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
-        this.userList = res.rows.map((item) => {
+      listUser2().then((res) => {
+        this.userList = res.data.map((item) => {
           return {
             id: item.userId,
             label: item.nickName,

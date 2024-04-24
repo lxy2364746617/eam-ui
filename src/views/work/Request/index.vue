@@ -104,7 +104,7 @@ import {
   getAllocationClose,
 } from "@/api/work/schedule";
 import { orderTemplate } from "@/api/work/template";
-import { listUser } from "@/api/system/user";
+import { listUser2 } from "@/api/system/user";
 import { findAll } from "@/api/system/group";
 export default {
   components: { Wrapper, ContTable },
@@ -279,8 +279,8 @@ export default {
       this.$refs["elForm2"].resetFields();
     },
     getUserList() {
-      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
-        this.userList = res.rows.map((item) => {
+      listUser2({ pageNum: 1, pageSize: 10000 }).then((res) => {
+        this.userList = res.data.map((item) => {
           return {
             id: item.userId,
             label: item.nickName,

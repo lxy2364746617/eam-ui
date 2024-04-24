@@ -41,6 +41,7 @@
                   :detailId="taskForm.businessId"
                 ></device-detail>
                 <receive-detail
+                  style="overflow: none"
                   v-if="path == '/property/receiveControls'"
                   :detailReadonly="true"
                   :businessId="taskForm.businessId"
@@ -154,7 +155,13 @@
               </el-timeline> -->
                 <ul>
                   <li
-                    :class="{linetime:true,linetime_finished:item.processStatus=='completed'||item.processStatus==null,linetime_running:item.processStatus=='running'}"
+                    :class="{
+                      linetime: true,
+                      linetime_finished:
+                        item.processStatus == 'completed' ||
+                        item.processStatus == null,
+                      linetime_running: item.processStatus == 'running',
+                    }"
                     v-for="(item, index) in flowRecordList"
                     :key="index"
                   >
@@ -439,8 +446,8 @@ import receiveDetail from "@/views/property/Receive/ui/index";
 import backspaceDetail from "@/views/property/Backspace/ui/index";
 import turnOverDetail from "@/views/property/TurnOver/ui/index";
 import ScrappingDetail from "@/views/property/Scrapping/ui/index";
-import AnnualDetail from "@/views/property/equipmentAcquisition/Annual/ui/index";
-import TemporarilyDetail from "@/views/property/equipmentAcquisition/Temporarily/ui/index";
+import AnnualDetail from "@/views/property/equipmentAcquisition/Annual/ui/index2";
+import TemporarilyDetail from "@/views/property/equipmentAcquisition/Temporarily/ui/index2";
 import PositionChangeDetail from "@/views/property/PositionChange/ui/index";
 import spareReceiveDetail from "@/views/sparepart/spareReceive/ui/index";
 import requirementDetail from "@/views/sparepart/requirement/ui/index";
@@ -594,7 +601,7 @@ export default {
   },
   methods: {
     handlerDeviceList(row) {
-      this.deviceList = row.map(item=>({
+      this.deviceList = row.map((item) => ({
         neckNo: item.neckNo,
         deviceId: item.deviceId,
         deviceCode: item.deviceCode,
@@ -996,7 +1003,7 @@ export default {
 .test-form {
   margin: 15px auto;
   width: 100% !important;
-  padding: 15px;
+  padding: 0px 15px;
   padding-right: 0;
 }
 
@@ -1042,7 +1049,7 @@ export default {
 }
 .linetime_finished:before {
   content: "\e6da";
-  font-family:element-icons !important;
+  font-family: element-icons !important;
   display: inline-block;
   width: 20px;
   height: 20px;
@@ -1054,8 +1061,8 @@ export default {
   left: -12px;
   transform: translateY(-50%);
   font-size: 15px;
-    font-weight: 900;
-    color: #24a71e;
+  font-weight: 900;
+  color: #24a71e;
 }
 .linetime_running:before {
   content: "";

@@ -12,8 +12,8 @@
       :getList="getList"
       :isShowCard="isShowCard"
       :busId="formData.purchasePlanNo"
-      :busString="'busId'"
       :handleSelectionChange="handleSelectionChange"
+      :busString="'busId'"
       @addFileList="handlerAddFileList"
       @delFileList="handlerDelFileList"
       ref="spareForm"
@@ -62,7 +62,6 @@
       <el-button
         v-hasPermi="['property:purchase:submit']"
         type="primary"
-        v-if="isDeclare === 'Y'"
         @click="submitReview"
         >保存并提交审批</el-button
       >
@@ -92,7 +91,6 @@
         </template>
       </TitleForm>
     </el-drawer>
-
     <!-- 提交 -->
     <el-dialog
       :title="subtitle"
@@ -136,7 +134,6 @@ export default {
     "em_device_att",
     "em_device_level",
     "acquisition_plan",
-    "is_declare",
   ],
   props: {
     detailReadonly: {
@@ -220,7 +217,7 @@ export default {
       }
     } else {
       this.formData = {
-        purchasePlanType: 1,
+        purchasePlanType: 2,
       };
       this.isShowCard = false;
       this.getTreeSelect();
@@ -235,63 +232,43 @@ export default {
       immediate: true,
       deep: true,
     },
-    "formData.annual": {
-      handler(val) {
-        if (val) {
-          const startDate = new Date(val, 0, 1);
-          const endDate = new Date(val, 11, 31);
-
-          this.formData.time = [startDate, endDate];
-          this.formData["startTime"] = `${val}-1-1`;
-          this.formData["endTime"] = `${val}-12-31`;
-        } else {
-          this.formData.time = [];
-        }
-      },
-      immediate: true,
-      deep: true,
-    },
   },
   computed: {
-    isDeclare() {
-      return this.dict.type.is_declare[0]?.value;
-    },
     columnsInfo() {
       return [
         {
           label: "计划名称",
           prop: "purchasePlanName",
-          span: 5,
+          span: 6,
           required: true,
         },
         {
           label: "计划类型",
           prop: "purchasePlanType",
-          span: 5,
+          span: 6,
           required: true,
           formType: "select",
           options: [
             {
-              label: "年度采购",
-              value: 1,
+              label: "临时采购",
+              value: 2,
             },
           ],
           formDisabled: true,
         },
-        {
-          label: "年度",
-          prop: "annual",
-          span: 5,
-          formType: "dateYear",
-          required: true,
-        },
+        // {
+        //   label: "年度",
+        //   prop: "annual",
+        //   span: 5,
+        //   formType: "dateYear",
+        //   required: true,
+        // },
         {
           label: "开竣工时间",
           prop: "time",
-          span: 9,
+          span: 12,
           required: true,
           formType: "dateRange",
-          formDisabled: true,
         },
       ];
     },
@@ -374,8 +351,6 @@ export default {
           label: "需求组织",
           prop: "demandOrganization",
           tableVisible: true,
-          formType: "selectTree",
-          options: this.deptOptions,
           width: 150,
           span: 23,
           required: true,
@@ -409,7 +384,7 @@ export default {
         setProject(this.approvalContent).then((res) => {
           if (res.code === 200) {
             definitionStart2(val.id, res.data, "purchase_plan", {
-              path: "/property/annualControls",
+              path: "/property/temporarilyControls",
               nextUserIds: userIds,
             }).then((res) => {
               if (res.code == 200) {
@@ -582,11 +557,6 @@ export default {
         return;
       }
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
-      this.radioRow = selection[0];
-    },
     handlerAddFileList(val) {
       this.addFileList = val;
     },
@@ -595,24 +565,17 @@ export default {
     },
     // ! 信息提交
     spareSubmitForm(val, review) {
+      val["startTime"] = val.time[0];
+      val["endTime"] = val.time[1];
+      val["annual"] = val.time[1].substring(0, 4);
       delete val.time;
       // * 新增
-
-      if (
-        !this.equipmentList.some((item) => {
-          const demandTime = new Date(item.demandDate).getTime();
-          const startTime = new Date(val.startTime).getTime();
-          const endTime = new Date(val.endTime).getTime();
-
-          return startTime <= demandTime && demandTime <= endTime;
-        })
-      )
-        return this.$message.error("请检查需求日期，必须在年度计划范围内");
       if (review) {
         if (!this.formData.id) {
           val["addList"] = this.equipmentList;
           val["addFileList"] = this.addFileList;
           // if (!(val["addList"].length >=0))
+
           this.approvalContent = val;
           this.handleSubmit();
         } else {
@@ -659,6 +622,11 @@ export default {
         }
       }
     },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.id);
+      this.radioRow = selection[0];
+    },
     // ! 查询表格数据
     getList(queryParams) {
       let search = JSON.parse(JSON.stringify(queryParams));
@@ -666,6 +634,7 @@ export default {
       delete search.pageSize;
       let matches = this.equipmentList.filter((item) => {
         for (let key in search) {
+          // if (item[key] != search[key]) {
           if (!String(item[key]).includes(search[key])) {
             if (search[key] == "" || search[key] === null) continue;
             return false;

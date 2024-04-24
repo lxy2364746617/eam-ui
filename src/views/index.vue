@@ -77,7 +77,7 @@
           <span>设备状态</span>
         </div>
         <div style="height: 100%; width: 85%">
-          <Bar v-if="flag" :data="chartData"></Bar>
+          <Bar v-if="flag" :data="{ ...chartData, title: '设备' }"></Bar>
         </div>
       </div>
       <div class="border" style="height: 300px; width: 617px">
@@ -85,11 +85,6 @@
         <div class="use">
           <ul v-if="commonNavigation.length > 0">
             <li
-              :style="{
-                backgroundImage: `url(${useIcon})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'contain',
-              }"
               v-for="item in commonNavigation"
               :key="item.name"
               @click="
@@ -98,16 +93,38 @@
                 }
               "
             >
-              <svg-icon
-                style="color: #226efc; font-size: 18px"
-                :icon-class="item.icon"
-              />
-              <span style="margin-top: 44px; font-size: 14px">{{
-                item.title
-              }}</span>
+              <div
+                :style="{
+                  backgroundImage: `url(${useIcon})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: 'contain',
+                  width: '87px',
+                  height: '68px',
+                  margin: '0 auto',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }"
+              >
+                <svg-icon
+                  style="
+                    color: #226efc;
+                    font-size: 18px;
+                    transform: translateY(-9px);
+                  "
+                  :icon-class="item.icon"
+                />
+              </div>
+              <span style="font-size: 14px">{{ item.title }}</span>
             </li>
           </ul>
           <div class="no-information" v-else>
+            <div
+              :style="{
+                backgroundImage: `url(${not})`,
+                width: '82px',
+                height: '82px',
+              }"
+            ></div>
             <span>暂无常用功能导航</span>
           </div>
         </div>
@@ -180,7 +197,10 @@
         </div>
         <div class="work-order">
           <div style="height: 48%; width: 85%; margin-bottom: 20px">
-            <Bar v-if="flagOrder2" :data="womStatusCount"></Bar>
+            <Bar2
+              v-if="flagOrder2"
+              :data="{ ...womStatusCount, title: '工单' }"
+            ></Bar2>
           </div>
 
           <div style="height: 48%; width: 100%">
@@ -220,7 +240,11 @@
             @click="handleView(item)"
           >
             <el-tooltip :content="item.noticeTitle" placement="top">
-              <span class="single-line-ellipsis">{{ item.noticeTitle }}</span>
+              <span
+                style="font-family: 'DINPro-Medium'"
+                class="single-line-ellipsis"
+                >{{ item.noticeTitle }}</span
+              >
             </el-tooltip>
             <el-tooltip :content="item.createTime" placement="top">
               <span class="single-line-data">{{ item.createTime }}</span>
@@ -228,6 +252,13 @@
           </li>
         </ul>
         <div class="no-information" v-else>
+          <div
+            :style="{
+              backgroundImage: `url(${not})`,
+              width: '82px',
+              height: '82px',
+            }"
+          ></div>
           <span>暂无公告</span>
         </div>
       </div>
@@ -314,6 +345,13 @@
           </ul>
         </div>
         <div class="no-information" v-else>
+          <div
+            :style="{
+              backgroundImage: `url(${not})`,
+              width: '82px',
+              height: '82px',
+            }"
+          ></div>
           <span>暂无预警</span>
         </div>
       </div>
@@ -352,10 +390,12 @@ import {
   getNoticeList,
 } from "@/api/home/index.js";
 import Bar from "@/components/HomeEchart/Bar.vue";
+import Bar2 from "@/components/HomeEchart/Bar2.vue";
 import ChartLine from "@/components/HomeEchart/ChartLine.vue";
+
 export default {
   name: "index",
-  components: { ContTable, Bar, ChartLine, noticeDetail },
+  components: { ContTable, Bar, ChartLine, noticeDetail, Bar2 },
   dicts: ["process_category", "wf_process_status"],
   data() {
     return {
@@ -363,6 +403,7 @@ export default {
       version: "3.4.0",
       dialogVisible: false,
       process: process.env.VUE_APP_BASE_API,
+      not: require("@/assets/images/shouye/notData.png"),
       img: require("@/assets/images/shouye/info.png"),
       baseImgs: {
         0: require("@/assets/images/shouye/base1.png"),
@@ -814,6 +855,7 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis; /* 显示省略号 */
     white-space: nowrap; /* 禁止文本换行 */
+    text-align: center;
   }
   .user-avatar {
     width: 80px; /* 正方形的宽度 */
@@ -918,7 +960,8 @@ export default {
 .system {
   height: calc(100% - 30px);
   overflow: auto;
-  padding: 10px 0px;
+  font-family: "DINPro-Medium";
+  padding-top: 8px !important;
   li {
     height: 30px;
     font-size: 16px;
@@ -934,6 +977,7 @@ export default {
     white-space: nowrap;
   }
   .single-line-data {
+    font-weight: 400;
     width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1021,7 +1065,7 @@ export default {
 .use {
   width: 100%;
   height: calc(100% - 30px);
-  padding: 16px 24px 16px 34px;
+  padding: 20px 24px 16px 34px;
   overflow-y: auto;
 
   ul {
@@ -1030,13 +1074,20 @@ export default {
     flex-wrap: wrap;
     li {
       cursor: pointer;
-      margin-right: 10px;
       width: 100px;
-      height: 100px;
+      height: 90px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
       align-items: center;
+      margin-bottom: 12px;
+      margin-right: 10px;
+
+      div {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+      }
     }
   }
 }
@@ -1096,9 +1147,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   span {
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 400;
   }
 }
 .border-title {
@@ -1108,6 +1160,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   overflow: hidden;
+  font-weight: 600;
 }
 
 .border {
@@ -1116,5 +1169,23 @@ export default {
   overflow: hidden;
   padding: 15px;
 }
+::v-deep .el-table__empty-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 400;
+  color: #2c3e50;
+  &::before {
+    content: "";
+    display: block;
+    width: 82px;
+    height: 82px;
+    background-image: url("../assets/images/shouye/notData.png");
+    background-repeat: no-repeat;
+  }
+}
+/* font.css 或 font.scss */
 </style>
 

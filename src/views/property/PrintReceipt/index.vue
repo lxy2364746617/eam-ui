@@ -124,58 +124,73 @@
       </table>
       <!-- 底部 -->
       <div v-if="form.flag !== 'BF' && form.flag !== 'YJ'">
-        <span
-          class="basic"
-          v-for="item in personnelOptions"
-          :key="item.taskName"
-          ><span
-            >{{ "部门主管" }}：<span v-if="item.taskName === '部门主管'">{{
-              item.candidate
-            }}</span></span
+        <div class="basic">
+          <span
+            >{{ "部门主管："
+            }}<span
+              v-if="
+                personnelOptions.some((item) => item.taskName === '部门主管')
+              "
+              >{{ getPersonnel("部门主管") }}</span
+            ></span
           >
           <span
-            >{{ "设备管理员" }}：<span v--if="item.taskName === '设备管理员'">{{
-              item.candidate
-            }}</span></span
-          ><span
-            >{{ "材料员" }}：<span v-if="item.taskName === '材料员'">{{
-              item.candidate
-            }}</span></span
+            >{{ "设备管理员："
+            }}<span
+              v-if="
+                personnelOptions.some((item) => item.taskName === '设备管理员')
+              "
+              >{{ getPersonnel("设备管理员") }}</span
+            ></span
           >
-        </span>
+          <span
+            >{{ "材料员："
+            }}<span
+              v-if="personnelOptions.some((item) => item.taskName === '材料员')"
+              >{{ getPersonnel("材料员") }}</span
+            ></span
+          >
+        </div>
       </div>
       <div v-if="form.flag === 'YJ'">
-        <span
-          class="basic"
-          v-for="item in personnelOptions"
-          :key="item.taskName"
-        >
+        <div class="basic">
           <span
-            >{{ "调出单位负责人" }}：<span
-              v-if="item.taskName === '调出单位负责人'"
-              >{{ item.candidate }}</span
+            >{{ "调出单位负责人："
+            }}<span
+              v-if="
+                personnelOptions.some(
+                  (item) => item.taskName === '调出单位负责人'
+                )
+              "
+              >{{ getPersonnel("调出单位负责人") }}</span
             ></span
           >
           <span
-            >{{ "调入单位负责人" }}：<span
-              v-if="item.taskName === '调入单位负责人'"
-              >{{ item.candidate }}</span
+            >{{ "调入单位负责人："
+            }}<span
+              v-if="
+                personnelOptions.some(
+                  (item) => item.taskName === '调入单位负责人'
+                )
+              "
+              >{{ getPersonnel("调入单位负责人") }}</span
             ></span
           >
-        </span>
+        </div>
       </div>
       <div v-if="form.flag === 'BF'">
-        <span class="basic">
+        <div class="basic">
           <span>报废人：{{ dataSource.scrapPerson }}</span>
-          <span v-for="item in personnelOptions" :key="item.taskName">
-            <span
-              >{{ "设备管理员" }}：<span
-                v-if="item.taskName === '设备管理员'"
-                >{{ item.candidate }}</span
-              ></span
-            >
-          </span>
-        </span>
+          <span
+            >{{ "设备管理员："
+            }}<span
+              v-if="
+                personnelOptions.some((item) => item.taskName === '设备管理员')
+              "
+              >{{ getPersonnel("设备管理员") }}</span
+            ></span
+          >
+        </div>
       </div>
     </div>
   </div>
@@ -255,6 +270,12 @@ export default {
   mounted() {},
   computed: {},
   methods: {
+    getPersonnel(role) {
+      const person = this.personnelOptions.find(
+        (item) => item.taskName === role
+      );
+      return person ? person.candidate : "";
+    },
     // 递归获取treeselect父节点
     loops(list, parent) {
       return (list || []).map(({ children, id, label }) => {

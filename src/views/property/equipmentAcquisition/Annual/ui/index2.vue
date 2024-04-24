@@ -374,8 +374,6 @@ export default {
           label: "需求组织",
           prop: "demandOrganization",
           tableVisible: true,
-          formType: "selectTree",
-          options: this.deptOptions,
           width: 150,
           span: 23,
           required: true,
@@ -597,17 +595,6 @@ export default {
     spareSubmitForm(val, review) {
       delete val.time;
       // * 新增
-
-      if (
-        !this.equipmentList.some((item) => {
-          const demandTime = new Date(item.demandDate).getTime();
-          const startTime = new Date(val.startTime).getTime();
-          const endTime = new Date(val.endTime).getTime();
-
-          return startTime <= demandTime && demandTime <= endTime;
-        })
-      )
-        return this.$message.error("请检查需求日期，必须在年度计划范围内");
       if (review) {
         if (!this.formData.id) {
           val["addList"] = this.equipmentList;

@@ -1,26 +1,47 @@
 <template>
-  <div class="app-container" style="padding-top: 0;">
-    <jm-table :tableData="itemList" @getList="getList" @handleSelectionChange="handleSelectionChange" :total="total"
-      ref="jmtable" :handleWidth="230" :columns="columns" :isRadio="isChoose" >
+  <div class="app-container" style="padding-top: 0">
+    <jm-table
+      :tableData="itemList"
+      @getList="getList"
+      @handleSelectionChange="handleSelectionChange"
+      :total="total"
+      ref="jmtable"
+      :handleWidth="230"
+      :columns="columns"
+      :isRadio="isChoose"
+    >
     </jm-table>
-    <div style="width: 100%; height: 68px;"></div>
+    <div style="width: 100%; height: 68px"></div>
     <div
-      style="position: absolute;bottom: 0px;width: 100%;background-color: #fff;text-align: center;padding: 20px;border-top: 1px solid #ddd;">
+      style="
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        background-color: #fff;
+        text-align: center;
+        padding: 20px;
+        border-top: 1px solid #ddd;
+      "
+    >
       <el-button size="mini" @click="close">取消</el-button>
-      <el-button size="mini" @click="submitRadio" type="primary" :disabled="multiple">确定</el-button>
+      <el-button
+        size="mini"
+        @click="submitRadio"
+        type="primary"
+        :disabled="multiple"
+        >确定</el-button
+      >
     </div>
   </div>
 </template>
 
 <script>
-import {
-  lineList,
-} from '@/api/maintain/pplan'
+import { lineList } from "@/api/maintain/pplan";
 import JmTable from "@/components/JmTable";
 
 export default {
   name: "pointItem",
-  dicts: ['mro_item_method', 'mro_item_type', 'sys_normal_disable'],
+  dicts: ["mro_item_method", "mro_item_type", "sys_normal_disable"],
   components: { JmTable },
   props: {
     isChoose: {
@@ -28,19 +49,25 @@ export default {
       type: Boolean,
     },
     formData: {
-      default: () => { },
+      default: () => {},
       type: Object,
     },
-
   },
   computed: {
     // 列信息
     columns() {
       return [
-        { label: '巡点检路线编码', prop: 'lineCode', class: true },
-        { label: '巡点检路线名称', prop: 'lineName', },
-        { label: '启用状态', prop: 'lineStatus', formType: 'select', options: this.dict.type.sys_normal_disable, span: 24, formVisible: false, },
-      ]
+        { label: "巡点检路线编码", prop: "lineCode", class: true },
+        { label: "巡点检路线名称", prop: "lineName" },
+        {
+          label: "启用状态",
+          prop: "lineStatus",
+          formType: "select",
+          options: this.dict.type.sys_normal_disable,
+          span: 24,
+          formVisible: false,
+        },
+      ];
     },
   },
   data() {
@@ -76,43 +103,45 @@ export default {
     };
   },
   created() {
-    this.getList(this.queryParams)
+    this.getList(this.queryParams);
   },
   methods: {
     close() {
-      this.$emit('close')
+      this.$emit("close");
     },
     submitRadio() {
       if (this.isChoose) {
         // 单选
-        this.$emit('submitRadio', this.radioRow)
+        this.$emit("submitRadio", this.radioRow);
       } else {
         // 多选
-        this.$emit('submitRadio', this.checkBoxRows)
+        this.$emit("submitRadio", this.checkBoxRows);
       }
     },
     /** 查询用户列表 */
     getList(queryParams) {
-      this.loading = true
-      queryParams.exportIds=this.formData.disIds&&this.formData.disIds.join(',')
+      this.loading = true;
+      queryParams.exportIds =
+        this.formData.disIds && this.formData.disIds.join(",");
+      queryParams.lineStatus = this.formData?.lineStatus;
       lineList(queryParams).then((response) => {
-        response.rows.forEach(item=>{
-          item.lineStatus=='1'&&(item.selectDisable=true)
-        })
-        this.itemList = response.rows
-        
+        response.rows.forEach((item) => {
+          item.lineStatus == "1" && (item.selectDisable = true);
+        });
+        this.itemList = response.rows;
+
         this.total = response.total;
         this.loading = false;
-      })
+      });
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.itemId);
+      this.ids = selection.map((item) => item.itemId);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
-      this.radioRow = selection[0]
+      this.radioRow = selection[0];
       this.checkBoxRows = selection;
     },
-  }
+  },
 };
 </script>

@@ -2,7 +2,14 @@
   <div style="width: 100%; height: 100%">
     <div v-if="datas" ref="chart" style="width: 100%; height: 88%"></div>
     <div v-else>
-      <p>暂无数据</p>
+      <div
+        :style="{
+          backgroundImage: `url(${img})`,
+          width: '82px',
+          height: '82px',
+        }"
+      ></div>
+      <p style="text-align: center">暂无数据</p>
     </div>
   </div>
 </template>
@@ -13,6 +20,7 @@ export default {
   props: ["data"],
   data() {
     return {
+      img: require("@/assets/images/shouye/notData.png"),
       chart: null, // 用来获取实例
       mySetionChart: null, // 改变指向
       datas: this.data, // 数据

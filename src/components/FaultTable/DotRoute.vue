@@ -315,6 +315,7 @@ export default {
       plineForm: {
         choosedrawer: false,
         disIds: [],
+        lineStatus: 0,
       },
       //设备弹窗
       deviceForm: {

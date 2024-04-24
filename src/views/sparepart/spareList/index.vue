@@ -394,7 +394,7 @@ export default {
         ...row,
         partType: "" + row.partType,
         unit: "" + row.unit,
-        inventory: undefined,
+        // inventory: undefined,
       };
       this.editValue = {
         ...row,
@@ -434,6 +434,7 @@ export default {
         //   this.$modal.msgWarning(
         //     "该备件有库存，无法修改单位。没有库存可以修改单位！"
         //   );
+        delete formVal.inventory;
         updateManagement(formVal).then((res) => {
           if (res.code === 200) {
             this.$message.success("编辑成功！");

@@ -255,8 +255,8 @@ export default {
           label: "所属组织",
           prop: "affDept",
           tableVisible: true,
-          formType: "selectTree",
-          options: this.deptOptions,
+          // formType: "selectTree",
+          // options: this.deptOptions,
           width: 150,
         },
         {

@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { chartOption } from "./Line.config";
+import { chartOption } from "./Bar.config2";
 export default {
   props: ["data"],
   data() {

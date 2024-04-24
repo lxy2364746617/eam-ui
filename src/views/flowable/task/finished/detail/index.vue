@@ -174,8 +174,8 @@ import receiveDetail from "@/views/property/Receive/ui/index";
 import backspaceDetail from "@/views/property/Backspace/ui/index";
 import turnOverDetail from "@/views/property/TurnOver/ui/index";
 import ScrappingDetail from "@/views/property/Scrapping/ui/index";
-import AnnualDetail from "@/views/property/equipmentAcquisition/Annual/ui/index";
-import TemporarilyDetail from "@/views/property/equipmentAcquisition/Temporarily/ui/index";
+import AnnualDetail from "@/views/property/equipmentAcquisition/Annual/ui/index2";
+import TemporarilyDetail from "@/views/property/equipmentAcquisition/Temporarily/ui/index2";
 import PositionChangeDetail from "@/views/property/PositionChange/ui/index";
 import spareReceiveDetail from "@/views/sparepart/spareReceive/ui/index";
 import requirementDetail from "@/views/sparepart/requirement/ui/index";
@@ -311,7 +311,7 @@ export default {
 .test-form {
   margin: 15px auto;
   width: 100% !important;
-  padding: 15px;
+  padding: 0px 15px;
   padding-right: 0;
 }
 

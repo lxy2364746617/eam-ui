@@ -184,7 +184,10 @@
         @submitRadio="submitSpareReceive"
         :isRadio="true"
         @close="closeSpareReceive"
-        :searchValue="[{ prop: 'approvalStatus', value: 'completed' }]"
+        :searchValue="[
+          { prop: 'approvalStatus', value: 'completed' },
+          { prop: 'type', value: 2 },
+        ]"
       ></spareReceive>
     </el-drawer>
 

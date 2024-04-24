@@ -8,7 +8,15 @@
           style="font-size: 12px; color: #888; float: right"
         >
           <!-- <el-button type="text" icon="el-icon-s-help">快速工单</el-button> -->
-          <el-button type="text" icon="el-icon-edit" @click="disabled1 = false"
+          <el-button
+            type="text"
+            icon="el-icon-edit"
+            @click="
+              () => {
+                spareValue2 = JSON.parse(JSON.stringify(spareValue));
+                disabled1 = false;
+              }
+            "
             >编辑</el-button
           >
         </el-col>
@@ -86,6 +94,7 @@
             :formData="spareValue"
             @submitForm="submitForm"
             @newFormData="newFormData"
+            :locationOptions="locationOptions"
             @close="close"
           ></component>
         </el-tab-pane>
@@ -195,6 +204,7 @@ export default {
       disabled1: true,
       formData: { imgFileResourceList: [] },
       spareValue: null,
+      spareValue2: null,
       formTitle: "编辑设备",
       drawer: false,
       // 部门树选项
@@ -336,11 +346,12 @@ export default {
       this.drawer = true;
     },
     close(callback) {
-      this.spareValue = JSON.parse(JSON.stringify(this.formData));
+      this.spareValue = JSON.parse(JSON.stringify(this.spareValue2));
 
       this.disabled1 = true;
       this.$refs.jmform1.clearValidate();
       if (callback) callback();
+      this.spareValue2 = null;
     },
     async save(fn) {
       var jmform1 = await this.$refs.jmform1.submitForm();
@@ -361,6 +372,7 @@ export default {
             this.$message.success("编辑成功！");
             this.disabled1 = true;
             if (callback) callback();
+            this.spareValue2 = null;
           } else {
             this.close(callback);
           }

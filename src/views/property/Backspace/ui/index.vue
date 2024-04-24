@@ -685,6 +685,7 @@ export default {
             if (row.id) {
               this.equipmentList.splice(this.selectIndex, 1);
               this.delList.push(row.id);
+              console.log("========================", this.delList);
             } else this.equipmentList.splice(this.selectIndex, 1);
           })
           .then(() => {

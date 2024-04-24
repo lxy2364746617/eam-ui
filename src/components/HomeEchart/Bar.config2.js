@@ -8,9 +8,9 @@ export function chartOption() {
   data = list?.stateList?.map((item) => {
     const key = Object.keys(item)[0];
     const value = item[key];
-    nameArray.push(key + "\t\t\t\t\t\t\t\t\t" + "{a|" + value + "}");
+    nameArray.push(key + "\t\t\t\t\t\t\t\t\t" + "{a|" + value + "条}");
     return {
-      name: key + "\t\t\t\t\t\t\t\t\t" + "{a|" + value + "  个}",
+      name: key + "\n\n" + "{a|" + value + "  条}",
       label: key,
       value,
       itemStyle: { borderWidth: 0 },
@@ -60,7 +60,7 @@ export function chartOption() {
       "#FF6A00",
     ],
     title: {
-      text: `{a|${list.title}总数量}\n\n{b|${list.total}}\n\n{c|今日新增${list.today}台}`,
+      text: `{a|${list.title}总数量}\n\n{b|${list.total}}\n\n{c|今日新增${list.today}条}`,
       left: "35%",
       top: "32%",
       textAlign: "center",
@@ -90,16 +90,12 @@ export function chartOption() {
     },
     legend: [
       {
-        orient: "vertical",
-        // data: nameArray,
         icon: "circle",
-        left: "right",
-        top: "center",
         align: "left",
-        right: 10,
+        itemGap: 20, // 调整图例项之间的间距
+        right: 1,
         bottom: 20,
-        itemGap: 10,
-
+        width: "40%",
         //图例标记的图形高度
         itemHeight: 12,
         //图例标记的图形宽度

@@ -24,6 +24,11 @@ export function chartOption() {
     },
     legend: {
       data: legend,
+      icon: "rect",
+      //图例标记的图形高度
+      itemHeight: 12,
+      //图例标记的图形宽度
+      itemWidth: 12,
     },
     grid: {
       left: "4%",

@@ -194,7 +194,7 @@ import JmTable from "@/components/JmTable/index.vue";
 import ContTable from "@/components/ContTable";
 import Wrapper from "@/components/wrapper";
 import { orderTemplate } from "@/api/work/template";
-import { listUser } from "@/api/system/user";
+import { listUser2 } from "@/api/system/user";
 import { findAll } from "@/api/system/group";
 import { exportWomInfo } from "@/api/work/schedule";
 
@@ -570,8 +570,8 @@ export default {
       });
     },
     getUserList() {
-      listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
-        this.userList = res.rows.map((item) => {
+      listUser2({ pageNum: 1, pageSize: 10000 }).then((res) => {
+        this.userList = res.data.map((item) => {
           return {
             id: item.userId,
             label: item.nickName,

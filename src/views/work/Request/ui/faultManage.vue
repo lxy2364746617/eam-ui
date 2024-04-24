@@ -86,7 +86,7 @@
 
 <script>
 import {
-  listFaultcode,
+  listFaultcode2,
   getFaultcode,
   delFaultcode,
   addFaultcode,
@@ -199,7 +199,7 @@ export default {
     /** 查询故障代码管理列表 */
     getList() {
       this.loading = true;
-      listFaultcode(this.queryParams).then((response) => {
+      listFaultcode2(this.queryParams).then((response) => {
         this.faultcodeList = response.rows;
         this.total = response.total;
         this.loading = false;

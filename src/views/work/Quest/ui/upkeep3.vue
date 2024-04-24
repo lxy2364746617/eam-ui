@@ -72,9 +72,11 @@
       :labelWidth="'140px'"
     >
       <template #footer>
-        <div class="container-box2" v-if="!disabled">
-          <el-button @click="saveHandle" type="primary">执行</el-button>
-          <el-button @click="handleCancel">取消</el-button>
+        <div class="container-box2">
+          <el-button v-if="!disabled" @click="saveHandle" type="primary"
+            >执行</el-button
+          >
+          <el-button v-else @click="handleCancel">取消</el-button>
         </div>
       </template>
     </carry-form>
@@ -358,12 +360,7 @@ export default {
       ]).then((res) => {
         if (res[0].code === 200 && res[1].code === 200) {
           this.$message.success("执行成功！");
-          this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
-          this.$tab.closePage(this.$route).then(({ visitedViews }) => {
-            if (this.$route.path === this.$route.path) {
-              this.$tab.toLastView(visitedViews);
-            }
-          });
+          this.handleCancel();
         }
       });
       // this.formData = { supplierName: "" };

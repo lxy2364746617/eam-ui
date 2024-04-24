@@ -447,7 +447,7 @@ export default {
           formType: "radio",
           options: [
             { label: "已解决", value: 1 },
-            { label: "为解决", value: 0 },
+            { label: "未解决", value: 0 },
           ],
           required: true,
         },

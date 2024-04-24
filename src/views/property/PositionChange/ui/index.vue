@@ -325,7 +325,7 @@ export default {
         },
         {
           label: "申请部门负责人",
-          prop: "applyPersonName",
+          prop: "applyPersonId",
           span: 8,
           required: true,
           formType: "select",
@@ -484,28 +484,7 @@ export default {
       );
       this.addItem.choosedrawer = false;
     },
-    /** 查询用户列表 */
-    getUserList(id) {
-      if (!id) id = 100;
-      this.loading = true;
-      listUser({ deptId: id }).then((response) => {
-        this.userList = response.rows.map((item) => ({
-          label: item.nickName,
-          value: item.nickName,
-        }));
-      });
-    },
-    /** 查询用户列表 */
-    getUserList2(id) {
-      if (!id) id = 100;
-      this.loading = true;
-      listUser({ deptId: id }).then((response) => {
-        this.userList2 = response.rows.map((item) => ({
-          label: item.nickName,
-          value: item.nickName,
-        }));
-      });
-    },
+
     // ! 提交审批流
     sub(val, userIds) {
       if (!this.formData.id) {
@@ -739,6 +718,7 @@ export default {
     // ! 信息提交
     spareSubmitForm(val, review) {
       delete val.time;
+      delete val.userId;
       // * 新增
       this.equipmentList = this.equipmentList.map((item) => {
         if (typeof item.id === "string") {
@@ -819,7 +799,7 @@ export default {
       listUser({ deptId: id }).then((response) => {
         this.userList = response.rows.map((item) => ({
           label: item.nickName,
-          value: item.nickName,
+          value: item.userId,
         }));
       });
     },

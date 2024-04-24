@@ -1,59 +1,68 @@
 <template>
   <div>
     <el-card shadow="never" style="margin-top: 10px">
-      <jm-table
-        :tableData="equipmentList"
-        @handleSelectionChange="handleSelectionChange"
-        @getList="getList"
-        :total="total"
-        ref="jmtable"
-        :initLoading="false"
-        :handleWidth="130"
-        :showSearch="false"
-        :paginationShow="false"
-        :columns="columns"
+      <div
+        style="
+          height: calc(100vh - 422px);
+          overflow-y: auto;
+          overflow-x: hidden;
+        "
       >
-        <template slot="headerLeft">
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              plain
-              icon="el-icon-plus"
-              size="mini"
-              @click="handleAdd"
-              v-hasPermi="['property:base:addParentEm']"
-              >添加</el-button
-            >
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="danger"
-              plain
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete(0)"
-              v-hasPermi="['property:base:removeParentEm']"
-              >解除</el-button
-            >
-          </el-col>
-        </template>
-        <template #end_handle="scope">
-          <!-- <el-button
+        <jm-table
+          :tableData="equipmentList"
+          @handleSelectionChange="handleSelectionChange"
+          @getList="getList"
+          :total="total"
+          ref="jmtable"
+          :initLoading="false"
+          :handleWidth="130"
+          :showSearch="false"
+          :paginationShow="false"
+          :columns="columns"
+        >
+          <template slot="headerLeft">
+            <el-col :span="1.5">
+              <el-button
+                type="primary"
+                plain
+                icon="el-icon-plus"
+                size="mini"
+                @click="handleAdd"
+                v-hasPermi="['property:base:addParentEm']"
+                >添加</el-button
+              >
+            </el-col>
+            <el-col :span="1.5">
+              <el-button
+                type="danger"
+                plain
+                icon="el-icon-delete"
+                size="mini"
+                :disabled="multiple"
+                @click="handleDelete(0)"
+                v-hasPermi="['property:base:removeParentEm']"
+                >解除</el-button
+              >
+            </el-col>
+          </template>
+          <template #end_handle="scope">
+            <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.index,scope.row,'edit')"
           >修改</el-button> -->
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(1, scope)"
-            >解除</el-button
-          >
-        </template>
-      </jm-table>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDelete(1, scope)"
+              >解除</el-button
+            >
+          </template>
+        </jm-table>
+      </div>
+
       <el-drawer
         :title="title"
         :visible.sync="drawer"
@@ -83,7 +92,6 @@
           :total="total2"
           :initLoading="false"
           :handleWidth="130"
-          :showOperate="false"
           size="60%"
         >
         </jm-table>
@@ -106,7 +114,7 @@
         </div>
       </el-drawer>
     </el-card>
-    <el-card shadow="never" style="margin-top: 10px; text-align: right">
+    <el-card shadow="never" style="text-align: right">
       <el-button size="mini" @click="closeform">取消</el-button>
       <el-button
         size="mini"
@@ -128,7 +136,12 @@
 </template>
 
 <script>
-import { updateBASE, addBASE } from "@/api/equipment/BASE";
+import {
+  listBASE,
+  addBASE,
+  updateBASE,
+  getPrtOrgTreeByDeptId,
+} from "@/api/equipment/BASE";
 import {
   listParts,
   addParts,
@@ -137,18 +150,19 @@ import {
   selectPage,
 } from "@/api/equipment/parts";
 import { listDept } from "@/api/system/dept";
-import { equipmentTree } from "@/api/equipment/category";
+import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
 import JmUserTree from "@/components/JmUserTree";
+import { getLocationTree } from "@/api/Location";
 import supplier from "@/views/device/book/supplier";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "bookadd",
-  dicts: ["em_property_type"],
+  dicts: ["em_property_type", "spare_parts_type", "spare_parts_unit"],
   components: {
     Treeselect,
     JmUserTree,
@@ -177,12 +191,38 @@ export default {
         { label: "备件名称", prop: "partName", span: 24 },
         { label: "备件编码", prop: "partCode", span: 24 },
         { label: "规格型号", prop: "sModel", span: 24 },
-        { label: "备件类别", prop: "partType", span: 24 },
-        { label: "单位", prop: "unit", span: 24 },
+        {
+          label: "备件类别",
+          prop: "partType",
+          span: 24,
+          formType: "select",
+          options: this.dict.type.spare_parts_type,
+        },
+        {
+          label: "单位",
+          prop: "unit",
+          span: 24,
+          formType: "select",
+          options: this.dict.type.spare_parts_unit,
+        },
         { label: "当前库存", prop: "inventory", span: 24 },
         { label: "供应商名称", prop: "supplierName", span: 24 },
-        { label: "存储位置", prop: "locationName", span: 24 },
-        { label: "所属组织", prop: "affDeptName", span: 24 },
+        {
+          label: "存储位置",
+          prop: "location",
+          span: 24,
+          options: this.locationOptions,
+          formType: "selectTree",
+          width: 230,
+        },
+        {
+          label: "所属组织",
+          prop: "affDept",
+          span: 24,
+          options: this.deptOptions,
+          formType: "selectTree",
+          width: 230,
+        },
       ];
     },
   },
@@ -212,6 +252,7 @@ export default {
       // 部门树选项
       categoryOptions: [],
       deptOptions: [],
+      locationOptions: [],
       // 是否显示弹出层
       open: false,
       // 默认密码
@@ -261,6 +302,17 @@ export default {
     this.getList(this.queryParams);
   },
   methods: {
+    getTree(arr) {
+      arr.forEach((item) => {
+        item.value = item.deptId;
+        item.label = item.deptName;
+        item.isDisabled = item.locationFlag == "N" ? true : false;
+        if (item.children && item.children.length > 0) {
+          this.getTree(item.children);
+        }
+      });
+      return arr;
+    },
     /** 查询用户列表 */
     getList(queryParams) {
       queryParams.deviceId = this.queryParams.deviceId;
@@ -290,7 +342,9 @@ export default {
       });
     },
     closeform() {
-      this.$emit("closeform");
+      this.$modal.confirm("是否确定不保存直接退出？").then(() => {
+        this.$emit("closeform");
+      });
     },
     prvstep() {
       this.save(() => {
@@ -327,7 +381,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.drawer = true;
-      this.title = "新增设备";
+      this.title = "添加备件";
       this.getList2(this.queryParams2);
       this.formDataNow = {};
     },
@@ -359,25 +413,30 @@ export default {
       var formData = this.$parent.getFormDataParams();
       formData.archivesPartsList = this.equipmentList;
       if (formData.deviceId != undefined) {
-        await updateBASE({ ...formData }).then((response) => {
+        await updateBASE(formData).then((response) => {
           this.$modal.msgSuccess("修改成功");
           if (typeof fn == "function") fn();
+          this.formData.archivesPartsList = this.equipmentList;
         });
       } else {
-        await addBASE({ ...formData }).then((response) => {
+        await addBASE(formData).then((response) => {
           this.$modal.msgSuccess("保存成功");
           if (typeof fn == "function") fn();
+          this.formData.archivesPartsList = this.equipmentList;
         });
       }
       this.$emit("closeform");
     },
     getTreeSelect() {
-      equipmentTree().then((response) => {
+      equipmentTreeNoTemplate().then((response) => {
         this.categoryOptions = response.data;
       });
-      listDept().then((response) => {
+      getPrtOrgTreeByDeptId().then((response) => {
         this.deptOptions = response.data;
         this.$forceUpdate();
+      });
+      getLocationTree().then((res) => {
+        this.$set(this, "locationOptions", this.getTree(res.data));
       });
     },
   },

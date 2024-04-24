@@ -162,17 +162,12 @@ export default {
       deep: true,
       immediate: true,
     },
-    "formData.itemId": {
+    "formData.attachmentDTOList": {
       handler(val) {
-        // if (val) {
-        //   if (this.deptOptions && this.formData.attachmentDTOList) {
-        //     this.standardList = this.formData.attachmentDTOList;
-        //   }
-        // } else {
-        //   this.standardList = [];
-        // }
+        this.standardList = val ?? [];
       },
       deep: true,
+      immediate: true,
     },
     delAttachmentList: {
       handler(val) {
@@ -195,23 +190,6 @@ export default {
   },
   async created() {
     await this.getDeptTree();
-    // if (this.deptOptions && this.formData.attachmentDTOList) {
-    //   this.standardList = this.formData.attachmentDTOList ?? [];
-    // }
-    if (this.formData.orderCode) {
-      request({
-        url: "/wom/repair/getWomAttachmentList",
-        method: "get",
-        params: { orderCode: this.formData.orderCode },
-      }).then((res) => {
-        if (res.code === 200) {
-          this.standardList = res.data.map((item) => ({
-            ...item,
-            id: uuidv4(),
-          }));
-        }
-      });
-    }
   },
   mounted() {},
   computed: {

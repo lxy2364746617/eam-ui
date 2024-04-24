@@ -530,6 +530,9 @@ export default {
 ::v-deep .el-table__row:nth-child(odd) {
   background-color: #f7fbff;
 }
+::v-deep .el-table__body-wrapper {
+  height: 463px;
+}
 // 滚动条样式
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
   height: 12px;

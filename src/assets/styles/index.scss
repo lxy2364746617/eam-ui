@@ -208,3 +208,15 @@ aside {
   background-color: #F4F4F6;
   min-height: calc(100vh - 114px);
 }
+@font-face {
+  font-family: "DINPro-Bold"; /* 自定义字体名称 */
+  src: url("../fonts/DINPro-Bold.OTF") format("truetype"); /* 更换为实际字体文件路径及格式 */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "DINPro-Medium"; /* 自定义字体名称 */
+  src: url("../fonts/DINPro-Medium.OTF") format("truetype"); /* 更换为实际字体文件路径及格式 */
+  font-weight: normal;
+  font-style: normal;
+}

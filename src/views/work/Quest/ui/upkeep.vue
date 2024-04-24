@@ -343,7 +343,9 @@
         min-width="200"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.dealMethod }}</span>
+          <span @click="linkClick(scope.row.dealMethod)">{{
+            scope.row.dealMethod
+          }}</span>
           <i
             v-if="scope.row.dealMethod == '自行处理'"
             class="el-icon-view controls"
@@ -587,8 +589,9 @@ export default {
         if (!val) {
           this.itemId = null;
           this.formData.itemId = null;
-          this.$refs.titleform.resetFields();
           this.formData.addAttachmentDTOList = [];
+          this.formData.attachmentDTOList = [];
+          this.$refs.titleform.resetFields();
         }
       },
       deep: true,
@@ -674,7 +677,7 @@ export default {
           formType: "radio",
           options: [
             { label: "已解决", value: 1 },
-            { label: "为解决", value: 0 },
+            { label: "未解决", value: 0 },
           ],
           required: true,
         },
@@ -701,6 +704,15 @@ export default {
     },
   },
   methods: {
+    linkClick(row, item) {
+      // if (row === "自行处理") return;
+      // this.$router.push({
+      //   name: "Quest",
+      //   query: {
+      //     orderCode: row,
+      //   },
+      // });
+    },
     UpperFun(e, quotaLower) {
       console.log(e);
       if (e.target.value - quotaLower < 0) {
@@ -795,9 +807,9 @@ export default {
     submitForm2: function (formdata) {
       // ! 成功了才会走这
       formdata["idList"] = this.itemIds;
-      formdata.addAttachmentDTOList.forEach((item) => {
-        item.createTime = item.createTime.substring(0, 10);
-      });
+      // formdata.addAttachmentDTOList.forEach((item) => {
+      //   item.createTime = item.createTime.substring(0, 10);
+      // });
       formdata["attachmentDTOList"] = JSON.parse(
         JSON.stringify(formdata.addAttachmentDTOList)
       );
@@ -815,6 +827,7 @@ export default {
     handleCancel() {
       //   //   this.$store.dispatch("tagsView/delView", this.$route); // 关闭当前页
       //   //   this.$router.go(-1); //跳回上页
+      this.drawerOne = false;
     },
     handelerGenerate() {
       if (!this.itemIds.length > 0) {
@@ -854,10 +867,20 @@ export default {
       this.$set(
         this.standardList[scope.$index],
         "dealResult",
-        scope.row.quotaValue < scope.row.quotaUpper - scope.row.quotaLower &&
+        (scope.row.quotaValue <= scope.row.quotaUpper &&
+          scope.row.quotaValue &&
           scope.row.quotaUpper &&
-          scope.row.quotaLower &&
-          scope.row.quotaValue
+          !scope.row.quotaLower) ||
+          (scope.row.quotaValue >= scope.row.quotaLower &&
+            scope.row.quotaValue &&
+            scope.row.quotaLower &&
+            !scope.row.quotaUpper) ||
+          (scope.row.quotaValue <= scope.row.quotaUpper &&
+            scope.row.quotaValue >= scope.row.quotaLower &&
+            scope.row.quotaValue &&
+            scope.row.quotaLower &&
+            scope.row.quotaUpper &&
+            scope.row.quotaValue >= 0)
           ? 1
           : 2
       );
@@ -931,7 +954,11 @@ export default {
       }
       getSelectPage(queryParams).then((res) => {
         if (res.code == 200) {
-          this.standardList = res.data.records;
+          if (this.carryValue.y)
+            this.standardList = res.data.records.filter(
+              (item) => item.dealResult == 2
+            );
+          else this.standardList = res.data.records;
         }
       });
     },

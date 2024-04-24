@@ -572,6 +572,16 @@ export default {
       val["annual"] = val.time[1].substring(0, 4);
       delete val.time;
       // * 新增
+      if (
+        !this.equipmentList.some((item) => {
+          const demandTime = new Date(item.demandDate).getTime();
+          const startTime = new Date(val.startTime).getTime();
+          const endTime = new Date(val.endTime).getTime();
+
+          return startTime <= demandTime && demandTime <= endTime;
+        })
+      )
+        return this.$message.error("请检查需求日期，必须在年度计划范围内");
       if (review) {
         if (!this.formData.id) {
           val["addList"] = this.equipmentList;

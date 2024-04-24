@@ -329,6 +329,7 @@ export default {
           prop: "leaseTime",
           formType: "date",
           tableVisible: false,
+          formDisabled: true,
           span: 8,
         },
         {

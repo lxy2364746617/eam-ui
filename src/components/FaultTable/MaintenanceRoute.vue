@@ -460,6 +460,7 @@ export default {
       lineForm: {
         choosedrawer: false,
         disIds: [],
+        lineStatus: 0,
       },
       lineList: [],
       drawer: false,

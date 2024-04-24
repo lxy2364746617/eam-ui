@@ -226,7 +226,7 @@
                 >执行</el-button
               >
               <el-button
-                v-if="scope.row.errorNum > 0 && scope.row.errorStatus == 3"
+                v-if="scope.row.errorNum > 0"
                 size="mini"
                 type="text"
                 icon="el-icon-edit"
@@ -529,6 +529,7 @@ export default {
             this.getTreeParent(val.deviceType).join(" > ") +
             " > " +
             val.deviceName,
+          yc: true,
         })
       );
     },
