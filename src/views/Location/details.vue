@@ -535,7 +535,8 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
           busId : this.busId,
           origin : 'FLP',
           ...fileList[fileList.length-1],
-          ...fileList[fileList.length-1].response
+          ...fileList[fileList.length-1].response,
+          url:`${process.env.VUE_APP_BASE_API}${fileList[fileList.length-1].response.fileName}`
         }
          //fileList[fileList.length?fileList.length-1:0]=Object.assign(res,{busId:this.busId,origin:'FLP'})
         //this.sysFileResources = fileList; 

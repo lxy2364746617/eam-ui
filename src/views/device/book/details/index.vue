@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { equipmentTree } from "@/api/equipment/category";
+import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 import { getBASE } from "@/api/equipment/BASE";
 import { modifyBASE } from "@/api/equipment/BASE";
 import Treeselect from "@riophae/vue-treeselect";
@@ -282,7 +282,7 @@ export default {
       this.drawer=true
     },
     getTreeSelect(){
-      equipmentTree().then(response => {
+      equipmentTreeNoTemplate().then(response => {
         this.categoryOptions = response.data;
       });
       getLocationTree().then(res=>{
@@ -315,8 +315,9 @@ export default {
       arr.forEach(b => {
         b.label=b.fieldName;
         b.prop=b.fieldCode;
-        b.required = b.required;
-        //b.required = b.required=='0'?true:false;
+        //b.required = b.required;
+        b.required = b.required=='0'?true:false;
+        b.formDisabled = b.isModify == '1' ? true : false;
         b.disabled = b.disabled;
         b.formType = b.componentType;
         switch (b.componentType) {

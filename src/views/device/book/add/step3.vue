@@ -9,7 +9,8 @@
           :columns="formData.emArchivesIndex.componentContent" 
           :showButton="false"
           :formData="formData.emArchivesIndex.fieldValue"
-          ref="jmform1">
+          ref="jmform1"
+          :labelWidth="'200px'">
         </jm-form>
       </div>
     </el-card>
