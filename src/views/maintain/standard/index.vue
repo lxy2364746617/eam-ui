@@ -77,7 +77,8 @@ import JmTable from '@/components/JmTable';
 import JmForm from "@/components/JmForm";
 import { equipmentTree } from '@/api/equipment/category';
 import { listDept } from '@/api/system/dept';
-import { getLocationTree} from '@/api/Location'
+import { getLocationTree} from '@/api/Location';
+import {  getPrtOrgTreeByDeptId} from "@/api/equipment/BASE";
 
 export default {
   name: "Template",
@@ -230,7 +231,7 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
-      listDept().then((response) => {
+      getPrtOrgTreeByDeptId().then((response) => {
         this.deptOptions = response.data
       })
     },

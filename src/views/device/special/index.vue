@@ -39,7 +39,7 @@
 
 import JmTable from "@/components/JmTable";
 import { isSpecialEmCategoryCategory, } from "@/api/equipment/category";
-import { specialListBASE } from "@/api/equipment/BASE";
+import { specialListBASE, getPrtOrgTreeByDeptId} from "@/api/equipment/BASE";
 import { listDept } from "@/api/system/dept";
 import { equipmentTree } from "@/api/equipment/category";
 import { getLocationTree} from '@/api/Location'
@@ -104,7 +104,7 @@ export default {
     },
     /** 查询部门下拉树结构 */
     async getTreeSelect(){
-      await listDept().then(response => {
+      await getPrtOrgTreeByDeptId().then(response => {
         this.deptOptions = response.data;
       });
     },
@@ -130,18 +130,18 @@ export default {
         isSpecialEmCategoryCategory().then(response => {
               response.data.forEach(b => {
                   if(b.tableHead){
-                      b.tableHead.forEach(bb => {
+                      b.tableHead.forEach((bb,index) => {
                           bb.label = bb.fieldName
                           bb.prop = bb.fieldCode
                           bb.formType = bb.fieldType
                           bb.tableVisible = !bb.custom
-                          
                           for (const key in that.obj) {
                             if(key==bb.prop){
                                 Object.assign(bb,that.obj[key])
                             }
                           }
                       });
+                      b.tableHead = b.tableHead.filter(item=>item.fieldCode!='categoryId')
                   }
               });
               this.radioColumn = response.data

@@ -18,7 +18,7 @@ import { listDept } from "@/api/system/dept";
 import { getLocationTree} from '@/api/Location';
 import { equipmentTree } from "@/api/equipment/category";
 import JmTable from "@/components/JmTable";
-
+import {  getPrtOrgTreeByDeptId} from "@/api/equipment/BASE";
 export default {
   name: "partItem",
   dicts: ['mro_item_method', 'XDJ', 'sys_normal_disable','em_device_state','em_device_level'],
@@ -88,7 +88,7 @@ export default {
     await equipmentTree().then(response => {
         this.categoryOptions = response.data;
       });
-    await listDept().then(response => {
+    await getPrtOrgTreeByDeptId().then(response => {
         this.deptOptions = response.data;
       });
     this.getList(this.queryParams)
