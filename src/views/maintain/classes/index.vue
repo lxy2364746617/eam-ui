@@ -21,6 +21,11 @@
       <el-table-column label="序号" align="center" type="index" />
       <el-table-column label="班次编码" align="center" prop="classesCode" />
       <el-table-column label="班次类型" align="center" prop="classesType" />
+      <el-table-column label="所属组织" align="center" prop="deptId" >
+        <template slot-scope="scope">
+          {{findTreeName(deptOptions,scope.row.deptId)}}
+        </template>
+      </el-table-column>
       <el-table-column label="班次时间" align="center"  width="180">
         <template slot-scope="scope">
           <span>{{ scope.row.classesBeginEtime }}-{{ scope.row.classesEndEtime }}</span>
@@ -78,7 +83,8 @@ import {
   updateClasses,
   removeClasses
 } from "@/api/maintain/classes";
-
+import { getPrtOrgTreeByDeptId
+} from '@/api/equipment/BASE'
 export default {
   name: "CLASSES",
   dicts:['maintain_classes_type'],
@@ -122,6 +128,7 @@ export default {
       form: {
         classesType: null,
       },
+      deptOptions:[],
       // 表单校验
       rules: {
         ID: [{ required: true, message: "主键不能为空", trigger: "blur" }],
@@ -135,7 +142,11 @@ export default {
     };
   },
   created() {
+    getPrtOrgTreeByDeptId().then((response) => {
+        this.deptOptions = response.data
+      })
     this.getList();
+    
   },
   methods: {
     /** 查询运维计划班次管理列表 */
@@ -222,6 +233,28 @@ export default {
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {});
+    },
+    findTreeName(options, value) {
+      var name = "";
+      function Name(name) {
+        this.name = name;
+      }
+      var name1 = new Name("");
+      this.forfn(options, value, name1);
+      return name1.name;
+    },
+    forfn(options, value, name1) {
+      function changeName(n1, x) {
+        n1.name = x;
+      }
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].id == value) {
+          changeName(name1, options[i].label);
+        }
+        if (options[i].children) {
+          this.forfn(options[i].children, value, name1);
+        }
+      }
     },
     /** 导出按钮操作 */
     handleExport() {

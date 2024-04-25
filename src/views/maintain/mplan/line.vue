@@ -208,6 +208,7 @@ export default {
           options: this.dict.type.sys_normal_disable,
           span: 24,
           formVisible: false,
+          disabled:true
         },
       ];
     },
@@ -321,7 +322,8 @@ export default {
       this.loading = true;
       queryParams.exportIds =
         this.formData.disIds && this.formData.disIds.join(",");
-      queryParams.lineStatus = this.formData?.lineStatus;
+        queryParams.lineStatus=0
+      //queryParams.lineStatus = this.formData?.lineStatus;
       lineList(queryParams).then((response) => {
         this.itemList = response.rows;
         this.total = response.total;
