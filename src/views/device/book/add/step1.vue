@@ -82,8 +82,8 @@ export default {
       handler(val) {
         /* this.getTreeItem(val,this.categoryOptions)
         var b = this.treeItem */
-        console.log(val)
-        getAttrByCatgoryId({categoryId:val}).then(res=>{
+        if(val){
+          getAttrByCatgoryId({categoryId:val}).then(res=>{
         const b = res.data[0]
           if(b.isSm == 'Y' && b.smAttributes){
           if(this.formData.emArchivesIndex==null){
@@ -115,6 +115,8 @@ export default {
           this.$set(this.formData,'emArchivesSpecial',null)
         }
         })
+        }
+       
         
       },
        immediate: true,
