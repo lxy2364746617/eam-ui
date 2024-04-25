@@ -721,6 +721,8 @@ export default {
       delete val.userId;
       // * 新增
       this.equipmentList = this.equipmentList.map((item) => {
+        item['targetOrgId']=item.orgId
+        item['targetDeptId']=item.deptId
         if (typeof item.id === "string") {
           delete item.id;
           return item;

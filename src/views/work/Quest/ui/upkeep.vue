@@ -834,7 +834,7 @@ export default {
         this.$message.warning("请选择异常项!");
         return;
       }
-      if (this.checkBoxRows.some((item) => item.dealMethod)) {
+      if (this.checkBoxRows.some((item) => item.dealStatus !== 0)) {
         this.$message.warning("请选择未处理的异常项异常项!");
         return;
       }
@@ -854,7 +854,7 @@ export default {
         this.$message.warning("请选择异常项!");
         return;
       }
-      if (this.checkBoxRows.some((item) => item.dealMethod)) {
+      if (this.checkBoxRows.some((item) => item.dealStatus !== 0)) {
         this.$message.warning("请选择未处理的异常项异常项!");
         return;
       }

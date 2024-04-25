@@ -205,10 +205,7 @@ export default {
         params: { orderCode: this.formData.orderCode },
       }).then((res) => {
         if (res.code === 200) {
-          this.standardList = res.data.map((item) => ({
-            ...item,
-            id: uuidv4(),
-          }));
+          this.standardList = res.data;
         }
       });
     }
@@ -245,7 +242,7 @@ export default {
           prop: "supplierName",
           span: 22,
         },
-        { label: "使用部位", prop: "location", required: true, span: 22 },
+        { label: "使用部位", prop: "location", span: 22 },
         {
           label: "更换数量",
           prop: "replaceNum",
@@ -263,7 +260,7 @@ export default {
           options: this.dict.type.spare_parts_unit,
           formDisabled: true,
         },
-        { label: "原件编码", prop: "scriptCode", required: true, span: 22 },
+        { label: "原件编码", prop: "scriptCode", span: 22 },
         {
           label: "更换日期",
           prop: "createTime",
@@ -315,7 +312,7 @@ export default {
             this.drawersupplier2 = true;
           },
         },
-        { label: "使用部位", prop: "location", required: true, span: 22 },
+        { label: "使用部位", prop: "location", span: 22 },
         {
           label: "更换数量",
           prop: "replaceNum",
@@ -332,7 +329,7 @@ export default {
           required: true,
           formDisabled: true,
         },
-        { label: "原件编码", prop: "scriptCode", required: true, span: 22 },
+        { label: "原件编码", prop: "scriptCode", span: 22 },
         {
           label: "更换时间",
           prop: "createTime",
@@ -352,22 +349,24 @@ export default {
     },
     // ! 选择备件
     submitRadio(row) {
-      // this.$set(this.form, "attachmentCode", row.partCode);
-      // this.$set(this.form, "attachmentName", row.partName);
-      // this.$set(this.form, "specs", row.sModel);
-      // this.$set(this.form, "attachmentType", row.partType);
-      // this.$set(this.form, "unit", row.unit);
-      delete row.createTime;
-      delete row.id;
-      delete row.location;
-      this.form = {
-        ...row,
-        attachmentCode: row.partCode,
-        attachmentName: row.partName,
-        specs: row.sModel,
-        attachmentType: "" + row.partType,
-        unit: "" + row.unit,
-      };
+      this.$set(this.form, "attachmentCode", row.partCode);
+      this.$set(this.form, "attachmentName", row.partName);
+      this.$set(this.form, "specs", row.sModel);
+      this.$set(this.form, "attachmentType", "" + row.partType);
+      this.$set(this.form, "supplierId", row.supplierId);
+      this.$set(this.form, "supplierName", row.supplierName);
+      this.$set(this.form, "unit", "" + row.unit);
+      // delete row.createTime;
+      // delete row.id;
+      // delete row.location;
+      // this.form = {
+      //   ...row,
+      //   attachmentCode: row.partCode,
+      //   attachmentName: row.partName,
+      //   specs: row.sModel,
+      //   attachmentType: "" + row.partType,
+      //   unit: "" + row.unit,
+      // };
 
       this.closesupplier();
     },

@@ -223,7 +223,7 @@ export default {
           prop: "supplierName",
           span: 22,
         },
-        { label: "使用部位", prop: "location", required: true, span: 22 },
+        { label: "使用部位", prop: "location", span: 22 },
         {
           label: "更换数量",
           prop: "replaceNum",
@@ -241,7 +241,7 @@ export default {
           options: this.dict.type.spare_parts_unit,
           formDisabled: true,
         },
-        { label: "原件编码", prop: "scriptCode", required: true, span: 22 },
+        { label: "原件编码", prop: "scriptCode", span: 22 },
         {
           label: "更换日期",
           prop: "createTime",
@@ -293,7 +293,7 @@ export default {
             this.drawersupplier2 = true;
           },
         },
-        { label: "使用部位", prop: "location", required: true, span: 22 },
+        { label: "使用部位", prop: "location", span: 22 },
         {
           label: "更换数量",
           prop: "replaceNum",
@@ -310,7 +310,7 @@ export default {
           required: true,
           formDisabled: true,
         },
-        { label: "原件编码", prop: "scriptCode", required: true, span: 22 },
+        { label: "原件编码", prop: "scriptCode", span: 22 },
         {
           label: "更换时间",
           prop: "createTime",
