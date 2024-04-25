@@ -5,8 +5,9 @@
       <div
         :style="{
           backgroundImage: `url(${img})`,
-          width: '82px',
-          height: '82px',
+          width: '178px',
+              height: '143px',
+              backgroundSize:'cover'
         }"
       ></div>
       <p style="text-align: center">暂无数据</p>

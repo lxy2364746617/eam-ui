@@ -40,7 +40,12 @@
     </SparePartsOperation>
     <div class="form-footer" v-if="!isShowCard">
       <el-button type="primary" @click="submit">保存</el-button>
-      <el-button v-hasPermi="['sparepart:receive:submit']" type="primary" @click="submitReview">保存并提交审批</el-button>
+      <el-button
+        v-hasPermi="['sparepart:receive:submit']"
+        type="primary"
+        @click="submitReview"
+        >保存并提交审批</el-button
+      >
       <el-button @click="cancel">取消</el-button>
     </div>
     <!-- 对表格的操作 -->
@@ -385,9 +390,14 @@ export default {
     },
     // ! 选择备件
     submitRadio(row) {
+      this.$set(this.formDataNow, "partCode", row.partCode);
+      this.$set(this.formDataNow, "partName", row.partName);
       this.$set(this.formDataNow, "partType", String(row.partType));
       this.$set(this.formDataNow, "unit", String(row.unit));
-      this.formDataNow = { ...row, ...this.formDataNow };
+      this.$set(this.formDataNow, "smodel", row.sModel);
+      // this.$set(this.formDataNow, "partType", String(row.partType));
+      // this.$set(this.formDataNow, "unit", String(row.unit));
+      // this.formDataNow = { ...row, ...this.formDataNow };
       this.closesupplier();
     },
     closesupplier() {
@@ -527,7 +537,7 @@ export default {
       let matches = this.equipmentList.filter((item) => {
         for (let key in search) {
           if (!String(item[key]).includes(search[key])) {
-            if (search[key] == ""|| search[key] === null) continue;
+            if (search[key] == "" || search[key] === null) continue;
             return false;
           }
         }

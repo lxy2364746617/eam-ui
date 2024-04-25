@@ -531,7 +531,7 @@ export default {
   background-color: #f7fbff;
 }
 ::v-deep .el-table__body-wrapper {
-  height: 463px;
+  height: 460px;
 }
 // 滚动条样式
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar {

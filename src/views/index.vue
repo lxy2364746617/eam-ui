@@ -81,7 +81,7 @@
         </div>
       </div>
       <div class="border" style="height: 300px; width: 617px">
-        <div class="border-title">常用功能导航</div>
+        <div class="border-title"><span class="hot">常用功能导航</span></div>
         <div class="use">
           <ul v-if="commonNavigation.length > 0">
             <li
@@ -121,8 +121,9 @@
             <div
               :style="{
                 backgroundImage: `url(${not})`,
-                width: '82px',
-                height: '82px',
+                width: '178px',
+                height: '143px',
+                backgroundSize: 'cover',
               }"
             ></div>
             <span>暂无常用功能导航</span>
@@ -131,7 +132,7 @@
       </div>
       <div class="border" style="height: 655px; width: 617px">
         <div class="border-title">
-          <span>我的工单代办</span>
+          <span class="new">我的工单代办</span>
           <!-- <span>我的代办</span> -->
           <!-- <div>
             <el-radio-group v-model="radio" size="mini">
@@ -240,11 +241,7 @@
             @click="handleView(item)"
           >
             <el-tooltip :content="item.noticeTitle" placement="top">
-              <span
-                style="font-family: 'DINPro-Medium'"
-                class="single-line-ellipsis"
-                >{{ item.noticeTitle }}</span
-              >
+              <span class="single-line-ellipsis">{{ item.noticeTitle }}</span>
             </el-tooltip>
             <el-tooltip :content="item.createTime" placement="top">
               <span class="single-line-data">{{ item.createTime }}</span>
@@ -255,8 +252,9 @@
           <div
             :style="{
               backgroundImage: `url(${not})`,
-              width: '82px',
-              height: '82px',
+              width: '178px',
+              height: '143px',
+              backgroundSize: 'cover',
             }"
           ></div>
           <span>暂无公告</span>
@@ -310,7 +308,7 @@
       </div>
       <div class="border" style="height: 315px; width: 513px">
         <div class="border-title">
-          <span>预警通知</span>
+          <span class="new">预警通知</span>
         </div>
         <div class="forewarning" v-if="forewarning">
           <ul>
@@ -348,8 +346,9 @@
           <div
             :style="{
               backgroundImage: `url(${not})`,
-              width: '82px',
-              height: '82px',
+              width: '178px',
+              height: '143px',
+              backgroundSize: 'cover',
             }"
           ></div>
           <span>暂无预警</span>
@@ -960,8 +959,10 @@ export default {
 .system {
   height: calc(100% - 30px);
   overflow: auto;
-  font-family: "DINPro-Medium";
   padding-top: 8px !important;
+  color: #55556b;
+  font-family: "PingFang SC";
+
   li {
     height: 30px;
     font-size: 16px;
@@ -1017,6 +1018,7 @@ export default {
       width: 75px;
       height: 90px;
       margin-right: 10px;
+      font-family: "DINPro-Medium";
     }
     &:nth-of-type(1),
     &:nth-of-type(2),
@@ -1159,7 +1161,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  overflow: hidden;
+  // overflow: hidden;
   font-weight: 600;
 }
 
@@ -1168,6 +1170,7 @@ export default {
   border-radius: 10px;
   overflow: hidden;
   padding: 15px;
+  border: 1px solid #edecec;
 }
 ::v-deep .el-table__empty-text {
   display: flex;
@@ -1180,10 +1183,35 @@ export default {
   &::before {
     content: "";
     display: block;
-    width: 82px;
-    height: 82px;
+    width: 178px;
+    height: 143px;
     background-image: url("../assets/images/shouye/notData.png");
     background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
+.new {
+  position: relative;
+  &::before {
+    content: "NEW";
+    color: #ff2828;
+    font-size: 14px;
+    position: absolute;
+    right: -37px;
+    top: -4px;
+    font-weight: 500;
+  }
+}
+.hot {
+  position: relative;
+  &::before {
+    content: "HOT";
+    color: #ff2828;
+    font-size: 14px;
+    position: absolute;
+    right: -37px;
+    top: -4px;
+    font-weight: 500;
   }
 }
 /* font.css 或 font.scss */

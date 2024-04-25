@@ -212,7 +212,7 @@
             >执行</el-button
           >
           <el-button
-            v-if="scope.row.errorNum > 0"
+            v-if="scope.row.errorNum > 0  && !disabled"
             size="mini"
             type="text"
             icon="el-icon-edit"
