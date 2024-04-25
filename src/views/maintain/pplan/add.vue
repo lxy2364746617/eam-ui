@@ -336,9 +336,9 @@ export default {
                 groupId: [
                     { required: true, message: '巡点检班组不能为空', trigger: 'blur' },
                 ],
-                executor: [
+                /* executor: [
                     { required: true, message: '巡点检执行人不能为空', trigger: 'blur' },
-                ],
+                ], */
                 /* directorName: [
                     { required: true, message: '巡点检负责人不能为空', trigger: 'blur' },
                 ], */
