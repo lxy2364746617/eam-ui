@@ -21,9 +21,9 @@
       <el-table-column label="序号" align="center" type="index" />
       <el-table-column label="班次编码" align="center" prop="classesCode" />
       <el-table-column label="班次类型" align="center" prop="classesType" />
-      <el-table-column label="所属组织" align="center" prop="deptId" >
+      <el-table-column label="所属组织" align="center" prop="tenantId" >
         <template slot-scope="scope">
-          {{findTreeName(deptOptions,scope.row.deptId)}}
+          {{findTreeName(deptOptions,scope.row.tenantId)}}
         </template>
       </el-table-column>
       <el-table-column label="班次时间" align="center"  width="180">
