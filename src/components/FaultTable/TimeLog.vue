@@ -249,10 +249,7 @@ export default {
   watch: {
     standardList: {
       handler(val) {
-        this.$emit(
-          "timeLog",
-          val.filter((item) => !item.id)
-        );
+        this.$emit("timeLog", val);
       },
       deep: true,
       immediate: true,

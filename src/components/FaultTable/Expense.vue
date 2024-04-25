@@ -155,17 +155,13 @@ export default {
   watch: {
     standardList: {
       handler(val) {
-        this.$emit(
-          "expense",
-          val.filter((item) => !item.id)
-        );
+        this.$emit("expense", val);
       },
       deep: true,
       immediate: true,
     },
   },
   created() {
-    console.log("========================", this.disabled);
     if (this.formData.orderCode) {
       request({
         url: "/wom/repair/getWomFaultCostInfo",
