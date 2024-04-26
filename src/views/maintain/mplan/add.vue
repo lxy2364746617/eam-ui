@@ -345,9 +345,9 @@ export default {
                 groupId: [
                     { required: true, message: '保养班组不能为空', trigger: 'blur' },
                 ],
-                executor: [
-                    { required: true, message: '主要执行人日期不能为空', trigger: 'blur' },
-                ],
+                /* executor: [
+                    { required: true, message: '主要执行人不能为空', trigger: 'blur' },
+                ], */
                 directorName: [
                     { required: true, message: '保养负责人不能为空', trigger: 'blur' },
                 ],

@@ -125,7 +125,7 @@
             </p>
             <p>
               <span style="margin-right:10px">当前使用部门:</span>
-              <span>{{item.affDept}}</span>
+              <span>{{item.dept}}</span>
             </p>
             <p>
               <span style="margin-right:10px">目标使用部门:</span>

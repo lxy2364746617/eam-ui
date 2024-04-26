@@ -100,7 +100,7 @@ export default {
     /** 查询用户列表 */
     getList(queryParams) {
       this.loading = true
-      queryParams.exportIds=this.formData.disIds.join(',')
+      //queryParams.exportIds=this.formData.disIds.join(',')
       queryParams.itemType=queryParams.itemType?queryParams.itemType:this.itemType
       relationItem(queryParams).then((response) => {
         this.itemList = response.rows
