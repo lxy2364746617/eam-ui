@@ -150,6 +150,7 @@ import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 import { getLocationTree } from "@/api/Location";
 import { equipmentTree } from "@/api/equipment/category";
+import { getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
 export default {
   components: {
     PropertyOperation,
@@ -190,6 +191,7 @@ export default {
       delList: [],
       isShowCard: false,
       deptOptions: [],
+      deptOptions1: [],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -260,7 +262,9 @@ export default {
       }
     } else {
       this.formData = {
-        affDeptId: this.$store.state.user.standing.deptId,
+        outDeptPerson: this.$store.state.user.standing.nickName,
+        affDeptId: this.$store.state.user.standing.affDeptId,
+        outDeptId: this.$store.state.user.standing.deptId,
       };
       this.isShowCard = false;
       this.getTreeSelect();
@@ -333,7 +337,7 @@ export default {
           span: 8,
           required: true,
           formType: "selectTree",
-          options: this.deptOptions,
+          options: this.deptOptions1,
           formDisabled: true,
         },
         {
@@ -581,6 +585,9 @@ export default {
     getTreeSelect() {
       listDept().then((response) => {
         this.deptOptions = response.data;
+      });
+      getPrtOrgTreeByDeptId({ prtOrg: "Y" }).then((response) => {
+        this.deptOptions1 = response.data;
       });
       getLocationTree().then((res) => {
         this.locationOptions = this.locationTree(res.data);

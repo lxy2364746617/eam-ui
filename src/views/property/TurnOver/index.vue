@@ -163,6 +163,7 @@ import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 import fileImport from "@/components/FileImport";
+import { getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
 export default {
   components: { Wrapper, ContTable, subprocess, fileImport },
   dicts: ["wf_process_status"],
@@ -178,6 +179,7 @@ export default {
         pageSize: 10,
       },
       deptOptions: [],
+      deptOptions1: [],
       ids: [],
       // 文件上传
       filedrawer: false,
@@ -221,7 +223,7 @@ export default {
           prop: "affDeptId",
           tableVisible: true,
           formType: "selectTree",
-          options: this.deptOptions,
+          options: this.deptOptions1,
           width: 150,
         },
         {
@@ -387,6 +389,9 @@ export default {
     // 下载
     handleDownload() {},
     async getTreeSelect() {
+      getPrtOrgTreeByDeptId({ prtOrg: "Y" }).then((response) => {
+        this.deptOptions1 = response.data;
+      });
       await listDept().then(async (response) => {
         this.deptOptions = response.data;
         await this.getList(this.queryParams);

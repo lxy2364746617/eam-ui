@@ -429,6 +429,11 @@ export default {
             this.listGroupId = this.itemArr[0].groupId;
             this.getList2();
           }
+          console.log(
+            "========================",
+            this.listGroupId,
+            this.itemValue
+          );
         } else {
           this.title = "";
         }
@@ -760,11 +765,13 @@ export default {
     },
     async getList2(row) {
       this.loading2 = true;
+      console.log("========================", this.groupIds);
       getExecutorList({ groupId: this.listGroupId }).then((response) => {
         this.equipmentList2 = response.data;
         this.total2 = response.total;
         this.loading2 = false;
       });
+      // listUser2
     },
 
     // 多选框选中数据

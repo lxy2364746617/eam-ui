@@ -141,6 +141,7 @@ import { listDefinition1 } from "@/api/flowable/definition";
 import subprocess from "@/views/device/book/process";
 import { definitionStart2 } from "@/api/flowable/definition";
 import { equipmentTree } from "@/api/equipment/category";
+import { getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
 export default {
   components: {
     PropertyOperation,
@@ -176,6 +177,7 @@ export default {
       delList: [],
       isShowCard: false,
       deptOptions: [],
+      deptOptions1: [],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -247,7 +249,7 @@ export default {
       }
     } else {
       this.formData = {
-        scrapUnitId: this.$store.state.user.standing.deptId,
+        scrapUnitId: this.$store.state.user.standing.affDeptId,
         scrapUnit: this.$store.state.user.standing.dept.deptName,
       };
       this.isShowCard = false;
@@ -300,7 +302,7 @@ export default {
           span: 6,
           required: true,
           formType: "selectTree",
-          options: this.deptOptions,
+          options: this.deptOptions1,
           formDisabled: true,
         },
         {
@@ -617,6 +619,9 @@ export default {
         }
         // 方便获取父级tree
         this.loops(this.categoryOptions);
+      });
+      getPrtOrgTreeByDeptId({ prtOrg: "Y" }).then((response) => {
+        this.deptOptions1 = response.data;
       });
       listDept().then((response) => {
         this.deptOptions = response.data;
