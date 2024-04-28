@@ -621,8 +621,18 @@ export default {
     },
     columns4() {
       return [
-        { label: "开始时间", prop: "startTime", tableVisible: true },
-        { label: "结束时间", prop: "endTime", tableVisible: true },
+        {
+          label: "开始时间",
+          prop: "startTime",
+          tableVisible: true,
+          formType: "datetime",
+        },
+        {
+          label: "结束时间",
+          prop: "endTime",
+          tableVisible: true,
+          formType: "datetime",
+        },
         { label: "工时（h）", prop: "workHours", tableVisible: true },
         {
           label: "保养内容",

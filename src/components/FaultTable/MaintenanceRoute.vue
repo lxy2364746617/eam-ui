@@ -20,7 +20,7 @@
       ref="jmtable1"
       :columns="columns1"
       :showSearch="false"
-      @radiochange="radiochange"
+      @switchchange="switchchange"
       style="margin-top: 20px"
       @handleSelectionChange="handleSelectionChange"
       :rightToolbarShow="false"
@@ -716,12 +716,28 @@ export default {
         });
     },
     //线列表修改拍照状态
-    radiochange(event, prop, row) {
+    switchchange(event, prop, row) {
+      let arr = [];
       this.lineList.forEach((item, index) => {
         if (item.lineId == row.lineId) {
           item.photoFlag = row.photoFlag;
+          larchivesList({ lineId: item.lineId })
+            .then((res) => {
+              arr.push(
+                ...res.data.map((val) => ({
+                  ...val,
+                  lineCode: item.lineCode,
+                  lineName: item.lineName,
+                  photoFlag: item.photoFlag,
+                }))
+              );
+            })
+            .catch(() => {});
         }
       });
+      this.womDevices = arr;
+
+      this.$emit("lineDTOListWomDevices", this.womDevices);
     },
     // 调整项目
     // 左边表格全选/取消

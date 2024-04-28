@@ -34,12 +34,9 @@
             <el-card style="margin-bottom: 2px; font-size: 14px">
               <p class="title-p">
                 <el-checkbox :label="item.deviceId" :key="item.deviceId">
-                  <el-tooltip
-                    :content="`${item.deviceName}[${item.deviceCode}]`"
-                    placement="top"
-                  >
+                  <el-tooltip :content="`${item.deviceName}`" placement="top">
                     <div class="tooltip">
-                      {{ item.deviceName }}[{{ item.deviceCode }}]
+                      {{ item.deviceName }}
                     </div>
                   </el-tooltip>
                 </el-checkbox>

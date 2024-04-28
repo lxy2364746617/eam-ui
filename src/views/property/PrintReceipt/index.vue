@@ -150,6 +150,13 @@
               >{{ getPersonnel("材料员") }}</span
             ></span
           >
+          <span
+            >{{ "保管员："
+            }}<span
+              v-if="personnelOptions.some((item) => item.taskName === '保管员')"
+              >{{ getPersonnel("保管员") }}</span
+            ></span
+          >
         </div>
       </div>
       <div v-if="form.flag === 'YJ'">
@@ -274,7 +281,7 @@ export default {
       const person = this.personnelOptions.find(
         (item) => item.taskName === role
       );
-      return person ? person.candidate : "";
+      return person ? person.assigneeName : "";
     },
     // 递归获取treeselect父节点
     loops(list, parent) {
