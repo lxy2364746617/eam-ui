@@ -38,7 +38,7 @@
                 :businessId="taskForm.businessId"
               ></backspace-detail>
               <annual-detail
-                v-if="path == '/property/annualControls'"
+                v-if="path == '/property/purchase/annualControls'"
                 :detailReadonly="true"
                 :businessId="taskForm.businessId"
               ></annual-detail>

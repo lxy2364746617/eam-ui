@@ -16,7 +16,7 @@
 import { listAssembly } from "@/api/equipment/assembly";
 import { listDept } from "@/api/system/dept";
 import { getLocationTree} from '@/api/Location';
-import { equipmentTree } from "@/api/equipment/category";
+import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 import JmTable from "@/components/JmTable";
 
 export default {
@@ -85,7 +85,7 @@ export default {
     await getLocationTree().then(res=>{
         this.locationOptions=this.getTreeData(res.data)
       });
-    await equipmentTree().then(response => {
+    await equipmentTreeNoTemplate().then(response => {
         this.categoryOptions = response.data;
       });
     await listDept().then(response => {

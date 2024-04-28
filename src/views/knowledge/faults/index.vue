@@ -3,7 +3,7 @@
     <el-card class="box-card1" shadow="never" v-hasPermi="['kdb:faultCase:indexInfo']">
       <div class="header">
         <div class="chart_month">
-          <p class="title">月添加案</p>
+          <p class="title">月添加案例</p>
           <p class="value_text"><span>{{monthNum}}</span>例</p>
           <el-divider></el-divider>
           <p class="title">年添加案例</p>
@@ -58,6 +58,9 @@
 
 <script>
 import { faultCaseList,faultCaseListDel,faultCaseInfo,faultCaseType,faultCaseLevel } from '@/api/knowledge'
+import {
+  getWorkOrderSchedule,
+} from "@/api/work/schedule";
 import JmTable from "@/components/JmTable1";
 import * as echarts from "echarts";
   export default {
@@ -68,6 +71,14 @@ import * as echarts from "echarts";
     },
     data(){
       return {
+        workActiveList: [
+        { orderStatus: "待派工" },
+        { orderStatus: "待执行" },
+        { orderStatus: "执行中" },
+        { orderStatus: "待验收" },
+        { orderStatus: "已完成" },
+        { orderStatus: "已关闭" },
+      ],
         // 月添加案例数
         monthNum:'0',
         // 年添加案例数
@@ -172,13 +183,15 @@ import * as echarts from "echarts";
               ]
             }
           ]
-        }
+        },
+        // 进度
+      
       }
     },
     computed:{
       tablecolumns(){
         return [
-          { label: "案例编码", prop: "caseNo" },
+          { label: "案例编码", prop: "caseNo",type:'link' },
           { label: "故障代码", prop: "code" },
           { label: "故障名称", prop: "faultName", },
           { label: "故障分类", prop: "type", formType: "select",options:[]},
@@ -300,20 +313,119 @@ import * as echarts from "echarts";
       // 点击删除
       handleDelete(row){
         // console.log(row)
-        faultCaseListDel({id:row.id}).then(res=>{
+        this.$confirm('是否确定删除文件名为'+row.fileName+'的数据？').then(res=>{
+          faultCaseListDel({id:row.id}).then(res=>{
           this.getList()
           this.$message({
             message: '操作成功！',
             type: 'success'
           })
         })
+        })
+        
       },
       linkClick(row,item){
-        // console.log(row,item)
+         console.log('row',row,'item',item)
         if(item.label == "故障设备编码"){
           this.$router.push({name:'bookDetails',query:{i:row.deviceId}})
         }else if(item.label == '工单编码'){
-          // this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
+            getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
+        row["workActive"] = 0;
+
+        if (
+          row.orderType !== "DZWX" &&
+          row.orderType !== "JDBWX" &&
+          row.orderType !== "WWWX"
+        ) {
+          this.workActiveList.splice(3, 1);
+        }
+        this.workActiveList.forEach((item, index) => {
+          const matchedItem = res.data.find(
+            (val) => val.orderStatus === item.orderStatus
+          );
+
+          if (matchedItem) {
+            row["workActive"] = index + 1;
+            Object.assign(item, matchedItem);
+          }
+        });
+
+        row["workOrderSchedule"] = this.workActiveList;
+        switch (row.orderType + row.orderObj) {
+          // ! 巡点捡
+          case "RCDJ1":
+          case "ZZDJ1":
+          case "JMDJ1":
+            this.$router.push({
+              path: "/work/questAdd7",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "RCDJ2":
+          case "ZZDJ2":
+          case "JMDJ2":
+            this.$router.push({
+              path: "/work/questAdd5",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 设备维修
+          case "DZWX2":
+          case "JDBWX2":
+            this.$router.push({
+              path: "/work/questAdd2",
+              query: { item: row, disabled: true },
+            });
+            console.log('JDBWX2',row)
+            break;
+          case "WWWX2":
+            this.$router.push({
+              path: "/work/questAdd3",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "DZWX3":
+          case "WWWX3":
+          case "JDBWX3":
+            this.$router.push({
+              path: "/work/questAdd",
+              query: { item: row, disabled: true },
+            });
+            console.log('JDBWX3',row)
+            break;
+          // ! 定期检验
+          case "DQJY2":
+            this.$router.push({
+              path: "/work/questAdd8",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 保养
+          case "RCBY1":
+          case "YJBY1":
+          case "EJBY1":
+          case "CGRH1":
+            this.$router.push({
+              path: "/work/questAdd6",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "RCBY2":
+          case "YJBY2":
+          case "EJBY2":
+          case "CGRH2":
+            this.$router.push({
+              path: "/work/questAdd4",
+              query: { item: row, disabled: true },
+            });
+            break;
+          default:
+            break;
+        }
+      });
+           // this.$router.push({path: "/work/questAdd2",query: { item: row, disabled: true },});    
+        }else if(item.label == '案例编码'){
+           this.$router.push({name:'faults_details',query:{orderCode:row.orderCode,deviceCode:row.deviceCode,id:row.id,caseNo:row.caseNo}})
         }
       }
     },

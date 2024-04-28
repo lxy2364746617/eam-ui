@@ -161,9 +161,9 @@ export default {
             Object.entries(this.userobj).forEach(([key, value]) => {  
             formData.append(key, value);
             })
-          userList(formData).then(res=>{
+          /* userList(formData).then(res=>{
             this.userList=res.data
-          })
+          }) */
         }
       })
     },
