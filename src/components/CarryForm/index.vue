@@ -553,7 +553,7 @@ export default {
       this.formData["delAttachmentList"] = val;
     },
     updateAttachmentiist(val) {
-      this.formData["updateAttachmentiist"] = val;
+      this.formData["updateAttachmentList"] = val;
     },
     /** 转换部门数据结构 */
     normalizer(node) {
