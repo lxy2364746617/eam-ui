@@ -135,7 +135,7 @@ import { techList,equipmentTree,equipmentTreeList,techAdd,techListDel,addClickNu
 import { download } from '@/utils'
 import { getToken } from "@/utils/auth";
 import JmTable from "@/components/JmTable1";
-import { equipmentTree as deviceTree}  from '@/api/equipment/category'
+import { equipmentTreeNoTemplate as deviceTree}  from '@/api/equipment/category'
 import log from "../../monitor/job/log";
 import { getLocationTree} from '@/api/Location'
 import { listDept } from '@/api/system/dept'
@@ -425,7 +425,7 @@ import { listDept } from '@/api/system/dept'
 
       // 获取设备树
       getEquipmentTree(){
-        equipmentTree().then(res=>{
+        deviceTree().then(res=>{
           // console.log(res)
           this.dataTree = res.data
           this.dialogSbVisible = true

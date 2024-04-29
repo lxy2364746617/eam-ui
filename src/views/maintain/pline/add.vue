@@ -292,20 +292,26 @@ export default {
             let that = this;
             this.$refs['form'].validate((valid) => {
                 if (valid) {
-                    that.btnLoading = true;
                     let data = {
                         ...that.form,
                         mroPatrolLineArchivesList: that.lineList.map(item => {
                             return { deviceId: item.deviceId }
                         }),
                     }
+                    if(this.lineList.length==0) return  that.$modal.msgError(`请添加设备`);
+                    let arr = this.lineList.filter(item=>{
+                        return item.dayNum==0&&item.fullNum==0&&item.preNum==0
+                    })
+                   if(arr.length>0) {
+                    let msg =  arr.map(item=>item.deviceName).join(',')
+                    return that.$modal.msgError(`${msg}巡点检标准为0，请选择标准`);
+                   }
                     if (that.lineId != '' && that.lineId) {
                         data.lineId=that.lineId;
                         updatePline(data).then(response => {
                             that.$modal.msgSuccess("修改成功");
                             that.goback()
                         }).catch((err) => {
-                            that.btnLoading = false;
                         });
                     } else {
                         addPline(data).then(response => {
@@ -313,7 +319,6 @@ export default {
                             // this.getList();
                             that.goback()
                         }).catch((err) => {
-                            that.btnLoading = false;
                         });
                     }
                 }

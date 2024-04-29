@@ -296,20 +296,26 @@ export default {
             let that = this;
             this.$refs['form'].validate((valid) => {
                 if (valid) {
-                    that.btnLoading = true;
                     let data = {
                         ...that.form,
                         mroMaintainLineArchivesList: that.lineList.map(item => {
                             return { deviceId: item.deviceId }
                         }),
                     }
+                     if(this.lineList.length==0) return  that.$modal.msgError(`请添加设备`);
+                    let arr = this.lineList.filter(item=>{
+                        return item.cNum==0&&item.dayNum==0&&item.oNum==0&&item.tNum==0
+                    })
+                   if(arr.length>0) {
+                    let msg =  arr.map(item=>item.deviceName).join(',')
+                    return that.$modal.msgError(`${msg}保养检修标准为0，请添加标准`);
+                   }
                     if (that.lineId != '' && that.lineId) {
                         data.lineId=that.lineId;
                         updateMline(data).then(response => {
                             that.$modal.msgSuccess("修改成功");
                             that.goback()
                         }).catch((err) => {
-                            that.btnLoading = false;
                         });
                     } else {
                         addMline(data).then(response => {
@@ -317,7 +323,6 @@ export default {
                             // this.getList();
                             that.goback()
                         }).catch((err) => {
-                            that.btnLoading = false;
                         });
                     }
                 }
