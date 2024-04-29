@@ -397,7 +397,6 @@ export default {
         this.getList()
       },
       getList(){
-        this.loading = true
         let keys = Object.keys(this.queryParams)
         let params = {}
         keys.forEach(key=>{

@@ -66,7 +66,7 @@ import {
   mcheckList
 } from '@/api/maintain/mstandard'
 import JmTable from '@/components/JmTable';
-import { equipmentTree } from '@/api/equipment/category';
+import { equipmentTreeNoTemplate } from '@/api/equipment/category';
 import { listDept } from '@/api/system/dept';
 import { getLocationTree} from '@/api/Location'
 export default {
@@ -167,7 +167,7 @@ export default {
     /** 查询设备档案下拉树结构 */
     getTree() {
       this.showstate = false;
-      equipmentTree().then((response) => {
+      equipmentTreeNoTemplate().then((response) => {
         this.categoryOptions = response.data
         // 方便获取父级tree;
         this.loops(this.categoryOptions)

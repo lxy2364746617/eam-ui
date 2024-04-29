@@ -48,7 +48,7 @@
       direction="rtl"
       size="80%"
       :wrapperClosable="false">
-      <parentdevice @submitRadio="submitRadio" @close="close" :formData="formData" :deviceAtt='"0"'></parentdevice>
+      <parentdevice @submitRadio="submitRadio" @close="close" :formData="formData" :deviceAtt='"0"' :isDeviceStep1='true' :deviceId='formData.deviceId' @before-close='close'></parentdevice>
     </el-drawer>
   </div>
 </template>

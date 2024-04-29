@@ -25,7 +25,7 @@
         :destroy-on-close="true"
         size="80%"
         :wrapperClosable="false">
-        <parentdevice @submitRadio="submitRadio" @close="close" :deviceAtt='"0"'></parentdevice>
+        <parentdevice @submitRadio="submitRadio" @close="close" :deviceAtt='"0"' :isDeviceStep1='true' :deviceId='formData.deviceId' @before-close='close'></parentdevice>
       </el-drawer>
     </el-card>
     <el-card shadow="never" style="margin-top: 10px;text-align: right;">

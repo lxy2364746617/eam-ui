@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { listBASE } from "@/api/equipment/BASE";
+import { listBASE,listSjsb } from "@/api/equipment/BASE";
 import { equipmentTree } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
@@ -72,6 +72,14 @@ export default {
       type: Object,
     },
     deviceAtt: {
+      default: "",
+      type: String,
+    },
+    isDeviceStep1:{//getlist接口不同
+      default:false,
+      type:Boolean
+    },
+    deviceId: {
       default: "",
       type: String,
     },
@@ -220,10 +228,12 @@ export default {
         categoryId: this.queryParams.categoryId,
         ...queryParams,
         deviceAtt: this.deviceAtt,
-        currDeptId: this.formData?.currDeptId,
-        useDeptId: this.formData?.useDeptId,
+        currDeptId:this.isDeviceStep1?'': this.formData?.currDeptId,
+        useDeptId:this.isDeviceStep1?'':this.formData?.useDeptId,
       };
-      listBASE(data).then((response) => {
+      if(this.isDeviceStep1){
+        data.deviceId = this.deviceId
+        listSjsb(data).then((response) => {
         response.rows.forEach((item) => {
           item.archivesOther &&
             (item.propertyCode = item.archivesOther.propertyCode);
@@ -251,6 +261,37 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+      }else{
+        listBASE(data).then((response) => {
+        response.rows.forEach((item) => {
+          item.archivesOther &&
+            (item.propertyCode = item.archivesOther.propertyCode);
+        });
+        // 不展示自身
+        if (this.formData) {
+          response.rows.forEach((b, i) => {
+            if (b.deviceId == this.formData.deviceId) {
+              response.rows.splice(i, 1);
+            }
+          });
+          this.equipmentList = response.rows.filter((item) => {
+            if (
+              this.formData.disIds &&
+              this.formData.disIds.includes(item.deviceId)
+            ) {
+              return false;
+            } else {
+              return true;
+            }
+          });
+        } else {
+          this.equipmentList = response.rows;
+        }
+        this.total = response.total;
+        this.loading = false;
+      });
+      }
+      
     },
     // 节点单击事件
     handleNodeClick(data) {

@@ -67,12 +67,12 @@
               <div class="content_body content_body2">
                 <el-row :gutter="20" style="width:100%">
                   <el-col :span="6" v-for="(item,index) in ywwdData.list" :key="index">
-                    <div class="wd_box" >
+                    <div class="wd_box" @click="ywwdClick(item)">
                       <p class="el-icon-folder-opened icon_top"></p>
                       <p class="name" >{{item.fileName}}</p>
                       <p class="type">类型:{{getName(item.kdbType)}}</p>
                       <el-divider></el-divider>
-                      <p class="icon_bottom"><span class="el-icon-right" @click="ywwdClick(item)"></span></p>
+                      <p class="icon_bottom"><span class="el-icon-right" ></span></p>
                     </div>
                   </el-col>
                 </el-row>
@@ -160,9 +160,11 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       // 点击故障案例更多
       ClickMore(type){
         if(type == 'gzal'){
-          this.getGzglList(20)
+          //this.getGzglList(20)
+          this.$router.push({path:'/knowledge/faults'})
         }else if(type == 'jszl'){
-          this.getJszlList(20)
+          //this.getJszlList(20)
+          this.$router.push({path:'/knowledge/technology'})
         }
 
       },
@@ -398,6 +400,7 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
   border-radius: 8px;
   padding: 10PX 10px 0 10px;
   margin-bottom: 10PX;
+  cursor: pointer;
   
   p{
     overflow: hidden;

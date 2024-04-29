@@ -266,7 +266,7 @@ export default {
     submitRadio(rows){
       const deviceId = this.formData.deviceId;
       var arr = rows.map((b)=> {
-        return {'deviceId': deviceId,'childDeviceId': b.deviceId}
+        return {'deviceId': deviceId,'childDeviceId': b.deviceId,deviceName:this.formData.deviceName}
       })
       addAssembly(arr).then(response => {
         this.$modal.msgSuccess("保存成功");

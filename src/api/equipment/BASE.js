@@ -147,3 +147,11 @@ export function getDeptInfo(query) {
     params: query
   })
 }
+//detail-step1-上级设备
+export function listSjsb(query) {
+  return request({
+    url: '/equipment/base/listSjsb',
+    method: 'get',
+    params: query
+  })
+}

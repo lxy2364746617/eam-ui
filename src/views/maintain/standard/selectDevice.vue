@@ -26,7 +26,7 @@
 
 <script>
 import { relationList } from "@/api/maintain/standard";
-import { equipmentTree } from "@/api/equipment/category";
+import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";
 import JmUserTree from "@/components/JmUserTree";
@@ -111,7 +111,7 @@ export default {
   methods: {
      /** 查询设备档案下拉树结构 */
    async getTree() {
-     await equipmentTree().then((response) => {
+     await equipmentTreeNoTemplate().then((response) => {
         this.categoryOptions = response.data
         // 方便获取父级tree
         this.loops(this.categoryOptions)

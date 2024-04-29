@@ -52,7 +52,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="保养内容">
-            <el-input class="p_input" type="textarea" v-model="form.itemContent" maxlength="100" show-word-limit placeholder="请输入保养部位" />
+            <el-input class="p_input" type="textarea" v-model="form.itemContent" maxlength="100" show-word-limit placeholder="请输入保养内容" />
           </el-form-item>
           <el-form-item label="保养工具" prop="itemTool">
             <el-input class="p_input" v-model="form.itemTool" placeholder="请输入保养工具" />
