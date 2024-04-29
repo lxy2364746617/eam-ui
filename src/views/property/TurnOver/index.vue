@@ -199,11 +199,11 @@ export default {
     columns() {
       return [
         {
-          label: "创建日期",
+          label: "创建时间",
           prop: "createTime",
           tableVisible: true,
-          width: 150,
-          formType: "date",
+          width: 200,
+          formType: "dateSeconds",
         },
         {
           label: "移交单编号",

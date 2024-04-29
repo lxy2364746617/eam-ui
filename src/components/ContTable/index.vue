@@ -94,6 +94,18 @@
                   >
                   </el-date-picker>
                   <el-date-picker
+                    v-if="col.formType == 'dateSeconds'"
+                    v-model="queryParams[col.prop]"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                    size="small"
+                    type="date"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                    style="width: auto"
+                    placeholder="选择日期"
+                  >
+                  </el-date-picker>
+                  <el-date-picker
                     v-else-if="col.formType == 'dateYear'"
                     v-model="queryParams[col.prop]"
                     value-format="yyyy"

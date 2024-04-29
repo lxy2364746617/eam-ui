@@ -209,6 +209,13 @@ export default {
     },
     columns() {
       return [
+        {
+          label: "创建时间",
+          prop: "createTime",
+          tableVisible: true,
+          width: 200,
+          formType: "dateSeconds",
+        },
         { label: "报废编号", prop: "scrapNo", tableVisible: true, width: 200 },
         { label: "业务名称", prop: "busName", tableVisible: true },
         {

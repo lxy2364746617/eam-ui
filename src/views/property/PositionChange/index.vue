@@ -194,11 +194,11 @@ export default {
     columns() {
       return [
         {
-          label: "创建日期",
+          label: "创建时间",
           prop: "createTime",
           tableVisible: true,
-          formType: "date",
-          width: 150,
+          formType: "dateSeconds",
+          width: 200,
         },
         { label: "变动单号", prop: "changeNo", tableVisible: true, width: 200 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },

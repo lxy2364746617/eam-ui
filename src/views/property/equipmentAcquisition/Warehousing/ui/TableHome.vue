@@ -302,10 +302,11 @@ export default {
           ],
         },
         {
-          label: "创建日期",
+          label: "创建时间",
           prop: "createTime",
           tableVisible: true,
-          formType: "date",
+          width: 200,
+          formType: "dateSeconds",
         },
       ];
     },

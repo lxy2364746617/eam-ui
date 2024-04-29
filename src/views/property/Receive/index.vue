@@ -199,11 +199,11 @@ export default {
     columns() {
       return [
         {
-          label: "创建日期",
+          label: "创建时间",
           prop: "createTime",
           tableVisible: true,
           width: 200,
-          formType: "date",
+          formType: "dateSeconds",
         },
         { label: "领用单号", prop: "neckNo", tableVisible: true, width: 200 },
         { label: "设备数量", prop: "deviceNum", tableVisible: true },
