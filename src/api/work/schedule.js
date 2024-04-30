@@ -34,6 +34,9 @@ export const updateAllocation = (data) => {
 };
 // 工单管理-工单调度执行人修改
 export const updateExecutor = (data) => {
+  data.forEach((item) => {
+    delete item.createTime;
+  });
   return request({
     url: "/workorder/allocation/update_executor",
     method: "post",

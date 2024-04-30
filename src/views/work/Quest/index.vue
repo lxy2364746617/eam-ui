@@ -429,11 +429,11 @@ export default {
             this.listGroupId = this.itemArr[0].groupId;
             this.getList2();
           }
-          console.log(
-            "========================",
-            this.listGroupId,
-            this.itemValue
-          );
+          // console.log(
+          //   "========================",
+          //   this.listGroupId,
+          //   this.itemValue
+          // );
         } else {
           this.title = "";
         }
@@ -491,7 +491,6 @@ export default {
         });
 
         row["workOrderSchedule"] = this.workActiveList;
-        console.log("========================", row["workOrderSchedule"]);
         switch (row.orderType + row.orderObj) {
           // ! 巡点捡
           case "RCDJ1":
@@ -708,8 +707,10 @@ export default {
         this.title === "任务转派"
       ) {
         this.itemArr = this.itemArr.map((item) => {
-          item.workOrderCode = item.orderCode;
-          delete item.orderCode;
+          if (!item.workOrderCode) {
+            item.workOrderCode = item.orderCode;
+            delete item.orderCode;
+          }
           item = { ...item, ...this.radioRow2 };
           return item;
         });
@@ -721,7 +722,8 @@ export default {
           }
         });
       } else if (this.itemValue && this.title === "转派") {
-        this.itemValue.workOrderCode = this.itemValue.orderCode;
+        if (!this.itemValue.workOrderCode)
+          this.itemValue.workOrderCode = this.itemValue.orderCode;
         delete this.itemValue.orderCode;
         updateExecutor([{ ...this.itemValue, ...this.radioRow2 }]).then(
           (res) => {
@@ -765,7 +767,7 @@ export default {
     },
     async getList2(row) {
       this.loading2 = true;
-      console.log("========================", this.groupIds);
+      // console.log("========================", this.groupIds);
       getExecutorList({ groupId: this.listGroupId }).then((response) => {
         this.equipmentList2 = response.data;
         this.total2 = response.total;

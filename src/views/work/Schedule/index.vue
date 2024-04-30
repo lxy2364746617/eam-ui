@@ -533,8 +533,10 @@ export default {
         this.title === "手动分派"
       ) {
         this.itemArr = this.itemArr.map((item) => {
-          item.workOrderCode = item.orderCode;
-          delete item.orderCode;
+          if (!item.workOrderCode) {
+            item.workOrderCode = item.orderCode;
+            delete item.orderCode;
+          }
           item = { ...item, ...this.radioRow2 };
           return item;
         });
@@ -546,8 +548,10 @@ export default {
           }
         });
       } else if (this.itemValue && this.title === "分派") {
-        this.itemValue.workOrderCode = this.itemValue.orderCode;
-        delete this.itemValue.orderCode;
+        if (!this.itemValue.workOrderCode) {
+          this.itemValue.workOrderCode = this.itemValue.orderCode;
+          delete this.itemValue.orderCode;
+        }
         updateExecutor([{ ...this.itemValue, ...this.radioRow2 }]).then(
           (res) => {
             if (res.code === 200) {
