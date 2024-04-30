@@ -820,7 +820,7 @@ export default {
       this.isDrawer = true;
     },
     handlerDeleteHours(row) {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将删除此用户, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -904,7 +904,7 @@ export default {
       form["workOrderCode"] = this.formData.orderCode;
       form["userName"] = this.selectUser.userName;
       // form["userId"] = this.selectUser.userId;
-      delete this.selectUser.createTime
+      delete this.selectUser.createTime;
       await getWorkHours({ ...form, ...this.selectUser }).then((response) => {
         if (response.data.length && response.data.length > 0) {
           response.data.forEach((item) => {
