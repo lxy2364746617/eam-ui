@@ -9,42 +9,42 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="检验计划名称" prop="planName">
-                        <el-input v-model="form.planName" placeholder="请输入保养计划名称" />
+                        <el-input v-model="form.planName" placeholder="请输入保养计划名称" :disabled='readOnly'/>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划状态" prop="planStatus">
-                        <el-radio-group v-model="form.planStatus">
+                        <el-radio-group v-model="form.planStatus" :disabled='readOnly'>
                             <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{
                                 dict.label }}</el-radio>
                         </el-radio-group>
                     </el-form-item></el-col>
                 <el-col :span="12">
-                    <el-form-item label="检验类型" prop="itemType">
-                        <el-select v-model="form.itemType" placeholder="请选择检验类型">
+                    <el-form-item label="检验类型" prop="itemType" >
+                        <el-select v-model="form.itemType" placeholder="请选择检验类型" :disabled='readOnly'>
                             <el-option v-for="dict in dict.type.DQJY" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="检验周期" prop="planCycle">
-                        <el-input-number v-model="form.planCycle" :min="1"  label="请输入保养周期" :disabled='form.planCycleType=="班"'></el-input-number>
+                        <el-input-number v-model="form.planCycle" :min="1"  label="请输入保养周期" :disabled='form.planCycleType=="班"||readOnly'></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="检验周期类别" prop="planCycleType">
-                        <el-select v-model="form.planCycleType" placeholder="请选择保养周期类别">
+                        <el-select v-model="form.planCycleType" placeholder="请选择保养周期类别" :disabled='readOnly'>
                             <el-option v-for="dict in dict.type.mro_m_cycle_type" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
                     </el-form-item></el-col>
                 <el-col :span="12">
-                    <el-form-item label="计划开始时间" prop="planBeginTime">
+                    <el-form-item label="计划开始时间" prop="planBeginTime" >
                         <el-date-picker clearable v-model="form.planBeginTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="请选择计划开始时间" :picker-options="startDatePicker"></el-date-picker>
+                            placeholder="请选择计划开始时间" :picker-options="startDatePicker" :disabled='readOnly'></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划结束时间" prop="planEndTime">
                         <el-date-picker clearable v-model="form.planEndTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="请选择计划结束时间" :picker-options="endDatePicker"></el-date-picker>
+                            placeholder="请选择计划结束时间" :picker-options="endDatePicker" :disabled='readOnly'></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="本次执行日期" prop="thisExecuteTime">
@@ -57,14 +57,14 @@
 
                 <el-col :span="24">
                     <el-form-item label="备注" prop="remark">
-                        <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" />
+                        <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" :disabled='readOnly'/>
                     </el-form-item></el-col>
             </el-row>
             <div class="title">人员配置</div>
             <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                 <el-col :span="8">
                     <el-form-item label="检测单位" prop="supplierId">
-                        <el-select v-model="form.supplierId" placeholder="请选择检测单位" @change="changeSupplierId">
+                        <el-select v-model="form.supplierId" placeholder="请选择检测单位" @change="changeSupplierId" :disabled='readOnly'>
                             <el-option v-for="dict in gysArr" :key="dict.id" :label="dict.supplierName"
                                 :value="dict.id"></el-option>
                         </el-select>
@@ -75,7 +75,7 @@
                     </el-form-item></el-col>
                 <el-col :span="8">
                     <el-form-item label="内部负责人" prop="headUserId">
-                        <el-select v-model="form.headUserId" placeholder="请选择内部负责人">
+                        <el-select v-model="form.headUserId" placeholder="请选择内部负责人" :disabled='readOnly'>
                             <el-option v-for="dict in userArr" :key="dict.userId" :label="dict.nickName"
                                 :value="dict.userId"></el-option>
                         </el-select>
@@ -83,27 +83,27 @@
             </el-row>
         </el-form>
         <div class="title">设备信息   
-            <el-button type="primary"  size="mini" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
+            <el-button type="primary"  size="mini" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;" v-if="!readOnly">添加</el-button>
+            <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete" v-if="!readOnly">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false" 
               :rightToolbarShow="false" @handleSelectionChange="handleSelectionChange">
             <template #end_handle="scope">
                 <!-- <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:rplan:remove']">查看</el-button> -->
-                <el-button size="mini" type="text" @click="handleDelete(scope)"
+                <el-button size="mini" type="text" @click="handleDelete(scope)" v-if="!readOnly"
                     v-hasPermi="['maintain:rplan:remove']">删除</el-button>
             </template>
         </jm-table>
         <div class="title" style="margin-top: 20px;">关联文档
-            <el-button type="primary" size="mini" @click="AddFile" v-hasPermi="['maintain:rplan:add']">上传</el-button>
+            <el-button type="primary" size="mini" @click="AddFile" v-hasPermi="['maintain:rplan:add']" v-if="!readOnly">上传</el-button>
         </div>
         <jm-table :tableData.sync="fileResourceList" ref="jmtable2" :columns="columns2" :showSearch="false"
             style="margin-top:20px" :rightToolbarShow="false">
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="downloadFile(scope.row)"
                     v-hasPermi="['maintain:rplan:edit']">下载</el-button>
-                <el-button size="mini" type="text" @click="handleDelete2(scope.row)"
+                <el-button size="mini" type="text" @click="handleDelete2(scope.row)" v-if="!readOnly"
                     v-hasPermi="['maintain:rplan:remove']">删除</el-button>
                 <el-button size="mini" type="text" v-if="fileType.includes(scope.row.fileType)"
                     @click="handlePreview(scope.row)" v-hasPermi="['maintain:rplan:edit']">预览</el-button>
@@ -171,6 +171,7 @@ export default {
     },
     data() {
         return {
+            readOnly:false,
             // 遮罩层
             planId: '',
             loading: true,
@@ -280,6 +281,7 @@ export default {
     },
     created() {
         this.disabled = this.$route.query.d == 'true';
+        this.$route.query.readOnly&&(this.readOnly = this.$route.query.readOnly == 'true')
         if (this.$route.query.l) {
             this.planId = this.$route.query.l;
             this.getDetails(this.$route.query.l);

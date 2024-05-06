@@ -21,7 +21,7 @@
           <li v-for="(item,index ) in tableData" :key="index">
             <div class="linetime" v-if="item.orderStatus=='已完成'&&( item.maintenanceType=='XDJ'||item.maintenanceType=='BYJX')">
               <div class="linetime_detail">
-                <p>{{findName(typeArr,item.maintenanceType) }}</p>
+                <p>{{findName(typeArr,item.maintenanceType) }} <el-link @click="busDetail(item)">{{item.orderCode}}</el-link> </p>
                 <el-divider></el-divider>
                 <div>
                   <p>
@@ -75,7 +75,7 @@
             </div>
             <div class="linetime" v-if="item.orderType=='DQJY'">
               <div class="linetime_detail">
-                <p>{{findName(typeArr,item.maintenanceType) }}</p>
+                <p>{{findName(typeArr,item.maintenanceType) }}<el-link @click="busDetail(item)">{{item.orderCode}}</el-link></p>
                 <el-divider></el-divider>
                 <div>
                   <p>
@@ -114,7 +114,7 @@
             </div>
             <div class="linetime" v-if="item.orderStatus=='待执行'&&(item.maintenanceType=='XDJ'||item.maintenanceType=='BYJX')">
               <div class="linetime_detail">
-                <p>{{findName(typeArr,item.maintenanceType) }}</p>
+                <p>{{findName(typeArr,item.maintenanceType) }}<el-link @click="busDetail(item)">{{item.orderCode}}</el-link></p>
                 <el-divider></el-divider>
                 <div>
                   <p>
@@ -157,7 +157,7 @@
             </div>
             <div class="linetime" v-if="item.orderType=='SBWX'">
               <div class="linetime_detail">
-                <p>{{findName(typeArr,item.maintenanceType) }}</p>
+                <p>{{findName(typeArr,item.maintenanceType) }}<el-link @click="busDetail(item)">{{item.orderCode}}</el-link></p>
                 <el-divider></el-divider>
                 <div>
                   <p>
@@ -201,7 +201,11 @@
         <el-table v-if="!isTimeLine" ref="table" :data="tableData" style="width: 100%">
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="orderType" label="工单类型"></el-table-column>
-          <el-table-column prop="orderCode" label="工单编号"></el-table-column>
+          <el-table-column prop="orderCode" label="工单编号">
+            <template slot-scope="scope">
+              <el-link @click="busDetail(scope.row)">{{scope.row.orderCode}}</el-link>
+            </template>
+          </el-table-column>
           <el-table-column prop="orderName" label="工单名称"></el-table-column>
           <el-table-column prop="orderStatus" label="工单状态"></el-table-column>
           <el-table-column prop="itemNum" label="任务项"></el-table-column>
@@ -256,7 +260,11 @@
         </el-row>
         <el-table v-if="!isTimeLine2" ref="table" :data="tableData2" style="width: 100%">
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="planCode" label="计划编号"></el-table-column>
+          <el-table-column prop="planCode" label="计划编号">
+            <template slot-scope="scope">
+              <el-link @click="busDetail2(scope.row)">{{scope.row.planCode}}</el-link>
+            </template>
+          </el-table-column>
           <el-table-column prop="planName" label="计划名称"></el-table-column>
           <el-table-column prop="ilk" label="计划类型">
             <template slot-scope="scope">{{findName(dict.type.maintain_ilk,scope.row.ilk)}}</template>
@@ -284,6 +292,7 @@ import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/light.css";
 import { list, statistics, getMaintenanceList } from "@/api/equipment/parts";
+import {  getWorkOrderSchedule} from "@/api/work/schedule";
 export default {
   props: {
     formData: {
@@ -412,8 +421,18 @@ export default {
             placement: "right",
             allowHTML: true,
           });
+          
         },
       },
+      // 进度
+      workActiveList: [
+        { orderStatus: "待派工" },
+        { orderStatus: "待执行" },
+        { orderStatus: "执行中" },
+        { orderStatus: "待验收" },
+        { orderStatus: "已完成" },
+        { orderStatus: "已关闭" },
+      ],
       /* calendarOptions:{
          plugins: [
           dayGridPlugin,
@@ -449,6 +468,19 @@ export default {
   created() {
     this.getList();
     this.getList2();
+    // 获取当月1号的日期
+    const firstDayOfMonth = new Date();
+    firstDayOfMonth.setDate(1);
+    // 获取当前日期
+    const currentDate = new Date();
+    // 格式化日期为年月日
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    this.time = [formatDate(firstDayOfMonth),formatDate(currentDate)]
   },
   mounted() {
     this.calendarApi = this.$refs.fullCalendar.getApi();
@@ -464,10 +496,13 @@ export default {
       return name || value;
     },
     getNum(a, b) {
+      a=a||0
+      b=b||0
       let num = 0;
-      if (a == 0) return (num = 100);
-      else if (b == 0) return (num = 0);
-      else return (num = Math.floor(a / b));
+      if (a == 0) return  100;
+      else if (b == 0) return 0;
+      else return   Number((b/a).toFixed(2))*100;
+      
     },
     tabClick(e) {
       if (e.label == "运维计划") {
@@ -557,6 +592,110 @@ export default {
     prevClick() {
       this.$refs.fullCalendar.getApi().prev(); // 将日历后退一步（例如，一个月或一周）。
     },
+    busDetail(row) {
+      getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
+        row["workActive"] = 0;
+        if (
+          row.orderType !== "DZWX" &&
+          row.orderType !== "JDBWX" &&
+          row.orderType !== "WWWX"
+        ) {
+          this.workActiveList.splice(3, 1);
+        }
+        this.workActiveList.forEach((item, index) => {
+          const matchedItem = res.data.find(
+            (val) => val.orderStatus === item.orderStatus
+          );
+
+          if (matchedItem) {
+            row["workActive"] = index + 1;
+            Object.assign(item, matchedItem);
+          }
+        });
+
+        row["workOrderSchedule"] = this.workActiveList;
+        switch (row.orderType + row.orderObj) {
+          // ! 巡点捡
+          case "RCDJ1":
+          case "ZZDJ1":
+          case "JMDJ1":
+            this.$router.push({
+              path: "/work/questAdd7",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "RCDJ2":
+          case "ZZDJ2":
+          case "JMDJ2":
+            this.$router.push({
+              path: "/work/questAdd5",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 设备维修
+          case "DZWX2":
+          case "JDBWX2":
+            this.$router.push({
+              path: "/work/questAdd2",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "WWWX2":
+            this.$router.push({
+              path: "/work/questAdd3",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "DZWX3":
+          case "WWWX3":
+          case "JDBWX3":
+            this.$router.push({
+              path: "/work/questAdd",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 定期检验
+          case "DQJY2":
+            this.$router.push({
+              path: "/work/questAdd8",
+              query: { item: row, disabled: true },
+            });
+            break;
+          // ! 保养
+          case "RCBY1":
+          case "YJBY1":
+          case "EJBY1":
+          case "CGRH1":
+            this.$router.push({
+              path: "/work/questAdd6",
+              query: { item: row, disabled: true },
+            });
+            break;
+          case "RCBY2":
+          case "YJBY2":
+          case "EJBY2":
+          case "CGRH2":
+            this.$router.push({
+              path: "/work/questAdd4",
+              query: { item: row, disabled: true },
+            });
+            break;
+          default:
+            break;
+        }
+      });
+    },
+    busDetail2(row){
+      if(row.itemType=='DQJY'){
+          this.$router.push({ path: '/maintain/rplan/add', query: { l: row.planId, d: false, i: true ,readOnly:true} })
+      }
+      if(row.itemType=='BYJX'){
+        this.$router.push({ path: '/maintain/mplan/add', query: { l: row.planId, d: false, i: true ,readOnly:true} })
+      }
+      if(row.itemType=='XDJ'){
+        this.$router.push({ path: '/maintain/patrol/pplan/add', query: { l: row.planId, d: false, i: true ,readOnly:true} })
+      }
+    }
   },
 };
 </script>
@@ -664,5 +803,10 @@ li {
   .el-progress_text{
     color: inherit !important;
   }
+}
+.el-link{
+  margin-left: 10px;
+  color: #1890ff;
+  text-decoration: underline
 }
 </style>

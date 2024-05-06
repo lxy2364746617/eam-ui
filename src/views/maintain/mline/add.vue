@@ -105,7 +105,7 @@
 import { getMline, addMline, updateMline, findByDeviceId, findByDeviceIdAndItemType, larchivesList } from "@/api/maintain/mline";
 import JmTable from "@/components/JmTable";
 import JmForm from "@/components/JmForm";
-import parentdevice from '@/views/maintain/pline/selectDevice'
+import parentdevice from '@/views/maintain/mline/selectDevice'
 import Sortable from 'sortablejs'
 import { getLocationTree} from '@/api/Location'
 export default {

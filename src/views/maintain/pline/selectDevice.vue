@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { relationList } from "@/api/maintain/mline";
+import { relationList } from "@/api/maintain/pline";
 import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 import Treeselect from "@riophae/vue-treeselect";
 import JmTable from "@/components/JmTable";

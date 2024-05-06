@@ -917,6 +917,7 @@ export default {
         this.roleOptions = response.roles;
         this.open = true;
         this.title = "添加用户";
+        this.form.deptId = this.queryParams.deptId
         this.form.password = this.initPassword;
       });
     },
