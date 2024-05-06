@@ -94,6 +94,15 @@
                   "
                   @equipmentList="handlerDeviceList"
                 ></adminParentdevice>
+
+                <adminParentdevice3
+                  v-if="
+                    taskName !== '设备管理员' &&
+                    path == '/property/receiveControls'
+                  "
+                  :detailReadonly="true"
+                  :businessId="taskForm.businessId"
+                ></adminParentdevice3>
               </div>
               <div>
                 <!-- <el-button v-if="!formKeyExist" icon="el-icon-edit-outline" type="success" size="mini"
@@ -452,6 +461,7 @@ import PositionChangeDetail from "@/views/property/PositionChange/ui/index";
 import spareReceiveDetail from "@/views/sparepart/spareReceive/ui/index";
 import requirementDetail from "@/views/sparepart/requirement/ui/index";
 import adminParentdevice from "@/views/property/Receive/ui/adminParentdevice";
+import adminParentdevice3 from "@/views/property/Receive/ui/adminParentdevice3";
 export default {
   name: "Record",
   components: {
@@ -470,6 +480,7 @@ export default {
     spareReceiveDetail,
     requirementDetail,
     adminParentdevice,
+    adminParentdevice3,
   },
   props: {},
   data() {

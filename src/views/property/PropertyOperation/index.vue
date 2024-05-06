@@ -31,8 +31,7 @@
           {{ item.label }}:
           {{
             item.formType == "selectTree"
-              ? findTreeName(deptOptions, listValue[item.prop]) ||
-                findTreeName(deptOptions1, listValue[item.prop])
+              ? findTreeName(deptOptions, listValue[item.prop])
               : item.formType == "select"
               ? findName(item.options, listValue[item.prop])
               : item.formType == "dateRange"
@@ -173,7 +172,10 @@ import { listDept } from "@/api/system/dept";
 import ContTable from "@/components/ContTable";
 import request from "@/utils/request";
 import { getAssociatedPlan } from "@/api/property/receive";
-import { getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
+import {
+  getPrtOrgTreeByDeptId,
+  getPrtOrgTreeListAll,
+} from "@/api/equipment/BASE";
 export default {
   components: { ContTable },
   props: {
@@ -353,11 +355,12 @@ export default {
       this.$refs.titleForm.submitForm();
     },
     async getTreeSelect() {
-      getPrtOrgTreeByDeptId({ prtOrg: "Y" }).then((response) => {
-        this.deptOptions1 = response.data;
-      });
-      await listDept().then((response) => {
+      // getPrtOrgTreeByDeptId({ prtOrg: "Y" }).then((response) => {
+      //   this.deptOptions1 = response.data;
+      // });
+      getPrtOrgTreeListAll().then((response) => {
         this.deptOptions = response.data;
+        console.log("========================", this.deptOptions);
       });
     },
   },
