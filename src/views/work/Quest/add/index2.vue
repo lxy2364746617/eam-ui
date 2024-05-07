@@ -138,6 +138,7 @@ export default {
         faultName: this.formData?.faultInfoDTO?.faultType.split(" ")[1],
         level: this.formData?.faultInfoDTO?.faultGrade,
         type: this.formData?.faultInfoDTO?.faultType.split(" ")[2],
+        faultType: this.formData?.faultInfoDTO?.faultType,
       }).then((res) => {
         if (res.code === 200) {
           this.$message.success("加入故障案例库成功！");
