@@ -842,7 +842,7 @@ export default {
               approveList: this.deviceList,
             }).then((res) => {
               if (res.code === 200) {
-                complete(this.taskForm).then((response) => {
+                completeFinish(this.taskForm).then((response) => {
                   this.$modal.msgSuccess(response.msg);
                   this.goBack();
                 });

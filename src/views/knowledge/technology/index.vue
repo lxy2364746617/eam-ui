@@ -8,6 +8,7 @@
         :checkbox="false"
         :total="total"
         :columns="tablecolumns"
+        @linkClick='linkClick'
         ref="jmTable"
         v-hasPermi="['kdb:tech:list']"
         >
@@ -202,7 +203,7 @@ import { listDept } from '@/api/system/dept'
       tablecolumns(){
         return[
           { label: "文件名称", prop: "fileName" },
-          { label: "设备编码", prop: "deviceCode" },
+          { label: "设备编码", prop: "deviceCode",type:'link'},
           { label: "设备名称", prop: "deviceName", },
           { label: "设备类别", prop: "categoryId",options:this.categoryOptions,formType: 'selectTree',width: 230, },/*  */
           { label: "规格型号", prop: "specs", },
@@ -419,8 +420,10 @@ import { listDept } from '@/api/system/dept'
           type: 'success'
         })
       },
-
-
+      linkClick(row,item){
+        console.log('linkclick')
+        this.$router.push({name:'bookDetails',query:{i:row.deviceId}})
+      },
 
 
       // 获取设备树

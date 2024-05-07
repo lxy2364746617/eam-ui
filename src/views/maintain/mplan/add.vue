@@ -9,25 +9,25 @@
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养计划名称" prop="planName">
-                        <el-input v-model="form.planName" placeholder="请输入保养计划名称" />
+                        <el-input v-model="form.planName" placeholder="请输入保养计划名称" :disabled='readOnly'/>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划状态" prop="planStatus">
-                        <el-radio-group v-model="form.planStatus">
+                        <el-radio-group v-model="form.planStatus" :disabled='readOnly'>
                             <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{
                                 dict.label }}</el-radio>
                         </el-radio-group>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养类型" prop="itemType">
-                        <el-select v-model="form.itemType" placeholder="请选择保养类型" @change="tablekey++">
+                        <el-select v-model="form.itemType" placeholder="请选择保养类型" @change="tablekey++" :disabled='readOnly'>
                             <el-option v-for="dict in dict.type.BYJX" :key="dict.value" :label="dict.label"
                                 :value="dict.value"></el-option>
                         </el-select>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养周期" prop="planCycle">
-                        <el-input-number v-model="form.planCycle" :min="1"  label="请输入保养周期" :disabled="form.planCycleType=='班'"></el-input-number>
+                        <el-input-number v-model="form.planCycle" :min="1"  label="请输入保养周期" :disabled="form.planCycleType=='班'||readOnly"></el-input-number>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="保养周期类别" prop="planCycleType">
@@ -39,12 +39,12 @@
                 <el-col :span="12">
                     <el-form-item label="计划开始时间" prop="planBeginTime">
                         <el-date-picker clearable v-model="form.planBeginTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="请选择计划开始时间" :picker-options="startDatePicker"></el-date-picker>
+                            placeholder="请选择计划开始时间" :picker-options="startDatePicker" :disabled='readOnly'></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="计划结束时间" prop="planEndTime">
                         <el-date-picker clearable v-model="form.planEndTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="请选择计划结束时间" :picker-options="endDatePicker"></el-date-picker>
+                            placeholder="请选择计划结束时间" :picker-options="endDatePicker" :disabled='readOnly'></el-date-picker>
                     </el-form-item></el-col>
                 <el-col :span="12">
                     <el-form-item label="本次执行日期" prop="thisExecuteTime">
@@ -57,14 +57,14 @@
 
                 <el-col :span="24">
                     <el-form-item label="备注" prop="remark">
-                        <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" />
+                        <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" :disabled='readOnly'/>
                     </el-form-item></el-col>
             </el-row>
             <div class="title">人员配置</div>
             <el-row :gutter="10" style="padding: 0 40px; margin: 10px auto;">
                 <el-col :span="8">
                     <el-form-item label="保养班组" prop="groupId">
-                        <el-select v-model="form.groupId" @change="changeGroupId">
+                        <el-select v-model="form.groupId" @change="changeGroupId" :disabled='readOnly'>
                             <el-option v-for=" item in groupOptions" :key="item.id" :label="item.groupName" 
                             :value="item.id" >
                             </el-option>
@@ -72,7 +72,7 @@
                     </el-form-item></el-col>
                 <el-col :span="8">
                     <el-form-item label="主要执行人" prop="executor">
-                        <el-select v-model="form.executor">
+                        <el-select v-model="form.executor" :disabled='readOnly'>
                             <el-option v-for=" item in groupMembers" :key="item.userId" :label="item.nickName" 
                             :value="item.userId" >
                             </el-option>
@@ -85,7 +85,7 @@
                 <el-col :span="8">
                     <el-form-item label="其他执行人" prop="otherExecutors">
                         <!-- <el-input v-model="form.otherExecutor" placeholder="请输入其他执行人" /> -->
-                        <el-select v-model="form.otherExecutors" multiple="" @change="$forceUpdate()">
+                        <el-select v-model="form.otherExecutors" multiple="" @change="$forceUpdate()" :disabled='readOnly'>
                             <el-option v-for=" item in groupMembers" :key="item.userId" :label="item.nickName" 
                             :value="item.userId" >
                             </el-option>
@@ -94,15 +94,15 @@
             </el-row>
         </el-form>
         <div class="title">保养路线
-            <el-button type="primary"  size="mini" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;">添加</el-button>
-            <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete">批量删除</el-button>
+            <el-button type="primary"  size="mini" icon="el-icon-plus" @click="handleAdd" style="margin-left: auto;" v-if="!readOnly">添加</el-button>
+            <el-button type="primary"  size="mini" icon="el-icon-delete" @click="allDelete" v-if="!readOnly">批量删除</el-button>
         </div>
         <jm-table :tableData.sync="lineList" ref="jmtable1" :columns="columns1" :showSearch="false" :key="tablekey"
             @radiochange="radiochange"  :rightToolbarShow='false'>
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="showLine(scope.row)"
                     v-hasPermi="['maintain:mplan:remove']">查看</el-button>
-                <el-button size="mini" type="text" @click="handleDelete(scope)"
+                <el-button size="mini" type="text" @click="handleDelete(scope)" v-if="!readOnly"
                     v-hasPermi="['maintain:mplan:remove']">删除</el-button>
             </template>
         </jm-table>
@@ -115,7 +115,7 @@
             <template #end_handle="scope">
                 <el-button size="mini" type="text" @click="downloadFile(scope.row)"
                     v-hasPermi="['maintain:mplan:edit']">下载</el-button>
-                <el-button size="mini" type="text" @click="handleDelete2(scope.row)"
+                <el-button size="mini" type="text" @click="handleDelete2(scope.row)" v-if="!readOnly"
                     v-hasPermi="['maintain:mplan:remove']">删除</el-button>
                 <el-button size="mini" type="text" v-if="fileType.includes(scope.row.fileType)"
                     @click="handlePreview(scope.row)" v-hasPermi="['maintain:mplan:edit']">预览</el-button>
@@ -247,6 +247,7 @@ export default {
     },
     data() {
         return {
+            readOnly:false,
             // 遮罩层
             planId: '',
             loading: true,
@@ -359,6 +360,7 @@ export default {
     },
     created() {
         this.disabled = this.$route.query.d == 'true';
+        this.$route.query.readOnly&&(this.disabled = this.$route.query.readOnly == 'true')
         if (this.$route.query.l) {
             this.planId = this.$route.query.l;
             this.getDetails(this.$route.query.l);

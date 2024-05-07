@@ -19,7 +19,7 @@
       <li v-for="(item,index ) in tableData" :key="index">
         <div class="linetime" v-if="item.busType=='设备入库'">
           <div class="linetime_detail">
-            <p style="margin-bottom:15px">{{item.busType}}</p>
+            <p style="margin-bottom:15px">{{item.busType}}<el-link @click="busDetail(item.busType,item.busCode)"> {{item.busCode}}</el-link></p>
             <p>
               <span style="margin-right:10px">所属组织:</span>
               <span>{{findTreeName(deptOptions,item.affDept)}}</span>
@@ -40,11 +40,15 @@
               <span style="margin-right:10px">使用部门:</span>
               <span>{{findTreeName(deptOptions,item.affDept)}}</span>
             </p>
+            <div :class="['linetime_status',item.apvStatus]">
+              <div class="triangle"></div>
+              {{findName(dict.type.wf_process_status,item.apvStatus)}}
+            </div>
           </div>
         </div>
         <div class="linetime" v-if="item.busType=='设备领用'||item.busType=='设备回退'">
           <div class="linetime_detail">
-            <p style="margin-bottom:15px">{{item.busType}}</p>
+            <p style="margin-bottom:15px">{{item.busType}}<el-link @click="busDetail(item.busType,item.busCode)"> {{item.busCode}}</el-link></p>
             <p>
               <span style="margin-right:10px">所属组织:</span>
               <span>{{findTreeName(deptOptions,item.affDept)}}</span>
@@ -65,11 +69,15 @@
               <span style="margin-right:10px">目标设备状态:</span>
               <span>{{item.targetDeviceStatus}}</span>
             </p>
+            <div :class="['linetime_status',item.apvStatus]">
+              <div class="triangle"></div>
+              {{findName(dict.type.wf_process_status,item.apvStatus)}}
+            </div>
           </div>
         </div>
         <div class="linetime" v-if="item.busType=='设备移交'">
           <div class="linetime_detail">
-            <p style="margin-bottom:15px">{{item.busType}}</p>
+            <p style="margin-bottom:15px">{{item.busType}}<el-link @click="busDetail(item.busType,item.busCode)"> {{item.busCode}}</el-link></p>
             <p>
               <span style="margin-right:10px">所属组织:</span>
               <span>{{findTreeName(deptOptions,item.affDept)}}</span>
@@ -98,7 +106,7 @@
         </div>
         <div class="linetime" v-if="item.busType=='位置状态变动'">
           <div class="linetime_detail">
-            <p style="margin-bottom:15px">{{item.busType}}</p>
+            <p style="margin-bottom:15px">{{item.busType}}<el-link @click="busDetail(item.busType,item.busCode)"> {{item.busCode}}</el-link></p>
             <p>
               <span style="margin-right:10px">当前功能位置:</span>
               <span>{{item.location}}</span>
@@ -131,11 +139,15 @@
               <span style="margin-right:10px">目标使用部门:</span>
               <span>{{item.targetDept}}</span>
             </p>
+            <div :class="['linetime_status',item.apvStatus]">
+              <div class="triangle"></div>
+              {{findName(dict.type.wf_process_status,item.apvStatus)}}
+            </div>
           </div>
         </div>
         <div class="linetime" v-if="item.busType=='设备报废'">
           <div class="linetime_detail">
-            <p style="margin-bottom:15px">{{item.busType}}</p>
+            <p style="margin-bottom:15px">{{item.busType}}<el-link @click="busDetail(item.busType,item.busCode)"> {{item.busCode}}</el-link></p>
             <p>
               <span style="margin-right:10px">所属组织:</span>
               <span>{{findTreeName(deptOptions,item.affDept)}}</span>
@@ -144,6 +156,10 @@
               <span style="margin-right:10px">功能位置:</span>
               <span>{{item.location}}</span>
             </p>
+            <div :class="['linetime_status',item.apvStatus]">
+              <div class="triangle"></div>
+              {{findName(dict.type.wf_process_status,item.apvStatus)}}
+            </div>
           </div>
         </div>
 
@@ -158,8 +174,12 @@
     <el-table v-if="!isTimeLine" ref="table" :data="tableData" style="width: 100%;">
       <!--       <el-table-column type="selection" width="55"></el-table-column>
       -->
-      <el-table-column prop="busCode" label="业务单号"></el-table-column>
-      <el-table-column prop="createTime" label="业务日期"></el-table-column>
+      <el-table-column prop="busCode" label="业务单号">
+        <template slot-scope="scope">
+          <el-link @click="busDetail(scope.row.busType,scope.row.busCode)">{{scope.row.busCode}}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column prop="createTime" label="创建日期"></el-table-column>
       <el-table-column prop="applyDept" label="申请部门">
         <template slot-scope="scope">{{findTreeName(deptOptions,scope.row.applyDept)}}</template>
       </el-table-column>
@@ -195,7 +215,7 @@ export default {
   dicts: ["wf_process_status", "wf_process_status", "em_device_state"],
   data() {
     return {
-      time: "",
+      time: '',
       tableData: [],
       deptOptions: [],
       total: 0,
@@ -229,13 +249,26 @@ export default {
   },
   created() {
     this.getTreeSelect();
+    // 获取当月1号的日期
+    const firstDayOfMonth = new Date();
+    firstDayOfMonth.setDate(1);
+    // 获取当前日期
+    const currentDate = new Date();
+    // 格式化日期为年月日
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    this.time = [formatDate(firstDayOfMonth),formatDate(currentDate)]
     //this.getList();
   },
   methods: {
-    findName(options, value) {
+    findName(options, value) {      
       var name = "";
       for (let i = 0; i < options.length; i++) {
-        if (options[i].value == value || options[i].id == value) {
+        if (value&&(options[i].value == value || options[i].id == value)) {
           name = options[i].label;
         }
         if (options[i].children) {
@@ -275,7 +308,7 @@ export default {
     },
     getList() {
       getDeviceResume(this.searchForm).then((res) => {
-        this.tableData = res.rows;
+        this.tableData = res.rows.reverse();
       });
     },
     selectAllCheckboxes(val) {
@@ -298,6 +331,42 @@ export default {
         this.getList();
       }
     },
+    busDetail(type,code){
+      console.log(type,code)
+      if(type=='设备入库'){
+
+      }
+      if(type=='设备领用'){
+         this.$router.push({
+          path: "/property/receiveControls",
+          query: { formData:{'neckNo': code}, isShowCard: 1 },
+        });
+      }
+      if(type=='设备回退'){
+        this.$router.push({
+          path: "/property/backspaceControls",
+          query: { formData:{'backNo': code}, isShowCard: 1 },
+        })
+      }
+      if(type=='设备移交'){
+        this.$router.push({
+          path: "/property/turnOverControls",
+          query: { formData:{'transferNo': code}, isShowCard: 1 },
+        })
+      }
+      if(type=='设备报废'){
+        this.$router.push({
+          path: "/property/scrappingControls",
+          query: { formData:{'scrapNo': code}, isShowCard: 1 },
+        })
+      }
+      if(type=='位置状态变动'){
+        this.$router.push({
+          path: "/property/positionChangeControls",
+          query: { formData:{'changeNo': code}, isShowCard: 1 },
+        })
+      }
+    }
   },
 };
 </script>
@@ -400,5 +469,10 @@ li {
 .isactive {
   background: #1f77fc;
   color: #fff;
+}
+.el-link{
+  margin-left: 10px;
+  color: #1890ff;
+  text-decoration: underline
 }
 </style>

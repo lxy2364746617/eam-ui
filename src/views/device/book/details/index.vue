@@ -109,7 +109,7 @@ import step9 from "@/views/device/book/details/step9";
 import step10 from "@/views/device/book/details/step10";
 import { getLocationTree} from '@/api/Location'
 export default {
-  name: "bookadddetails",
+  name: "bookDetails",
   dicts: [
     'em_device_state',  'device_run_state'
   ],
