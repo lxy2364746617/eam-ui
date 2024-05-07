@@ -308,7 +308,7 @@ export default {
     },
     getList() {
       getDeviceResume(this.searchForm).then((res) => {
-        this.tableData = res.rows;
+        this.tableData = res.rows.reverse();
       });
     },
     selectAllCheckboxes(val) {
