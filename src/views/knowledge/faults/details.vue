@@ -163,11 +163,12 @@ import JmForm from "@/components/JmForm";
         getWomInfo(params).then(res=>{
           console.log(res,'工单基本信息')
           this.orderType = res.data.orderType
+          console.log(this.orderType)
           this.infoList.forEach(item=>{    
             let value = res.data[item.prop] || res.data.faultInfoDTO[item.prop]
             if(item.prop == 'fileList'){
               if(res.data.faultInfoDTO.fileList.length){
-                res.data.fileList.forEach(items=>{
+                res.data.faultInfoDTO.fileList.forEach(items=>{
                   items.src = items.url
                   item.srcList.push(items.url)
                 })
@@ -184,6 +185,7 @@ import JmForm from "@/components/JmForm";
           if(this.orderType == 'WWWX'){
             this.getWWWXInfo()
           }else{
+            console.log('getClxxInfo')
             this.getClxxInfo()
           }
         })
