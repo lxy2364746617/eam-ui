@@ -18,21 +18,14 @@
       <el-row :gutter="12" style="margin-top: 10px">
         <el-col :span="5">
           <img
-            v-if="formData.fileResource"
-            :src="mainImage"
+            :src="mainImage || require('@/assets/images/noImg.png')"
             alt=""
             srcset=""
             style="vertical-align: top; height: 100px"
           />
           <img
-            v-else
-            class="noImg"
-            style="width: 120px; vertical-align: top; height: 100px; border: 0"
-          />
-          <img
-            v-if="qrCode.indexOf('null') == -1"
             class="qrcodeimg"
-            :src="qrCode"
+            :src="qrCode || require('@/assets/images/noImg.png')"
             alt=""
             srcset=""
             style="

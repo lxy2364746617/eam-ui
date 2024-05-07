@@ -24,27 +24,15 @@
       <el-row :gutter="12" :style="{ 'margin-top': disabled1 ? 0 : 36 + 'px' }">
         <el-col :span="6">
           <img
-            v-if="formData.fileResource"
-            :src="mainImage"
+            :src="mainImage || require('@/assets/images/noImg.png')"
             alt=""
             srcset=""
             style="vertical-align: top; height: 100px"
           />
-          <div
-            v-else
-            class="noImg"
-            style="
-              width: 120px;
-              vertical-align: top;
-              height: 100px;
-              display: inline-block;
-            "
-          />
           <img
-            v-if="qrCode.indexOf('null') == -1"
             @click="opendrawer"
             class="qrcodeimg"
-            :src="qrCode"
+            :src="qrCode || require('@/assets/images/noImg.png')"
             alt=""
             srcset=""
             style="
