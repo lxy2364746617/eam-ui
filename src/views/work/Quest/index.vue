@@ -768,7 +768,9 @@ export default {
     async getList2(row) {
       this.loading2 = true;
       // console.log("========================", this.groupIds);
-      getExecutorList({ groupId: this.listGroupId }).then((response) => {
+      getExecutorList({
+        groupId: this.listGroupId ? this.listGroupId : 0,
+      }).then((response) => {
         this.equipmentList2 = response.data;
         this.total2 = response.total;
         this.loading2 = false;
