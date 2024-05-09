@@ -55,6 +55,7 @@ export default {
       visibleNumber: 5,
       // 当前激活菜单的 index
       currentIndex: undefined,
+      activeMenu:''
     };
   },
   computed: {
@@ -102,7 +103,7 @@ export default {
       return constantRoutes.concat(childrenMenus);
     },
     // 默认激活的菜单
-    activeMenu() {
+    /* activeMenu() {
       // const path = this.$route.path;
       // let activePath = path;
       // if (path !== undefined && path.lastIndexOf("/") > 0 && hideList.indexOf(path) === -1) {
@@ -117,8 +118,8 @@ export default {
       // }
       // this.activeRoutes(activePath);
       // return activePath;
-      return this.topMenus[0].path;
-    },
+      return this.$store.state.arsMsg.activeMenu||this.topMenus[0].path;
+    }, */
   },
   beforeMount() {
     window.addEventListener("resize", this.setVisibleNumber);
@@ -128,6 +129,8 @@ export default {
   },
   mounted() {
     this.setVisibleNumber();
+    window.handleSelect = this.handleSelect
+    window.changeActiveMenu = this.changeActiveMenu
     // 打开第一个菜单
     this.handleSelect(this.topMenus[0].path, [this.topMenus[0].path]);
   },
@@ -142,8 +145,12 @@ export default {
       const width = document.body.getBoundingClientRect().width / 3;
       this.visibleNumber = parseInt(width / 75);
     },
+    changeActiveMenu(val){
+      this.activeMenu = val
+    },
     // 菜单选择事件
     handleSelect(key, keyPath) {
+      this.activeMenu = key
       this.currentIndex = key;
       const route = this.routers.find((item) => item.path === key);
       if (this.ishttp(key)) {
