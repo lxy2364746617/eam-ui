@@ -325,7 +325,13 @@
         min-width="100"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.dealStatus == 0 ? "未处理" : "已处理" }}</span>
+          <span>{{
+            scope.row.dealResult === 1
+              ? ""
+              : scope.row.dealStatus == 0
+              ? "未处理"
+              : "已处理"
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column
