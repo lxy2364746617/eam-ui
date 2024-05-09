@@ -547,7 +547,7 @@ export default {
         item["currentCodeLineId"] = this.currentCodeLineId;
         item["lineId"] = this.lineId;
         item["itemCodeLineId"] =
-          item.deviceCode + item.itemCode + this.lineId + item.itemId;
+          item.deviceCode + item.itemCode + this.lineId + item.itemId +item.checkId;
         if (
           !this.maintainItems.some(
             (v) => v.itemCodeLineId === item["itemCodeLineId"]

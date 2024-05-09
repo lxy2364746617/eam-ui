@@ -83,6 +83,7 @@ export default {
     if (this.$route.query.item) {
       let row = JSON.parse(JSON.stringify(this.$route.query.item));
       // this.$route.query.item = null;
+      console.log("========================", row);
       this.formData = row;
       this.disabled = this.$route.query.disabled === "true" ? true : false;
     }

@@ -85,18 +85,18 @@ export default {
       this.groupOptions = res.data;
       if (this.formData.groupId) {
         this.changeGroupId(this.formData.groupId, 2);
-        request({
-          url: "/wom/repair/getWomRepairInfo",
-          method: "get",
-          params: { orderCode: this.formData.orderCode },
-        }).then((res) => {
-          if (res.code === 200) {
-            this.form = { ...this.form, ...res.data };
-            this.$set(this.form, "unit", Number(this.formData.groupId));
-            this.$set(this.form, "executor", this.formData.executor);
-          }
-        });
       }
+      request({
+        url: "/wom/repair/getWomRepairInfo",
+        method: "get",
+        params: { orderCode: this.formData.orderCode },
+      }).then((res) => {
+        if (res.code === 200) {
+          this.form = { ...this.form, ...res.data };
+          this.$set(this.form, "unit", Number(this.formData.groupId));
+          this.$set(this.form, "executor", this.formData.executor);
+        }
+      });
     });
     await getWomDevice({
       orderCode: this.formData.orderCode,
@@ -109,7 +109,7 @@ export default {
         }).then((res) => {
           if (res.code == 200) {
             this.$set(this.form, "faultType", res.data.faultInfoDTO.faultType);
-            this.$set(this.form, "faultInfo", res.data.faultInfoDTO.faultInfo);
+            // this.$set(this.form, "faultInfo", res.data.faultInfoDTO.faultInfo);
             // this.$set(
             //   this.form,
             //   "faultReason",

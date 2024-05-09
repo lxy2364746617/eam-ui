@@ -16,7 +16,9 @@
     <el-row v-if="flag">
       <el-col :span="2">
         <img
-          :src="process + data.devicePic"
+          :src="
+            process + data.devicePic || require('@/assets/images/noImg.png')
+          "
           alt=""
           srcset=""
           style="width: 100%; vertical-align: top; height: 120px"
