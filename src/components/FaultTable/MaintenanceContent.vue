@@ -174,7 +174,6 @@ export default {
           prop: "acceptResult",
           formType: "select",
           options: this.dict.type.em_device_check,
-          required: true,
         },
         {
           span: 4,

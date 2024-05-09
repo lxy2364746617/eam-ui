@@ -364,7 +364,7 @@ export default {
         }
         this.plineList = this.plineList?.map((item) => ({
           ...item,
-          sCheckNum: item.itemMap[val],
+          sCheckNum: item.itemMap[val] ?? 0,
         }));
       },
     },
@@ -423,7 +423,7 @@ export default {
     submitRadio2(row) {
       let row1 = row.map((item) => {
         item.photoFlag = "1";
-        item.sCheckNum = item.itemMap[this.formData.orderType];
+        item.sCheckNum = item.itemMap[this.formData.orderType] ?? 0;
         return item;
       });
       this.plineList = this.plineList.concat(row1);

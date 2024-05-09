@@ -424,13 +424,17 @@ export default {
           ...item,
           faultInfoDTO: { ...formdata },
         }));
-        let outArr = this.rowArr;
-        getStore("addList").forEach((t) => {
-          outArr = outArr.filter((item) => {
-            return item.topicId != t.topicId;
-          });
-        });
-        setStore("addList", outArr.concat(newArr));
+
+        let addList = getStore("addList");
+
+        let filteredAddList = addList.filter(
+          (t) => !newArr.some((item) => item.deviceId === t.deviceId)
+        );
+
+        let finalList = filteredAddList.concat(newArr);
+
+        setStore("addList", finalList);
+
         this.handleCancel();
         this.getList();
         this.formData = { checkValue: 1 };
@@ -442,7 +446,7 @@ export default {
       setStore(
         "addList",
         getStore("addList")
-          .filter((item) => item.topicId != this.itemValue.topicId)
+          .filter((item) => item.deviceId != this.itemValue.deviceId)
           .concat({ ...this.itemValue, faultInfoDTO: { ...formdata } })
       );
 
@@ -613,11 +617,11 @@ export default {
         if (!row.id) {
           setStore(
             "equipmentList",
-            this.equipmentList.filter((item) => item.topicId != row.topicId)
+            this.equipmentList.filter((item) => item.deviceId != row.deviceId)
           );
           setStore(
             "addList",
-            getStore("addList").filter((item) => item.topicId != row.topicId)
+            getStore("addList").filter((item) => item.deviceId != row.deviceId)
           );
         } else {
           setStore(

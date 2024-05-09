@@ -35,7 +35,7 @@
         :showButton="showButton"
         :labelWidth="'140px'"
       >
-        <template #footer>
+        <template #footer v-if="!disabled">
           <div class="container-box2">
             <el-button @click="saveHandle" type="primary">执行</el-button>
             <el-button @click="handleCancel">取消</el-button>

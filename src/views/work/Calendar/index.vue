@@ -213,12 +213,10 @@ export default {
               info.event._def.extendedProps.orderStatus +
               "</p>" +
               "<p style='padding-left:20px;margin:4px'>执行人员:" +
-              (!!info.event._def.extendedProps.executor
-                ? this.findTreeName(
-                    this.userList,
-                    info.event._def.extendedProps.executor
-                  )
-                : "带派工") +
+              this.findTreeName(
+                this.userList,
+                info.event._def.extendedProps.executor
+              ) +
               "</p>" +
               "</div>",
             theme: "light",
@@ -294,6 +292,7 @@ export default {
           getCalendarMonth({ date: this.dateTitle }).then((res) => {
             if (res.code === 200) {
               this.dataList = res.data.map((item, index) => ({
+                ...item,
                 id: item.orderCode,
                 title: item.orderName,
                 beginDate: item.planExecuteDate,
@@ -534,13 +533,12 @@ export default {
       });
     },
     handleEventClick(calEvent) {
-      console.log("========================");
+      console.log("========================", calEvent);
       this.goDetails(
         JSON.parse(JSON.stringify(calEvent.event._def.extendedProps))
       );
     },
     goDetails(row) {
-      console.log("========================", row);
       getWorkOrderSchedule({ orderCode: row.orderCode }).then((res) => {
         row["workActive"] = 0;
         if (
