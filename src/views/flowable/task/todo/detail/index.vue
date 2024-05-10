@@ -57,7 +57,7 @@
                   :businessId="taskForm.businessId"
                 ></annual-detail>
                 <temporarily-detail
-                  v-if="path == '/property/temporarilyControls'"
+                  v-if="path == '/property/purchase/temporarilyControls'"
                   :detailReadonly="true"
                   :businessId="taskForm.businessId"
                 ></temporarily-detail>

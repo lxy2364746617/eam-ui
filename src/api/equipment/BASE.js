@@ -163,3 +163,12 @@ export function listSjsb(query) {
     params: query,
   });
 }
+
+//分词搜素
+export function matchPage(query) {
+  return request({
+    url: "/equipment/base/match/page",
+    method: "post",
+    data: query,
+  });
+}

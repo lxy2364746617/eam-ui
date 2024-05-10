@@ -273,7 +273,8 @@ import {
   countBASE,
   exportBASE,
   copyBASE,
-  getPrtOrgTreeByDeptId
+  getPrtOrgTreeByDeptId,
+  matchPage 
 } from '@/api/equipment/BASE'
 import { getToken } from '@/utils/auth'
 import Treeselect from '@riophae/vue-treeselect'
@@ -508,9 +509,17 @@ export default {
       },
     }
   },
+  watch:{
+    '$route.query.msg':{
+      handler(val){
+        val&&this.getList(this.queryParams)
+      }
+    }
+  },
   created() {
     this.getTree()
     this.getTreeSelect()
+    this.getList(this.queryParams)
   },
   methods: {
     
@@ -547,6 +556,7 @@ export default {
       }),
       getPrtOrgTreeByDeptId().then((response) => {
         this.deptOptions1 = response.data
+        this.key++
       })
     },
     // 设备指标
@@ -587,7 +597,18 @@ export default {
         ...queryParams,
       }
       this.getCount(data)
-      listBASE(data).then((response) => {
+      if(this.$route.query.msg){//分词搜索
+        matchPage({
+            esTerm:this.$route.query.msg ,
+            pageNum: 1,
+            pageSize: 10
+          }).then(res=>{
+            this.equipmentList = res.rows
+            this.total = res.total
+            this.loading = false
+        })
+      }else{
+        listBASE(data).then((response) => {
         response.rows.forEach((b) => {
           Object.assign(
             b,
@@ -620,6 +641,8 @@ export default {
         this.total = response.total
         this.loading = false
       })
+      }
+      
     },
     /** 查询统计 */
     getCount(queryParams) {
@@ -632,7 +655,7 @@ export default {
       this.addDetails = false
       this.queryParams.categoryId = data.parentId == 0 ? '' : data.id // 如果是最外层，传空
       this.getCount({ categoryId: this.queryParams.categoryId })
-      this.handleQuery()
+      //this.handleQuery()
     },
     // 取消按钮
     cancel() {
@@ -641,11 +664,14 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      
+      this.$route.query.msg&&(this.$route.query.msg=null)
       this.queryParams.pageNum = 1
       this.getList(this.queryParams)
     },
     /** 重置按钮操作 */
     resetQuery() {
+      this.$route.query.msg&&(this.$route.query.msg=null)
       this.dateRange = []
       this.resetForm('queryForm')
       this.queryParams.deptId = undefined
@@ -874,6 +900,7 @@ export default {
          definitionStart(val.id,this.id,'EA',this.deviceCode,{path:'/device/book/details',nextUserIds:userIds,businessName:this.deviceName}).then(res=>{
           this.subopen=false
           this.getList()
+          
       })  
       
     },

@@ -214,7 +214,7 @@ export default {
           let faultNume = res.data.faultInfoDTO["faultType"].split(" ");
           if (item.prop == "fileList") {
             if (res.data.faultInfoDTO.fileList.length) {
-              res.data.fileList.forEach((items) => {
+              res.data.faultInfoDTO.fileList.forEach((items) => {
                 items.src = items.url;
                 item.srcList.push(items.url);
               });

@@ -20,12 +20,16 @@
       class="header-search-select"
       @change="change"
     >
-      <el-option
+    <el-option
+        :value="search"
+        :label="search"
+      />
+      <!-- <el-option
         v-for="option in options"
         :key="option.item.path"
-        :value="option.item"
+        :value="option.search"
         :label="option.item.title.join(' > ')"
-      />
+      /> -->
     </el-select>
   </div>
 </template>
@@ -86,10 +90,12 @@ export default {
         startRecorder()
       }else{
         closetWebSocke()
+        this.$store.commit('arsMsg/updateOutputMessage','')
       }
     },
     close() {
       this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur();
+      this.$store.commit('arsMsg/updateOutputMessage','')
       this.options = [];
       this.show = false;
     },
@@ -225,9 +231,18 @@ export default {
 
   &.show {
     .header-search-select {
-      width: 120px;
+      width: 100px;
       margin-left: 10px;
     }
   }
+}
+.el-select-dropdown__item.selected {
+    color: #007bfe;
+    font-weight: 700;
+    max-width: 200px;
+    max-height: 200px;
+    /* overflow: auto; */
+    white-space: normal;
+    overflow-y: auto;
 }
 </style>

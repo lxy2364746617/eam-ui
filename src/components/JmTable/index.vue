@@ -472,7 +472,7 @@ export default {
         this.name = name;
       }
       var name1 = new Name("");
-      this.forfn(options, value, name1);
+      options&&this.forfn(options, value, name1);
       return name1.name;
     },
     forfn(options, value, name1) {
@@ -508,6 +508,7 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      this.$route.query.msg&&(this.$router.push({path:this.$route.path}))
       this.queryParams.pageNum = 1;
       this.getList();
     },

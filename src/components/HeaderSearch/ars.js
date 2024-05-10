@@ -1,5 +1,6 @@
 import store from './../../store';
 import router from './../../router';
+
 function sampleData(pcmDatas, pcmSampleRate, newSampleRate, prevChunkInfo = {}) {
   try {
       let index = prevChunkInfo ? prevChunkInfo.index : 0;
@@ -142,14 +143,17 @@ function onOpen(evt, way, afterOpen) {
 }
 
 function onClose(evt) {
-    tracks.forEach(function(track) {
+    tracks.forEach(function (track) {
         track.enabled = false;
         track.stop()
-        });
-    window.handleSelect('/decive')
-    window.changeActiveMenu('/decive')
-    router.push({path:'/decive/book'})
-    console.log('websocket连接关闭' ,new Date());
+    });
+    if (outputMessageArray.length > 0) {
+        window.handleSelect('/decive')
+        window.changeActiveMenu('/decive')
+        router.push({ path: '/decive/book', query: { msg: outputMessageArray.map(msg => msg.result).join('') } })
+    }
+
+    console.log('websocket连接关闭', new Date());
 }
 
 function onMessage(evt) {
