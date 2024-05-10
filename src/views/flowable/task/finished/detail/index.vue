@@ -31,6 +31,7 @@
                 v-if="path == '/property/receiveControls'"
                 :detailReadonly="true"
                 :businessId="taskForm.businessId"
+                :isShow="true"
               ></receive-detail>
               <backspace-detail
                 v-if="path == '/property/backspaceControls'"
