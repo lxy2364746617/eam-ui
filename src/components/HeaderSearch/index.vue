@@ -23,7 +23,8 @@
     <el-option
         :value="search"
         :label="search"
-      />
+    >
+    </el-option>
       <!-- <el-option
         v-for="option in options"
         :key="option.item.path"
@@ -236,13 +237,11 @@ export default {
     }
   }
 }
-.el-select-dropdown__item.selected {
-    color: #007bfe;
-    font-weight: 700;
-    max-width: 200px;
-    max-height: 200px;
-    /* overflow: auto; */
-    white-space: normal;
-    overflow-y: auto;
+</style>
+<style lang="scss">
+.el-select-dropdown__item{
+  white-space: normal ;
+  height: auto ;
+  overflow-y:auto ;
 }
 </style>

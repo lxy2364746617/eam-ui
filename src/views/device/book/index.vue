@@ -600,8 +600,8 @@ export default {
       if(this.$route.query.msg){//分词搜索
         matchPage({
             esTerm:this.$route.query.msg ,
-            pageNum: 1,
-            pageSize: 10
+            pageNum: queryParams.pageNum,
+            pageSize: queryParams.pageSize
           }).then(res=>{
             this.equipmentList = res.rows
             this.total = res.total
