@@ -5,6 +5,7 @@ import dict from './modules/dict'
 import user from './modules/user'
 import tagsView from './modules/tagsView'
 import permission from './modules/permission'
+import arsMsg from './modules/arsMsg'
 import settings from './modules/settings'
 import getters from './getters'
 
@@ -17,7 +18,8 @@ const store = new Vuex.Store({
     user,
     tagsView,
     permission,
-    settings
+    settings,
+    arsMsg
   },
   getters
 })

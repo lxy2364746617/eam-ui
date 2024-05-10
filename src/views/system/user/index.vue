@@ -919,6 +919,7 @@ export default {
         this.title = "添加用户";
         this.form.deptId = this.queryParams.deptId
         this.form.password = this.initPassword;
+        this.selecttree({id:this.form.deptId})
       });
     },
      /** 查看按钮操作 */

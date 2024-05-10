@@ -35,12 +35,13 @@
 // make search results more in line with expectations
 import Fuse from "fuse.js/dist/fuse.min.js";
 import path from "path";
+import {startRecorder,closetWebSocke} from "./ars.js"
 
 export default {
   name: "HeaderSearch",
   data() {
     return {
-      search: "",
+      /* search: "", */
       options: [],
       searchPool: [],
       show: false,
@@ -51,8 +52,14 @@ export default {
     routes() {
       return this.$store.getters.permission_routes;
     },
+    search() {
+      return this.$store.state.arsMsg.outputMessage;
+    }
   },
   watch: {
+    search() {
+      console.log(this.search)
+    },
     routes() {
       this.searchPool = this.generateRoutes(this.routes);
     },
@@ -68,6 +75,7 @@ export default {
     },
   },
   mounted() {
+    console.log(this.$store.state,this.$store.state.arsMsg.outputMessage)
     this.searchPool = this.generateRoutes(this.routes);
   },
   methods: {
@@ -75,6 +83,9 @@ export default {
       this.show = !this.show;
       if (this.show) {
         this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus();
+        startRecorder()
+      }else{
+        closetWebSocke()
       }
     },
     close() {
@@ -214,7 +225,7 @@ export default {
 
   &.show {
     .header-search-select {
-      width: 210px;
+      width: 120px;
       margin-left: 10px;
     }
   }

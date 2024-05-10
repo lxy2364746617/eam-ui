@@ -69,6 +69,7 @@ import JmTable from '@/components/JmTable';
 import { equipmentTreeNoTemplate } from '@/api/equipment/category';
 import { listDept } from '@/api/system/dept';
 import { getLocationTree} from '@/api/Location'
+import {  getPrtOrgTreeByDeptId} from "@/api/equipment/BASE";
 export default {
   name: "Template",
   dicts: ['em_is_special', 'sys_normal_disable'],
@@ -177,7 +178,7 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
-      listDept().then((response) => {
+      getPrtOrgTreeByDeptId().then((response) => {
         this.deptOptions = response.data
       })
       getLocationTree().then(res=>{
