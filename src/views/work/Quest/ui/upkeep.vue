@@ -618,15 +618,15 @@ export default {
     this.routerForm = this.carryValue.l;
     await this.getDetails(this.queryParams);
 
-    if (!this.carryValue.y) {
-      getRelevanceInfo({
-        busId: this.routerForm.orderCode + "_" + this.form.deviceCode,
-      }).then((res) => {
-        if (res.code == 200 && res.rows.length > 0) {
-          this.fileList = res.rows;
-        }
-      });
-    }
+    // if (!this.carryValue.y) {
+    //   getRelevanceInfo({
+    //     busId: this.routerForm.orderCode + "_" + this.form.deviceCode,
+    //   }).then((res) => {
+    //     if (res.code == 200 && res.rows.length > 0) {
+    //       this.fileList = res.rows;
+    //     }
+    //   });
+    // }
   },
   mounted() {
     this.wrapperTitle = this.$route.meta.title;
@@ -767,6 +767,13 @@ export default {
     //上传文件
     AddFile() {
       this.filedrawer = true;
+      getRelevanceInfo({
+        busId: this.routerForm.orderCode + "_" + this.form.deviceCode,
+      }).then((res) => {
+        if (res.code == 200 && res.rows.length > 0) {
+          this.fileList = res.rows;
+        }
+      });
     },
     handlerDownload() {
       // const format = new FormData();
@@ -1088,6 +1095,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 20px;
 }
 .noImg {
   background: url("../../../../assets/images/noImg.png") no-repeat;

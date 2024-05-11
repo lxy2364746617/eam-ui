@@ -382,15 +382,15 @@ export default {
     this.routerForm = this.carryValue.l;
     await this.getDetails(this.queryParams);
 
-    if (!this.carryValue.y) {
-      getRelevanceInfo({
-        busId: this.routerForm.orderCode + "_" + this.form.deviceCode,
-      }).then((res) => {
-        if (res.code == 200 && res.rows.length > 0) {
-          this.fileList = res.rows;
-        }
-      });
-    }
+    // if (!this.carryValue.y) {
+    //   getRelevanceInfo({
+    //     busId: this.routerForm.orderCode + "_" + this.form.deviceCode,
+    //   }).then((res) => {
+    //     if (res.code == 200 && res.rows.length > 0) {
+    //       this.fileList = res.rows;
+    //     }
+    //   });
+    // }
   },
   mounted() {
     this.wrapperTitle = this.$route.meta.title;
@@ -520,6 +520,13 @@ export default {
     //上传文件
     AddFile() {
       this.filedrawer = true;
+      getRelevanceInfo({
+        busId: this.routerForm.orderCode + "_" + this.form.deviceCode,
+      }).then((res) => {
+        if (res.code == 200 && res.rows.length > 0) {
+          this.fileList = res.rows;
+        }
+      });
     },
     // ! 异常处理
     // 自行处理
@@ -764,6 +771,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 20px;
 }
 .noImg {
   background: url("../../../../assets/images/noImg.png") no-repeat;
@@ -778,5 +786,13 @@ export default {
 }
 ::v-deep .el-table__fixed-right {
   height: 100% !important;
+}
+.img-text {
+  width: 100%;
+  height: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
 }
 </style>
