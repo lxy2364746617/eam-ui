@@ -151,6 +151,10 @@ function onClose(evt) {
         window.handleSelect('/decive')
         window.changeActiveMenu('/decive')
         router.push({ path: '/decive/book', query: { msg: outputMessageArray.map(msg => msg.result).join('') } })
+        setTimeout(() => {
+            speak('搜索完成')
+        }, 1000);
+        
     }
 
     console.log('websocket连接关闭', new Date());
@@ -258,4 +262,8 @@ export function startRecorder() {
 window.addEventListener('beforeunload', (event) => {
     audioContent && audioContent.close();
 });
+function speak(text) {
+    const msg = new SpeechSynthesisUtterance(text); // 创建语音消息
+    window.speechSynthesis.speak(msg); // 播放语音
+  }
     

@@ -239,7 +239,7 @@ export default {
 }
 </style>
 <style lang="scss">
-.el-select-dropdown__item{
+.el-select-dropdown__item.selected{
   white-space: normal ;
   height: auto ;
   overflow-y:auto ;
