@@ -59,7 +59,7 @@
     </PropertyOperation>
 
     <adminParentdevice
-      v-if="isShowCard && !businessId"
+      v-if="(isShowCard && !businessId) || isShow"
       :equipList="equipList || []"
       :detailReadonly="true"
     ></adminParentdevice>
@@ -175,6 +175,10 @@ export default {
       type: String,
       default: "",
     },
+    isShow: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -244,8 +248,16 @@ export default {
         this.detailReadonly
           ? true
           : false;
-      if (this.$route.query.formData && this.isShowCard) {
-        getNeckApprove(this.$route.query.formData.neckNo).then((res) => {
+      if (
+        (this.$route.query.formData && this.isShowCard) ||
+        (this.$route.query.i && this.isShowCard) ||
+        this.isShow
+      ) {
+        getNeckApprove(
+          this.$route.query?.formData?.neckNo ||
+            this.$route.query?.i ||
+            this.businessId
+        ).then((res) => {
           if (res.code === 200) {
             this.equipList = res.data;
           }
