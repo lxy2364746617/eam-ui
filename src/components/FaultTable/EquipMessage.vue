@@ -155,9 +155,9 @@ export default {
         deviceCode: [
           { required: true, message: "设备编码不能为空", trigger: "blur" },
         ],
-        specs: [
-          { required: true, message: "设备规格不能为空", trigger: "blur" },
-        ],
+        // specs: [
+        //   { required: true, message: "设备规格不能为空", trigger: "blur" },
+        // ],
         categoryName: [
           { required: true, message: "设备类别不能为空", trigger: "blur" },
         ],

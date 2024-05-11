@@ -84,7 +84,7 @@ export default {
         this.$set(this.form, "executor", this.formData.executor);
       }
     });
-    if (this.formData.orderCode && this.disabled) {
+    if (this.formData.orderCode) {
       console.log("========================", 12321);
       request({
         url: "/wom/repair/getWomRepairInfoOut",
@@ -94,8 +94,14 @@ export default {
         if (res.code === 200) {
           this.form = {
             ...res.data,
-            identityResult: res.data.identityResult + "",
-            acceptResult: res.data.acceptResult + "",
+            identityResult:
+              res.data.identityResult !== null
+                ? res.data.identityResult + ""
+                : null,
+            acceptResult:
+              res.data.acceptResult !== null
+                ? res.data.acceptResult + ""
+                : null,
           };
         }
       });
