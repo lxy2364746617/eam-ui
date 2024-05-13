@@ -70,6 +70,7 @@
           </el-col>
         </el-row>
         <jm-table
+        :key="key"
           :tableData="equipmentList"
           @getList="getList"
           @handleSelectionChange="handleSelectionChange"
@@ -372,6 +373,7 @@ export default {
   },
   data() {
     return {
+      key:0,
       id:'',
       tableData:[],
       subopen:false,
@@ -520,6 +522,7 @@ export default {
     this.getTree()
     this.getTreeSelect()
     this.getList(this.queryParams)
+    
   },
   methods: {
     
@@ -531,11 +534,14 @@ export default {
     getTree() {
       equipmentTreeNoTemplate().then((response) => {
         this.categoryOptions = response.data
+        this.key++
         // 方便获取父级tree
         this.loops(this.categoryOptions)
       })
       getLocationTree().then(res=>{
         this.locationOptions=this.getTreeName(res.data)
+        this.key++
+
       })
     },
     getTreeName(arr){
@@ -551,9 +557,9 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
-      listDept().then((response) => {
+      /* listDept().then((response) => {
         this.deptOptions = response.data
-      }),
+      }), */
       getPrtOrgTreeByDeptId().then((response) => {
         this.deptOptions1 = response.data
         this.key++
@@ -655,7 +661,7 @@ export default {
       this.addDetails = false
       this.queryParams.categoryId = data.parentId == 0 ? '' : data.id // 如果是最外层，传空
       this.getCount({ categoryId: this.queryParams.categoryId })
-      //this.handleQuery()
+     // this.handleQuery()
     },
     // 取消按钮
     cancel() {
@@ -664,7 +670,6 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      
       this.$route.query.msg&&(this.$route.query.msg=null)
       this.queryParams.pageNum = 1
       this.getList(this.queryParams)
