@@ -100,6 +100,7 @@
         :visible.sync="isDrawer"
       >
         <ContTable
+          v-if="groupIdName !== 'DQJY'"
           class="mr20 ml20"
           :tableData="equipmentList2"
           @getList="getList2"
@@ -113,7 +114,21 @@
           :showSearch="false"
         >
         </ContTable>
-
+        <ContTable
+          v-else
+          class="mr20 ml20"
+          :tableData="equipmentList2"
+          @getList="getList2"
+          @handleSelectionChange="handleSelectionChange2"
+          :total="total2"
+          ref="jmtable"
+          :isRadio="true"
+          :handleWidth="230"
+          :columns="columns3"
+          :isEdit="false"
+          :showSearch="false"
+        >
+        </ContTable>
         <div class="submit">
           <el-button type="primary" @click="save">保存</el-button>
           <el-button @click="close">取消</el-button>
@@ -194,7 +209,7 @@ import JmTable from "@/components/JmTable/index.vue";
 import ContTable from "@/components/ContTable";
 import Wrapper from "@/components/wrapper";
 import { orderTemplate } from "@/api/work/template";
-import { listUser2 } from "@/api/system/user";
+import { listUser2, listUser } from "@/api/system/user";
 import { findAll } from "@/api/system/group";
 import { exportWomInfo } from "@/api/work/schedule";
 
@@ -259,7 +274,7 @@ export default {
       ids: [],
       ids2: [],
       groupIds: [],
-
+      groupIdName: [],
       equipmentList: null,
       equipmentList2: null,
       isChoose: false,
@@ -417,23 +432,33 @@ export default {
         },
       ];
     },
+    columns3() {
+      return [
+        { label: "姓名", prop: "nickName", tableVisible: true },
+        { label: "用户名", prop: "userName", tableVisible: true },
+        { label: "岗位", prop: "postName", tableVisible: true },
+
+        {
+          label: "技能等级",
+          prop: "level",
+          tableVisible: true,
+          formType: "rate",
+          width: 200,
+        }, //(A、B、C)
+      ];
+    },
   },
   watch: {
     isDrawer: {
       handler(newVal, oldVal) {
         if (newVal) {
-          if (this.itemValue && this.itemValue.groupId) {
-            this.listGroupId = this.itemValue.groupId;
+          if (this.itemValue && this.itemValue?.groupId) {
+            this.listGroupId = this.itemValue?.groupId;
             this.getList2();
           } else {
-            this.listGroupId = this.itemArr[0].groupId;
+            this.listGroupId = this.itemArr[0]?.groupId;
             this.getList2();
           }
-          // console.log(
-          //   "========================",
-          //   this.listGroupId,
-          //   this.itemValue
-          // );
         } else {
           this.title = "";
         }
@@ -663,10 +688,17 @@ export default {
     },
     handlerAdd() {
       this.title = "任务转派";
-      if (!(this.ids.length && this.ids.length > 0)) {
-        this.$message.warning("请先选择要分派的工单！");
+      if (
+        !(
+          this.ids.length &&
+          this.ids.length > 0 &&
+          this.itemArr.every((item) => item.orderStatus.includes("待执行"))
+        )
+      ) {
+        this.$message.warning("请先选择需要分派 且 待执行的工单！");
         return;
       }
+
       if (this.groupIds.size >= 2) {
         this.$message.warning("请先选择工单类型相同的工单！");
         return;
@@ -689,6 +721,7 @@ export default {
       this.title = "转派";
       this.itemValue = row;
       this.isDrawer = true;
+      this.groupIdName = row.maintenanceType;
     },
     handlerGetId() {},
 
@@ -767,14 +800,23 @@ export default {
     },
     async getList2(row) {
       this.loading2 = true;
-      // console.log("========================", this.groupIds);
-      getExecutorList({
-        groupId: this.listGroupId ? this.listGroupId : 0,
-      }).then((response) => {
-        this.equipmentList2 = response.data;
-        this.total2 = response.total;
-        this.loading2 = false;
-      });
+      console.log("========================", this.groupIdName);
+      if (this.groupIdName !== "DQJY") {
+        getExecutorList({
+          groupId: this.listGroupId ? this.listGroupId : 0,
+        }).then((response) => {
+          this.equipmentList2 = response.data;
+          this.total2 = response.total;
+          this.loading2 = false;
+        });
+      } else {
+        listUser({ pageNum: 1, pageSize: 10000 }).then((res) => {
+          this.equipmentList2 = res.rows;
+          this.total2 = res.total;
+          this.loading2 = false;
+        });
+      }
+
       // listUser2
     },
 
@@ -787,6 +829,9 @@ export default {
       ) {
         this.ids = selection.map((item) => item.id);
         this.groupIds = new Set(selection.map((item) => item.groupId));
+        this.groupIdName = Array.from(
+          new Set(selection.map((item) => item.maintenanceType))
+        )[0];
         this.itemArr = selection;
       }
 
