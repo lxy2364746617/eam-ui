@@ -114,7 +114,11 @@
                   :icon-class="item.icon"
                 />
               </div>
-              <span style="font-size: 14px">{{ item.title }}</span>
+              <el-tooltip :content="item.title"
+                ><span style="font-size: 16px">
+                  {{ item.title }}
+                </span></el-tooltip
+              >
             </li>
           </ul>
           <div class="no-information" v-else>
@@ -1089,6 +1093,14 @@ export default {
         flex-direction: column;
         justify-content: flex-end;
         align-items: center;
+      }
+      span {
+        display: block;
+        width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
       }
     }
   }
