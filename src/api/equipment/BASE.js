@@ -128,6 +128,7 @@ export function copyBASE(query) {
     url: "/equipment/base/copy",
     method: "get",
     params: query,
+    noRepeat:true
   });
 }
 

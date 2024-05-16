@@ -328,7 +328,7 @@ export default {
           label: '设备状态',
           prop: 'deviceStatus',
           formType: 'selectTag',
-          options: this.dict.type.em_device_state,
+          options: this.statesArr,
         },
         { label: '财务资产编码', prop: 'propertyCode' },
         { label: '自选设备编码', prop: 'freeDeviceCode' },
@@ -516,9 +516,20 @@ export default {
       handler(val){
         val&&this.getList(this.queryParams)
       }
+    },
+    'dict.type.em_device_state':{
+      handler(val){
+        this.statesArr = JSON.parse(JSON.stringify(val)).filter(item=>{
+          return item.label!='已报废'
+        })
+        console.log(this.statesArr,val)
+      },
+      immediate:true,
+      deep:true
     }
   },
   created() {
+    
     this.getTree()
     this.getTreeSelect()
     this.getList(this.queryParams)
@@ -585,7 +596,7 @@ export default {
       this.addItem.copyInputName = row.deviceName
       this.addItem.copyInputId = row.deviceId
       this.addItem.choosedrawer = false
-      this.copyCodeOpen=true
+      //this.copyCodeOpen=true
     },
     back() {
       this.addEdit = false
@@ -738,20 +749,21 @@ export default {
       
       if (this.addItem.addRadio == 1) {
         // 复制
-        if (this.addItem.copyInputName == '') {
+        /* if (this.addItem.copyInputName == '') {
           this.$modal.msgError('复制设备不能为空')
         }else if(this.addItem.copyInputCode == ''){
            this.$modal.msgError('设备编码不能为空')
         }
-        else {
-          copyBASE({ deviceId: this.addItem.copyInputId,deviceCode:this.addItem.copyInputCode }).then((response) => {
+        else { */
+          copyBASE({ deviceId: this.addItem.copyInputId }).then((response) => {
             // this.btnLoading = false
             this.getList()
             this.copyCodeOpen=false
             this.addItem.addDrawer = false
             this.addItem=this.$options.data().addItem
+            this.$modal.msgSuccess('复制完成')
           })
-        }
+        /* } */
       } else if (this.addItem.addRadio == 2) {
         // 新增
         this.$router.push({ path: '/device/book/add' })
