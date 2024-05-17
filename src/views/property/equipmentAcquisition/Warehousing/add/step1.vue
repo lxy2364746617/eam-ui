@@ -170,8 +170,7 @@ export default {
           label: "设备编码",
           prop: "deviceCode",
           span: 8,
-          required: true,
-          formDisabled: this.isEdit,
+          formDisabled: true,
         },
         {
           label: "设备状态",
