@@ -801,7 +801,7 @@ export default {
           ' > ' +
           row.deviceName
         this.$router.push({
-          path: '/device/book/details?i=' + deviceId + '&t=' + this.title+((row.processStatus=='running'||row.processStatus=='completed')?'&isReadonly=true':''),
+          path: '/device/book/details?i=' + deviceId + '&t=' + this.title,
         })
         // this.addDetails = true;
       }

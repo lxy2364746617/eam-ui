@@ -2,7 +2,7 @@
   <div>
     <p class="subtitle"><i class="el-icon-magic-stick"></i> 重要数据
       <span v-if="disabled1" class="rightbutton">
-        <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false" v-hasPermi="['equipment:base:modify']">编辑</el-button>
+        <el-button v-if="!isReadonly&&(formData.processStatus=='reject'||formData.processStatus=='uncommitted'||formData.processStatus==null)" type="text" icon="el-icon-edit" @click="disabled1=false" v-hasPermi="['equipment:base:modify']">编辑</el-button>
       </span>
       <span v-else class="rightbutton">
         <el-button type="text" @click="save('1')">确认</el-button>

@@ -8,7 +8,7 @@
         </el-col>
         <el-col :span="5" v-if="disabled1" style="font-size: 12px;color: #888;">
           <!-- <el-button type="text" icon="el-icon-s-help">快速工单</el-button> -->
-          <el-button v-if="!isReadonly" type="text" icon="el-icon-edit" @click="disabled1=false" 
+          <el-button v-if="!isReadonly&&(formData.processStatus=='reject'||formData.processStatus=='uncommitted'||formData.processStatus==null)" type="text" icon="el-icon-edit" @click="disabled1=false" 
           v-hasPermi="['equipment:base:modify']" >编辑</el-button>
         </el-col>
       </el-row>
@@ -199,7 +199,6 @@ export default {
     this.getTreeSelect()
     // 编辑
     this.isReadonly=(this.$route.query.isReadonly||this.detailReadonly)?true:false
-    
     this.formTitle = this.$route.query.t
     this.getInfo()
   },

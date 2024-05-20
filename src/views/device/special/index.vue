@@ -61,8 +61,19 @@ export default {
             currDeptId: { formType: 'selectTree', options: this.deptOptions,width:230 },
             affDeptId: { formType: 'selectTree',  options: this.deptOptions, width:230},
             makerAoTime: { formType: 'daterange',width:200 },
-            deviceStatus:{formType: 'selectTag', options: this.dict.type.em_device_state, },
+            deviceStatus:{formType: 'selectTag', options: this.statesArr, },
         }
+    }
+  },
+  watch:{
+    'dict.type.em_device_state':{
+      handler(val){
+        this.statesArr = JSON.parse(JSON.stringify(val)).filter(item=>{
+          return item.label!='已报废'
+        })
+      },
+      immediate:true,
+      deep:true
     }
   },
   data() {
@@ -85,6 +96,7 @@ export default {
               isSpecial: "Y",
               categoryId: undefined,
           },
+          statesArr:[]
       };
   },
   async created() {

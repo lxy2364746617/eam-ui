@@ -324,10 +324,20 @@ export default {
       this.$set(this.formData,'parentDeviceName',row.deviceName)
       this.close()
     },
+    getCategoryTree(arr){
+      arr.forEach(item=>{
+          item.isDisabled=item.children?.length>0?true:false
+          if(item.children&&item.children.length>0){
+            this.getCategoryTree(item.children)
+          }
+        })
+        return arr
+    },
     getTreeSelect(){
       equipmentTreeNoTemplate().then(response => {
-        this.categoryOptions = response.data;
+        this.categoryOptions = this.getCategoryTree(response.data);
       });
+      
       /* listDept({prtOrg:'Y' }).then(response => {
         this.deptOptions = response.data;
       }); */

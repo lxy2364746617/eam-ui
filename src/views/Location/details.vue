@@ -346,7 +346,9 @@ import { locationDetail,getLocationAttr,locationDetailDevice,locationDetailFile,
             })
             this.tablecolumns.forEach(item=>{
               if(item.prop =='deviceStatus'){
-                item.options = res.data
+                item.options = res.data.filter(item=>{
+                  return item.label!='已报废'
+                })
               }
             })
           }

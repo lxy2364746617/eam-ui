@@ -45,13 +45,22 @@ export default {
         { label:"设备名称", prop:"deviceName", },
         { label:"规格型号", prop:"specs", },
         { label:"设备类型", prop:"categoryId", formType: 'selectTree', options: this.categoryOptions, width:220  },
-        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.dict.type.em_device_state, },
+        { label:"设备状态", prop:"deviceStatus", formType: 'select', options: this.statesArr, },
         { label:"功能位置", prop:"location", options:this.locationOptions,formType: 'selectTree', width:220},
         { label:"重要等级", prop:"level", formType: 'select', options: this.dict.type.em_device_level, }, //(A、B、C)
         // { label:"所属子公司", prop:"",  },
         { label:"所属组织", prop:"affDeptId", formType: 'selectTree', options: this.deptOptions, width:220 },
       ]
     },
+  },
+  watch:{
+    'dict.type.em_device_state':{
+      handler(val){
+        this.statesArr = JSON.parse(JSON.stringify(val)).filter(item=>{
+          return item.label!='已报废'
+        })
+      },
+    }
   },
   data() {
     return {
@@ -79,6 +88,7 @@ export default {
       locationOptions:[],
       deptOptions: [],
       categoryOptions: [],
+      statesArr:[]
     };
   },
  async created() {

@@ -160,7 +160,7 @@ import parentdevice from '@/views/maintain/mstandard/selectDevice'
 import pointItem from '@/views/maintain/mstandard/pointItem'
 import { number } from 'echarts';
 import { getLocationTree} from '@/api/Location'
-import partItem from '@/views/maintain/standard/partItem'
+import partItem from '@/views/maintain/mstandard/partItem'
 export default {
     name: "Template",
     dicts: ['sys_normal_disable', 'em_is_special', 'mro_m_cycle_type'],
