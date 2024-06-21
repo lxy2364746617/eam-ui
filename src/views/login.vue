@@ -6,7 +6,7 @@
       :rules="loginRules"
       class="login-form"
     >
-      <h3 class="title">设备管理测试平台</h3>
+      <h3 class="title">设备管理中心-试用版</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -190,23 +190,24 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
 .login {
   display: flex;
-  justify-content: center;
+  justify-content: end;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
-  background-size: cover;
+  background-image: url("../assets/images/login-background.png");
+  background-size: 100% 100%;
 }
 .title {
   margin: 0px auto 30px auto;
   text-align: center;
-  color: #707070;
+  color: #fff;
 }
 
 .login-form {
   border-radius: 6px;
-  background: #ffffff;
+  background: rgba(0, 0, 0, 0.6);
   width: 400px;
   padding: 25px 25px 5px 25px;
+  margin-right: 90px;
   .el-input {
     height: 38px;
     input {
