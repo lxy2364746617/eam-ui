@@ -210,7 +210,7 @@ export default {
       if(response.data.emArchivesSpecial){
         response.data.emArchivesSpecial.componentContent = JSON.parse(response.data.emArchivesSpecial.componentContent)
         response.data.emArchivesSpecial.fieldValue = JSON.parse(response.data.emArchivesSpecial.fieldValue)
-        this.setFormLabel(response.data.emArchivesSpecial.componentContent ,true)
+        response.data.emArchivesSpecial.componentContent&&this.setFormLabel(response.data.emArchivesSpecial.componentContent ,true)
       }
       // 第二步
       if(response.data.archivesOther==null){
@@ -220,13 +220,13 @@ export default {
       if(response.data.emArchivesExtendAtt){
         response.data.emArchivesExtendAtt.componentContent = JSON.parse(response.data.emArchivesExtendAtt.componentContent)
         response.data.emArchivesExtendAtt.fieldValue = JSON.parse(response.data.emArchivesExtendAtt.fieldValue)
-        this.setFormLabel(response.data.emArchivesExtendAtt.componentContent)
+        response.data.emArchivesExtendAtt.componentContent&&this.setFormLabel(response.data.emArchivesExtendAtt.componentContent)
       }
       // 第三步 主要指标
       if(response.data.emArchivesIndex){
         response.data.emArchivesIndex.componentContent = JSON.parse(response.data.emArchivesIndex.componentContent)
         response.data.emArchivesIndex.fieldValue = JSON.parse(response.data.emArchivesIndex.fieldValue)
-        this.setFormLabel(response.data.emArchivesIndex.componentContent)
+        response.data.emArchivesIndex.componentContent&&this.setFormLabel(response.data.emArchivesIndex.componentContent)
       }
       this.formData = response.data;
       this.formData1 = JSON.parse(JSON.stringify(this.formData))
