@@ -204,9 +204,6 @@ export function completions(data,that) {
           "content":data,//语音转文字内容	
       }]
     },
-    cancelToken: new CancelToken((c) => {
-      that.cancelAxios = c
-    }),
     timeout:60000
   });
 }

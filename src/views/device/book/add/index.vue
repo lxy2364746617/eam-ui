@@ -111,12 +111,11 @@ export default {
       this.isEdit = this.$route.query.f == 'edit'
       this.formTitle = "编辑设备"
       getBASE(deviceId).then(response => {
-
         // 第一步  特种设备
         if (response.data.emArchivesSpecial) {
           response.data.emArchivesSpecial.componentContent = JSON.parse(response.data.emArchivesSpecial.componentContent)
           response.data.emArchivesSpecial.fieldValue = JSON.parse(response.data.emArchivesSpecial.fieldValue)
-           this.setFormLabel(response.data.emArchivesSpecial.componentContent)
+          response.data.emArchivesSpecial.componentContent&& this.setFormLabel(response.data.emArchivesSpecial.componentContent)
         }
         // 第二步
         if (response.data.archivesOther == null) {
@@ -130,18 +129,15 @@ export default {
             item.prop = item.prop || item.fieldCode
           })
           response.data.emArchivesExtendAtt.fieldValue = JSON.parse(response.data.emArchivesExtendAtt.fieldValue)
-           this.setFormLabel(response.data.emArchivesExtendAtt.componentContent)
+           response.data.emArchivesExtendAtt.componentContent&&this.setFormLabel(response.data.emArchivesExtendAtt.componentContent)
         }
         // 第三步 主要指标
         if (response.data.emArchivesIndex) {
           response.data.emArchivesIndex.componentContent = JSON.parse(response.data.emArchivesIndex.componentContent)
           response.data.emArchivesIndex.fieldValue = JSON.parse(response.data.emArchivesIndex.fieldValue)
-
-           this.setFormLabel(response.data.emArchivesIndex.componentContent)
+          response.data.emArchivesIndex.componentContent&&this.setFormLabel(response.data.emArchivesIndex.componentContent)
         }
-
         this.formData = response.data;
-        console.log(this.formData)
         this.stepActive = this.formData.step;
 
         // var obj = {
