@@ -275,7 +275,8 @@ import {
   exportBASE,
   copyBASE,
   getPrtOrgTreeByDeptId,
-  matchPage 
+  matchPage,
+  completions
 } from '@/api/equipment/BASE'
 import { getToken } from '@/utils/auth'
 import Treeselect from '@riophae/vue-treeselect'
@@ -514,15 +515,38 @@ export default {
   watch:{
     '$route.query.msg':{
       handler(val){
-        val&&this.getList(this.queryParams)
-      }
+        if(val){
+          completions(this.$route.query.msg,this).then(res=>{
+        let msgData = JSON.parse(res.choices[0].message.content.replace(/^```json\n/, '').replace(/```/, ''))
+        let nameObj={
+          'E_category':'设备类别',
+          'E_loc':'功能位置',
+          'E_manufacturer':'厂家',
+          'E_model':'规格型号',
+          'E_name':'设备名称',
+          'E_org':'所属组织',
+          'E_status':'设备状态',
+        }
+        let str=''
+        this.completionData={}
+        Object.keys(nameObj).forEach(item=>{
+          /* if (msgData[item].join(',')!="")  {str+=nameObj[item]+'为'+msgData[item].join(',')+';'} */
+          this.completionData[item] = msgData[item].join(',')==''?null:msgData[item].join(',')
+        })
+
+        this.getList(this.queryParams)
+        const msg = new SpeechSynthesisUtterance('搜索完成'); // 创建语音消息
+        window.speechSynthesis.speak(msg); // 播放语音
+        })
+        }
+      },
+      immediate:true
     },
     'dict.type.em_device_state':{
       handler(val){
-        this.statesArr = JSON.parse(JSON.stringify(val)).filter(item=>{
+        this.statesArr =val&& JSON.parse(JSON.stringify(val)).filter(item=>{
           return item.label!='已报废'
         })
-        console.log(this.statesArr,val)
       },
       immediate:true,
       deep:true
@@ -532,11 +556,10 @@ export default {
     
     this.getTree()
     this.getTreeSelect()
-    this.getList(this.queryParams)
+    !this.$route.query.msg && this.getList(this.queryParams)
     
   },
   methods: {
-    
     /** 导入按钮操作 */
     handleImport() {
       this.$refs.fileImport.upload.open = true
@@ -615,15 +638,11 @@ export default {
       }
       this.getCount(data)
       if(this.$route.query.msg){//分词搜索
-        matchPage({
-            esTerm:this.$route.query.msg ,
-            pageNum: queryParams.pageNum,
-            pageSize: queryParams.pageSize
-          }).then(res=>{
+         matchPage(Object.assign(this.completionData,{pageNum: queryParams.pageNum,pageSize: queryParams.pageSize})).then(res=>{
             this.equipmentList = res.rows
             this.total = res.total
             this.loading = false
-        })
+        }) 
       }else{
         listBASE(data).then((response) => {
         response.rows.forEach((b) => {

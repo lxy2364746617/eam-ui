@@ -368,8 +368,9 @@ export default {
         this.tableData2&&this.tableData2.forEach((item,index)=>{
           item.index=10*(this.queryParams.pageNum-1)+index+1
         })
-        if (this.showSearch && this.tableData2) {
-          this.tableData2.unshift({});
+        if (this.showSearch ) {
+          if(this.tableData2 == null) this.tableData2=[{}]
+          else this.tableData2.unshift({});
         }
         this.$nextTick(() => {
           this.loading = false;

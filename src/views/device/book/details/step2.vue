@@ -17,6 +17,7 @@
         :disabled="disabled5"
         :showButton="false"
         :formData="formData.emArchivesIndex.fieldValue"
+        :labelWidth="'200px'"
         ref="jmform5">
       </jm-form>
     </div>

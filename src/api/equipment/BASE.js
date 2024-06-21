@@ -173,3 +173,40 @@ export function matchPage(query) {
     data: query,
   });
 }
+//分词搜索前分析
+/* export function completions(data) {
+  return request({
+    baseURL:'/baidu',
+    url: "/api/proxy/promptflow-tb4idke0/v2/completions",
+    method: "post",
+    headers:{
+      "Content-Type":"application/json",
+      "app-code":"64a790dc6d004ce58820c69d3817494e"
+    },
+    data: {
+      messages:[{
+          "role":"user",//固定值
+          "content":data,//语音转文字内容	
+      }]
+    },
+    timeout:60000
+  });
+} */
+
+//分词搜索前分析
+export function completions(data,that) {
+  return request({
+    url: "/equipment/base/baiduYy",
+    method: "post",
+    data: {
+      messages:[{
+          "role":"user",//固定值
+          "content":data,//语音转文字内容	
+      }]
+    },
+    cancelToken: new CancelToken((c) => {
+      that.cancelAxios = c
+    }),
+    timeout:60000
+  });
+}

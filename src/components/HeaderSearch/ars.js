@@ -116,7 +116,7 @@ function startWebSocket(way, afterOpen) {
         onOpen(evt, way, afterOpen);
         timer = setInterval(() => {
         websocket.close();
-    }, 6000);
+    }, 2000);
     };
     websocket.onclose = function(evt) {
         onClose(evt);
@@ -127,7 +127,7 @@ function startWebSocket(way, afterOpen) {
          clearInterval(timer);
          timer = setInterval(() => {
             websocket.close();
-        }, 6000);
+        }, 2000);
     }; 
     websocket.onerror = function(evt) {
         onError(evt);
@@ -152,7 +152,7 @@ function onClose(evt) {
         window.changeActiveMenu('/decive')
         router.push({ path: '/decive/book', query: { msg: outputMessageArray.map(msg => msg.result).join('') } })
         setTimeout(() => {
-            speak('搜索完成')
+            speak('搜索中，请稍候')
         }, 1000);
         
     }
