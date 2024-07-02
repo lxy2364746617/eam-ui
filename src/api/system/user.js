@@ -12,7 +12,7 @@ export function listUser(query) {
 // 查询产权组织下的用户
 export function listUser2(query) {
   return request({
-    url: "/system/user/getUserByAffDeptId",
+    url: "/system/user/findAll",
     method: "get",
   });
 }

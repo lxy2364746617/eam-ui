@@ -158,7 +158,7 @@
           </el-form-item>
           <el-form-item size="large">
             <el-button type="primary" @click="submitFormAdd2">提交</el-button>
-            <el-button @click="resetForm2">重置</el-button>
+            <el-button @click="resetForm2">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -196,7 +196,7 @@ export default {
       drawer: false,
       drawer2: false,
       formData: {},
-      formData2: {},
+      formData2: { closeReason: "" },
 
       rules: {
         planExecuteDate: [
@@ -324,9 +324,9 @@ export default {
         },
         {
           label: "执行人员",
-          prop: "executor",
-          formType: "selectTree",
-          options: this.userList,
+          prop: "executorName",
+          // formType: "selectTree",
+          // options: this.userList,
           tableVisible: true,
           width: 150,
         },
@@ -492,12 +492,13 @@ export default {
       this.$refs["elForm"].resetFields();
     },
     resetForm2() {
-      this.$refs["elForm2"].resetFields();
+      this.drawer2 = false;
     },
     handleSet(row, f) {
       this.title = "关闭";
 
       this.drawer2 = true;
+      this.$refs["elForm2"].resetFields();
       // this.radioRow = row;
     },
     handlerAdd() {

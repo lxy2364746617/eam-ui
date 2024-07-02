@@ -230,7 +230,7 @@ export default {
       drawer2: false,
       drawer3: false,
       formData: {},
-      formData2: {},
+      formData2: { closeReason: "" },
       formData3: {},
 
       rules: {
@@ -370,9 +370,9 @@ export default {
         },
         {
           label: "执行人员",
-          prop: "executor",
-          formType: "selectTree",
-          options: this.userList,
+          prop: "executorName",
+          // formType: "selectTree",
+          // options: this.userList,
           tableVisible: true,
           width: 150,
         },
@@ -684,7 +684,7 @@ export default {
       this.title = "关闭";
 
       this.drawer2 = true;
-      // this.radioRow = row;
+      this.$refs["elForm3"].resetFields();
     },
     handlerAdd() {
       this.title = "任务转派";
