@@ -213,10 +213,7 @@ export default {
               info.event._def.extendedProps.orderStatus +
               "</p>" +
               "<p style='padding-left:20px;margin:4px'>执行人员:" +
-              this.findTreeName(
-                this.userList,
-                info.event._def.extendedProps.executor
-              ) +
+              info.event._def.extendedProps.executorName +
               "</p>" +
               "</div>",
             theme: "light",

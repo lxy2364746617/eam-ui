@@ -87,7 +87,7 @@
           </el-form-item>
           <el-form-item size="large">
             <el-button type="primary" @click="submitFormAdd2">提交</el-button>
-            <el-button @click="resetForm2">重置</el-button>
+            <el-button @click="resetForm2">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -119,7 +119,7 @@ export default {
       ids: [],
       orderOptions: [],
       userList: [],
-      formData2: {},
+      formData2: { closeReason: "" },
       drawer2: false,
       typeAll: [],
       loading: false,
@@ -195,9 +195,9 @@ export default {
         },
         {
           label: "执行人员",
-          prop: "executor",
-          formType: "selectTree",
-          options: this.userList,
+          prop: "executorName",
+          // formType: "selectTree",
+          // options: this.userList,
           tableVisible: true,
           width: 150,
         },
@@ -276,7 +276,7 @@ export default {
       });
     },
     resetForm2() {
-      this.$refs["elForm2"].resetFields();
+      this.drawer2 = false;
     },
     getUserList() {
       listUser2({ pageNum: 1, pageSize: 10000 }).then((res) => {
@@ -386,8 +386,8 @@ export default {
     },
     handleDelete(row) {
       this.title = "关闭";
-
       this.drawer2 = true;
+      this.$refs["elForm2"].resetFields();
     },
     submitFormAdd2() {
       this.$refs["elForm2"].validate(async (valid) => {
