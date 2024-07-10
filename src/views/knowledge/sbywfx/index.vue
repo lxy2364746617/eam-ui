@@ -2,41 +2,41 @@
     <div class="box">
       <div class="box1">
         <div class="box1_left">
-          <div style="padding-left:10px;height:20%">累计故障处理情况</div>
+          <div style="padding-left:10px;height:20%;background:#e7f3ff;">累计故障处理情况</div>
           <div style="height:80%">
             <div style="width:50%;height:100%;display:inline-block;">
               <span class="box1_num" style="height:40%">500</span>
-              <span class="box1_num">月</span>
+              <span class="box1_num">当月故障处理数量</span>
             </div>
             <div style="width:50%;height:100%;display:inline-block">
               <span class="box1_num" style="height:40%">1,000</span>
-              <span class="box1_num" >年</span>
+              <span class="box1_num" >当年故障处理数量</span>
             </div>
           </div>
         </div>
         <div class="box1_mid">
-          <div style="padding-left:10px">累计巡检情况</div>
+          <div style="padding-left:10px;height:20%;background:#e7f3ff">累计巡检情况</div>
           <div style="height:80%">
             <div style="width:50%;height:100%;display:inline-block;">
               <span class="box1_num" style="height:40%">500</span>
-              <span class="box1_num">月</span>
+              <span class="box1_num">当月点巡检设备数量</span>
             </div>
             <div style="width:50%;height:100%;display:inline-block">
               <span class="box1_num" style="height:40%">1,000</span>
-              <span class="box1_num" >年</span>
+              <span class="box1_num" >当年点巡检设备数量</span>
             </div>
           </div>
         </div>
         <div class="box1_right">
-          <div style="padding-left:10px">累计保养情况</div>
+          <div style="padding-left:10px;height:20%;background:#e7f3ff">累计保养情况</div>
           <div style="height:80%">
             <div style="width:50%;height:100%;display:inline-block;">
               <span class="box1_num" style="height:40%">500</span>
-              <span class="box1_num">月</span>
+              <span class="box1_num">当月保养设备数量</span>
             </div>
             <div style="width:50%;height:100%;display:inline-block">
               <span class="box1_num" style="height:40%">1,000</span>
-              <span class="box1_num" >年</span>
+              <span class="box1_num" >当年保养设备数量</span>
             </div>
           </div>
         </div>
@@ -233,7 +233,7 @@ export default {
 
 }
 .box1{
-  flex:1;
+  flex:1.5;
   display: flex;
   margin-top: 10px;
   justify-content: space-around;
@@ -246,16 +246,6 @@ export default {
       align-items: center;
       justify-content: center;
     }
-  }
-  .box1_left{
-    background: #ffb64f;
-    
-  }
-  .box1_mid{
-    background: #fc297d;
-  }
-  .box1_right{
-    background: #007bfe;
   }
 }
 .box2{
