@@ -1,4 +1,7 @@
 import request from "@/utils/request";
+import axios from 'axios'
+const CancelToken = axios.CancelToken;
+let cancelSource = CancelToken.source();
 
 // 查询设备平台_设备档案_基础信息列表
 export function listBASE(query) {
@@ -194,11 +197,13 @@ export function matchPage(query) {
 } */
 
 //分词搜索前分析
-export function completions(data,that) {
+export function completions(data) {
   return request({
     url: "/equipment/base/baiduYy",
     method: "post",
+    cancelToken: cancelSource.token,
     data: {
+      
       messages:[{
           "role":"user",//固定值
           "content":data,//语音转文字内容	
@@ -207,3 +212,11 @@ export function completions(data,that) {
     timeout:60000
   });
 }
+//取消请求
+export const cancelRequest = () => {
+  if (cancelSource) {
+    cancelSource.cancel();
+    // 重置cancelSource
+    cancelSource = CancelToken.source();
+  }
+};

@@ -3,15 +3,23 @@
     <el-button
       class="headersearchbtn"
       type="primary"
-      icon="el-icon-microphone"
+      icon="el-icon-search"
       size="medium"
       @click.stop="click"
       style="width: 30px"
     ></el-button>
+    <!-- <el-button
+      class="headersearchbtn"
+      type="primary"
+      icon="el-icon-microphone"
+      size="medium"
+      @click.stop="click"
+      style="width: 30px"
+    ></el-button> -->
     <!-- <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" /> -->
-    <el-select
+    <!-- <el-select
       ref="headerSearchSelect"
-      v-model="search"
+      v-model="searchText"
       :remote-method="querySearch"
       filterable
       default-first-option
@@ -25,13 +33,21 @@
         :label="search"
     >
     </el-option>
-      <!-- <el-option
+       <el-option
         v-for="option in options"
         :key="option.item.path"
         :value="option.search"
         :label="option.item.title.join(' > ')"
-      /> -->
-    </el-select>
+      /> 
+    </el-select> -->
+    <el-tooltip  effect="dark" :content="searchText" placement="bottom" :manuanual ="show" :value="show">
+      <div class="header-search-select">
+        <el-input v-model="searchText" ref="headerSearchSelect" @change='changeSearch'>
+          <el-button style="width:30px;padding-left:10px" slot="append"  icon="el-icon-microphone" @click="searchYy"></el-button>
+        </el-input>
+      </div>
+    
+    </el-tooltip>
   </div>
 </template>
 
@@ -51,6 +67,7 @@ export default {
       searchPool: [],
       show: false,
       fuse: undefined,
+      searchText:''
     };
   },
   computed: {
@@ -63,6 +80,7 @@ export default {
   },
   watch: {
     search() {
+      this.searchText = this.search
       console.log(this.search)
     },
     routes() {
@@ -72,11 +90,11 @@ export default {
       this.initFuse(list);
     },
     show(value) {
-      if (value) {
+      /* if (value) {
         document.body.addEventListener("click", this.close);
       } else {
         document.body.removeEventListener("click", this.close);
-      }
+      } */
     },
   },
   mounted() {
@@ -84,18 +102,32 @@ export default {
     this.searchPool = this.generateRoutes(this.routes);
   },
   methods: {
+    changeSearch(val){
+      if(val){
+        const msg = new SpeechSynthesisUtterance('搜索中，请稍候'); // 创建语音消息
+        window.speechSynthesis.speak(msg); // 播放语音
+      this.$router.push({ path: '/decive/book', query: { msg: val } })
+      }
+      
+    },
+    searchYy(){
+      this.searchText=''
+      startRecorder()
+    },
     click() {
       this.show = !this.show;
       if (this.show) {
         this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus();
-        startRecorder()
+        
       }else{
+        this.searchText=''
         closetWebSocke()
         this.$store.commit('arsMsg/updateOutputMessage','')
       }
     },
     close() {
       this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur();
+      closetWebSocke()
       this.$store.commit('arsMsg/updateOutputMessage','')
       this.options = [];
       this.show = false;
@@ -232,7 +264,7 @@ export default {
 
   &.show {
     .header-search-select {
-      width: 100px;
+      width: 120px;
       margin-left: 10px;
     }
   }
@@ -243,5 +275,10 @@ export default {
   white-space: normal ;
   height: auto ;
   overflow-y:auto ;
+}
+.el-tooltip__popper.is-dark {
+    background: #303133;
+    color: #FFF;
+    max-width: 120px;
 }
 </style>

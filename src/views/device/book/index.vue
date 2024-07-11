@@ -276,7 +276,8 @@ import {
   copyBASE,
   getPrtOrgTreeByDeptId,
   matchPage,
-  completions
+  completions,
+  cancelRequest
 } from '@/api/equipment/BASE'
 import { getToken } from '@/utils/auth'
 import Treeselect from '@riophae/vue-treeselect'
@@ -516,6 +517,7 @@ export default {
     '$route.query.msg':{
       handler(val){
         if(val){
+          cancelRequest()
           completions(this.$route.query.msg,this).then(res=>{
         let msgData = JSON.parse(res.choices[0].message.content.replace(/^```json\n/, '').replace(/```/, ''))
         let nameObj={
@@ -636,6 +638,7 @@ export default {
         categoryId: this.queryParams.categoryId,
         ...queryParams,
       }
+      cancelRequest()
       this.getCount(data)
       if(this.$route.query.msg){//分词搜索
          matchPage(Object.assign(this.completionData,{pageNum: queryParams.pageNum,pageSize: queryParams.pageSize})).then(res=>{
@@ -895,7 +898,7 @@ export default {
     handleDelete(row) {
       const deviceIds = row.deviceId || this.ids
       this.$modal
-        .confirm('是否确认删除用户编号为"' + deviceIds + '"的数据项？')
+        .confirm('是否确认删除用户编号为"' + row.deviceCode + '"的数据项？')
         .then(function () {
           return delBASE(deviceIds)
         })
