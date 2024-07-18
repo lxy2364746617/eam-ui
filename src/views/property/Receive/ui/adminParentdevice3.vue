@@ -151,13 +151,11 @@ export default {
     };
   },
   created() {
-    console.log("========================this.businessId", this.businessId);
     this.getTreeSelect();
     if (this.businessId) {
       getNeckApprove(this.businessId).then((res) => {
         if (res.code === 200) {
           this.equipmentList = res.data;
-          console.log("========================", this.equipmentList);
         }
       });
     }

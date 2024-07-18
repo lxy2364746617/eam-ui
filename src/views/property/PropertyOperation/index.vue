@@ -360,7 +360,6 @@ export default {
       // });
       getPrtOrgTreeListAll().then((response) => {
         this.deptOptions = response.data;
-        console.log("========================", this.deptOptions);
       });
     },
   },

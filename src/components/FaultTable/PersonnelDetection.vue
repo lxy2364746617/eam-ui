@@ -91,10 +91,8 @@ export default {
     // },
     "formData.supplierName": {
       handler(val) {
-        console.log("========================", val, this.formData);
         if (!val) {
           this.formData.checkUnit = null;
-          console.log("========================", this.formData);
         }
       },
     },

@@ -932,7 +932,6 @@ export default {
           if (this.itemIdList.length && this.itemIdList.length > 0) {
             formdata["itemIdList"] = this.itemIdList;
           }
-          console.log("========================", formdata);
           addEquip(formdata).then((res) => {
             if ((res.code = 200)) {
               this.$message.success("添加成功");

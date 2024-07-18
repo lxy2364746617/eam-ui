@@ -238,7 +238,6 @@ export default {
         if (formVal.id) {
           this.equipmentList.splice(this.selectIndex, 1, formVal);
           this.updateList.push(formVal);
-          console.log("========================有id编辑", this.updateList);
         }
       }
       this.close();
@@ -287,7 +286,6 @@ export default {
     },
     // ! 信息提交
     spareSubmitForm(val) {
-      console.log("========================父", val);
     },
     // ! 查询表格数据
     getList() {

@@ -527,7 +527,6 @@ export default {
     if (this.$route.query) {
       let row = this.$route.query;
       // this.$route.query = null;
-      console.log('========================', this.$route.query);
       this.formData = row.item;
       this.disabled = row.disabled === "true" ? true : false;
 

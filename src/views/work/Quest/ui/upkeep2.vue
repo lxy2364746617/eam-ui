@@ -64,6 +64,14 @@
         <strong style="font-size: 14px">保养检修项目</strong>
       </div>
       <span style="font-size: 20px">
+        <el-button
+          v-if="carryValue.i"
+          size="small"
+          type="primary"
+          @click="handlerOk"
+          >一键OK</el-button
+        >
+
         <i class="el-icon-camera-solid controls" @click="AddFile"></i
         >&nbsp;&nbsp;<i
           class="el-icon-download controls"
@@ -601,6 +609,13 @@ export default {
         }
       });
     },
+    handlerOk() {
+      this.standardList = this.standardList.map((item) => ({
+        ...item,
+        result: 1,
+      }));
+    },
+
     // 提交
     handlerSubmit() {
       if (

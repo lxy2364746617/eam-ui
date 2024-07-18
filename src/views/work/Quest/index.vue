@@ -800,7 +800,6 @@ export default {
     },
     async getList2(row) {
       this.loading2 = true;
-      console.log("========================", this.groupIdName);
       if (this.groupIdName !== "DQJY") {
         getExecutorList({
           groupId: this.listGroupId ? this.listGroupId : 0,

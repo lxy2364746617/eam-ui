@@ -530,7 +530,6 @@ export default {
       });
     },
     handleEventClick(calEvent) {
-      console.log("========================", calEvent);
       this.goDetails(
         JSON.parse(JSON.stringify(calEvent.event._def.extendedProps))
       );
