@@ -65,6 +65,13 @@
         <strong style="font-size: 14px">点检项目</strong>
       </div>
       <span style="font-size: 20px">
+        <el-button
+          v-if="carryValue.i"
+          size="small"
+          type="primary"
+          @click="handlerOk"
+          >一键OK</el-button
+        >
         <i class="el-icon-camera-solid controls" @click="AddFile"></i
         >&nbsp;&nbsp;<i
           class="el-icon-download controls"
@@ -951,6 +958,12 @@ export default {
         "editType",
         this.standardList[scope.$index].editType ? false : true
       );
+    },
+    handlerOk() {
+      this.standardList = this.standardList.map((item) => ({
+        ...item,
+        dealResult: 1,
+      }));
     },
     getDetails(queryParams) {
       queryParams["orderCode"] = this.routerForm.orderCode;

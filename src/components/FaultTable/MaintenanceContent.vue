@@ -85,7 +85,6 @@ export default {
       }
     });
     if (this.formData.orderCode) {
-      console.log("========================", 12321);
       request({
         url: "/wom/repair/getWomRepairInfoOut",
         method: "get",

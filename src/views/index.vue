@@ -136,7 +136,7 @@
       </div>
       <div class="border" style="height: 655px; width: 617px">
         <div class="border-title">
-          <span class="new">我的工单代办</span>
+          <span class="new">我的工单待办</span>
           <!-- <span>我的代办</span> -->
           <!-- <div>
             <el-radio-group v-model="radio" size="mini">
@@ -215,7 +215,7 @@
       </div>
       <div class="border" style="height: 655px; width: 617px">
         <div class="border-title">
-          <span>我的流程代办</span>
+          <span>我的流程待办</span>
         </div>
         <div class="charge">
           <ContTable

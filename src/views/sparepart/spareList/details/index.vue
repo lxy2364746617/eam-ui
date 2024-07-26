@@ -338,7 +338,6 @@ export default {
       this.drawer = true;
     },
     close(callback) {
-      console.log("========================", this.spareValue2);
       this.spareValue = JSON.parse(JSON.stringify(this.spareValue2));
 
       this.disabled1 = true;

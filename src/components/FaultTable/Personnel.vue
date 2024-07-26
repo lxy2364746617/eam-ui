@@ -83,7 +83,6 @@ export default {
               item.groupType === this.formData.orderType &&
               item.groupStatue == 0
           );
-          console.log("========================", this.groupOptions);
           if (this.formData.groupId) {
             this.changeGroupId(this.formData.groupId, 2);
           }
