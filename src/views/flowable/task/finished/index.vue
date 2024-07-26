@@ -42,17 +42,25 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row> -->
-    <el-empty v-if="finishedList.length==0" :image-size="200"></el-empty>
-    <el-card v-for="item in finishedList" :key="item.taskId">
+    <el-empty v-if="finishedList.length==0" :image-size="200" v-loading='loading'></el-empty>
+    <el-card v-for="item in finishedList" :key="item.taskId" v-loading="loading">
       <div v-if="item.processStatus" class="card_status" :style="'color:'+(item.processStatus=='completed'?'#4DCA38;':'#F15555;')+'background:'+(item.processStatus=='completed'?'#CAF6C2':'#F7CCCC')">
         {{findName(dict.type.wf_process_status,item.processStatus)}}
       </div>
       <el-col :span="8" class="card_col1">
         <img src="@/assets/images/device.svg" style="width:80px;height:80px;margin:auto 0"> 
-        <div class="card_info">
+        <div style="flex:1;margin:auto">
+          <div class="card_info">
           <p>{{findName(dict.type.process_category,item.category)}}</p>
-          <p>{{item.businessCode}}</p>
+          <el-tooltip>
+              <div slot="content" style="white-space:nowrap;">
+                <span v-for="item in item.businessCode.split(',')" :key="item">{{ item }}<br /></span>
+              </div>
+              <p>{{item.businessCode.split(',')[0]+(item.businessCode.split(',')[1]?'...':'')}}</p>
+            </el-tooltip>
         </div>
+        </div>
+        
       </el-col>
       <el-col :span="8" class="card_col2">
         <div class="card_info">
@@ -267,6 +275,8 @@ export default {
           deployId: row.deployId,
           taskId: row.taskId,
           businessId: row.businessId,
+          batch:row.batch,
+          batchId:row.businessCode
       }})
     },
     /** 撤回任务 */

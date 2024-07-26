@@ -21,9 +21,14 @@
                 :key="new Date().getTime()"
                 :form-conf="variablesData"
               />
+              <!-- 批量设备 -->
+              <device-list
+                v-if="batch==1"
+                :batchId='batchId'
+              ></device-list>
               <!-- 设备档案详情 -->
               <device-detail
-                v-if="path == '/device/book/details'"
+                v-if="batch==0&&path == '/device/book/details'"
                 :detailReadonly="true"
                 :detailId="taskForm.businessId"
               ></device-detail>
@@ -165,6 +170,7 @@
 </template>
 
 <script>
+import  deviceList  from "@/views/flowable/task/myProcess/deviceList";
 import { flowRecord } from "@/api/flowable/finished";
 import Parser from "@/components/parser/Parser";
 import { getProcessVariables, flowXmlAndNode } from "@/api/flowable/definition";
@@ -196,6 +202,7 @@ export default {
     PositionChangeDetail,
     spareReceiveDetail,
     requirementDetail,
+    deviceList
   },
   props: {},
   data() {
@@ -242,6 +249,8 @@ export default {
     this.taskForm.procInsId = this.$route.query && this.$route.query.procInsId;
     this.taskForm.businessId = this.$route.query.businessId;
     this.readonly = this.$route.query.readonly;
+    this.batch = this.$route.query.batch
+      this.batchId = this.$route.query.batchId
     if (this.readonly) this.activeName = "2";
     // 回显流程记录
     // 流程任务重获取变量表单

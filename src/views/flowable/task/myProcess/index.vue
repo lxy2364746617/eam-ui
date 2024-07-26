@@ -148,7 +148,7 @@ import {
   exportDeployment,
   flowRecord
 } from "@/api/flowable/finished";
-import { myProcessList,stopProcess } from "@/api/flowable/process";
+import { myProcessList,stopProcess,batchList } from "@/api/flowable/process";
 import {listDefinition,getProcessVariables} from "@/api/flowable/definition";
 export default {
   name: "Deploy",
@@ -317,7 +317,8 @@ export default {
     },
     /** 详情 */
     handleFlowRecord(row){
-      getProcessVariables(row.taskId).then(res => {
+      if(row.batch==0){
+        getProcessVariables(row.taskId).then(res => {
         if(res.data.path){
           this.$router.push({path: res.data.path+ '?i=' + row.businessId + '&t=详情&isReadonly=true' }) 
         }else{
@@ -325,11 +326,17 @@ export default {
           query: {
           procInsId: row.procInsId,
           deployId: row.deployId,
+          deviceCode: row.deployId,
           taskId: row.taskId,
           isDetail:true
           }}) 
         }          
         });
+      }else{
+        //batchList({})
+        this.$router.push({path:'/flowable/task/myProcess/deviceList',query:{deviceCode:row.businessCode}})
+      }
+      
        
     },
     //审批流程

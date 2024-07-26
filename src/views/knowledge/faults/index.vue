@@ -222,7 +222,7 @@ export default {
         { label: "故障分类", prop: "type", formType: "select", options: [] },
         { label: "故障设备编码", prop: "deviceCode", type: "link" },
         { label: "设备名称", prop: "deviceName" },
-        { label: "故障部件(KV)", prop: "location" },
+        /* { label: "故障部件(KV)", prop: "location" }, */
         {
           label: "故障等级",
           prop: "faultGrade",
@@ -364,7 +364,7 @@ export default {
     // 点击删除
     handleDelete(row) {
       // console.log(row)
-      this.$confirm("是否确定删除文件名为" + row.fileName + "的数据？").then(
+      this.$confirm("是否确定删除故障名为" + row.faultName + "的数据？").then(
         (res) => {
           faultCaseListDel({ id: row.id }).then((res) => {
             this.getList();

@@ -104,3 +104,12 @@ export function exportDeployment(query) {
     params: query
   })
 }
+
+// 批量查询设备列表
+export function batchList(data) {
+  return request({
+    url: '/flowable/task/batchList',
+    method: 'get',
+    params:data
+  })
+}

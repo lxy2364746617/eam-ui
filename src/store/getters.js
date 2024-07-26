@@ -16,5 +16,6 @@ const getters = {
   defaultRoutes:state => state.permission.defaultRoutes,
   sidebarRouters:state => state.permission.sidebarRouters,
   outputMessage:state => state.arsMsg.outputMessage,
+  outputMessage1:state => state.arsMsg.outputMessage1,
 }
 export default getters

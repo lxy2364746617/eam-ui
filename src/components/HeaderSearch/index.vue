@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ show: show }" class="header-search">
+  <div :class="{ show: true }" class="header-search">
     <el-button
       class="headersearchbtn"
       type="primary"
@@ -40,10 +40,10 @@
         :label="option.item.title.join(' > ')"
       /> 
     </el-select> -->
-    <el-tooltip  effect="dark" :content="searchText" placement="bottom" :manuanual ="show" :value="show">
+    <el-tooltip  effect="dark" :content="searchText" placement="bottom" >
       <div class="header-search-select">
         <el-input v-model="searchText" ref="headerSearchSelect" @change='changeSearch'>
-          <el-button style="width:30px;padding-left:10px" slot="append"  icon="el-icon-microphone" @click="searchYy"></el-button>
+          <el-button :class='{btnactive:btnactive}' style="width:40px;padding-left:13px" slot="append"  icon="el-icon-microphone" @click="searchYy"></el-button>
         </el-input>
       </div>
     
@@ -67,7 +67,8 @@ export default {
       searchPool: [],
       show: false,
       fuse: undefined,
-      searchText:''
+      searchText:'',
+      btnactive:false
     };
   },
   computed: {
@@ -98,11 +99,11 @@ export default {
     },
   },
   mounted() {
-    console.log(this.$store.state,this.$store.state.arsMsg.outputMessage)
     this.searchPool = this.generateRoutes(this.routes);
   },
   methods: {
     changeSearch(val){
+      console.log(val)
       if(val){
         const msg = new SpeechSynthesisUtterance('搜索中，请稍候'); // 创建语音消息
         window.speechSynthesis.speak(msg); // 播放语音
@@ -112,21 +113,24 @@ export default {
     },
     searchYy(){
       this.searchText=''
-      startRecorder()
+      this.btnactive = true
+      startRecorder('',(()=>{this.btnactive = false}))
     },
     click() {
       this.show = !this.show;
       if (this.show) {
-        this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus();
+        //this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus();
         
       }else{
-        this.searchText=''
+        //this.searchText=''
+        this.btnactive = false
         closetWebSocke()
         this.$store.commit('arsMsg/updateOutputMessage','')
       }
     },
     close() {
       this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur();
+      this.btnactive = false
       closetWebSocke()
       this.$store.commit('arsMsg/updateOutputMessage','')
       this.options = [];
@@ -264,7 +268,7 @@ export default {
 
   &.show {
     .header-search-select {
-      width: 120px;
+      width: 200px;
       margin-left: 10px;
     }
   }
@@ -279,6 +283,29 @@ export default {
 .el-tooltip__popper.is-dark {
     background: #303133;
     color: #FFF;
-    max-width: 120px;
+    max-width: 200px;
+}
+@keyframes example {
+  0% {opacity: 0.3;}
+  50%{opacity: 1;}
+  100% {opacity: 0.3;}
+}
+ 
+@-webkit-keyframes example 
+{
+  0% {opacity: 0.3;}
+  50%{opacity: 1;}
+  100% {opacity: 0.3;}
+}
+.btnactive{
+  background: #1b8aff !important;
+  color: white !important;
+  
+  animation-name: example;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  -webkit-animation-name: example;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
 }
 </style>

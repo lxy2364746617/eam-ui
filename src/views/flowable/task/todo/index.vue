@@ -68,13 +68,20 @@
         </template>
       </el-table-column>
     </el-table> -->
-    <el-empty v-if="todoList.length==0" :image-size="200"></el-empty>
-    <el-card v-for="item in todoList" :key="item.taskId">
+    <el-empty v-if="todoList.length==0" :image-size="200" v-loading='loading'></el-empty>
+    <el-card v-for="item in todoList" :key="item.taskId" v-loading='loading'>
       <el-col :span="8" class="card_col1">
-        <img src="@/assets/images/device.svg" style="width:80px;height:80px;margin:auto 0"> 
-        <div class="card_info">
-          <p>{{findName(dict.type.process_category,item.category)}}</p>
-          <p>{{item.businessCode}}</p>
+        <img src="@/assets/images/device.svg" style="width:80px;height:80px;margin:auto 20px"> 
+        <div style="flex:1;margin:auto">
+          <div class="card_info">
+            <p>{{findName(dict.type.process_category,item.category)}}</p>
+            <el-tooltip>
+              <div slot="content" style="white-space:nowrap;">
+                <span v-for="item in item.businessCode.split(',')" :key="item">{{ item }}<br /></span>
+              </div>
+              <p>{{item.businessCode.split(',')[0]+(item.businessCode.split(',')[1]?'...':'')}}</p>
+            </el-tooltip>
+          </div>
         </div>
       </el-col>
       <el-col :span="8" class="card_col2">
@@ -197,7 +204,9 @@ export default {
           taskId: row.taskId,
           taskName: row.taskName,
           startUser: row.startUserName + '-' + row.startDeptName,
-          businessId:row.businessId
+          businessId:row.businessId,
+          batch:row.batch,
+          batchId:row.businessCode
         }})
     },
     // 取消按钮
@@ -271,15 +280,16 @@ export default {
      text-align: center;
      height: 100% !important;
    }
-   .card_col1{
-     display: flex;
-     justify-content: space-around;
-   }
+   
    .card_col1,.card_col2,.card_col3{
      display: flex;
      justify-content: space-around;
      border-right: 1px solid #9C9393;
      
+   }
+   .card_col1{
+     display: flex;
+     justify-content: flex-start;
    }
    .card_col4{
      line-height: 128px;

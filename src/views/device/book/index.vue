@@ -79,6 +79,8 @@
           :isRadio="isChoose"
           :handleWidth="230"
           :columns="columns"
+          :rowKey='"deviceId"'
+          :reserveSelection='true'
         >
           <template slot="headerLeft" v-if="!isChoose">
             <el-col :span="1.5">
@@ -116,6 +118,15 @@
                 @click="handleExport"
                 v-hasPermi="['equipment:base:export']"
               >下载</el-button>
+            </el-col>
+            <el-col :span="1.5">
+              <el-button
+                type="primary"
+                icon="el-icon-plus"
+                size="mini"
+                @click="handleSubmit"
+                v-hasPermi="['flowable:business:submit']"
+              >批量提交</el-button>
             </el-col>
             <!-- <el-col :span="1.5">
               <el-button
@@ -243,7 +254,7 @@
       ></parentdevice>
     </el-drawer>
     <!-- 提交 -->
-    <el-dialog   :title="subtitle" :visible.sync="subopen"  width="800px">
+    <el-dialog   :title="subtitle" :visible.sync="subopen"  width="800px" v-loading='loading'>
       <subprocess :tableData='tableData' @submit="sub" @getTableData='getTableData'></subprocess>
     </el-dialog>
     <el-dialog :visible="copyCodeOpen" top="20vh" append-to-body :show-close='false'>
@@ -290,7 +301,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import fileImport from '@/components/FileImport'
 import parentdevice from '@/views/device/book/device'
 import  subprocess  from '@/views/device/book/process'
-import {definitionStart} from "@/api/flowable/definition";
+import {definitionStart,definitionStartPl} from "@/api/flowable/definition";
 import { getLocationTree} from '@/api/Location'
 export default {
   name: 'devicebook',
@@ -473,6 +484,8 @@ export default {
       },
       deviceIndexVisible: false,
       locationOptions:[],
+      isMultipleSubmit:false,//是否是批量提交
+        selectedRows:[],
       // 表单校验
       rules: {
         userName: [
@@ -510,6 +523,7 @@ export default {
             trigger: 'blur',
           },
         ],
+        
       },
     }
   },
@@ -643,12 +657,18 @@ export default {
       if(this.$route.query.msg){//分词搜索
          matchPage(Object.assign(this.completionData,{pageNum: queryParams.pageNum,pageSize: queryParams.pageSize})).then(res=>{
             this.equipmentList = res.rows
+            this.equipmentList.forEach(item=>{
+              item.selectDisable = !(item.processStatus=='uncommitted'||item.processStatus=='reject'||item.processStatus=='canceled'||item.processStatus=='terminated')
+            })
             this.total = res.total
             this.loading = false
         }) 
       }else{
         listBASE(data).then((response) => {
+          console.log(this.$refs.jmtable)
         response.rows.forEach((b) => {
+          b.selectDisable = !(b.processStatus=='uncommitted'||b.processStatus=='reject'||b.processStatus=='canceled'||b.processStatus=='terminated')
+
           Object.assign(
             b,
             b.archivesOther ? b.archivesOther : {},
@@ -718,6 +738,8 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      console.log('handleSelectionChange',selection)
+      this.selectedRows = selection
       this.ids = selection.map((item) => item.deviceId)
       this.exportIds = selection.map((item) => item.deviceId).join(',')
       this.single = selection.length != 1
@@ -910,11 +932,39 @@ export default {
     },
     /* 提交按钮 */
     handleSet(row){
+      this.isMultipleSubmit = false //是否是批量提交
       this.id = row.deviceId
       this.deviceCode=row.deviceCode
       this.deviceName=row.deviceName
       this.subopen = true;
       this.subtitle = "提交";
+      let data={
+        pageNum:1,
+        pageSize:10,
+        category:'EA'
+      }
+      listDefinition1(data).then(res=>{
+        this.tableData=res.data.records
+      })
+    },
+    /* 批量提交 */
+    handleSubmit(){
+      if(this.selectedRows.length==0) return this.$modal.msgWarning('请选择设备')
+      this.isMultipleSubmit = true //是否是批量提交
+      this.selectedRows = this.selectedRows.map(item=>{
+        return {
+          businessId:item.deviceId,
+          businessCode:item.deviceCode,
+          deviceCode:item.deviceCode,
+          businessName:item.deviceName,
+          businessType:'EA',
+          path:'/device/book/details',
+
+        }
+      })
+      this.subopen = true;
+      this.subtitle = "提交";
+      
       let data={
         pageNum:1,
         pageSize:10,
@@ -936,11 +986,28 @@ export default {
       })
     },
     sub(val,userIds){
-         definitionStart(val.id,this.id,'EA',this.deviceCode,{path:'/device/book/details',nextUserIds:userIds,businessName:this.deviceName}).then(res=>{
+      if(this.isMultipleSubmit){
+        this.selectedRows.forEach(item=>{
+          item.procDefId = val.id,
+          item.nextUserIds=userIds
+        })
+        this.loading = true
+        definitionStartPl(this.selectedRows).then(res=>{
+          this.loading = false
           this.subopen=false
+          this.selectedRows =[]
+          this.$refs.jmtable.$refs.table.clearSelection()
+          //this.handleSelectionChange([])
           this.getList()
           
-      })  
+        })
+      }else{
+        definitionStart(val.id,this.id,'EA',this.deviceCode,{path:'/device/book/details',nextUserIds:userIds,businessName:this.deviceName}).then(res=>{
+          this.subopen=false
+          this.getList()
+      })
+      }
+           
       
     },
     handleFlowRecord(row){

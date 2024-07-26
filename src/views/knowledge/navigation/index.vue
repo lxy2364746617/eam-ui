@@ -4,8 +4,10 @@
       <div class="top">
         <div class="search">
           <div class="search_center">
-            <el-input placeholder="知识搜索"  prefix-icon="el-icon-search" v-model="search_text" v-hasPermi="['kdb:indexSearch:search']"></el-input>
-            <el-button type="primary"  style="margin-left:20px" @click="searchClick">搜 索</el-button>
+            <el-input placeholder="知识搜索" clearable  prefix-icon="el-icon-search" v-model="search_text" v-hasPermi="['kdb:indexSearch:search']">
+              <el-button  slot="append" style="font-size:20px;height: 50px;" :class="{btnactive:btnactive}"  icon="el-icon-microphone" @click="searchByYy"></el-button>
+            </el-input>
+            <el-button type="primary"  style="margin-left:20px" @click="searchClick" >搜 索</el-button>
           </div>
         </div>
         <div class="imgBox">
@@ -105,6 +107,7 @@
 
 <script>
 import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList } from '@/api/knowledge'
+import {startRecorder,closetWebSocke} from "@/components/HeaderSearch/ars.js"
   export default {
     name:'navigation',
     data(){
@@ -134,8 +137,19 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
         ywwdData:{
           list:[]
         },
-        typeArr:[]
+        typeArr:[],
+        btnactive:false
       }
+    },
+    computed:{
+      search() {
+        return this.$store.state.arsMsg.outputMessage1;
+      }
+    },
+    watch:{
+      search() {
+      this.search_text = this.search
+    },
     },
     mounted(){
       maintainType().then(res=>{
@@ -150,11 +164,16 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
       this.getGzzdList()
     },
     methods:{
+    searchByYy(){
+      this.btnactive = true
+      startRecorder('知识导航',(()=>{this.btnactive=false}))
+    },
       getName(val){
         return this.typeArr.filter(item=>item.id==val)[0].label
       },
       // 点击搜索按钮
       searchClick(){
+        closetWebSocke()
         this.$router.push({name:'searchPage',query:{searchText:this.search_text}})
       },
       // 点击故障案例更多
@@ -490,5 +509,28 @@ import { navFaultCaseList,navTechList,navMaintainList,maintainType,navRuleList }
 
 .icon-fuwenben{
   color:#13227A;
+}
+@keyframes example {
+  0% {opacity: 0.3;}
+  50%{opacity: 1;}
+  100% {opacity: 0.3;}
+}
+ 
+@-webkit-keyframes example 
+{
+  0% {opacity: 0.3;}
+  50%{opacity: 1;}
+  100% {opacity: 0.3;}
+}
+.btnactive{
+  background: #1b8aff !important;
+  color: white !important;
+  
+  animation-name: example;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  -webkit-animation-name: example;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
 }
 </style>

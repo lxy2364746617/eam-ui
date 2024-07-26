@@ -112,6 +112,12 @@ export const constantRoutes = [
         meta: { title: "流程详情", icon: "" },
       },
       {
+        path: "task/myProcess/deviceList",
+        component: () => import("@/views/flowable/task/myProcess/deviceList"),
+        name: "MyProcessDeviceList",
+        meta: { title: "设备列表", icon: "" },
+      },
+      {
         path: "task/myProcess/send/index",
         component: () => import("@/views/flowable/task/myProcess/send/index"),
         name: "SendRecord",

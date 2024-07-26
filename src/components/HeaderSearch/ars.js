@@ -107,23 +107,24 @@ let outputMessageArray = [];
 let tracks
 
 
-function startWebSocket(way, afterOpen) {    
+function startWebSocket(way, afterOpen) {   
     outputMessageArray = []
     websocket && websocket.close();
     websocket = new WebSocket(WS_URL);
     let timer  
     websocket.onopen = function(evt) {
-        onOpen(evt, way, afterOpen);
+        onOpen(evt, way);
         timer = setInterval(() => {
         websocket.close();
     }, 2000);
     };
     websocket.onclose = function(evt) {
-        onClose(evt);
+        onClose(evt,way);
         clearInterval(timer); 
+        afterOpen()
     };
     websocket.onmessage = function(evt) {
-         onMessage(evt);
+         onMessage(evt,way);
          clearInterval(timer);
          timer = setInterval(() => {
             websocket.close();
@@ -142,25 +143,30 @@ function onOpen(evt, way, afterOpen) {
     way === 'upload' && afterOpen();
 }
 
-function onClose(evt) {
+function onClose(evt,way) {
     tracks.forEach(function (track) {
         track.enabled = false;
         track.stop()
     });
     if (outputMessageArray.length > 0) {
-        window.handleSelect('/decive')
-        window.changeActiveMenu('/decive')
-        router.push({ path: '/decive/book', query: { msg: outputMessageArray.map(msg => msg.result).join('') } })
-        setTimeout(() => {
-            speak('搜索中，请稍候')
-        }, 1000);
+        if(way=='知识导航'){}//知识导航语音
+        else{//菜单顶部语音
+            //设备档案
+            window.handleSelect('/decive')
+            window.changeActiveMenu('/decive')
+            router.push({ path: '/decive/book', query: { msg: outputMessageArray.map(msg => msg.result).join('') } })
+            setTimeout(() => {
+                speak('搜索中，请稍候')
+            }, 1000);
+        }
+        
         
     }
 
     console.log('websocket连接关闭', new Date());
 }
 
-function onMessage(evt) {
+function onMessage(evt,type) {
     try {
         const data = JSON.parse(evt.data);
         const {serialNum, completed, result} = data;
@@ -176,7 +182,8 @@ function onMessage(evt) {
                 outputMessageArray.push(data);
             }
         }
-        store.commit('arsMsg/updateOutputMessage', outputMessageArray.map(msg => msg.result).join(''));
+        if(type=='知识导航') store.commit('arsMsg/updateOutputMessage1', outputMessageArray.map(msg => msg.result).join(''));
+        else store.commit('arsMsg/updateOutputMessage', outputMessageArray.map(msg => msg.result).join(''));
        
 /*         output.innerHTML = `<h4>识别结果：${outputMessageArray.map(msg => msg.result).join('')}</h4>`;
  */        
@@ -221,7 +228,7 @@ function initAudio(stream) {
     scriptProcessor.onaudioprocess = handleAudioprocess;
 }
 
-export function startRecorder() {
+export function startRecorder(way,callback) {
     navigator.mediaDevices.getUserMedia({
         video: false,
         audio: {
@@ -231,7 +238,7 @@ export function startRecorder() {
         }
     }).then(stream => {
         tracks = stream.getAudioTracks();
-        startWebSocket();
+        startWebSocket(way,callback);
         initAudio(stream);
     }).catch(error => {
         let errorMessage;

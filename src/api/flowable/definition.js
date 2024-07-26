@@ -42,6 +42,14 @@ export function definitionStart(
     data: data,
   });
 }
+// 部署流程实例--批量
+export function definitionStartPl(data) {
+  return request({
+    url: "/flowable/definition/startPl",
+    method: "post",
+    data: data,
+  });
+}
 // 部署流程实例
 export function definitionStart2(procDefId, businessId, businessType, data) {
   if(!data.path){
