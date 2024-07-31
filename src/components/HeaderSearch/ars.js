@@ -149,20 +149,53 @@ function onClose(evt,way) {
         track.stop()
     });
     if (outputMessageArray.length > 0) {
-        if(way=='知识导航'){}//知识导航语音
+        if(way=='知识导航'){
+            console.log('知识导航：',outputMessageArray)
+        }//知识导航语音
         else{//菜单顶部语音
-            //设备档案
-            window.handleSelect('/decive')
-            window.changeActiveMenu('/decive')
-            router.push({ path: '/decive/book', query: { msg: outputMessageArray.map(msg => msg.result).join('') } })
-            setTimeout(() => {
-                speak('搜索中，请稍候')
-            }, 1000);
-        }
-        
-        
+            console.log('顶部语音：',outputMessageArray)
+            const arsMsg = outputMessageArray.map(msg => msg.result).join('')
+            if(arsMsg.includes('设备领用')) router.push({ path: '/property/receive',  })
+            else if(arsMsg.includes('设备回退')) router.push({ path: '/property/backspace',  })
+            else if(arsMsg.includes('设备移交')) router.push({ path: '/property/turnOver',  })
+            else if(arsMsg.includes('设备调剂')) router.push({ path: '/property/prescription',  })
+            else if(arsMsg.includes('设备报废')) router.push({ path: '/property/scrapping',  })
+            else if(arsMsg.includes('位置状态变动')) router.push({ path: '/property/position',  })
+            else if(arsMsg.includes('工单请求')) router.push({ path: '/work/request',  })
+            else if(arsMsg.includes('工单调度')) router.push({ path: '/work/schedule',  })
+            else if(arsMsg.includes('待办任务')) router.push({ path: '/work/quest',  })
+            else if(arsMsg.includes('工单记录')) router.push({ path: '/work/record',  })
+            else if(arsMsg.includes('工单日历')) router.push({ path: '/work/calendar',  })
+            else if(arsMsg.includes('备件列表')) router.push({ path: '/sparepart/spareList',  })
+            else if(arsMsg.includes('备件需求')) router.push({ path: '/sparepart/requirement',  })
+            else if(arsMsg.includes('备件领用')) router.push({ path: '/sparepart/spareReceive',  })
+            else if(arsMsg.includes('备件出入库')) router.push({ path: '/sparepart/spareInAndOut',  })
+            else if(arsMsg.includes('巡点检项目')) router.push({ path: '/devops/patrol/item',  })
+            else if(arsMsg.includes('巡点检标准')) router.push({ path: '/devops/patrol/pstandard',  })
+            else if(arsMsg.includes('巡点检路线')) router.push({ path: '/devops/patrol/pline',  })
+            else if(arsMsg.includes('巡点检计划')) router.push({ path: '/devops/patrol/pplan',  })
+            else if(arsMsg.includes('保养检修项目')) router.push({ path: '/devops/maintain/mitem',  })
+            else if(arsMsg.includes('保养检修标准')) router.push({ path: '/devops/maintain/mstandard',  })
+            else if(arsMsg.includes('保养检修路线')) router.push({ path: '/devops/maintain/mline',  })
+            else if(arsMsg.includes('保养检修计划')) router.push({ path: '/devops/maintain/mplan',  })
+            else if(arsMsg.includes('定期检验计划')) router.push({ path: '/devops/regular/rplan',  })
+            else if(arsMsg.includes('故障代码管理')) router.push({ path: '/devops/fault/faultcode',  })
+            else if(arsMsg.includes('知识导航')) router.push({ path: '/knowledge/navigation',  })
+            else if(arsMsg.includes('故障案例库')) router.push({ path: '/knowledge/faults',  })
+            else if(arsMsg.includes('技术资料库')) router.push({ path: '/knowledge/technology',  })
+            else if(arsMsg.includes('运维文档库')) router.push({ path: '/knowledge/maintenance',  })
+            else if(arsMsg.includes('规章制度库')) router.push({ path: '/knowledge/regulations',  })
+            else{
+                //设备档案
+                window.handleSelect('/decive')
+                window.changeActiveMenu('/decive')
+                router.push({ path: '/decive/book', query: { msg: arsMsg } })
+                setTimeout(() => {
+                    speak('搜索中，请稍候')
+                }, 1000);
+            }
+        }    
     }
-
     console.log('websocket连接关闭', new Date());
 }
 

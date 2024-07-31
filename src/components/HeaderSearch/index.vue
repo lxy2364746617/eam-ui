@@ -57,8 +57,8 @@
 import Fuse from "fuse.js/dist/fuse.min.js";
 import path from "path";
 import {startRecorder,closetWebSocke} from "./ars.js"
-
 export default {
+  dicts:['XDJ','BYJX','DQJY','SBWX'],
   name: "HeaderSearch",
   data() {
     return {
@@ -103,11 +103,57 @@ export default {
   },
   methods: {
     changeSearch(val){
-      console.log(val)
       if(val){
-        const msg = new SpeechSynthesisUtterance('搜索中，请稍候'); // 创建语音消息
-        window.speechSynthesis.speak(msg); // 播放语音
-      this.$router.push({ path: '/decive/book', query: { msg: val } })
+        if(val.includes('设备领用')) this.$router.push({ path: '/property/purchase/annual',  })
+        else if(val.includes('购置年度计划')) this.$router.push({ path: '/property/purchase/temporarily',  })
+        else if(val.includes('购置临时计划')) this.$router.push({ path: '/property/backspace',  })
+        else if(val.includes('设备购置入库')) this.$router.push({ path: '/property/purchase/warehousing',  })
+        else if(val.includes('设备回退')) this.$router.push({ path: '/property/backspace',  })
+        else if(val.includes('设备移交')) this.$router.push({ path: '/property/turnOver',  })
+        else if(val.includes('设备调剂')) this.$router.push({ path: '/property/prescription',  })
+        else if(val.includes('设备报废')) this.$router.push({ path: '/property/scrapping',  })
+        else if(val.includes('位置状态变动')) this.$router.push({ path: '/property/position',  })
+        else if(val.includes('工单请求')) {//打开工单
+          this.$router.push({ path: '/work/request',  })
+          const orderType = this.dict.type.XDJ.concat(this.dict.type.BYJX,this.dict.type.SBWX,this.dict.type.DQJY)
+          console.log(orderType)
+          if(val.includes('新增')){//是否新增
+            this.$router.push({ path: '/work/requestAdd', })
+            orderType.forEach(item => {//判断是否需要工单类型
+              if(val.includes(item.label)) {
+                this.$router.push({ path: '/work/requestAdd',query: { msg: item.value }  })
+              }
+            });
+          }
+        }
+        else if(val.includes('工单调度')) this.$router.push({ path: '/work/schedule',  })
+        else if(val.includes('待办任务')) this.$router.push({ path: '/work/quest',  })
+        else if(val.includes('工单记录')) this.$router.push({ path: '/work/record',  })
+        else if(val.includes('工单日历')) this.$router.push({ path: '/work/calendar',  })
+        else if(val.includes('备件列表')) this.$router.push({ path: '/sparepart/spareList',  })
+        else if(val.includes('备件需求')) this.$router.push({ path: '/sparepart/requirement',  })
+        else if(val.includes('备件领用')) this.$router.push({ path: '/sparepart/spareReceive',  })
+        else if(val.includes('备件出入库')) this.$router.push({ path: '/sparepart/spareInAndOut',  })
+        else if(val.includes('巡点检项目')) this.$router.push({ path: '/devops/patrol/item',  })
+        else if(val.includes('巡点检标准')) this.$router.push({ path: '/devops/patrol/pstandard',  })
+        else if(val.includes('巡点检路线')) this.$router.push({ path: '/devops/patrol/pline',  })
+        else if(val.includes('巡点检计划')) this.$router.push({ path: '/devops/patrol/pplan',  })
+        else if(val.includes('保养检修项目')) this.$router.push({ path: '/devops/maintain/mitem',  })
+        else if(val.includes('保养检修标准')) this.$router.push({ path: '/devops/maintain/mstandard',  })
+        else if(val.includes('保养检修路线')) this.$router.push({ path: '/devops/maintain/mline',  })
+        else if(val.includes('保养检修计划')) this.$router.push({ path: '/devops/maintain/mplan',  })
+        else if(val.includes('定期检验计划')) this.$router.push({ path: '/devops/regular/rplan',  })
+        else if(val.includes('故障代码管理')) this.$router.push({ path: '/devops/fault/faultcode',  })
+        else if(val.includes('知识导航')) this.$router.push({ path: '/knowledge/navigation',  })
+        else if(val.includes('故障案例库')) this.$router.push({ path: '/knowledge/faults',  })
+        else if(val.includes('技术资料库')) this.$router.push({ path: '/knowledge/technology',  })
+        else if(val.includes('运维文档库')) this.$router.push({ path: '/knowledge/maintenance',  })
+        else if(val.includes('规章制度库')) this.$router.push({ path: '/knowledge/regulations',  })
+        else {
+          const msg = new SpeechSynthesisUtterance('搜索中，请稍候'); // 创建语音消息
+          window.speechSynthesis.speak(msg); // 播放语音
+          this.$router.push({ path: '/decive/book', query: { msg: val } })
+        }
       }
       
     },
@@ -118,7 +164,7 @@ export default {
     },
     click() {
       this.show = !this.show;
-      if (this.show) {
+      /* if (this.show) {
         //this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus();
         
       }else{
@@ -126,6 +172,9 @@ export default {
         this.btnactive = false
         closetWebSocke()
         this.$store.commit('arsMsg/updateOutputMessage','')
+      } */
+      if(this.searchText){
+        this.changeSearch(this.searchText)
       }
     },
     close() {

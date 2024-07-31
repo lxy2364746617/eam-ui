@@ -46,7 +46,7 @@
           <div class="title"><i class="el-icon-s-operation"></i>已选择的设备</div>
           <div class="btn_box">
             <el-button type="primary" size="mini"  @click="sbDialog">点击选择设备</el-button>
-            <span class="num">已选{{deviceCheckboxData.length}}台设备</span>
+            <span class="num">已选{{templateList1.length}}台设备</span>
           </div>
           <jm-table :tableData="templateList1"
             :checkbox="false"

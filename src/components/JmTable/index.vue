@@ -25,15 +25,18 @@
       <el-table
         v-loading="loading"
         highlight-current-row
+        ref="table"
         @current-change="handleCurrentChange"
         :data="tableData2"
         @selection-change="handleSelectionChange"
+        :row-key="rowKey"
       >
         <el-table-column
-          v-if="!isRadio"
+          v-if="!isRadio" 
           type="selection"
           width="55"
           align="center"
+          :reserve-selection='reserveSelection'
           :selectable="(row, index) => ((index != 0 || !showSearch) && !row.selectDisable)"
         />
         <el-table-column v-if="isRadio" width="50">
@@ -358,8 +361,15 @@ export default {
     paginationShow:{
       default: true,
       type: Boolean,
+    },
+    rowKey:{
+      default: '',
+      type: String,
+    },
+    reserveSelection:{
+      default:false,
+      type:Boolean
     }
-    
   },
   watch: {
     tableData: {

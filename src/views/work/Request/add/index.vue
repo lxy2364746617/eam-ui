@@ -75,7 +75,7 @@ export default {
   },
   async created() {
     await this.getOrderTree();
-
+    this.formData.orderType = this.$route.query.msg
     if (this.$route.query.item) {
       // this.$route.query.item = null;
       this.formData = JSON.parse(JSON.stringify(this.$route.query.item));
