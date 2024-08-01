@@ -63,6 +63,7 @@ export function chartOption() {
     },
     yAxis: {
       type: "value",
+      name: "kwh",
       axisLabel: {
         shadowColor: "rgba(0, 0, 0, 0.02)",
         shadowBlur: 2,

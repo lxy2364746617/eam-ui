@@ -18,8 +18,8 @@ export function chartOption() {
     }
   });
   let colorList = [
-    "#328EFF",
-    "#32A9FF",
+    "rgba(50, 142, 255, 1)",
+    "rgba(255, 139, 102, 1)",
     "#F87A02",
     "#F99902",
     "#FFBF78",
@@ -37,7 +37,7 @@ export function chartOption() {
   seriesList.push({
     name: "abc",
     type: "bar",
-    data: [list?.total],
+    data: [99999],
     stack: "one",
     coordinateSystem: "polar",
     roundCap: true,
@@ -84,7 +84,6 @@ export function chartOption() {
       },
     });
   });
-
   let center = ["50%", "31%"];
   let radius1 = ["42%", "60%"];
   let radius2 = ["0%", "38%"];
@@ -137,7 +136,15 @@ export function chartOption() {
     },
     title: [
       {
-        text: `{a|${list.title}总数量}\n\n{b|${list.total}}\n\n{c|今日新增${list.today}台}`,
+        text: `{a|年度采购}\n\n{b|${
+          list.stateList.filter(
+            (item) => Object.keys(item)[0] === "年度采购"
+          )[0]["年度采购"]
+        }}\n{c|临时采购${
+          list.stateList.filter(
+            (item) => Object.keys(item)[0] === "临时采购"
+          )[0]["临时采购"]
+        }}`,
         textStyle: {
           rich: {
             a: {
@@ -156,7 +163,7 @@ export function chartOption() {
               // textShadowColor: "#6eb5f2",
             },
             c: {
-              padding: [15, 0, 0, 0],
+              padding: [30, 0, 0, 0],
               color: "#55566D",
               fontSize: 12,
               fontWeight: 500,
@@ -174,7 +181,7 @@ export function chartOption() {
         width: "100%",
         x: "center",
         bottom: "20%",
-        data: lengthList.slice(0, 4),
+        data: lengthList.slice(0, 3),
         formatter: function (params) {
           return `{a|${params.split(",")[0]}}{c|${" "}}\n\n{b|${
             params.split(",")[1]
@@ -208,7 +215,7 @@ export function chartOption() {
         width: "100%",
         x: "center",
         bottom: legendBottom,
-        data: lengthList.slice(4),
+        data: lengthList.slice(3),
         formatter: function (params) {
           return `{a|${params.split(",")[0]}}{c|${" "}}\n\n{b|${
             params.split(",")[1]

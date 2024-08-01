@@ -1,16 +1,25 @@
 <template>
   <div style="width: 100%; height: 100%">
-    <div v-if="datas" ref="chart" style="width: 100%; height: 88%"></div>
-    <div v-else>
+    <div v-if="datas" ref="chart" style="width: 100%; height: 100%"></div>
+    <div
+      v-else
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      "
+    >
       <div
         :style="{
           backgroundImage: `url(${img})`,
           width: '178px',
-              height: '143px',
-              backgroundSize:'cover'
+          height: '143px',
+          backgroundSize: 'cover',
         }"
       ></div>
-      <p style="text-align: center">暂无数据</p>
+      <p>暂无数据</p>
     </div>
   </div>
 </template>
@@ -28,7 +37,7 @@ export default {
     };
   },
   created() {
-    if (this.data) this.initChart();
+    if (this.data && this.data?.stateList?.length) this.initChart();
   },
   methods: {
     initChart() {

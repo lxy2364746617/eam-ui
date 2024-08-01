@@ -37,7 +37,7 @@ export function chartOption() {
   seriesList.push({
     name: "abc",
     type: "bar",
-    data: [list?.total],
+    data: [99999],
     stack: "one",
     coordinateSystem: "polar",
     roundCap: true,
@@ -84,12 +84,11 @@ export function chartOption() {
       },
     });
   });
-
   let center = ["50%", "31%"];
-  let radius1 = ["42%", "60%"];
+  let radius1 = ["40%", "58%"];
   let radius2 = ["0%", "38%"];
-  let titleX = "48%";
-  let titleY = "18%";
+  let titleX = "49%";
+  let titleY = "22%";
   let titleSize = 28;
   let legendBottom = "0%";
   seriesList.push({
@@ -137,7 +136,7 @@ export function chartOption() {
     },
     title: [
       {
-        text: `{a|${list.title}总数量}\n\n{b|${list.total}}\n\n{c|今日新增${list.today}台}`,
+        text: `{a|${list?.label}比例}\n\n{b|${list?.total}}`,
         textStyle: {
           rich: {
             a: {
@@ -155,13 +154,6 @@ export function chartOption() {
               fontFamily: "DINPro-Medium",
               // textShadowColor: "#6eb5f2",
             },
-            c: {
-              padding: [15, 0, 0, 0],
-              color: "#55566D",
-              fontSize: 12,
-              fontWeight: 500,
-              fontFamily: "DINPro-Medium",
-            },
           },
         },
         x: titleX,
@@ -174,7 +166,7 @@ export function chartOption() {
         width: "100%",
         x: "center",
         bottom: "20%",
-        data: lengthList.slice(0, 4),
+        data: lengthList.slice(0, 3),
         formatter: function (params) {
           return `{a|${params.split(",")[0]}}{c|${" "}}\n\n{b|${
             params.split(",")[1]
@@ -194,7 +186,7 @@ export function chartOption() {
             },
             b: {
               color: "#55566D",
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: 700,
               // textShadowColor: "#6eb5f2",
             },
@@ -208,7 +200,7 @@ export function chartOption() {
         width: "100%",
         x: "center",
         bottom: legendBottom,
-        data: lengthList.slice(4),
+        data: lengthList.slice(3),
         formatter: function (params) {
           return `{a|${params.split(",")[0]}}{c|${" "}}\n\n{b|${
             params.split(",")[1]

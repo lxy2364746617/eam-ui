@@ -73,3 +73,11 @@ export function getNoticeList(query) {
     params: query,
   });
 }
+// 工单总览
+export function getWomInfoCount(query) {
+  return request({
+    url: "/workorder/getWomInfoCount",
+    method: "get",
+    params: query,
+  });
+}

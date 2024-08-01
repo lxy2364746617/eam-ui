@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="10">
+    <el-row :gutter="10" class="mb8" style="margin-bottom: 20px">
       <slot name="headerLeft"></slot>
       <right-toolbar
         v-if="rightToolbarShow"
@@ -21,6 +21,7 @@
       size="small"
       :inline="true"
       label-width="68px"
+      :class="{ 'content-body': isScroll }"
     >
       <el-table
         v-loading="loading"
@@ -29,6 +30,24 @@
         :data="tableData2"
         @selection-change="handleSelectionChange"
       >
+        <el-table-column
+          v-if="!isRadio"
+          type="selection"
+          width="55"
+          align="center"
+          :selectable="(row, index) => index != 0 || !showSearch"
+        />
+        <el-table-column v-if="isRadio" width="50">
+          <template slot-scope="scope">
+            <el-radio
+              v-model="radio"
+              :label="scope.$index"
+              v-if="showSearch ? scope.$index !== 0 : true"
+              class="leftRadio"
+              >&nbsp;</el-radio
+            >
+          </template>
+        </el-table-column>
         <el-table-column
           label="序号"
           align="center"
@@ -70,18 +89,43 @@
                     type="date"
                     clearable
                     @keyup.enter.native="handleQuery"
+                    style="width: auto"
                     placeholder="选择日期"
                   >
                   </el-date-picker>
                   <el-date-picker
-                    v-if="col.formType == 'datetime'"
+                    v-if="col.formType == 'dateSeconds'"
                     v-model="queryParams[col.prop]"
-                    value-format="yyyy-MM-dd hh:mm:ss"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                    size="small"
+                    type="date"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                    style="width: auto"
+                    placeholder="选择日期"
+                  >
+                  </el-date-picker>
+                  <el-date-picker
+                    v-else-if="col.formType == 'dateYear'"
+                    v-model="queryParams[col.prop]"
+                    value-format="yyyy"
+                    type="year"
+                    size="small"
+                    placeholder="选择年份"
+                    clearable
+                    style="width: auto"
+                    @keyup.enter.native="handleQuery"
+                  ></el-date-picker>
+                  <el-date-picker
+                    v-else-if="col.formType == 'datetime'"
+                    v-model="queryParams[col.prop]"
+                    value-format="yyyy-MM-dd HH:mm:ss"
                     size="small"
                     type="datetime"
                     clearable
                     @keyup.enter.native="handleQuery"
-                    placeholder="选择日期时间"
+                    style="width: auto"
+                    placeholder="选择日期"
                   >
                   </el-date-picker>
                   <el-select
@@ -168,6 +212,22 @@
               <span v-else-if="col.formType == 'date'">{{
                 parseTime(scope.row[col.prop], "{y}-{m}-{d}")
               }}</span>
+              <el-rate
+                v-else-if="col.formType == 'rate'"
+                v-model="scope.row[col.prop]"
+                :max="5"
+                disabled
+                :colors="[
+                  '#02b606',
+                  '#02b606',
+                  '#02b606',
+                  '#02b606',
+                  '#02b606',
+                ]"
+                void-icon-class="el-icon-star-off"
+                :icon-classes="iconClasses"
+                disabled-void-color="#C6D1DE"
+              ></el-rate>
               <span
                 v-else-if="col.formType == 'select' || col.formType == 'radio'"
                 v-html="findName(col.options, scope.row[col.prop])"
@@ -187,6 +247,7 @@
                   @change="switchchange($event, col.prop, scope.row)"
                   :active-value="col.options[0].value"
                   :inactive-value="col.options[1].value"
+                  :disabled="col.disabled"
                 >
                 </el-switch>
               </span>
@@ -208,15 +269,11 @@
                 v-else-if="col.formType == 'selectTree'"
                 v-html="findTreeName(col.options, scope.row[col.prop])"
               ></span>
-              <el-tag size="mini" v-else-if="col.formType == 'edition'"
-                >v{{ scope.row[col.prop] }}</el-tag
-              >
-              <span
-                v-else-if="col.type == 'link'"
-                v-html="scope.row[col.prop]"
-                class="link"
-                @click="linkClick(scope.row, col)"
-              ></span>
+              <div v-else-if="col.type == 'template'">
+                <template>
+                  <div v-html="col.template(scope.row, col)"></div>
+                </template>
+              </div>
               <span
                 v-else
                 v-html="scope.row[col.prop]"
@@ -262,8 +319,8 @@
       </el-table>
     </el-form>
 
-    <PaginationSmall
-      v-show="total > 0 && paginationShow"
+    <pagination
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -274,10 +331,9 @@
 <script>
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import PaginationSmall from "@/components/PaginationSmall";
 export default {
   name: "JmTable",
-  components: { Treeselect, PaginationSmall },
+  components: { Treeselect },
   props: {
     tableData: {
       default: () => [],
@@ -328,9 +384,9 @@ export default {
     rightToolbarShow: {
       default: true,
       type: Boolean,
-    }, //显示分页
-    paginationShow: {
-      default: true,
+    },
+    isScroll: {
+      default: false,
       type: Boolean,
     },
   },
@@ -360,6 +416,7 @@ export default {
   },
   data() {
     return {
+      iconClasses: ["el-icon-star-off", "el-icon-star-off", "el-icon-star-off"], //星级图标
       radio: "",
       // 遮罩层
       loading: this.initLoading,
@@ -368,7 +425,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 20,
       },
       tableVisible: {},
     };
@@ -447,6 +504,7 @@ export default {
       this.getList();
     },
     getList() {
+      this.loading = true;
       this.$emit("getList", this.queryParams);
     },
     /** 搜索按钮操作 */
@@ -470,10 +528,6 @@ export default {
     },
     handleExport() {
       this.$emit("handleExport", this.queryParams);
-    },
-    // 点击link 跳转
-    linkClick(row, item) {
-      this.$emit("linkClick", row, item);
     },
   },
 };
@@ -504,7 +558,7 @@ export default {
   line-height: 46px;
 }
 ::v-deep .el-table th.el-table__cell {
-  background-color: #f5f6f8;
+  background-color: #e7f3ff;
 }
 .selectTag {
   background: none !important;
@@ -521,30 +575,29 @@ export default {
 ::v-deep .leftRadio .el-radio__label {
   display: none;
 }
-
+// 滚动条样式
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 12px;
+  opacity: 0.5;
+}
+// ::v-deep .el-link.el-link--primary {
+//   white-space: nowrap; /* 不换行 */
+//   overflow: hidden; /* 超出部分隐藏 */
+//   text-overflow: ellipsis; /* 显示省略号 */
+// }
 .active {
   color: #007bfe;
   cursor: pointer;
   text-decoration: underline;
 }
-// ::v-deep .el-table__row:nth-child(odd) {
-//   background-color: #f7fbff;
-// }
-::v-deep .el-table__body-wrapper {
-  height: 210px;
-  overflow-y: auto;
+::v-deep .el-table__row:nth-child(odd) {
+  background-color: #f7fbff;
 }
-// 滚动条样式
-::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-  height: 8px;
-  opacity: 0.5;
+.content-body {
+  max-height: 440px;
+  overflow-y: scroll;
 }
 ::v-deep .el-table__fixed-right {
   height: 100% !important;
-}
-.link {
-  color: #007bfe;
-  cursor: pointer;
-  text-decoration: underline;
 }
 </style>

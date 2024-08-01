@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { chartOption } from "./Bar.config";
+import { chartOption } from "./Bar.config3";
 export default {
   props: ["data"],
   data() {
@@ -37,7 +37,7 @@ export default {
     };
   },
   created() {
-    if (this.data) this.initChart();
+    if (this.data && this.data?.stateList?.length) this.initChart();
   },
   methods: {
     initChart() {

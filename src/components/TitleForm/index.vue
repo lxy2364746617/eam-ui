@@ -371,6 +371,7 @@
             />
           </el-form-item>
         </el-col>
+        <slot name="footerRight"></slot>
       </el-row>
     </el-form>
     <slot name="footer"></slot>
