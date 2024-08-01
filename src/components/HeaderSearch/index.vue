@@ -103,9 +103,9 @@ export default {
   methods: {
     changeSearch(val){
       if(val){
-        if(val.includes('设备领用')) this.$router.push({ path: '/property/purchase/annual',  })
-        else if(val.includes('购置年度计划')) this.$router.push({ path: '/property/purchase/temporarily',  })
-        else if(val.includes('购置临时计划')) this.$router.push({ path: '/property/backspace',  })
+        if(val.includes('设备领用')) this.$router.push({ path: '/property/receive',  })
+        else if(val.includes('购置年度计划')) this.$router.push({ path: '/property/purchase/annual',  })
+        else if(val.includes('购置临时计划')) this.$router.push({ path: '/property/purchase/temporarily',  })
         else if(val.includes('设备购置入库')) this.$router.push({ path: '/property/purchase/warehousing',  })
         else if(val.includes('设备回退')) this.$router.push({ path: '/property/backspace',  })
         else if(val.includes('设备移交')) this.$router.push({ path: '/property/turnOver',  })

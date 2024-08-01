@@ -1,5 +1,16 @@
 import store from './../../store';
 import router from './../../router';
+import { getDicts  } from "@/api/system/dict/data";
+
+let orderTypeArr=[]
+getDicts('XDJ').then(res=>{
+    orderTypeArr = orderTypeArr.concat(res.data)})
+getDicts('BYJX').then(res=>{
+    orderTypeArr = orderTypeArr.concat(res.data)})
+getDicts('SBWX').then(res=>{
+    orderTypeArr = orderTypeArr.concat(res.data)})
+getDicts('DQJY').then(res=>{
+    orderTypeArr = orderTypeArr.concat(res.data)})
 
 function sampleData(pcmDatas, pcmSampleRate, newSampleRate, prevChunkInfo = {}) {
   try {
@@ -144,6 +155,7 @@ function onOpen(evt, way, afterOpen) {
 }
 
 function onClose(evt,way) {
+    console.log(orderTypeArr)
     tracks.forEach(function (track) {
         track.enabled = false;
         track.stop()
@@ -156,12 +168,25 @@ function onClose(evt,way) {
             console.log('顶部语音：',outputMessageArray)
             const arsMsg = outputMessageArray.map(msg => msg.result).join('')
             if(arsMsg.includes('设备领用')) router.push({ path: '/property/receive',  })
+            else if(arsMsg.includes('购置年度计划')) router.push({ path: '/property/purchase/annual',  })
+            else if(arsMsg.includes('购置临时计划')) router.push({ path: '/property/purchase/temporarily',  })
+            else if(arsMsg.includes('设备购置入库')) router.push({ path: '/property/purchase/warehousing',  })
             else if(arsMsg.includes('设备回退')) router.push({ path: '/property/backspace',  })
             else if(arsMsg.includes('设备移交')) router.push({ path: '/property/turnOver',  })
             else if(arsMsg.includes('设备调剂')) router.push({ path: '/property/prescription',  })
             else if(arsMsg.includes('设备报废')) router.push({ path: '/property/scrapping',  })
             else if(arsMsg.includes('位置状态变动')) router.push({ path: '/property/position',  })
-            else if(arsMsg.includes('工单请求')) router.push({ path: '/work/request',  })
+            else if(arsMsg.includes('工单请求')){//打开工单
+                router.push({ path: '/work/request',  })
+                if(val.includes('新增')){//是否新增
+                  router.push({ path: '/work/requestAdd', })
+                  orderTypeArr.forEach(item => {//判断是否需要工单类型
+                    if(val.includes(item.dictLabel)) {
+                      router.push({ path: '/work/requestAdd',query: { msg: item.dictValue }  })
+                    }
+                  });
+                }
+            } 
             else if(arsMsg.includes('工单调度')) router.push({ path: '/work/schedule',  })
             else if(arsMsg.includes('待办任务')) router.push({ path: '/work/quest',  })
             else if(arsMsg.includes('工单记录')) router.push({ path: '/work/record',  })
