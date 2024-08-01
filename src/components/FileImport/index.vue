@@ -22,6 +22,7 @@
         :before-upload='beforeUpload'
         :auto-upload="autoUpload"
         :on-exceed='handleFileExceed'
+        :on-error='handleFileError'
         drag
       >
         <i class="el-icon-upload"></i>
@@ -110,11 +111,13 @@ export default {
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
       this.upload.isUploading = true;
+      this.$modal.loading("正在导入数据，请稍后...");
     },
     // 文件上传成功处理
     handleFileSuccess(response, file, fileList) {
       this.upload.open = false;
       this.upload.isUploading = false;
+      this.$modal.closeLoading();
       this.$refs.upload.clearFiles();
       this.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
       // console.log(response)
@@ -131,6 +134,12 @@ export default {
     submitFileForm() {
       this.$refs.upload.submit();
       this.upload.updateSupport=0
+    },
+    handleFileError(err, file, fileList){
+      console.log('handleFileError',err, file, fileList)
+      this.upload.isUploading = false;
+      this.$modal.closeLoading();
+      this.$modal.msgError("导入失败");
     },
     handleFileExceed(){
       this.$message.error('文件数量超出，只允许上传一个文件！');

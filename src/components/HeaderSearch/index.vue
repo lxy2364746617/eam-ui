@@ -82,7 +82,6 @@ export default {
   watch: {
     search() {
       this.searchText = this.search
-      console.log(this.search)
     },
     routes() {
       this.searchPool = this.generateRoutes(this.routes);
