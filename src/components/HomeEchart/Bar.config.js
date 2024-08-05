@@ -52,21 +52,9 @@ export function chartOption() {
   });
   dataList.forEach(function (item, index) {
     let obj = {
-      value: Math.floor((((item / totalNum) * 10000) / 10000) * 100),
+      value: parseInt((item / list?.total) * 10000) / 100,
       value2: item,
     };
-    if (index == dataList.length - 1) {
-      let total = valList.reduce((prev, curr) => {
-        return prev + curr;
-      });
-      obj.value = Number((100 - total).toFixed(2));
-      valList.push(obj.value);
-    } else {
-      valList.push(obj.value);
-    }
-    // if(id=="groupEch2"){
-    //     console.log(obj);
-    // }
     seriesList.push({
       name: nameList[index],
       type: "bar",
@@ -84,12 +72,11 @@ export function chartOption() {
       },
     });
   });
-
-  let center = ["50%", "31%"];
-  let radius1 = ["42%", "60%"];
+  let center = ["25%", "50%"];
+  let radius1 = ["56%", "80%"];
   let radius2 = ["0%", "38%"];
-  let titleX = "48%";
-  let titleY = "18%";
+  let titleX = "24%";
+  let titleY = "29%";
   let titleSize = 28;
   let legendBottom = "0%";
   seriesList.push({
@@ -171,10 +158,14 @@ export function chartOption() {
     ],
     legend: [
       {
-        width: "100%",
-        x: "center",
-        bottom: "20%",
-        data: lengthList.slice(0, 4),
+        width: "52%",
+        // height: "100%",
+        x: "right",
+        // orient: "vartical",
+        top: "center",
+        right: "4%",
+        // bottom: "20%",
+        data: lengthList,
         formatter: function (params) {
           return `{a|${params.split(",")[0]}}{c|${" "}}\n\n{b|${
             params.split(",")[1]
@@ -182,7 +173,7 @@ export function chartOption() {
         },
         itemHeight: 10,
         itemWidth: 10,
-        itemGap: 30,
+        itemGap: 20,
 
         textStyle: {
           rich: {
@@ -204,40 +195,41 @@ export function chartOption() {
           },
         },
       },
-      {
-        width: "100%",
-        x: "center",
-        bottom: legendBottom,
-        data: lengthList.slice(4),
-        formatter: function (params) {
-          return `{a|${params.split(",")[0]}}{c|${" "}}\n\n{b|${
-            params.split(",")[1]
-          }}`;
-        },
-        itemHeight: 10,
-        itemWidth: 10,
-        itemGap: 30,
+      // {
+      //   width: "10%",
+      //   x: "center",
+      //   orient: "vartical",
+      //   bottom: legendBottom,
+      //   data: lengthList.slice(4),
+      //   formatter: function (params) {
+      //     return `{a|${params.split(",")[0]}}{c|${" "}}\n\n{b|${
+      //       params.split(",")[1]
+      //     }}`;
+      //   },
+      //   itemHeight: 10,
+      //   itemWidth: 10,
+      //   itemGap: 30,
 
-        textStyle: {
-          rich: {
-            a: {
-              color: "#AAB2BF",
-              fontSize: 15,
-              fontWeight: 500,
-              padding: [30, 0, 0, 0],
-            },
-            b: {
-              color: "#55566D",
-              fontSize: 16,
-              fontWeight: 700,
-              // textShadowColor: "#6eb5f2",
-            },
-            // c: {
-            //   padding: [0, 0, 0, 30],
-            // },
-          },
-        },
-      },
+      //   textStyle: {
+      //     rich: {
+      //       a: {
+      //         color: "#AAB2BF",
+      //         fontSize: 15,
+      //         fontWeight: 500,
+      //         padding: [30, 0, 0, 0],
+      //       },
+      //       b: {
+      //         color: "#55566D",
+      //         fontSize: 16,
+      //         fontWeight: 700,
+      //         // textShadowColor: "#6eb5f2",
+      //       },
+      //       // c: {
+      //       //   padding: [0, 0, 0, 30],
+      //       // },
+      //     },
+      //   },
+      // },
     ],
     angleAxis: {
       max: 100,

@@ -4,7 +4,7 @@
     <Analysis />
     <div class="figure">
       <div>
-        <div class="figure-top">故障率TOP10设备</div>
+        <div class="figure-top">故障类别分布</div>
         <Three
           class="figure-one"
           :data="{
@@ -218,19 +218,101 @@ export default {
         this.locationOptions = this.getTreeName(res.data);
       });
     },
+    generateRandomString(length) {
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let result = "";
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+          Math.floor(Math.random() * characters.length)
+        );
+      }
+      return result;
+    },
+    generateRandomNumber(length) {
+      const firstCharacter = "123456789"; // 只包含1-9
+      const otherCharacters = "0123456789"; // 包含0-9
+      let result = "";
+
+      // 生成第一个字符
+      result += firstCharacter.charAt(
+        Math.floor(Math.random() * firstCharacter.length)
+      );
+
+      // 生成剩余的字符
+      for (let i = 1; i < length; i++) {
+        // 从1开始循环
+        result += otherCharacters.charAt(
+          Math.floor(Math.random() * otherCharacters.length)
+        );
+      }
+
+      return result;
+    },
     getList(queryParams) {
       //   this.loading = true;
-      this.equipmentList = new Array(10).fill({
-        item1: "GZ001",
-        item2: "主机温度故障",
-        item3: "机械故障",
-        item4: 305,
-        item5: 1024,
-        item6: 655,
-        item7: "12.1%",
-        item8: "15.6%",
-        item9: "12.6%",
-      });
+      this.equipmentList = [
+        {
+          item1: "GZ001",
+          item2: "主机温度故障",
+          item3: "机械故障",
+          item4: 305,
+          item5: 310,
+          item6: "13.7%",
+          item7: "12.1%",
+          item8: "15.6%",
+        },
+        {
+          item1: "GZ002",
+          item2: "转子不平衡",
+          item3: "机械故障",
+          item4: 100,
+          item5: 120,
+          item6: "12.7%",
+          item7: "15.1%",
+          item8: "11.6%",
+        },
+        {
+          item1: "GZ003",
+          item2: "压力异常",
+          item3: "电器故障",
+          item4: 24,
+          item5: 30,
+          item6: "11.7%",
+          item7: "5.1%",
+          item8: "7.6%",
+        },
+        {
+          item1: "GZ004",
+          item2: "压力异常",
+          item3: "电器故障",
+          item4: 50,
+          item5: 55,
+          item6: "14.7%",
+          item7: "9.1%",
+          item8: "8.6%",
+        },
+        {
+          item1: "GZ005",
+          item2: "主机温度故障",
+          item3: "机械故障",
+          item4: 40,
+          item5: 52,
+          item6: "11%",
+          item7: "6.1%",
+          item8: "7.6%",
+        },
+        {
+          item1: "GZ006",
+          item2: "主机温度故障",
+          item3: "机械故障",
+          item4: 66,
+          item5: 71,
+          item6: "12%",
+          item7: "11%",
+          item8: "10%",
+        },
+      ];
 
       this.total = this.equipmentList ? this.equipmentList.length : 0;
 

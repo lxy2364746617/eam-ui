@@ -10,6 +10,7 @@
         </div>
       </div>
       <el-button
+        @click="handlerHref"
         type="primary"
         icon="el-icon-data-line"
         style="padding: 16px 20px; font-size: 16px"
@@ -131,15 +132,15 @@
             </div>
           </div>
           <div class="work-content">
-            <div style="width: 70%; height: 100%">
+            <div style="width: 100%; height: 100%">
               <ChartLine v-if="flagOrder1" :data="womTypeList" />
             </div>
-            <div style="width: 30%; height: 100%">
+            <!-- <div style="width: 30%; height: 100%">
               <Bar2
                 v-if="flagOrder2"
                 :data="{ ...womStatusCount, title: '工单' }"
               ></Bar2>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="work-right">
@@ -147,55 +148,75 @@
             <span>设备状态</span>
           </div>
           <div class="work-content">
-            <Bar v-if="flag" :data="{ ...chartData, title: '设备' }"></Bar>
+            <Bar2
+              v-if="flagOrder2"
+              :data="{ ...womStatusCount, title: '工单' }"
+            ></Bar2>
+            <!-- <Bar v-if="flag" :data="{ ...chartData, title: '设备' }"></Bar> -->
           </div>
         </div>
       </div>
     </div>
-    <div class="three">
-      <div class="work-order2" style="width: 75.5%; height: 100%">
-        <div style="width: 49%; height: 100%">
-          <div class="work-title">我的工单待办</div>
-          <div class="charge">
-            <ContTable
-              :tableData="getTableDataBy('equipmentList' + 1)"
-              @getList="getList1"
-              :total="getTableDataBy('total' + 1)"
-              ref="contTable"
-              :handleWidth="100"
-              :columns="getTableDataBy('columns' + 1)"
-              :showOperate="false"
-              :showSearch="false"
-              :rightToolbarShow="false"
-              @linkClick="linkClick"
+    <div class="newTree">
+      <div>
+        <div class="border-title"><span class="hot">常用功能导航</span></div>
+        <div class="use">
+          <ul v-if="commonNavigation.length > 0">
+            <li
+              v-for="item in commonNavigation"
+              :key="item.name"
+              @click="
+                () => {
+                  $router.push({ name: item.name });
+                }
+              "
             >
-            </ContTable>
-          </div>
-        </div>
-        <div style="width: 49%; height: 100%; margin-left: 1%">
-          <div class="work-title">我的流程待办</div>
-          <div class="charge">
-            <ContTable
-              :tableData="getTableDataBy('equipmentList' + 2)"
-              @getList="getList2"
-              :total="getTableDataBy('total' + 2)"
-              ref="contTable"
-              :handleWidth="100"
-              :columns="getTableDataBy('columns' + 2)"
-              :showOperate="false"
-              :showSearch="false"
-              :rightToolbarShow="false"
-              @linkClick="linkClick"
-            >
-            </ContTable>
+              <div
+                :style="{
+                  backgroundImage: `url(${useIcon})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: 'contain',
+                  width: '42px',
+                  height: '42px',
+                  margin: '0 auto',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }"
+              >
+                <svg-icon
+                  style="color: #226efc; font-size: 22px"
+                  :icon-class="item.icon"
+                />
+              </div>
+              <el-tooltip :content="item.title"
+                ><span style="font-size: 16pxp; padding-top: 6px">
+                  {{ item.title }}
+                </span></el-tooltip
+              >
+            </li>
+          </ul>
+          <div class="no-information" v-else>
+            <div
+              :style="{
+                backgroundImage: `url(${not})`,
+                width: '178px',
+                height: '143px',
+                backgroundSize: 'cover',
+              }"
+            ></div>
+            <span>暂无常用功能导航</span>
           </div>
         </div>
       </div>
-      <div class="three-content" style="width: 24%; height: 100%">
-        <div style="over">
-          <div class="work-title">报警日历</div>
+
+      <div>
+        <div class="work-title" style="margin-bottom: 4px">设备状态</div>
+        <Bar v-if="flag" :data="{ ...chartData, title: '设备' }"></Bar>
+      </div>
+      <div>
+        <div class="over">
+          <div class="work-title" style="margin-bottom: 4px">报警日历</div>
           <div class="work-charge">
-            <!-- 日历两侧年月切换 -->
             <el-tooltip effect="dark" content="上个月" placement="top">
               <span class="time-left" @click="dateCut(1)"><</span>
             </el-tooltip>
@@ -274,7 +295,128 @@
       </div>
     </div>
 
-    <div class="four">
+    <!-- <div class="three">
+      <div class="work-order2" style="width: 75.5%; height: 100%">
+        <div style="width: 49%; height: 100%">
+          <div class="work-title">我的工单待办</div>
+          <div class="charge">
+            <ContTable
+              :tableData="getTableDataBy('equipmentList' + 1)"
+              @getList="getList1"
+              :total="getTableDataBy('total' + 1)"
+              ref="contTable"
+              :handleWidth="100"
+              :columns="getTableDataBy('columns' + 1)"
+              :showOperate="false"
+              :showSearch="false"
+              :rightToolbarShow="false"
+              @linkClick="linkClick"
+            >
+            </ContTable>
+          </div>
+        </div>
+        <div style="width: 49%; height: 100%; margin-left: 1%">
+          <div class="work-title">我的流程待办</div>
+          <div class="charge">
+            <ContTable
+              :tableData="getTableDataBy('equipmentList' + 2)"
+              @getList="getList2"
+              :total="getTableDataBy('total' + 2)"
+              ref="contTable"
+              :handleWidth="100"
+              :columns="getTableDataBy('columns' + 2)"
+              :showOperate="false"
+              :showSearch="false"
+              :rightToolbarShow="false"
+              @linkClick="linkClick"
+            >
+            </ContTable>
+          </div>
+        </div>
+      </div>
+      <div class="three-content" style="width: 24%; height: 100%">
+        <div style="over">
+          <div class="work-title">报警日历</div>
+          <div class="work-charge">
+            <el-tooltip effect="dark" content="上个月" placement="top">
+              <span class="time-left" @click="dateCut(1)"><</span>
+            </el-tooltip>
+            <el-tooltip effect="dark" content="下个月" placement="top">
+              <span class="time-right" @click="dateCut(2)">></span>
+            </el-tooltip>
+
+            <el-calendar
+              style="width: 100%; height: 100%"
+              v-model="calendarValue"
+            >
+              <template slot="dateCell" slot-scope="{ date, data }">
+                <el-tooltip
+                  effect="dark"
+                  content="1"
+                  placement="top"
+                  v-if="
+                    errorList.includes(data.day) || wranList.includes(data.day)
+                  "
+                >
+                  <template slot="content">
+                    <div>
+                      <span
+                        style="
+                          display: inline-block;
+                          width: 8px;
+                          height: 8px;
+                          background: red;
+                          border-radius: 50%;
+                          margin-right: 4px;
+                        "
+                      ></span
+                      ><span
+                        >警告：{{
+                          errorList.filter((item) => data.day == item).length
+                        }}</span
+                      >
+                    </div>
+                    <div>
+                      <span
+                        style="
+                          display: inline-block;
+                          width: 8px;
+                          height: 8px;
+                          background: orange;
+                          border-radius: 50%;
+                          margin-right: 4px;
+                        "
+                      ></span
+                      ><span
+                        >注意：{{
+                          wranList.filter((item) => data.day == item).length
+                        }}</span
+                      >
+                    </div>
+                  </template>
+
+                  <div class="is-point">
+                    <span>{{ Number(data.day.split("-")[2]) }}</span>
+                    <i
+                      class="point-error"
+                      v-if="errorList.includes(data.day)"
+                    />
+                    <i class="point-warn" v-if="wranList.includes(data.day)" />
+                  </div>
+                </el-tooltip>
+                <div v-else class="is-point">
+                  <span>{{ Number(data.day.split("-")[2]) }}</span>
+                  <i class="point-error" v-if="errorList.includes(data.day)" />
+                  <i class="point-warn" v-if="wranList.includes(data.day)" />
+                </div>
+              </template>
+            </el-calendar>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- <div class="four">
       <div style="width: 38%">
         <div class="border-title">
           <span>系统公告</span>
@@ -380,7 +522,7 @@
           <span>暂无预警</span>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <el-drawer
       :visible="showDetail"
@@ -418,7 +560,7 @@ import {
 import Bar from "@/components/HomeEchart/Bar.vue";
 import Bar2 from "@/components/HomeEchart/Bar2.vue";
 import ChartLine from "@/components/HomeEchart/ChartLine.vue";
-import Search from "@/components/HeaderSearch";
+import Search from "@/components/HeaderSearch/index2.vue";
 export default {
   name: "index",
   components: { ContTable, Bar, ChartLine, noticeDetail, Bar2, Search },
@@ -472,7 +614,7 @@ export default {
       userList: [],
       typeAll: [],
       radio: "工单",
-      order: 1,
+      order: 3,
       radioArr: ["工单", "流程"],
       orderArr: [
         { label: "周", value: 1 },
@@ -507,8 +649,8 @@ export default {
       selectNoticeId: "",
       scale: null,
       calendarValue: new Date(),
-      errorList: ["2024-07-09", "2024-07-16"],
-      wranList: ["2024-07-10", "2024-07-17"],
+      errorList: ["2024-07-09", "2024-07-16",'2024-08-01'],
+      wranList: ["2024-07-10", "2024-07-17",'2024-08-02'],
       womInfoCount: [
         { maintenanceType: "XDJ", count: 0, sort: 1 },
         { maintenanceType: "BYWX", count: 0, sort: 2 },
@@ -652,6 +794,9 @@ export default {
   },
   mounted() {},
   methods: {
+    handlerHref() {
+      window.location.href = "http://172.22.175.172/login";
+    },
     dateCut(type) {
       // type：1 月份左侧按钮，2 月份右侧按钮，3 年份左侧按钮，4 年份右侧按钮，5 回到今天
       if (type === 1) {
@@ -781,16 +926,16 @@ export default {
     getInfoAll() {
       getMenuList({ pageNum: 1, pageSize: 10 }).then((res) => {
         if (res.code === 200) {
-          this.commonNavigation = res.rows.slice(0, 6);
+          this.commonNavigation = res.rows;
         }
       });
-      getWomStatusCount({ type: 1 }).then((res) => {
+      getWomStatusCount({ type: 3 }).then((res) => {
         if (res.code === 200) {
           this.womStatusCount = res.data;
           this.flagOrder2 = true;
         }
       });
-      getWomTypeList({ type: 1 }).then((res) => {
+      getWomTypeList({ type: 3 }).then((res) => {
         if (res.code === 200) {
           this.womTypeList = res.data;
           this.flagOrder1 = true;
@@ -903,7 +1048,7 @@ export default {
 </script>
 <style lang='scss' scoped>
 .home {
-  padding: 15px 10px;
+  padding: 3px 10px 0px 10px;
   height: calc(100vh - 111px);
   overflow-y: auto;
   background-color: #f4f4f6;
@@ -916,9 +1061,26 @@ export default {
     margin-bottom: 8px;
     padding: 20px;
   }
+  .newTree {
+    height: 250px;
+    background-color: transparent;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    > div {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      width: 33%;
+      height: 100%;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
+  }
   .top {
-    height: 108px;
-
+    height: 85px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -931,7 +1093,7 @@ export default {
     }
   }
   .one {
-    height: 160px;
+    height: 110px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -986,7 +1148,7 @@ export default {
       margin: 0;
     }
     > div {
-      padding: 20px;
+      padding: 10px 15px;
       height: 100%;
       background-color: #fff;
       border-radius: 10px;
@@ -999,7 +1161,7 @@ export default {
     }
   }
   .two {
-    height: 380px;
+    height: 315px;
     padding-bottom: 0;
     width: 100%;
     background-color: transparent;
@@ -1020,6 +1182,8 @@ export default {
         border-radius: 10px;
         height: 100%;
         padding: 20px;
+        padding-bottom: 0;
+        padding-top: 10px;
         .work-content {
           display: flex;
           justify-content: space-between;
@@ -1032,7 +1196,7 @@ export default {
         background-color: #fff;
         border-radius: 10px;
         height: 100%;
-        padding: 20px 0;
+        padding: 10px 0 0 0;
         display: flex;
         justify-content: space-between;
         flex-direction: column;
@@ -1071,6 +1235,7 @@ export default {
       padding: 20px;
     }
     .work-charge {
+      transform: translateY(-100px);
       position: relative;
       height: calc(100% - 30px);
       overflow-y: auto;
@@ -1121,6 +1286,7 @@ export default {
     }
   }
 }
+
 .robot {
   width: 40px;
   height: 40px;
@@ -1154,7 +1320,7 @@ export default {
   margin-bottom: 10px;
 }
 .border-title {
-  padding-bottom: 10px;
+  padding-bottom: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1182,6 +1348,43 @@ export default {
 .charge {
   height: 100%;
   overflow-y: auto;
+}
+.work-charge {
+  // transform: translateY(-100px);
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  padding-top: 2px;
+  .time-left {
+    display: inline-block;
+    text-align: center;
+    line-height: 24px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+    left: 14px;
+    &:hover {
+      border-radius: 50%;
+      background-color: #eff6ff;
+    }
+  }
+  .time-right {
+    display: inline-block;
+    text-align: center;
+    line-height: 24px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+    right: 14px;
+    &:hover {
+      border-radius: 50%;
+      background-color: #eff6ff;
+    }
+  }
 }
 .no-information {
   width: 100%;
@@ -1261,7 +1464,7 @@ export default {
     height: 100%;
     li {
       cursor: pointer;
-      width: 31%;
+      width: 23%;
       height: 46%;
       border: 1px solid #e7e9f0;
       border-radius: 20px;
@@ -1334,7 +1537,9 @@ export default {
     text-align: right;
   }
 }
-
+.over {
+  height: 100%;
+}
 ::v-deep .el-calendar {
   .el-calendar__header {
     font-size: 16px;
@@ -1344,12 +1549,14 @@ export default {
     border-bottom: 0;
   }
   .el-calendar__body {
-    padding: 0px 0px 30px;
+    padding: 0px 0px 10px;
     thead {
       th {
         color: #9aa0b1;
         font-weight: 600;
         font-size: 14px;
+        padding: 0;
+        padding-bottom: 5px;
       }
     }
     .el-calendar-table__row {
@@ -1357,16 +1564,16 @@ export default {
         border: 0;
         height: unset;
         border-radius: 50%;
-        font-size: 13px;
+        font-size: 12px;
       }
       .el-calendar-day {
-        height: 33px;
-        line-height: 37px;
+        height: 28px;
+        line-height: 28px;
         padding: 0;
         span {
-          height: 24px;
-          line-height: 24px;
-          width: 24px;
+          height: 20px;
+          line-height: 20px;
+          width: 20px;
           text-align: center;
           border-radius: 50%;
           display: inline-block;
@@ -1422,5 +1629,8 @@ export default {
 ::v-deep .el-calendar .el-calendar__header .el-calendar__title {
   text-align: center;
   width: 100%;
+}
+::v-deep .el-calendar__header {
+  padding: 0 20px;
 }
 </style>

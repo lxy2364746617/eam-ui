@@ -4,98 +4,103 @@
     <Analysis />
     <div class="figure">
       <div>
-        <div class="figure-top">故障率TOP10设备</div>
-        <One
+        <div class="figure-top">采煤机运行时长TOP6-10</div>
+        <Three
           class="figure-one"
           :data="{
             xData: [
-              '回柱绞车\nJH-14',
-              '电动机\nYX 4002-6P 280KW 6KV',
-              '耐磨多级离心泵\nMD280-65x7',
-              '电动机\nYX 4002-6P 280KW 6KV',
-              '架线式电机车\n2K10-9-550P',
-              '提升泵\n150WA180-22-18.5',
-              '低压开关柜\nKY-HRKGS-Z-1',
-              '多参数测定仪\nCD5',
-              '交流电焊机\nBXL-500 380V',
-              '电容补偿柜\nCKJ',
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+
+              '采煤机\n' + generateRandomString(5),
             ],
-            name: '%',
-            series: [5, 6, 10, 12, 13, 14, 16, 18, 19, 20],
+            name: 'H',
+            series: [
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+            ],
             color: 'rgba(255, 191, 120, 1)',
           }"
-        ></One>
+        ></Three>
       </div>
       <div>
-        <div class="figure-top">故障次数TOP10设备</div>
-        <One
+        <div class="figure-top">采煤机过煤量TOP6-10</div>
+        <Three
           class="figure-one"
           :data="{
             xData: [
-              '回柱绞车\nJH-14',
-              '电动机\nYX 4002-6P 280KW 6KV',
-              '耐磨多级离心泵\nMD280-65x7',
-              '电动机\nYX 4002-6P 280KW 6KV',
-              '架线式电机车\n2K10-9-550P',
-              '提升泵\n150WA180-22-18.5',
-              '低压开关柜\nKY-HRKGS-Z-1',
-              '多参数测定仪\nCD5',
-              '交流电焊机\nBXL-500 380V',
-              '电容补偿柜\nCKJ',
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
             ],
-            name: '次',
-            series: [1, 3, 4, 5, 7, 7, 10, 12, 15, 20],
+            name: '',
+            series: [
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+            ],
             color: 'rgba(249, 153, 2, 1)',
           }"
-        ></One>
+        ></Three>
       </div>
       <div>
-        <div class="figure-top">维修时长TOP10设备</div>
+        <div class="figure-top">采煤机用电量TOP6-10</div>
 
-        <One
+        <Three
           class="figure-one"
           :data="{
             xData: [
-              '回柱绞车\nJH-14',
-              '电动机\nYX 4002-6P 280KW 6KV',
-              '耐磨多级离心泵\nMD280-65x7',
-              '电动机\nYX 4002-6P 280KW 6KV',
-              '架线式电机车\n2K10-9-550P',
-              '提升泵\n150WA180-22-18.5',
-              '低压开关柜\nKY-HRKGS-Z-1',
-              '多参数测定仪\nCD5',
-              '交流电焊机\nBXL-500 380V',
-              '电容补偿柜\nCKJ',
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
             ],
-            name: 'h',
-            series: [1, 2, 4, 5, 7, 24, 28, 30, 40, 45],
+            name: 'KWh',
+            series: [
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+            ],
             color: '#FF8B66',
           }"
-        ></One>
+        ></Three>
       </div>
       <div>
-        <div class="figure-top">停机时长TOP10设备</div>
+        <div class="figure-top">采煤机价格最高TOP6-10</div>
 
-        <One
+        <Three
           class="figure-one"
           :data="{
             xData: [
-              '回柱绞车\nJH-14',
-              '电动机\nYX 4002-6P 280KW 6KV',
-              '耐磨多级离心泵\nMD280-65x7',
-              '电动机\nYX 4002-6P 280KW 6KV',
-              '架线式电机车\n2K10-9-550P',
-              '提升泵\n150WA180-22-18.5',
-              '低压开关柜\nKY-HRKGS-Z-1',
-              '多参数测定仪\nCD5',
-              '交流电焊机\nBXL-500 380V',
-              '电容补偿柜\nCKJ',
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
+              '采煤机\n' + generateRandomString(5),
             ],
-            name: 'h',
-            series: [1, 2, 4, 23, 24, 24, 28, 30, 40, 45],
-            color: 'rgba(217, 217, 217, 1)',
+            name: 'W',
+            series: [
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+            ],
+            color: 'rgba(50, 142, 255, 1)',
           }"
-        ></One>
+        ></Three>
       </div>
     </div>
     <div
@@ -169,7 +174,7 @@
             >
             <ChartLine class="figure-line" :data="rowData"></ChartLine>
           </div>
-            <div>
+          <div>
             <span
               class="figure-top"
               style="
@@ -197,7 +202,7 @@
             >
             <ChartLine class="figure-line" :data="rowData"></ChartLine>
           </div>
-            <div>
+          <div>
             <span
               class="figure-top"
               style="
@@ -234,7 +239,7 @@
 import EquipmentAnalysisSearch from "@/components/EquipmentAnalysisSearch";
 import Wrapper from "@/components/wrapper";
 import Analysis from "../analysis";
-import One from "../echarts/one";
+import Three from "../echarts/three";
 import ContTable from "@/components/ContTable/index5";
 import { getPrtOrgTreeByDeptId } from "@/api/equipment/BASE";
 import { equipmentTreeNoTemplate } from "@/api/equipment/category";
@@ -245,7 +250,7 @@ export default {
     EquipmentAnalysisSearch,
     Wrapper,
     Analysis,
-    One,
+    Three,
     ContTable,
     ChartLine,
   },
@@ -337,6 +342,15 @@ export default {
           this.getList();
         }
       },
+      deep: true,
+    },
+    categoryOptions: {
+      handler(val) {
+        if (val.length) {
+          this.getList();
+        }
+      },
+      deep: true,
     },
   },
   created() {
@@ -402,17 +416,48 @@ export default {
         this.deptOptions1 = response.data;
       });
     },
+    generateRandomString(length) {
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let result = "";
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+          Math.floor(Math.random() * characters.length)
+        );
+      }
+      return result;
+    },
+    generateRandomNumber(length) {
+      const firstCharacter = "123456789"; // 只包含1-9
+      const otherCharacters = "0123456789"; // 包含0-9
+      let result = "";
+
+      // 生成第一个字符
+      result += firstCharacter.charAt(
+        Math.floor(Math.random() * firstCharacter.length)
+      );
+
+      // 生成剩余的字符
+      for (let i = 1; i < length; i++) {
+        // 从1开始循环
+        result += otherCharacters.charAt(
+          Math.floor(Math.random() * otherCharacters.length)
+        );
+      }
+
+      return result;
+    },
     getList(queryParams) {
       //   this.loading = true;
-      this.equipmentList = new Array(20).fill({
-        item1: "EQ0006763",
-        item2: "采煤机",
-        item3: "XX100",
+      this.equipmentList = new Array(20).fill(1).map((item) => ({
+        item1: this.generateRandomString(6),
+        item2: "采煤机" + this.generateRandomString(3),
+        item3: this.generateRandomString(5),
         item4: 3,
         item5: 261,
-        item6: 55,
-        item7: 3000,
-      });
+        item6: this.generateRandomNumber(2),
+        item7: this.generateRandomNumber(4),
+      }));
 
       this.total = 20;
 

@@ -93,7 +93,7 @@
             ],
             name: 'h',
             series: [1, 2, 4, 23, 24, 24, 28, 30, 40, 45],
-            color: 'rgba(217, 217, 217, 1)',
+            color: 'rgba(50, 142, 255, 1)',
           }"
         ></One>
       </div>
@@ -147,6 +147,32 @@ export default {
       locationOptions: [],
       categoryOptions: [],
     };
+  },
+  watch: {
+    deptOptions1: {
+      handler(val) {
+        if (val.length) {
+          this.getList();
+        }
+      },
+      deep: true,
+    },
+    categoryOptions: {
+      handler(val) {
+        if (val.length) {
+          this.getList();
+        }
+      },
+      deep: true,
+    },
+    locationOptions: {
+      handler(val) {
+        if (val.length) {
+          this.getList();
+        }
+      },
+      deep: true,
+    },
   },
   created() {
     this.getTreeSelect();
@@ -281,7 +307,6 @@ export default {
       });
       getLocationTree().then((res) => {
         this.locationOptions = this.getTreeName(res.data);
-        this.getList();
       });
     },
     getList(queryParams) {
@@ -290,25 +315,117 @@ export default {
         {
           item1: "EQ0006763",
           item2: "采煤机",
-          item3: "",
+          item3: "XXH100",
           item4: 3,
           item5: "36962e8506a84fb89d2a2b565d0b2267",
           item6: 261,
           item7: 261,
           item8: "6",
           item9: "8.5",
-          item10: "23.5%",
+          item10: "23",
           item11: "7",
           item12: "11",
           item13: "3",
           item14: "13",
-          item15: "87.4%",
-          item16: "76.9%",
-          item17: "5.6%",
-          item18: "7.3%",
+          item15: "12",
+          item16: "31",
+          item17: "87.4%",
+          item18: "77.3%",
           item19: "12.1%",
-          item20: "100%",
+          item20: "10%",
           item21: "10%",
+        },
+        {
+          item1: "ZSBM-JM03010301G104000529",
+          item2: "集合式电容器",
+          item3: "YTXF12",
+          item4: 443,
+          item5: "0097d8ee0d4142838b54b34659508244",
+          item6: 163,
+          item7: 163,
+          item8: "6",
+          item9: "9",
+          item10: "32",
+          item11: "7",
+          item12: "11",
+          item13: "3",
+          item14: "13",
+          item15: "27.4",
+          item16: "46.9",
+          item17: "56.6%",
+          item18: "76.3%",
+          item19: "12.1%",
+          item20: "30%",
+          item21: "10%",
+        },
+        {
+          item1: "ZSBM-JM03010301G106000232",
+          item2: "架线式电机车",
+          item3: "HHQ132",
+          item4: 69,
+          item5: "0097d8ee0d4142838b54b34659508244",
+          item6: 163,
+          item7: 163,
+          item8: "6",
+          item9: "4",
+          item10: "11",
+          item11: "7",
+          item12: "11",
+          item13: "3",
+          item14: "13",
+          item15: "12",
+          item16: "21",
+          item17: "55.6%",
+          item18: "75.3%",
+          item19: "12.1%",
+          item20: "12%",
+          item21: "10%",
+        },
+        {
+          item1: "ZSBM-JM03010301G104001289",
+          item2: "空气炮",
+          item3: "ASD12",
+          item4: 206,
+          item5: "0097d8ee0d4142838b54b34659508244",
+          item6: 163,
+          item7: 163,
+          item8: "3",
+          item9: "2",
+          item10: "23.5",
+          item11: "2",
+          item12: "4",
+          item13: "2",
+          item14: "13",
+          item15: "41",
+          item16: "21",
+          item17: "88%",
+          item18: "89%",
+          item19: "12.1%",
+          item20: "12%",
+          item21: "13%",
+        },
+        {
+          item1: "ZSBM-JM03010301G106001668",
+          item2: "交流弧焊机",
+          item3: "XAS111",
+          item4: 564,
+          item5: "0097d8ee0d4142838b54b34659508244",
+          item6: 163,
+          item7: 163,
+          item8: "6",
+          item9: "8.5",
+          item10: "12.5",
+          item11: "10",
+          item12: "8",
+          item13: "2",
+          item14: "13",
+          item15: "7",
+          item16: "5",
+          item17: "86.6%",
+          item18: "92.3%",
+          item19: "14.1%",
+          item20: "11%",
+          item21: "11%",
         },
       ];
 

@@ -52,21 +52,9 @@ export function chartOption() {
   });
   dataList.forEach(function (item, index) {
     let obj = {
-      value: Math.floor((((item / totalNum) * 10000) / 10000) * 100),
+      value: parseInt((item / list?.total) * 10000) / 100,
       value2: item,
     };
-    if (index == dataList.length - 1) {
-      let total = valList.reduce((prev, curr) => {
-        return prev + curr;
-      });
-      obj.value = Number((100 - total).toFixed(2));
-      valList.push(obj.value);
-    } else {
-      valList.push(obj.value);
-    }
-    // if(id=="groupEch2"){
-    //     console.log(obj);
-    // }
     seriesList.push({
       name: nameList[index],
       type: "bar",
@@ -88,7 +76,7 @@ export function chartOption() {
   let center = ["50%", "31%"];
   let radius1 = ["42%", "60%"];
   let radius2 = ["0%", "38%"];
-  let titleX = "48%";
+  let titleX = "48.8%";
   let titleY = "18%";
   let titleSize = 28;
   let legendBottom = "0%";
@@ -156,7 +144,7 @@ export function chartOption() {
               // textShadowColor: "#6eb5f2",
             },
             c: {
-              padding: [30, 0, 0, 0],
+              padding: [24, 0, 0, 0],
               color: "#55566D",
               fontSize: 12,
               fontWeight: 500,
