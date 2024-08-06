@@ -220,3 +220,9 @@ aside {
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "PingFang"; /* 自定义字体名称 */
+  src: url("../fonts/PingFang Medium_0.ttf") format("truetype"); /* 更换为实际字体文件路径及格式 */
+  font-weight: normal;
+  font-style: normal;
+}

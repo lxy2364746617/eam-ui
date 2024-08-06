@@ -2,20 +2,45 @@
   <div class="home">
     <div class="top">
       <div>
-        <span>你好 {{ $store.state.user.standing.nickName }}，</span>
+        <span style="padding-bottom: 8px"
+          >你好 {{ $store.state.user.standing.nickName }}，</span
+        >
         <div class="time">
-          {{ greetingTime }}
+          <span>{{ greetingTime }}</span>
           <!-- <div class="robot"></div> -->
           <search id="header-search" class="right-menu-item" />
         </div>
       </div>
-      <el-button
-        @click="handlerHref"
-        type="primary"
-        icon="el-icon-data-line"
-        style="padding: 16px 20px; font-size: 16px"
-        >关键设备监测</el-button
-      >
+      <div style="display: flex">
+        <div class="todo">
+          <div>
+            <img src="../assets/images/shouye/gongdan.png" alt="" />
+            <div>
+              <span>{{ orderCount ? orderCount : "0" }}</span
+              ><span class="til2">工单待办数量</span>
+            </div>
+          </div>
+          <div>
+            <img src="../assets/images/shouye/gongdan.png" alt="" />
+            <div>
+              <span>{{ todoCount ? todoCount : "0" }}</span
+              ><span class="til2">流程待办数量</span>
+            </div>
+          </div>
+        </div>
+        <el-button
+          @click="handlerHref"
+          type="primary"
+          icon="el-icon-data-line"
+          style="
+            padding: 16px 20px;
+            font-size: 16px;
+            background-color: rgba(20, 95, 240, 1);
+            border-radius: 10px;
+          "
+          >设备在线诊断</el-button
+        >
+      </div>
     </div>
     <div class="one">
       <div
@@ -114,7 +139,7 @@
       <div class="work-order">
         <div class="work-left">
           <div class="border-title">
-            <span>工单总览</span>
+            <span>工单趋势</span>
             <div style="width: 73px">
               <el-select
                 v-model="order"
@@ -145,7 +170,7 @@
         </div>
         <div class="work-right">
           <div class="border-title">
-            <span>设备状态</span>
+            <span>工单总览</span>
           </div>
           <div class="work-content">
             <Bar2
@@ -176,8 +201,8 @@
                   backgroundImage: `url(${useIcon})`,
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: 'contain',
-                  width: '42px',
-                  height: '42px',
+                  width: '40px',
+                  height: '40px',
                   margin: '0 auto',
                   display: 'flex',
                   justifyContent: 'center',
@@ -185,11 +210,13 @@
               >
                 <svg-icon
                   style="color: #226efc; font-size: 22px"
-                  :icon-class="item.icon"
+                  :icon-class="getIconClass(item.icon)"
                 />
               </div>
               <el-tooltip :content="item.title"
-                ><span style="font-size: 16pxp; padding-top: 6px">
+                ><span
+                  style="font-size: 15pxp; padding-top: 8px; font-weight: 600"
+                >
                   {{ item.title }}
                 </span></el-tooltip
               >
@@ -649,8 +676,8 @@ export default {
       selectNoticeId: "",
       scale: null,
       calendarValue: new Date(),
-      errorList: ["2024-07-09", "2024-07-16",'2024-08-01'],
-      wranList: ["2024-07-10", "2024-07-17",'2024-08-02'],
+      errorList: ["2024-07-09", "2024-07-16", "2024-08-01"],
+      wranList: ["2024-07-10", "2024-07-17", "2024-08-02"],
       womInfoCount: [
         { maintenanceType: "XDJ", count: 0, sort: 1 },
         { maintenanceType: "BYWX", count: 0, sort: 2 },
@@ -794,6 +821,9 @@ export default {
   },
   mounted() {},
   methods: {
+    getIconClass(icon) {
+      return icon !== "#" ? icon : "xxxx2";
+    },
     handlerHref() {
       window.location.href = "http://172.22.175.172/login";
     },
@@ -1048,11 +1078,11 @@ export default {
 </script>
 <style lang='scss' scoped>
 .home {
-  padding: 3px 10px 0px 10px;
+  padding: 5px 10px 0px 10px;
   height: calc(100vh - 111px);
   overflow-y: auto;
   background-color: #f4f4f6;
-  font-family: "DINPro-Medium";
+  font-family: "PingFang";
   > div {
     border-radius: 10px;
     width: 100%;
@@ -1062,7 +1092,7 @@ export default {
     padding: 20px;
   }
   .newTree {
-    height: 250px;
+    height: 282px;
     background-color: transparent;
     padding: 0;
     display: flex;
@@ -1080,20 +1110,51 @@ export default {
     }
   }
   .top {
-    height: 85px;
+    height: 90px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: rgba(212, 219, 249, 0.5);
+    .todo {
+      display: flex;
+      transform: translateY(16px);
+
+      > div {
+        display: flex;
+        margin-right: 40px;
+        img {
+          width: 2.3rem;
+          height: 43px;
+          margin-right: 10px;
+        }
+        > div {
+          display: flex;
+          flex-direction: column;
+          span {
+            font-size: 20px;
+            color: #495055;
+            font-family: "DINPro-Medium";
+            font-weight: 600;
+          }
+          .til2 {
+            color: #74788b;
+            font-size: 12px;
+            font-weight: 600;
+          }
+        }
+      }
+    }
     .time {
       display: flex;
       justify-content: start;
       align-items: center;
-      font-size: 30px;
+
+      font-size: 26px;
       font-weight: 600;
     }
   }
   .one {
-    height: 110px;
+    height: 115px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1106,16 +1167,20 @@ export default {
         background-color: #fff;
         border-radius: 10px;
         height: 30%;
-        padding: 15px;
+        padding: 8px 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         .one-right-one {
+          font-weight: 600;
           font-size: 10px;
         }
         .one-right-two {
+          margin-top: 5px;
           font-size: 26px;
           font-weight: 500;
+          font-family: "DINPro-Medium";
+          line-height: 1;
         }
       }
     }
@@ -1123,6 +1188,8 @@ export default {
       display: flex;
       justify-content: start;
       align-items: center;
+      font-weight: 600;
+      font-size: 12px;
       i {
         margin-right: 8px;
       }
@@ -1137,6 +1204,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       > span {
+        font-weight: 600;
         font-size: 12px;
         color: rgba(180, 180, 180, 1);
       }
@@ -1146,6 +1214,7 @@ export default {
       font-size: 26px;
       font-weight: 500;
       margin: 0;
+      font-family: "DINPro-Medium";
     }
     > div {
       padding: 10px 15px;
@@ -1161,7 +1230,7 @@ export default {
     }
   }
   .two {
-    height: 315px;
+    height: 310px;
     padding-bottom: 0;
     width: 100%;
     background-color: transparent;
@@ -1201,10 +1270,11 @@ export default {
         justify-content: space-between;
         flex-direction: column;
         .work-content {
-          height: calc(100% - 40px);
+          height: calc(100% - 22px);
         }
         .border-title {
           padding-left: 20px;
+          padding-bottom: 0;
         }
       }
     }
@@ -1561,14 +1631,15 @@ export default {
     }
     .el-calendar-table__row {
       td {
+        font-family: "DINPro-Medium";
         border: 0;
         height: unset;
         border-radius: 50%;
         font-size: 12px;
       }
       .el-calendar-day {
-        height: 28px;
-        line-height: 28px;
+        height: 30px;
+        line-height: 30px;
         padding: 0;
         span {
           height: 20px;
@@ -1632,5 +1703,6 @@ export default {
 }
 ::v-deep .el-calendar__header {
   padding: 0 20px;
+  padding-bottom: 15px;
 }
 </style>

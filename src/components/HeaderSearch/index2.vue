@@ -52,7 +52,7 @@
         >
           <el-button
             :class="{ btnactive: btnactive }"
-            style="width: 40px; padding-left: 13px"
+            style="width: 40px; padding-left: 9px; font-size: 20px"
             slot="append"
             icon="el-icon-microphone"
             @click="searchYy"

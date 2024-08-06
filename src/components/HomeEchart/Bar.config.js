@@ -73,10 +73,10 @@ export function chartOption() {
     });
   });
   let center = ["25%", "50%"];
-  let radius1 = ["56%", "80%"];
+  let radius1 = ["50%", "72%"];
   let radius2 = ["0%", "38%"];
   let titleX = "24%";
-  let titleY = "29%";
+  let titleY = "35%";
   let titleSize = 28;
   let legendBottom = "0%";
   seriesList.push({
@@ -130,24 +130,24 @@ export function chartOption() {
             a: {
               color: "#AAB2BF",
               fontSize: 16,
-              fontWeight: 500,
-              fontFamily: "DINPro-Medium",
+              fontWeight: 600,
+              fontFamily: "PingFang",
             },
             b: {
               color: "#55566D",
-              fontSize: 20,
-              padding: [6, 0, 0, 0],
+              fontSize: 18,
+              padding: [5, 0, 0, 0],
               fontWeight: 700,
               lineHeight: 1,
               fontFamily: "DINPro-Medium",
               // textShadowColor: "#6eb5f2",
             },
             c: {
-              padding: [15, 0, 0, 0],
+              padding: [5, 0, 0, 0],
               color: "#55566D",
               fontSize: 12,
-              fontWeight: 500,
-              fontFamily: "DINPro-Medium",
+              fontWeight: 600,
+              fontFamily: "PingFang",
             },
           },
         },
@@ -187,6 +187,7 @@ export function chartOption() {
               color: "#55566D",
               fontSize: 16,
               fontWeight: 700,
+              fontFamily: "DINPro-Medium",
               // textShadowColor: "#6eb5f2",
             },
             // c: {
