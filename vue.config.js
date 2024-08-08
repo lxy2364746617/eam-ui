@@ -7,7 +7,7 @@ function resolve(dir) {
 
 const CompressionPlugin = require("compression-webpack-plugin");
 
-const name = process.env.VUE_APP_TITLE || "设备管理测试平台"; // 网页标题
+const name = process.env.VUE_APP_TITLE || "设备管理中心-试用版"; // 网页标题
 
 const port = process.env.port || process.env.npm_config_port || 80; // 端口
 
@@ -37,8 +37,8 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://60.204.185.210:8080/`, // 服务器
-        // target: `http://192.168.1.101:8080`, // zhaojie
+        // target: `http://60.204.185.210:8080/`, // 服务器
+        target: `http://192.168.1.31:8080`, // zhaojie
         // target: `http://192.168.1.105:8080`, // sunbo
         // target: `http://localhost:8080`,
         changeOrigin: true,

@@ -812,6 +812,8 @@ export default {
   },
   created() {
     // this.getUserList();
+  },
+  mounted() {
     this.getOrderTree();
     this.getTypeList();
     this.getNoticeList();
@@ -819,13 +821,25 @@ export default {
     this.getChart(this.queryParams);
     this.getWomInfoCountAll();
   },
-  mounted() {},
   methods: {
     getIconClass(icon) {
       return icon !== "#" ? icon : "xxxx2";
     },
     handlerHref() {
-      window.location.href = "http://172.22.175.172/login";
+      window.location.href =
+        "http://172.22.175.172/home/manageCockpit?token=" +
+        Array(6)
+          .fill(0)
+          ?.map(() => {
+            return String.fromCharCode(64 + Math.random() * 10);
+          })
+          .join("") +
+        btoa(
+          JSON.stringify({
+            username: this.$store.state.user.standing.userName,
+            isJump: true,
+          })
+        );
     },
     dateCut(type) {
       // type：1 月份左侧按钮，2 月份右侧按钮，3 年份左侧按钮，4 年份右侧按钮，5 回到今天

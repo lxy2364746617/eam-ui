@@ -39,7 +39,7 @@ service.interceptors.request.use(
     }
     if (
       !isRepeatSubmit &&
-      (config.method === "post" || config.method === "put"||config.noRepeat)
+      (config.method === "post" || config.method === "put" || config.noRepeat)
     ) {
       const requestObj = {
         url: config.url,
@@ -75,7 +75,6 @@ service.interceptors.request.use(
           requestObj.time - s_time < interval &&
           s_url === requestObj.url
         ) {
-
           const message = "数据正在处理，请勿重复提交";
           console.warn(`[${s_url}]: ` + message);
           return Promise.reject(new Error(message));
@@ -121,7 +120,7 @@ service.interceptors.response.use(
           .then(() => {
             isRelogin.show = false;
             store.dispatch("LogOut").then(() => {
-              location.href = "/index";
+              location.href = "/login";
             });
           })
           .catch(() => {
