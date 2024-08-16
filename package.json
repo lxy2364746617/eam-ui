@@ -51,6 +51,7 @@
     "core-js": "3.25.3",
     "diagram-js": "^11.4.1",
     "echarts": "5.4.0",
+    "echarts-gl": "^2.0.9",
     "element-ui": "2.15.13",
     "file-drops": "^0.4.0",
     "file-saver": "2.0.5",
