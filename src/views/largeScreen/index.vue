@@ -138,7 +138,7 @@
           </div>
           <!-- ritht-4 -->
           <div class="boder" style="width: 100%; height: 262px">
-            <div class="boder-title">设备知识管理</div>
+            <div class="boder-title">备件分析</div>
             <div style="width: 100%; height: 240px; padding-top: 20px">
               <Six></Six>
             </div>
@@ -176,7 +176,7 @@ export default {
     this.target = this.$refs.bgBox;
     this.scale = setScaleResize({
       boxRef: this.$refs.boxRef,
-      relativeRef: this.$refs.boxRefFat,
+      relativeRef: this.$refs.bgBox,
     });
     // 去凭放大监听
     document.addEventListener("fullscreenchange", this.handleFullscreenChange);
@@ -213,7 +213,7 @@ export default {
         setTimeout(() => {
           this.scale = setScaleResize({
             boxRef: this.$refs.boxRef,
-            relativeRef: this.$refs.boxRefFat,
+            relativeRef: this.$refs.bgBox,
           });
         }, 200);
       }
@@ -252,6 +252,7 @@ export default {
     },
 
     handleScaleDomStyle() {
+      console.log("========================", 13213);
       const scale_width = window.innerWidth - 206;
       const scale_height = window.innerHeight - 111;
       this.scaleDpStyle = {

@@ -22,7 +22,7 @@
       </div>
 
       <div style="width: 69.5%">
-        <div class="figure-top">主要设备需求可调剂分析</div>
+        <div class="figure-top">主要设备采购需求分析</div>
 
         <Two
           class="figure-one"
@@ -37,9 +37,9 @@
               '其他',
             ],
             series1: [1, 2, 4, 23, 21, 22, 24],
-            color1: 'rgba(50, 142, 255, 1)',
+            color1: 'rgba(249, 153, 2, 1)',
             series2: [12, 22, 14, 23, 24, 24, 28],
-            color2: 'rgba(249, 153, 2, 1)',
+            color2: 'rgba(50, 142, 255, 1)',
           }"
         ></Two>
       </div>
@@ -167,10 +167,10 @@ export default {
           label: "计划类型",
           prop: "item13",
         },
-        {
-          label: "可调剂设备数量",
-          prop: "item14",
-        },
+        // {
+        //   label: "可调剂设备数量",
+        //   prop: "item14",
+        // },
       ];
     },
   },
@@ -205,7 +205,7 @@ export default {
           item11: "1",
           item12: "年度计划2024-1",
           item13: "年度采购",
-          item14: "6",
+          // item14: "6",
         },
         {
           item1: "EQ0006763",
@@ -221,7 +221,7 @@ export default {
           item11: "2",
           item12: "年度计划2024-1",
           item13: "临时采购",
-          item14: "2",
+          // item14: "2",
         },
       ];
 

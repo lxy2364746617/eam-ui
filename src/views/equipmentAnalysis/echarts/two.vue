@@ -50,7 +50,7 @@ export default {
           },
         },
         legend: {
-          data: ["需求设备数量之和", "可调剂设备数量之和"],
+          data: ["需求设备数量之和", "入库设备数量之和"],
           icon: "circle",
           //图例标记的图形高度
           itemHeight: 12,
@@ -117,7 +117,7 @@ export default {
             },
           },
           {
-            name: "可调剂设备数量之和",
+            name: "入库设备数量之和",
             data: this.data.series2,
             barWidth: 10,
             type: "bar",

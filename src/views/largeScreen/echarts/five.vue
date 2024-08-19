@@ -494,8 +494,12 @@ export default {
           value: 852,
         },
         {
-          name: "5-10年",
-          value: 423,
+          name: "5-8年",
+          value: 323,
+        },
+        {
+          name: "8-10年",
+          value: 289,
         },
         {
           name: "10年以上",

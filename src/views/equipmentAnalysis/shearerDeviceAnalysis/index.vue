@@ -1,6 +1,6 @@
 <template>
   <Wrapper>
-    <EquipmentAnalysisSearch />
+    <EquipmentAnalysisSearch :formData="{ categoryId: 3 }" />
     <Analysis />
     <div class="figure">
       <div>
@@ -155,7 +155,7 @@
                 justify-content: space-between;
               "
             >
-              <span>过煤效益比超势分析</span>
+              <span>过煤效益比趋势分析</span>
               <div style="width: 73px">
                 <el-select
                   v-model="order"
@@ -183,7 +183,7 @@
                 justify-content: space-between;
               "
             >
-              <span>过煤电耗比超势分析</span>
+              <span>过煤电耗比趋势分析</span>
               <div style="width: 73px">
                 <el-select
                   v-model="order"
@@ -200,7 +200,7 @@
                 </el-select>
               </div></span
             >
-            <ChartLine class="figure-line" :data="rowData"></ChartLine>
+            <ChartLine class="figure-line" :data="rowData2"></ChartLine>
           </div>
           <div>
             <span
@@ -211,7 +211,7 @@
                 justify-content: space-between;
               "
             >
-              <span>单位时长过煤量超势分析</span>
+              <span>单位时长过煤量趋势分析</span>
               <div style="width: 73px">
                 <el-select
                   v-model="order"
@@ -228,7 +228,7 @@
                 </el-select>
               </div></span
             >
-            <ChartLine class="figure-line" :data="rowData"></ChartLine>
+            <ChartLine class="figure-line" :data="rowData3"></ChartLine>
           </div>
         </div>
       </div>
@@ -264,6 +264,70 @@ export default {
       locationOptions: [],
       categoryOptions: [],
       rowData: {
+        过煤效益比: [
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2023-09",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2023-10",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2023-11",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2023-12",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2024-01",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2024-02",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2024-03",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 25,
+            date: "2024-04",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2024-05",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2024-06",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2024-07",
+          },
+          {
+            maintenanceType: "过煤效益比",
+            count: 0,
+            date: "2024-08",
+          },
+        ],
+      },
+      rowData2: {
         过煤电耗比: [
           {
             maintenanceType: "过煤电耗比",
@@ -322,6 +386,70 @@ export default {
           },
           {
             maintenanceType: "过煤电耗比",
+            count: 0,
+            date: "2024-08",
+          },
+        ],
+      },
+      rowData3: {
+        单位时长过煤量: [
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2023-09",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2023-10",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2023-11",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2023-12",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2024-01",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2024-02",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2024-03",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 25,
+            date: "2024-04",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2024-05",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2024-06",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
+            count: 0,
+            date: "2024-07",
+          },
+          {
+            maintenanceType: "单位时长过煤量",
             count: 0,
             date: "2024-08",
           },

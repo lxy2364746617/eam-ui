@@ -49,9 +49,14 @@ import { getLocationTree } from "@/api/Location";
 import { equipmentTreeNoTemplate } from "@/api/equipment/category";
 export default {
   components: { Wrapper },
+  props: {
+    formData: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data() {
     return {
-      formData: {},
       disabledForm: false,
       deptOptions1: undefined,
       locationOptions: [],
@@ -91,6 +96,7 @@ export default {
           prop: "categoryId",
           formType: "selectTree",
           options: this.categoryOptions,
+          formDisabled: this.formData.categoryId ? true : false,
           span: 5,
         }, //(1 设备、2 部件)
       ];
@@ -103,7 +109,9 @@ export default {
     reset() {
       this.$refs.titleform.resetFields();
     },
-    submitForm() {},
+    submitForm(row) {
+      console.log("========================", row);
+    },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
       equipmentTreeNoTemplate().then((response) => {
