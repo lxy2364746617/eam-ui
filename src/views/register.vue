@@ -6,7 +6,7 @@
       :rules="registerRules"
       class="register-form"
     >
-      <h3 class="title">设备管理中心-试用版</h3>
+      <h3 class="tle">设备管理中心-试用版</h3>
       <el-form-item prop="username">
         <el-input
           v-model="registerForm.username"
@@ -202,11 +202,11 @@ export default {
   height: 100%;
   background-image: url("../assets/images/login-background.png");
   background-size: 100% 100%;
-}
-.title {
-  margin: 0px auto 30px auto;
-  text-align: center;
-  color: #fff;
+  .tle {
+    margin: 0px auto 30px auto;
+    text-align: center;
+    color: #fff;
+  }
 }
 
 .register-form {
