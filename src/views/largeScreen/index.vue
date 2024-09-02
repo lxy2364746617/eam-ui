@@ -31,7 +31,7 @@
             class="boder"
             style="width: 100%; height: 350px; margin-bottom: 30px"
           >
-            <div class="boder-title">工单覆盖统计</div>
+            <div class="boder-title">设备覆盖统计</div>
             <div style="width: 100%; height: 320px; padding-top: 20px">
               <div class="two-top">
                 <div>
@@ -52,7 +52,7 @@
             style="width: 100%; height: 261px; margin-bottom: 30px"
           >
             <div class="boder-title" style="margin-bottom: 10px">
-              工单事态分析
+              工单完成率分析
             </div>
             <div style="width: 100%; height: 220px">
               <Three></Three>
@@ -70,7 +70,7 @@
           </div>
           <div class="boder" style="width: 100%; height: 228px">
             <div class="boder-title" style="margin-bottom: 10px">
-              工单事态分析
+              三率指标分析
             </div>
             <el-radio-group class="radioBtn" v-model="radio4" size="mini">
               <el-radio-button :label="1">完好率</el-radio-button>

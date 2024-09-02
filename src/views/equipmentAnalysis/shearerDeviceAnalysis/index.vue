@@ -4,7 +4,7 @@
     <Analysis />
     <div class="figure">
       <div>
-        <div class="figure-top">采煤机运行时长TOP6-10</div>
+        <div class="figure-top">采煤机运行时长TOP5</div>
         <Three
           class="figure-one"
           :data="{
@@ -29,7 +29,7 @@
         ></Three>
       </div>
       <div>
-        <div class="figure-top">采煤机过煤量TOP6-10</div>
+        <div class="figure-top">采煤机过煤量TOP5</div>
         <Three
           class="figure-one"
           :data="{
@@ -53,7 +53,7 @@
         ></Three>
       </div>
       <div>
-        <div class="figure-top">采煤机用电量TOP6-10</div>
+        <div class="figure-top">采煤机用电量TOP5</div>
 
         <Three
           class="figure-one"
@@ -77,8 +77,10 @@
           }"
         ></Three>
       </div>
+    </div>
+    <div class="figure2">
       <div>
-        <div class="figure-top">采煤机价格最高TOP6-10</div>
+        <div class="figure-top">采煤机价格最高TOP5</div>
 
         <Three
           class="figure-one"
@@ -99,6 +101,31 @@
               generateRandomNumber(3),
             ],
             color: 'rgba(50, 142, 255, 1)',
+          }"
+        ></Three>
+      </div>
+      <div>
+        <div class="figure-top">配件消耗量Top5</div>
+
+        <Three
+          class="figure-one"
+          :data="{
+            xData: [
+              '轴承\n' + generateRandomString(5),
+              '八角螺栓\n' + generateRandomString(5),
+              '六角螺栓\n' + generateRandomString(5),
+              '皮带\n' + generateRandomString(5),
+              '皮带\n' + generateRandomString(5),
+            ],
+            name: '',
+            series: [
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+              generateRandomNumber(3),
+            ],
+            color: '#ff1acf',
           }"
         ></Three>
       </div>
@@ -607,13 +634,14 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
-.figure {
+.figure,
+.figure2 {
   height: 380px;
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
   > div {
-    width: 24.5%;
+    width: 33%;
     height: 100%;
     border-radius: 10px;
     border: 1.95px solid #f4f4f4;
@@ -625,6 +653,11 @@ export default {
 
   .figure-one {
     height: calc(100% - 41px);
+  }
+}
+.figure2 {
+  > div {
+    width: 49.5%;
   }
 }
 .figure-top {
